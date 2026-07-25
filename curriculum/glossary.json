@@ -87,6 +87,41 @@
       "definition": "除一个零测集外性质均成立。"
     },
     {
+      "zh": "Lp 空间",
+      "en": "Lp space",
+      "definition": "p 次绝对可积可测函数按几乎处处相等取等价类得到的完备范数空间。"
+    },
+    {
+      "zh": "本质上确界",
+      "en": "essential supremum",
+      "definition": "允许忽略零测集后函数仍满足的最小几乎处处上界。"
+    },
+    {
+      "zh": "Hölder 不等式",
+      "en": "Holder inequality",
+      "definition": "用一对共轭 Lp 范数控制函数乘积积分的不等式。"
+    },
+    {
+      "zh": "Minkowski 不等式",
+      "en": "Minkowski inequality",
+      "definition": "保证 Lp 范数满足三角不等式的积分不等式。"
+    },
+    {
+      "zh": "Tonelli 定理",
+      "en": "Tonelli theorem",
+      "definition": "允许非负可测函数交换乘积空间积分次序且共同值可以为无穷的定理。"
+    },
+    {
+      "zh": "Fubini 定理",
+      "en": "Fubini theorem",
+      "definition": "在绝对可积条件下保证两种迭代积分与乘积空间积分相等的定理。"
+    },
+    {
+      "zh": "乘积测度",
+      "en": "product measure",
+      "definition": "在可测矩形上取两个测度乘积并扩张到乘积 sigma 代数的测度。"
+    },
+    {
       "zh": "样本外",
       "en": "out of sample",
       "definition": "未参与模型选择、拟合或阈值确定的数据区间。"

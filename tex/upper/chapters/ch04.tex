@@ -1,0 +1,96 @@
+\chapter{$L^p$ 空间、收敛定理与乘积测度}
+\label{ch:lp-product-measure}
+
+\begin{introduction}
+  \item 先修：第 3 章的可测函数、Lebesgue 积分、几乎处处与支配收敛。
+  \item 学习产出：能选择合适的 $L^p$ 误差尺度，并在交换极限或积分次序前逐条核对假设。
+  \item 研究连接：预测误差、随机变量矩、联合分布和嵌套期望都依赖本章的共同语言。
+\end{introduction}
+
+同一个误差函数在均值、均方和最坏情形下会得到不同判断；同一个二元函数在没有绝对可积性时，甚至会因求和或积分次序不同而得到不同答案。本章把这些现象统一到 $L^p$ 空间、收敛定理与乘积测度中。
+
+\section{$L^p$ 范数与几乎处处等价}
+
+在测度空间 $(\Omega,\mathcal F,\mu)$ 上，对 $1\le p<\infty$ 定义
+\[
+  \lVert f\rVert_p=\left(\int_\Omega |f|^p\,d\mu\right)^{1/p},
+\]
+并令 $L^p(\mu)$ 包含所有该值有限的可测函数。$L^\infty$ 使用本质上确界：忽略零测集后仍能成立的最小统一上界。
+
+严格地说，$L^p$ 的元素不是单个函数，而是“几乎处处相等”的等价类。若只在零测集上改变 $f$，所有 $L^p$ 范数不变；因此 $\lVert f\rVert_p=0$ 意味着 $f=0$ 几乎处处，而非每一点都为零。商掉这类差异后，$L^p$ 才成为真正的范数空间，并且对 $1\le p\le\infty$ 都是完备空间。
+
+\begin{note}
+在概率空间中，若 $1\le p\le q\le\infty$，则 $L^q\subseteq L^p$；在一般无限测度空间上不能照搬这个包含关系。集合总测度是不可省略的假设。
+\end{note}
+
+Hölder 不等式在 $1/p+1/q=1$ 时给出
+\[
+  \int |fg|\,d\mu\le \lVert f\rVert_p\lVert g\rVert_q,
+\]
+Minkowski 不等式则给出三角不等式 $\lVert f+g\rVert_p\le\lVert f\rVert_p+\lVert g\rVert_p$。前者控制乘积，后者使误差尺度成为范数。
+
+\subsection{固定账本：$f(x)=x$ 的三个范数}
+
+在 $[0,1]$ 上，
+\[
+  \lVert x\rVert_p=\left(\int_0^1x^p\,dx\right)^{1/p}
+  =(p+1)^{-1/p}.
+\]
+所以 $\lVert x\rVert_1=0.5$、$\lVert x\rVert_2=0.577350\ldots$、$\lVert x\rVert_4=0.668740\ldots$。$p$ 增大时更重视峰值，但有限 $p$ 仍不是最大误差。
+
+\section{三种收敛门禁不能互换}
+
+第 3 章的三条结果现在可用 $L^p$ 语言定位：
+\begin{itemize}[nosep]
+  \item 若 $0\le f_n\uparrow f$，单调收敛定理给出积分收敛；
+  \item 若 $f_n\to f$ 几乎处处且 $|f_n|\le g\in L^1$，支配收敛定理给出 $L^1$ 意义下的积分交换；
+  \item 只有非负性时，Fatou 引理通常只给下半连续不等式。
+\end{itemize}
+
+几乎处处收敛、依测度收敛和 $L^p$ 收敛是不同概念。$L^p$ 收敛推出依测度收敛；在有限测度空间中，从依测度收敛的序列可抽出几乎处处收敛子列，但原序列未必几乎处处收敛。第 3 章的尖峰 $n\mathbf 1_{(0,1/n]}$ 正说明：仅有逐点收敛而没有共同可积控制，积分可以完全不收敛。
+
+\section{乘积测度与两种积分次序}
+
+给定两个 $\sigma$ 有限测度空间，乘积 $\sigma$ 代数由可测矩形 $A\times B$ 生成，乘积测度满足
+\[
+  (\mu\times\nu)(A\times B)=\mu(A)\nu(B).
+\]
+Tonelli 定理处理非负可测函数：允许交换积分次序，结果也可以是 $+\infty$。Fubini 定理处理可积符号函数：若
+\[
+  \int |f|\,d(\mu\times\nu)<\infty,
+\]
+则几乎所有截面可积，两种迭代积分都存在且等于乘积空间积分。非负性与绝对可积性分别是两道不同门禁。
+
+\subsection{失败见证：条件求和不能冒充 Fubini}
+
+在 $\mathbb N\times\mathbb N$ 上取计数测度，并令
+\[
+  a_{mn}=\begin{cases}
+    1,&m=n,\\
+    -1,&m=n+1,\\
+    0,&\text{其他}.
+  \end{cases}
+\]
+固定一行求和时，第 1 行为 1，其余行中 $1$ 与 $-1$ 抵消，所以先逐行求和得到 1。固定一列求和时，每列的 $1$ 都与下一行的 $-1$ 抵消，所以先逐列求和得到 0。
+
+矛盾来自缺少绝对可积性：前 $N\times N$ 方阵的绝对值和为 $2N-1\to\infty$。方阵截断的有符号和恒为 1，而 $(N+1)\times N$ 截断恒为 0；不同扩张路径保留了不同边界项。Fubini 不适用，Tonelli 也不能用于含负项的 $a_{mn}$。
+
+\section{独立数值实验与误差界}
+
+对 $x^2$ 使用 $N=64$ 个等宽小区间的复合中点公式，程序得到积分 $0.333312988$。解析积分是 $1/3$；由于 $\max|(x^2)''|=2$，中点余项满足
+\[
+  |E_N|\le\frac{2}{24N^2}=0.000020345\ldots,
+\]
+实际误差也恰为 $0.000020345\ldots$。双重级数部分只做整数计数，因此误差界为零；它不是用浮点近似制造的次序差异。
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch04
+\end{lstlisting}
+
+\input{tex/upper/chapters/ch04-questions}
+\input{tex/upper/chapters/ch04-hints}
+
+\section*{本章小结与 Capstone 连接}
+
+$L^p$ 把误差尺度变成完备空间；收敛定理规定极限交换条件；Tonelli 与 Fubini 规定积分次序门禁。上册 Capstone 将要求每个期望、联合积分和数值近似同时声明空间、可积条件、独立 oracle 与误差界。

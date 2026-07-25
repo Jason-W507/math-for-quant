@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=4\n"
+            "accepted-units=5\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -527,6 +527,73 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed simple_m2=0.375000 simple_m4=0.468750 "
             "simple_m8=0.498047 spike10=1.000000 spike100=1.000000 "
             "point10=0.000000 point100=0.000000 gap=1.000000\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_four_notebook_reproduces_lp_and_fubini_oracles(
+        self,
+    ) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch04_lp_product_measure.py",
+                "--output",
+                "build/notebooks/upper/ch04_lp_product_measure.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch04_lp_product_measure.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed lp1=0.500000 lp2=0.577350 "
+            "lp4=0.668740 midpoint=0.333312988 error=0.000020345 "
+            "bound=0.000020345 row_first=1 col_first=0 square10=1 "
+            "rectangle10=0 abs10=19 square100=1 rectangle100=0 abs100=199\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_four_with_lp_and_fubini_oracles(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch04" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            oracle["published_markers"],
+            [
+                "0.577350",
+                "0.333312988",
+                "0.000020345",
+                "先逐行求和得到 1",
+                "先逐列求和得到 0",
+                "2N-1",
+            ],
+        )
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch04",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch04\n"
+            "evidence=7/7\n"
+            "oracle=passed lp1=0.500000 lp2=0.577350 lp4=0.668740 "
+            "midpoint=0.333312988 error=0.000020345 bound=0.000020345 "
+            "row_first=1 col_first=0 square10=1 rectangle10=0 abs10=19 "
+            "square100=1 rectangle100=0 abs100=199\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

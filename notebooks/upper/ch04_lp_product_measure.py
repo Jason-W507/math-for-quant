@@ -1,0 +1,90 @@
+# %% [markdown]
+# # Lp 范数、求积误差与 Fubini 反例
+#
+# 解析范数、复合中点余项和双重级数计数先由手算给出；程序只复现这些 oracle。
+
+# %%
+from __future__ import annotations
+
+import json
+import math
+from pathlib import Path
+
+
+def coefficient(row: int, column: int) -> int:
+    if row == column:
+        return 1
+    if row == column + 1:
+        return -1
+    return 0
+
+
+def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
+    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+    lp_norms = [
+        (1.0 / (int(power) + 1)) ** (1.0 / int(power))
+        for power in oracle["p_values"]
+    ]
+
+    bins = int(oracle["midpoint_bins"])
+    midpoint_integral = sum(((index + 0.5) / bins) ** 2 for index in range(bins)) / bins
+    midpoint_error = (1.0 / 3.0) - midpoint_integral
+    midpoint_bound = 2.0 / (24.0 * bins * bins)
+
+    square_sums = []
+    rectangular_sums = []
+    absolute_square_sums = []
+    for size_value in oracle["section_sizes"]:
+        size = int(size_value)
+        square_sums.append(
+            sum(coefficient(row, column) for row in range(1, size + 1) for column in range(1, size + 1))
+        )
+        rectangular_sums.append(
+            sum(coefficient(row, column) for row in range(1, size + 2) for column in range(1, size + 1))
+        )
+        absolute_square_sums.append(
+            sum(abs(coefficient(row, column)) for row in range(1, size + 1) for column in range(1, size + 1))
+        )
+
+    row_first = 1
+    column_first = 0
+    observed = [
+        *lp_norms,
+        midpoint_integral,
+        midpoint_error,
+        midpoint_bound,
+        row_first,
+        column_first,
+        *square_sums,
+        *rectangular_sums,
+        *absolute_square_sums,
+    ]
+    expected = [
+        *(float(item) for item in oracle["expected_lp_norms"]),
+        float(oracle["expected_midpoint_integral"]),
+        float(oracle["expected_midpoint_error"]),
+        float(oracle["expected_midpoint_bound"]),
+        int(oracle["expected_row_first"]),
+        int(oracle["expected_column_first"]),
+        *(int(item) for item in oracle["expected_square_sums"]),
+        *(int(item) for item in oracle["expected_rectangular_sums"]),
+        *(int(item) for item in oracle["expected_absolute_square_sums"]),
+    ]
+    tolerance = float(oracle["absolute_tolerance"])
+    if len(observed) != len(expected) or any(
+        abs(left - right) > tolerance for left, right in zip(observed, expected)
+    ):
+        raise SystemExit(f"oracle mismatch: observed={observed} expected={expected}")
+
+    print(
+        "oracle=passed "
+        f"lp1={lp_norms[0]:.6f} lp2={lp_norms[1]:.6f} lp4={lp_norms[2]:.6f} "
+        f"midpoint={midpoint_integral:.9f} error={midpoint_error:.9f} "
+        f"bound={midpoint_bound:.9f} row_first={row_first} col_first={column_first} "
+        f"square10={square_sums[0]} rectangle10={rectangular_sums[0]} abs10={absolute_square_sums[0]} "
+        f"square100={square_sums[1]} rectangle100={rectangular_sums[1]} abs100={absolute_square_sums[1]}"
+    )
+    return 0
+
+
+main()

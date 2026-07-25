@@ -1,0 +1,25 @@
+{
+  "provenance": "analytic Lp norms, composite-midpoint remainder for x^2, and hand-counted finite sections of a double series",
+  "p_values": [1, 2, 4],
+  "expected_lp_norms": [0.5, 0.5773502691896257, 0.668740304976422],
+  "midpoint_bins": 64,
+  "expected_midpoint_integral": 0.33331298828125,
+  "expected_midpoint_error": 0.000020345052083333332,
+  "expected_midpoint_bound": 0.000020345052083333332,
+  "section_sizes": [10, 100],
+  "expected_row_first": 1,
+  "expected_column_first": 0,
+  "expected_square_sums": [1, 1],
+  "expected_rectangular_sums": [0, 0],
+  "expected_absolute_square_sums": [19, 199],
+  "published_markers": [
+    "0.577350",
+    "0.333312988",
+    "0.000020345",
+    "先逐行求和得到 1",
+    "先逐列求和得到 0",
+    "2N-1"
+  ],
+  "expected": 0.5773502691896257,
+  "absolute_tolerance": 1e-12
+}

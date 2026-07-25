@@ -74,6 +74,24 @@
       "first_unit": "upper.ch03"
     },
     {
+      "symbol": "L^p(\\mu)",
+      "meaning": "关于测度 mu 的 p 次绝对可积函数之几乎处处等价类空间",
+      "domain": "Banach space for p in [1,infinity]",
+      "first_unit": "upper.ch04"
+    },
+    {
+      "symbol": "\\lVert f\\rVert_p",
+      "meaning": "函数 f 的 Lp 范数",
+      "domain": "nonnegative real",
+      "first_unit": "upper.ch04"
+    },
+    {
+      "symbol": "\\mu\\times\\nu",
+      "meaning": "测度 mu 与 nu 的乘积测度",
+      "domain": "product measurable space",
+      "first_unit": "upper.ch04"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",
