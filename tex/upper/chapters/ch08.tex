@@ -1,0 +1,77 @@
+\chapter{条件期望、独立性与概率核}
+\label{ch:conditioning}
+
+\begin{introduction}
+  \item 先修：第 7 章的概率空间、随机变量、联合分布与期望。
+  \item 学习产出：能把条件期望解释为信息约束下的随机变量，验证塔式性质，并用概率核区分条件独立与边缘独立。
+  \item 研究连接：因子暴露、状态切换、贝叶斯更新、缺失数据与时序预测都依赖“给定哪些信息”。
+\end{introduction}
+
+“给定 $Z=z$”不是把一列数据筛出来那么简单。条件化的对象可能是事件、随机变量或整套信息；零概率事件上尤其不能直接用小学分式。统一语言是子 $\sigma$ 代数与概率核。
+
+\section{条件期望是信息下的可测代表}
+
+设 $X$ 可积，$\mathcal G\subseteq\mathcal F$。条件期望 $\mathbb{E}[X\mid\mathcal G]$ 是一个 $\mathcal G$ 可测随机变量，并满足
+\[
+  \int_G\mathbb{E}[X\mid\mathcal G],d\mathbb P
+  =\int_GX,d\mathbb P,
+  \qquad G\in\mathcal G.
+\]
+它只在几乎处处意义下唯一。若 $X\in L^2$，它还是 $X$ 到 $L^2(\mathcal G)$ 的正交投影：误差与每个平方可积的 $\mathcal G$ 可测变量正交。这与第 6 章最小二乘投影是同一几何结构，但目标空间从有限维列空间换成可测函数子空间。
+
+有限账本有四个等概率状态，$Z=(0,0,1,1)$，$X=(0,2,2,4)$。由 $Z$ 生成的 $\mathcal G$ 把状态分成两组，因此
+\[
+  \mathbb{E}[X\mid\mathcal G]=(1,1,3,3).
+\]
+条件均值分别为 $1$ 与 $3$，再按两组各 $1/2$ 加权，得到
+\[
+  \mathbb{E}[\mathbb{E}[X\mid\mathcal G]]=2=\mathbb{E}[X].
+\]
+这就是塔式性质的有限版本。一般地，若 $\mathcal H\subseteq\mathcal G$，则
+\[
+  \mathbb{E}[\mathbb{E}[X\mid\mathcal G]\mid\mathcal H]
+  =\mathbb{E}[X\mid\mathcal H].
+\]
+
+\section{独立、条件独立与信息集合}
+
+$X$ 与 $Y$ 独立，是指其生成的 $\sigma$ 代数独立；等价地，对所有可测集合 $A,B$，
+\[
+  \mathbb P(X\in A,Y\in B)=\mathbb P(X\in A)\mathbb P(Y\in B).
+\]
+写作 $X\perp Y$。条件独立 $X\perp Y\mid Z$ 则要求给定 $Z$ 后的联合条件分布分解为两个条件边缘。两者没有相互推出关系，必须写出条件信息。
+
+反例令 $A=B=Z$，其中 $Z$ 为公平二元变量。给定 $Z$ 后，$A,B$ 都是常数，故 $A\perp B\mid Z$，条件独立误差为 $0$；但边缘上
+\[
+  \mathbb P(A=1,B=1)=\frac12,
+  \qquad \mathbb P(A=1)\mathbb P(B=1)=\frac14,
+\]
+所以 $1/2\ne1/4$。共同原因可以在分层内消除随机联系，却在混合总体中制造相关性。
+
+\section{条件分布与概率核}
+
+概率核 $K(z,B)$ 对固定 $z$ 是关于 $B$ 的概率测度，对固定 $B$ 是关于 $z$ 的可测函数。它给出条件分布的一个版本：
+\[
+  K(z,B)=\mathbb P(X\in B\mid Z=z).
+\]
+有限例中，令 $X$ 的支持为 $(0,2,4)$，条件核为
+\[
+  K=\begin{pmatrix}1/2&1/2&0\\0&1/2&1/2\end{pmatrix}.
+\]
+每行和为 $1$；再用 $\mathbb P(Z=0)=\mathbb P(Z=1)=1/2$ 混合，依据全概率公式恢复 $(1/4,1/2,1/4)$。条件期望也可写为
+\[
+  \mathbb{E}[X\mid Z=z]=\int x\,K(z,dx).
+\]
+
+密度公式 $f_{X\mid Y}(x\mid y)=f_{X,Y}(x,y)/f_Y(y)$ 只有在相应密度存在且 $f_Y(y)>0$ 时才有意义。连续模型中单点通常概率为零，但正则条件分布仍可能通过概率核定义；把分母为零的比值当作条件密度，会制造未定义结果而不是“极小概率估计”。
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch08
+\end{lstlisting}
+
+\input{tex/upper/chapters/ch08-questions}
+\input{tex/upper/chapters/ch08-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+条件期望由信息 $\sigma$ 代数决定，概率核承载条件分布，条件独立必须显式写出共同信息；上册 Capstone 将审计特征可用时间、条件集合与混合总体偏差。

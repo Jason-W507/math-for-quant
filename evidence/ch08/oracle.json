@@ -1,0 +1,26 @@
+{
+  "provenance": "four-state equal-mass ledger with hand-computed partition averages, a two-row conditional kernel, total-probability mixture, and a common-cause conditional-independence counterexample",
+  "probabilities": [0.25, 0.25, 0.25, 0.25],
+  "conditioning_state": [0, 0, 1, 1],
+  "random_variable": [0.0, 2.0, 2.0, 4.0],
+  "expected_conditional_means": [1.0, 3.0],
+  "expected_unconditional_mean": 2.0,
+  "kernel_support": [0.0, 2.0, 4.0],
+  "kernel": [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5]],
+  "conditioning_probabilities": [0.5, 0.5],
+  "expected_mixture": [0.25, 0.5, 0.25],
+  "common_cause_a": [0, 0, 1, 1],
+  "common_cause_b": [0, 0, 1, 1],
+  "expected_marginal_joint_one": 0.5,
+  "expected_marginal_product_one": 0.25,
+  "maximum_conditional_independence_error": 1e-12,
+  "published_markers": [
+    "条件均值分别为 $1$ 与 $3$",
+    "$\\mathbb{E}[\\mathbb{E}[X\\mid\\mathcal G]]=2=\\mathbb{E}[X]$",
+    "混合后恢复 $(1/4,1/2,1/4)$",
+    "$1/2\\ne1/4$",
+    "条件独立误差为 $0$"
+  ],
+  "expected": 2.0,
+  "absolute_tolerance": 1e-10
+}

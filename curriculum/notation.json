@@ -146,6 +146,24 @@
       "first_unit": "upper.ch07"
     },
     {
+      "symbol": "\\mathbb{E}[X\\mid\\mathcal G]",
+      "meaning": "给定信息 sigma 代数 G 的条件期望",
+      "domain": "G-measurable integrable random variable",
+      "first_unit": "upper.ch08"
+    },
+    {
+      "symbol": "K(z,B)",
+      "meaning": "给定状态 z 时事件 B 的条件概率核",
+      "domain": "probability kernel",
+      "first_unit": "upper.ch08"
+    },
+    {
+      "symbol": "X\\perp Y\\mid Z",
+      "meaning": "随机变量 X 与 Y 给定 Z 条件独立",
+      "domain": "conditional independence relation",
+      "first_unit": "upper.ch08"
+    },
+    {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",
       "domain": "extended nonnegative real when defined",

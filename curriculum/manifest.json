@@ -207,7 +207,29 @@
         "capstone_connection": "tex/upper/chapters/ch07.tex"
       }
     },
-    {"id":"upper.ch08","title":"条件期望、独立性与概率核","volume":"upper","state":"planned","prerequisites":["upper.ch07"]},
+    {
+      "id": "upper.ch08",
+      "title": "条件期望、独立性与概率核",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch07"],
+      "evidence": {
+        "notation_symbols": ["\\mathbb{E}[X\\mid\\mathcal G]", "K(z,B)", "X\\perp Y\\mid Z"],
+        "glossary_terms": ["条件期望", "塔式性质", "独立性", "条件独立", "概率核"],
+        "notation_and_assumptions": "tex/upper/chapters/ch08.tex",
+        "core_derivation": "tex/upper/chapters/ch08.tex",
+        "independent_oracle": {
+          "source": "notebooks/upper/ch08_conditioning.py",
+          "oracle": "evidence/ch08/oracle.json",
+          "command": ["{python}", "notebooks/upper/ch08_conditioning.py"]
+        },
+        "questions": "tex/upper/chapters/ch08-questions.tex",
+        "hints": "tex/upper/chapters/ch08-hints.tex",
+        "solutions": "tex/upper/solutions/ch08.tex",
+        "capstone_connection": "tex/upper/chapters/ch08.tex"
+      }
+    },
     {"id":"upper.ch09","title":"概率收敛、极限定理与集中不等式","volume":"upper","state":"planned","prerequisites":["upper.ch08"]},
     {"id":"upper.ch10","title":"估计、检验、渐近、回归与多重检验","volume":"upper","state":"planned","prerequisites":["upper.ch06","upper.ch09"]},
     {"id":"upper.ch11","title":"随机过程、Markov、鞅、Poisson 与 Brownian","volume":"upper","state":"planned","prerequisites":["upper.ch08","upper.ch09"]},

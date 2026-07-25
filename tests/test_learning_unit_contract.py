@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=8\n"
+            "accepted-units=9\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -785,6 +785,57 @@ class LearningUnitContractTests(unittest.TestCase):
             "bernoulli=(0.250000,0.187500,1.250000) "
             "poisson_pgf=0.367879 normal_mgf=1.133148 "
             "pareto_truncated=(2.302585,6.907755)\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_eight_notebook_reproduces_conditioning_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch08_conditioning.py",
+                "--output",
+                "build/notebooks/upper/ch08_conditioning.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch08_conditioning.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed conditional=(1.000000,3.000000) "
+            "tower=2.000000 kernel_rows=(1.000000,1.000000) "
+            "mixture=(0.250000,0.500000,0.250000) "
+            "marginal_joint=0.500000 marginal_product=0.250000 "
+            "conditional_error=0.000e+00\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_eight_with_conditioning_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch08",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch08\n"
+            "evidence=7/7\n"
+            "oracle=passed conditional=(1.000000,3.000000) "
+            "tower=2.000000 kernel_rows=(1.000000,1.000000) "
+            "mixture=(0.250000,0.500000,0.250000) "
+            "marginal_joint=0.500000 marginal_product=0.250000 "
+            "conditional_error=0.000e+00\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

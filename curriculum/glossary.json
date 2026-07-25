@@ -157,6 +157,11 @@
     {"zh": "联合分布", "en": "joint distribution", "definition": "随机向量在乘积空间上的推前概率分布。"},
     {"zh": "边缘分布", "en": "marginal distribution", "definition": "从联合分布对其余坐标积分或求和得到的单坐标分布。"},
     {"zh": "重尾分布", "en": "heavy-tailed distribution", "definition": "尾部衰减较慢并可能使某些矩不存在的分布。"},
+    {"zh": "条件期望", "en": "conditional expectation", "definition": "给定子 sigma 代数时保持其每个事件上积分的可测随机变量。"},
+    {"zh": "塔式性质", "en": "tower property", "definition": "对嵌套信息集合依次条件化等于直接对较粗信息条件化的性质。"},
+    {"zh": "独立性", "en": "independence", "definition": "相关事件的联合概率对所有可测集合均分解为边缘概率乘积。"},
+    {"zh": "条件独立", "en": "conditional independence", "definition": "给定指定信息后联合条件分布分解为条件边缘分布乘积。"},
+    {"zh": "概率核", "en": "probability kernel", "definition": "对状态可测、对事件为概率测度的条件分布映射。"},
     {
       "zh": "样本外",
       "en": "out of sample",
