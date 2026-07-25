@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=6\n"
+            "accepted-units=7\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -656,6 +656,54 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed value=-1.000000 gradient=(0.000000,-0.500000) "
             "chain=(4.000000,-6.500000) max_error=2.620e-11 "
             "left=-1.0 right=1.0\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_six_notebook_reproduces_projection_and_conditioning(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch06_linear_algebra.py",
+                "--output",
+                "build/notebooks/upper/ch06_linear_algebra.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch06_linear_algebra.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed beta=(1.166667,0.500000) "
+            "sse=0.166667 orth_error=6.661e-16 recon_error=3.331e-16 "
+            "sigma=(2.676243,0.915272) condition=4.000e+06 "
+            "amplification=1000001\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_six_with_projection_and_conditioning(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch06",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch06\n"
+            "evidence=7/7\n"
+            "oracle=passed beta=(1.166667,0.500000) sse=0.166667 "
+            "orth_error=6.661e-16 recon_error=3.331e-16 "
+            "sigma=(2.676243,0.915272) condition=4.000e+06 "
+            "amplification=1000001\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

@@ -146,6 +146,11 @@
       "en": "matrix differential",
       "definition": "通过线性微分与形状账本推导标量、向量和矩阵导数的记法。"
     },
+    {"zh": "正交投影", "en": "orthogonal projection", "definition": "将向量映射到子空间且使残差位于该子空间正交补的线性映射。"},
+    {"zh": "最小二乘", "en": "least squares", "definition": "通过最小化残差平方和估计参数的方法。"},
+    {"zh": "谱分解", "en": "spectral decomposition", "definition": "将实对称矩阵写成正交特征向量与实特征值的分解。"},
+    {"zh": "奇异值分解", "en": "singular value decomposition", "definition": "将任意矩阵分解为左右正交方向与非负奇异值。"},
+    {"zh": "条件数", "en": "condition number", "definition": "衡量问题输出对输入相对扰动最坏敏感度的数值。"},
     {
       "zh": "样本外",
       "en": "out of sample",

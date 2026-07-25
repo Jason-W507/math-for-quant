@@ -110,6 +110,24 @@
       "first_unit": "upper.ch05"
     },
     {
+      "symbol": "P_X",
+      "meaning": "到设计矩阵 X 列空间的正交投影矩阵",
+      "domain": "symmetric idempotent matrix",
+      "first_unit": "upper.ch06"
+    },
+    {
+      "symbol": "\\hat\\beta",
+      "meaning": "线性模型的最小二乘系数估计",
+      "domain": "column vector",
+      "first_unit": "upper.ch06"
+    },
+    {
+      "symbol": "\\kappa_2(A)",
+      "meaning": "矩阵 A 的二范数条件数",
+      "domain": "real at least one or infinity",
+      "first_unit": "upper.ch06"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",

@@ -1,0 +1,76 @@
+\chapter{线性代数、分解、投影与条件数}
+\label{ch:linear-algebra}
+
+\begin{introduction}
+  \item 先修：第 1 章的命题与量纲、第 5 章的梯度和矩阵微分。
+  \item 学习产出：能推导最小二乘投影，选择合适分解，并用扰动实验解释条件数。
+  \item 研究连接：回归、因子风险模型、PCA、协方差估计和优化都依赖稳定的线性代数。
+\end{introduction}
+
+矩阵不是二维数据容器，而是线性映射。列空间描述模型能表达的方向，正交补描述无法解释的残差，分解则把映射拆成便于计算和诊断的结构。
+
+\section{内积、正交与投影}
+
+在欧氏空间中，$\langle u,v\rangle=u^Tv$。若 $u^Tv=0$，两向量正交。给定满列秩 $X\in\mathbb R^{n\times d}$，将 $y\in\mathbb R^n$ 投影到 $\operatorname{col}(X)$，就是寻找 $X\beta$ 使残差 $r=y-X\beta$ 与列空间正交：
+\[
+  X^Tr=0\quad\Longleftrightarrow\quad X^TX\beta=X^Ty.
+\]
+因此
+\[
+  \hat\beta=(X^TX)^{-1}X^Ty,
+  \qquad P_X=X(X^TX)^{-1}X^T.
+\]
+$P_X$ 对称且幂等，$P_Xy$ 是投影，$(I-P_X)y$ 是正交残差。实际程序通常不显式形成逆矩阵，而使用 QR 或 SVD 求解。
+
+\section{最小二乘从一阶条件得到同一结论}
+
+最小化
+\[
+  L(\beta)=\frac12\lVert y-X\beta\rVert_2^2
+\]
+时，第 5 章的微分给出 $\nabla L=X^T(X\beta-y)$。令梯度为零就得到正规方程；几何投影与优化一阶条件是同一事实。
+
+固定账本取
+\[
+X=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix},\qquad
+y=\begin{pmatrix}1\\2\\2\end{pmatrix}.
+\]
+手算 $X^TX=\left(\begin{smallmatrix}3&3\\3&5\end{smallmatrix}\right)$、$X^Ty=(5,6)^T$，得到 $\hat\beta=(7/6,1/2)^T$。残差为 $(-1/6,1/3,-1/6)^T$，满足 $X^Tr=0$，残差平方和为 $1/6$。
+
+\section{QR、谱分解与 SVD 各自回答什么}
+
+\begin{itemize}[nosep]
+  \item \textbf{QR：}$X=QR$，其中 $Q$ 列正交、$R$ 上三角；满列秩最小二乘可解 $R\beta=Q^Ty$，避免把条件数在 $X^TX$ 中平方。
+  \item \textbf{谱分解：}实对称矩阵 $A=Q\Lambda Q^T$，正交特征向量给出主方向；协方差矩阵和 Hessian 的正定性可由特征值判断。
+  \item \textbf{SVD：}任意 $m\times n$ 矩阵都可写为 $U\Sigma V^T$；奇异值揭示秩、可辨识方向、低秩近似与伪逆稳定性。
+\end{itemize}
+
+本例 $X^TX$ 的特征值为 $4\pm\sqrt{10}$，所以 $X$ 的奇异值是 $\sqrt{4\pm\sqrt{10}}$，即 $2.676243$ 与 $0.915272$。程序的 SVD 重构误差小于 $10^{-12}$，并独立核验投影的对称与幂等性质。
+
+\section{条件数是最坏方向的扰动放大}
+
+对可逆矩阵，二范数条件数
+\[
+  \kappa_2(A)=\frac{\sigma_{\max}(A)}{\sigma_{\min}(A)}
+\]
+衡量相对输入扰动可能被放大的最坏比例。它不是某一次误差的精确预测，却是数据精度、算法与参数化共同作用的风险上界。
+
+取
+\[
+A_\varepsilon=\begin{pmatrix}1&1\\1&1+\varepsilon\end{pmatrix},
+\qquad \varepsilon=10^{-6}.
+\]
+其行列式仅为 $10^{-6}$。令真实解为 $(1,-1)^T$，则右端为 $(0,-10^{-6})^T$。只把第一项增加 $10^{-8}$，新解变为 $(1.01000001,-1.01)^T$：输入分量变化 $10^{-8}$，解分量最大变化 $0.01000001$，放大倍数为 $1000001$。库报告的条件数约 $4.0\times10^6$，而手算方程和实测变化共同说明了风险来源。
+
+不要用“矩阵可逆”替代“问题可稳定求解”：近零奇异值意味着某些方向几乎不可辨识；正则化会改变问题本身，并非免费修复。
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch06
+\end{lstlisting}
+
+\input{tex/upper/chapters/ch06-questions}
+\input{tex/upper/chapters/ch06-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+投影给出残差正交不变量，分解暴露结构，条件数连接扰动与误差；上册 Capstone 将同时审计残差、重构、奇异值谱和扰动。
