@@ -167,7 +167,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch01"],
+      "prerequisites": ["upper.ch01", "upper.ch05"],
       "evidence": {
         "notation_symbols": ["P_X", "\\hat\\beta", "\\kappa_2(A)"],
         "glossary_terms": ["正交投影", "最小二乘", "谱分解", "奇异值分解", "条件数"],

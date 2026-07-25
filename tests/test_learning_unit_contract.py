@@ -685,7 +685,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "execution=passed oracle=passed beta=(1.166667,0.500000) "
             "sse=0.166667 orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
-            "amplification=1000001\n",
+            "amplification=1000001 relative=1.000001\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -703,7 +703,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed beta=(1.166667,0.500000) sse=0.166667 "
             "orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
-            "amplification=1000001\n"
+            "amplification=1000001 relative=1.000001\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

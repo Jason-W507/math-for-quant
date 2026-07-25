@@ -41,6 +41,10 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
     component_amplification = float(
         np.max(np.abs(perturbed_solution - base_solution)) / perturbation
     )
+    relative_amplification = float(
+        (np.linalg.norm(perturbed_solution - base_solution) / np.linalg.norm(base_solution))
+        / (np.linalg.norm(perturbed_rhs - base_rhs) / np.linalg.norm(base_rhs))
+    )
     condition_number = float(np.linalg.cond(near_singular))
 
     tolerance = float(oracle["absolute_tolerance"])
@@ -60,6 +64,8 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         raise SystemExit(f"SSE mismatch: {sse}")
     if abs(component_amplification - float(oracle["expected_component_amplification"])) > 1.0:
         raise SystemExit(f"amplification mismatch: {component_amplification}")
+    if abs(relative_amplification - float(oracle["expected_relative_amplification"])) > 1e-9:
+        raise SystemExit(f"relative amplification mismatch: {relative_amplification}")
     if orthogonality_error > float(oracle["maximum_orthogonality_error"]):
         raise SystemExit(f"orthogonality mismatch: {orthogonality_error}")
     if max(reconstruction_error, projection_error) > float(
@@ -72,7 +78,8 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         f"beta=({beta[0]:.6f},{beta[1]:.6f}) sse={sse:.6f} "
         f"orth_error={orthogonality_error:.3e} recon_error={reconstruction_error:.3e} "
         f"sigma=({singular_values[0]:.6f},{singular_values[1]:.6f}) "
-        f"condition={condition_number:.3e} amplification={component_amplification:.0f}"
+        f"condition={condition_number:.3e} amplification={component_amplification:.0f} "
+        f"relative={relative_amplification:.6f}"
     )
     return 0
 
