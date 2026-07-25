@@ -317,6 +317,30 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(result.stderr, "notation registry must contain symbols\n")
 
+    def test_rejects_a_unit_symbol_missing_from_the_shared_registry(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        unit = next(
+            item for item in manifest["units"] if item["id"] == "foundation.oracle-smoke"
+        )
+        unit["evidence"]["notation_symbols"] = ["x_t"]
+        fixture = ROOT / "build" / "test-manifests" / "unregistered-symbol.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture.relative_to(ROOT).as_posix(),
+            "--unit",
+            "foundation.oracle-smoke",
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "foundation.oracle-smoke: unregistered notation symbol x_t\n",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

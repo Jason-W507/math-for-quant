@@ -28,6 +28,8 @@
       "published": false,
       "prerequisites": [],
       "evidence": {
+        "notation_symbols": ["r_t"],
+        "glossary_terms": ["独立 oracle"],
         "notation_and_assumptions": "evidence/foundation/notation-and-assumptions.md",
         "core_derivation": "evidence/foundation/core-derivation.md",
         "independent_oracle": {

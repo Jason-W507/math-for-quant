@@ -4,7 +4,10 @@ import argparse
 import asyncio
 import os
 import sys
+import warnings
 from pathlib import Path
+
+os.environ.setdefault("JUPYTER_ALLOW_INSECURE_WRITES", "true")
 
 import jupytext
 from nbclient import NotebookClient
@@ -58,13 +61,18 @@ def main() -> int:
         runtime.mkdir(parents=True, exist_ok=True)
         os.environ["JUPYTER_RUNTIME_DIR"] = str(runtime)
         os.environ["IPYTHONDIR"] = str(ROOT / "build" / "ipython")
-        executed = NotebookClient(
-            generated_notebook,
-            timeout=60,
-            kernel_name="python3",
-            extra_arguments=["--log-level=ERROR"],
-            resources={"metadata": {"path": str(ROOT)}},
-        ).execute()
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore",
+                message="WARNING: Insecure writes have been enabled.*",
+            )
+            executed = NotebookClient(
+                generated_notebook,
+                timeout=60,
+                kernel_name="python3",
+                extra_arguments=["--log-level=ERROR"],
+                resources={"metadata": {"path": str(ROOT)}},
+            ).execute()
         output_text = "".join(
             str(item.get("text", ""))
             for cell in executed.cells
