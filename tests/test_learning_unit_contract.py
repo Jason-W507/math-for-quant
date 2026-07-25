@@ -738,6 +738,36 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_chapter_seven_rejects_negative_probability_mass(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch07" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["finite_probabilities"] = [-0.25, 0.75, 0.5]
+        oracle["expected_mean"] = 1.25
+        oracle["expected_variance"] = 0.1875
+        fixture = ROOT / "build" / "test-fixtures" / "ch07-negative-mass.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch07_probability_distributions.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("nonnegative", result.stderr)
+
     def test_accepts_chapter_seven_with_distribution_oracles(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",

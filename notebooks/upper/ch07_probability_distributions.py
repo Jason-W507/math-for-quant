@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -19,15 +20,38 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
 
     values = np.asarray(oracle["finite_values"], dtype=float)
     probabilities = np.asarray(oracle["finite_probabilities"], dtype=float)
+    if (
+        values.ndim != 1
+        or probabilities.ndim != 1
+        or values.size == 0
+        or values.shape != probabilities.shape
+        or not np.all(np.isfinite(values))
+        or not np.all(np.isfinite(probabilities))
+    ):
+        raise SystemExit("finite distribution requires matching finite one-dimensional arrays")
+    if np.any(probabilities < 0.0):
+        raise SystemExit("finite probability mass must be nonnegative")
     if abs(float(probabilities.sum()) - 1.0) > tolerance:
         raise SystemExit("finite probability mass does not sum to one")
     mean = float(probabilities @ values)
     variance = float(probabilities @ ((values - mean) ** 2))
 
     joint = np.asarray(oracle["joint_distribution"], dtype=float)
+    if joint.ndim != 2 or joint.size == 0 or not np.all(np.isfinite(joint)):
+        raise SystemExit("joint distribution must be a finite nonempty matrix")
+    if np.any(joint < 0.0):
+        raise SystemExit("joint probability mass must be nonnegative")
     joint_mass = float(joint.sum())
+    if abs(joint_mass - 1.0) > tolerance:
+        raise SystemExit("joint probability mass does not sum to one")
     row_marginal = joint.sum(axis=1)
     column_marginal = joint.sum(axis=0)
+    expected_marginals = np.asarray(oracle["expected_marginals"], dtype=float)
+    if (
+        expected_marginals.shape != row_marginal.shape
+        or expected_marginals.shape != column_marginal.shape
+    ):
+        raise SystemExit("expected marginal shape is incompatible with joint distribution")
 
     p = float(oracle["bernoulli_p"])
     bernoulli_mean = p
@@ -80,4 +104,7 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
     return 0
 
 
-main()
+oracle_path = Path("evidence/ch07/oracle.json")
+if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+    oracle_path = Path(sys.argv[1])
+main(oracle_path)
