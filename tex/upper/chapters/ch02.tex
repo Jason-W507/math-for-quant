@@ -46,12 +46,18 @@ d(x,z)\le d(x,y)+d(y,z).
 \forall\varepsilon>0\;\exists\delta>0\;\forall x:\quad
 0<d_X(x,a)<\delta\Longrightarrow d_Y(T(x),L)<\varepsilon.
 \]
-条件 $0<d_X(x,a)$ 表明函数极限只看 $a$ 附近，不要求 $T(a)$ 已定义或等于 $L$。若 $a$ 是孤立点，该条件会对任意 $L$ 空真，因而不能定义唯一极限。在度量空间中，聚点处的定义等价于：每个满足 $x_n\to a$ 且 $x_n\ne a$ 的序列都有 $T(x_n)\to L$。
+条件 $0<d_X(x,a)$ 表明函数极限只看 $a$ 附近，不依赖 $T(a)$ 的取值，也不要求 $T(a)=L$。若 $a$ 是孤立点，该条件会对任意 $L$ 空真，因而不能定义唯一极限。在度量空间中，聚点处的定义等价于：每个满足 $x_n\to a$ 且 $x_n\ne a$ 的序列都有 $T(x_n)\to L$。
 
-映射 $T$ 在 $a$ 连续，是指 $T(a)$ 已定义且 $\lim_{x\to a}T(x)=T(a)$；等价的序列判据为
+映射 $T$ 在任意 $a\in X$ 连续，是指
+\[
+\forall\varepsilon>0\;\exists\delta>0:\quad
+d_X(x,a)<\delta\Longrightarrow d_Y(T(x),T(a))<\varepsilon.
+\]
+它等价于下面不排除 $x_n=a$ 的序列判据：
 \[
 x_n\to a\quad\Longrightarrow\quad T(x_n)\to T(a).
 \]
+若 $a$ 是聚点，连续性还等价于 $\lim_{x\to a}T(x)=T(a)$；若 $a$ 是孤立点，取足够小的 $\delta$ 即知任意映射都在 $a$ 连续。
 连续性允许把极限穿过映射，但不自动给出收敛速度，也不保证算法产生的序列收敛。若实现还包含排序、阈值或裁剪，边界点可能不连续，必须单独分析。
 
 \section{压缩映射为何给出可执行的收敛证明}
