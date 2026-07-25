@@ -497,6 +497,22 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
 
     def test_accepts_chapter_three_with_simple_and_spike_oracles(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch03" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            oracle["published_markers"],
+            [
+                "0.375",
+                "0.46875",
+                "0.498046875",
+                "n(1/n)=1",
+                "点值为零",
+                "极限交换差额为 1",
+            ],
+        )
         result = self.run_contract(
             "curriculum/manifest.json",
             "--unit",

@@ -8,7 +8,14 @@
   "expected_point_values": [0.0, 0.0],
   "expected_limit_integral": 0.0,
   "expected_interchange_gap": 1.0,
-  "published_markers": ["0.375", "0.46875", "0.498046875", "1"],
+  "published_markers": [
+    "0.375",
+    "0.46875",
+    "0.498046875",
+    "n(1/n)=1",
+    "点值为零",
+    "极限交换差额为 1"
+  ],
   "expected": 0.5,
   "absolute_tolerance": 1e-12
 }
