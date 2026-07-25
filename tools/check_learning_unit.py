@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
+
+from pypdf import PdfReader
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +28,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--unit")
+    parser.add_argument("--volume", choices=("upper", "lower", "all"))
     return parser.parse_args()
 
 
@@ -45,6 +49,53 @@ def artifact_paths(evidence: dict[str, object]) -> list[str]:
         else:
             paths.append(str(value))
     return paths
+
+
+def validate_evidence_content(
+    identifier: str, evidence: dict[str, object]
+) -> str | None:
+    for relative in artifact_paths(evidence):
+        path = ROOT / relative
+        if path.stat().st_size == 0:
+            return f"{identifier}: empty evidence artifact {relative}"
+
+    markdown: dict[str, str] = {}
+    for field in (
+        "notation_and_assumptions",
+        "core_derivation",
+        "questions",
+        "hints",
+        "solutions",
+        "capstone_connection",
+    ):
+        markdown[field] = (ROOT / str(evidence[field])).read_text(encoding="utf-8")
+
+    required_question_labels = ("口述概念", "笔试推导", "数值编程", "研究判断")
+    if any(label not in markdown["questions"] for label in required_question_labels):
+        return (
+            f"{identifier}: questions must include "
+            + ", ".join(required_question_labels)
+        )
+    for field in ("hints", "solutions"):
+        numbered = re.findall(r"(?m)^\s*[1-4][.)、]", markdown[field])
+        if len(numbered) < 4:
+            return f"{identifier}: {field} must address all four question levels"
+    if not markdown["notation_and_assumptions"].lstrip().startswith("#"):
+        return f"{identifier}: notation and assumptions must have a heading"
+    if "=" not in markdown["core_derivation"] or "#" not in markdown["core_derivation"]:
+        return f"{identifier}: core derivation must contain a heading and derivation"
+    if "capstone" not in markdown["capstone_connection"].casefold():
+        return f"{identifier}: capstone connection must name the Capstone boundary"
+
+    oracle = evidence["independent_oracle"]
+    try:
+        oracle_data = json.loads((ROOT / str(oracle["oracle"])).read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, KeyError, TypeError) as error:
+        return f"{identifier}: invalid oracle evidence: {error}"
+    for field in ("expected", "absolute_tolerance", "provenance"):
+        if field not in oracle_data:
+            return f"{identifier}: oracle evidence missing {field}"
+    return None
 
 
 def validate_prerequisites(units: list[dict[str, object]]) -> str | None:
@@ -133,9 +184,37 @@ def validate_shared_contract(
         path = ROOT / str(relative)
         if not path.is_file():
             return f"missing {name} registry: {relative}"
-        registry = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            registry = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as error:
+            return f"invalid {name} registry JSON: {error.msg}"
         if registry.get("schema_version") != 1:
             return f"unsupported {name} registry schema_version"
+        if name == "notation":
+            symbols = registry.get("symbols")
+            if not isinstance(symbols, list) or not symbols:
+                return "notation registry must contain symbols"
+            for symbol in symbols:
+                if not isinstance(symbol, dict) or any(
+                    not str(symbol.get(field, "")).strip()
+                    for field in ("symbol", "meaning", "domain", "first_unit")
+                ):
+                    return "notation registry contains an incomplete symbol"
+                if symbol["first_unit"] not in unit_ids:
+                    return (
+                        "notation registry contains unknown first_unit "
+                        f"{symbol['first_unit']}"
+                    )
+        if name == "glossary":
+            terms = registry.get("terms")
+            if not isinstance(terms, list) or not terms:
+                return "glossary registry must contain terms"
+            for term in terms:
+                if not isinstance(term, dict) or any(
+                    not str(term.get(field, "")).strip()
+                    for field in ("zh", "en", "definition")
+                ):
+                    return "glossary registry contains an incomplete term"
     return None
 
 
@@ -154,8 +233,39 @@ def run_oracle(evidence: dict[str, object]) -> subprocess.CompletedProcess[str]:
     )
 
 
+def validate_publications(
+    manifest: dict[str, object], requested: str
+) -> tuple[str | None, list[tuple[str, int]]]:
+    volumes = manifest.get("volumes", [])
+    selected = [
+        volume
+        for volume in volumes
+        if requested == "all" or volume.get("id") == requested
+    ]
+    if not selected:
+        return f"unknown volume: {requested}", []
+
+    results: list[tuple[str, int]] = []
+    for volume in selected:
+        identifier = str(volume.get("id", "<unknown>"))
+        relative = str(volume.get("pdf", ""))
+        path = ROOT / relative
+        if not path.is_file():
+            return f"{identifier}: missing publication artifact {relative}", []
+        try:
+            pages = len(PdfReader(path).pages)
+        except Exception as error:  # pypdf exposes several parser-specific errors.
+            return f"{identifier}: invalid publication artifact {relative}: {error}", []
+        if pages < 1:
+            return f"{identifier}: publication artifact has no pages {relative}", []
+        results.append((identifier, pages))
+    return None, results
+
+
 def main() -> int:
     args = parse_args()
+    if args.unit is not None and args.volume is not None:
+        return fail("choose either --unit or --volume")
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
 
     units = manifest.get("units", [])
@@ -185,6 +295,9 @@ def main() -> int:
         for relative in paths:
             if not (ROOT / relative).is_file():
                 return fail(f"{unit.get('id')}: missing artifact {relative}")
+        content_error = validate_evidence_content(str(unit.get("id")), evidence)
+        if content_error is not None:
+            return fail(content_error)
 
     if args.unit is None:
         shared_error = validate_shared_contract(manifest, units)
@@ -196,11 +309,20 @@ def main() -> int:
                 return fail(
                     f"{unit.get('id')}: oracle failed: {result.stderr.strip()}"
                 )
+        publication_results: list[tuple[str, int]] = []
+        if args.volume is not None:
+            publication_error, publication_results = validate_publications(
+                manifest, args.volume
+            )
+            if publication_error is not None:
+                return fail(publication_error)
         print("curriculum=passed volumes=2 upper_chapters=17 tracks=6")
         print("question-levels=passed count=4")
         print("registries=passed count=2")
         print(f"course-graph=passed units={len(units)}")
         print(f"accepted-units={len(accepted)}")
+        for identifier, pages in publication_results:
+            print(f"publication=passed volume={identifier} pages={pages}")
         print("learning-unit contract passed")
         return 0
     if selected is None:
@@ -214,7 +336,7 @@ def main() -> int:
         return fail(f"{args.unit}: oracle failed: {result.stderr.strip()}")
 
     print(f"unit={args.unit}")
-    print("evidence=4/4")
+    print(f"evidence={len(REQUIRED_EVIDENCE_FIELDS)}/{len(REQUIRED_EVIDENCE_FIELDS)}")
     print(result.stdout, end="")
 
     print("learning-unit contract passed")

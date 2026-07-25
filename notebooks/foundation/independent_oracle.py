@@ -6,22 +6,16 @@
 # %%
 from __future__ import annotations
 
-import argparse
 import json
 from pathlib import Path
 
 import numpy as np
 
 
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--oracle", type=Path, required=True)
-    return parser.parse_args()
-
-
-def main() -> int:
-    args = parse_args()
-    oracle = json.loads(args.oracle.read_text(encoding="utf-8"))
+def main(
+    oracle_path: Path = Path("evidence/foundation/oracle.json"),
+) -> int:
+    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
     returns = np.array([0.01, -0.02, 0.03], dtype=np.float64)
     observed = float(np.mean(returns))
     expected = float(oracle["expected"])
@@ -38,5 +32,4 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
-    raise SystemExit(main())
+main()

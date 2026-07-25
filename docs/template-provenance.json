@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "template": "ElegantBook-4.7",
+  "external_source": "D:/Latex/ElegantBook",
+  "files": [
+    {
+      "source": "elegantbook.cls",
+      "sha256": "D2CDB802B3DE46B1D659D1A8EB36979AECD761402D3E95296936F433F97549EB",
+      "note": "Baseline before the documented local compatibility patch."
+    },
+    {
+      "source": "License",
+      "vendored": "vendor/elegantbook/LPPL-License.txt",
+      "sha256": "5F05FCF6EF25A6C31BCCD2DF7C0C46B23107BBEB2CE5CDBA74EFB5CC357F4DBB"
+    },
+    {
+      "source": "figure/cover.jpg",
+      "vendored": "assets/cover.jpg",
+      "sha256": "0748354F5D61633F9032DAB0A4A6774CB91CF1A0FC5892CC52D73A47A4552A0B"
+    }
+  ]
+}

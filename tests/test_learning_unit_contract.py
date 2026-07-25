@@ -6,6 +6,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from pypdf import PdfWriter
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -99,7 +101,7 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(
             result.stdout,
             "unit=foundation.oracle-smoke\n"
-            "evidence=4/4\n"
+            "evidence=7/7\n"
             "oracle=passed observed=0.006666666667 "
             "expected=0.006666666667\n"
             "learning-unit contract passed\n",
@@ -133,6 +135,7 @@ class LearningUnitContractTests(unittest.TestCase):
                 "notebooks/foundation/independent_oracle.py",
                 "--output",
                 "build/notebooks/foundation/independent_oracle.ipynb",
+                "--execute",
             ],
             cwd=ROOT,
             text=True,
@@ -144,7 +147,9 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(
             result.stdout,
             "notebook=build/notebooks/foundation/independent_oracle.ipynb\n"
-            "roundtrip=passed cells=2\n",
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed observed=0.006666666667 "
+            "expected=0.006666666667\n",
         )
         self.assertEqual(result.stderr, "")
         self.assertTrue(
@@ -188,6 +193,129 @@ class LearningUnitContractTests(unittest.TestCase):
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_volume_scope_rejects_a_missing_publication_artifact(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        manifest["volumes"][0]["pdf"] = "build/test-publication/missing-upper.pdf"
+        fixture_path = ROOT / "build" / "test-manifests" / "missing-publication.json"
+        fixture_path.parent.mkdir(parents=True, exist_ok=True)
+        fixture_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture_path.relative_to(ROOT).as_posix(),
+            "--volume",
+            "upper",
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "upper: missing publication artifact "
+            "build/test-publication/missing-upper.pdf\n",
+        )
+
+    def test_volume_scope_accepts_a_parseable_publication_artifact(self) -> None:
+        publication = ROOT / "build" / "test-publication" / "upper.pdf"
+        publication.parent.mkdir(parents=True, exist_ok=True)
+        writer = PdfWriter()
+        writer.add_blank_page(width=72, height=72)
+        with publication.open("wb") as stream:
+            writer.write(stream)
+
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        manifest["volumes"][0]["pdf"] = publication.relative_to(ROOT).as_posix()
+        fixture_path = ROOT / "build" / "test-manifests" / "valid-publication.json"
+        fixture_path.parent.mkdir(parents=True, exist_ok=True)
+        fixture_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture_path.relative_to(ROOT).as_posix(),
+            "--volume",
+            "upper",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("publication=passed volume=upper pages=1\n", result.stdout)
+        self.assertEqual(result.stderr, "")
+
+    def test_rejects_an_empty_evidence_artifact(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        empty = ROOT / "build" / "test-evidence" / "empty-derivation.md"
+        empty.parent.mkdir(parents=True, exist_ok=True)
+        empty.write_text("", encoding="utf-8")
+        unit = next(
+            item for item in manifest["units"] if item["id"] == "foundation.oracle-smoke"
+        )
+        unit["evidence"]["core_derivation"] = empty.relative_to(ROOT).as_posix()
+        fixture = ROOT / "build" / "test-manifests" / "empty-evidence.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture.relative_to(ROOT).as_posix(),
+            "--unit",
+            "foundation.oracle-smoke",
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "foundation.oracle-smoke: empty evidence artifact "
+            "build/test-evidence/empty-derivation.md\n",
+        )
+
+    def test_rejects_questions_without_all_four_public_levels(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        questions = ROOT / "build" / "test-evidence" / "incomplete-questions.md"
+        questions.parent.mkdir(parents=True, exist_ok=True)
+        questions.write_text("# 问题\n\n1. 只有一个普通问题。\n", encoding="utf-8")
+        unit = next(
+            item for item in manifest["units"] if item["id"] == "foundation.oracle-smoke"
+        )
+        unit["evidence"]["questions"] = questions.relative_to(ROOT).as_posix()
+        fixture = ROOT / "build" / "test-manifests" / "incomplete-questions.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture.relative_to(ROOT).as_posix(),
+            "--unit",
+            "foundation.oracle-smoke",
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "foundation.oracle-smoke: questions must include 口述概念, 笔试推导, "
+            "数值编程, 研究判断\n",
+        )
+
+    def test_rejects_a_structurally_empty_notation_registry(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        registry = ROOT / "build" / "test-evidence" / "empty-notation.json"
+        registry.parent.mkdir(parents=True, exist_ok=True)
+        registry.write_text(
+            json.dumps({"schema_version": 1, "symbols": []}), encoding="utf-8"
+        )
+        manifest["registries"]["notation"] = registry.relative_to(ROOT).as_posix()
+        fixture = ROOT / "build" / "test-manifests" / "empty-notation.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(fixture.relative_to(ROOT).as_posix())
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stderr, "notation registry must contain symbols\n")
 
 
 if __name__ == "__main__":

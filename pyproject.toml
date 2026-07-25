@@ -5,6 +5,9 @@ description = "Executable evidence and publication pipeline for Quantitative Res
 requires-python = ">=3.13,<3.14"
 dependencies = [
     "jupytext>=1.16,<2",
+    "ipykernel>=7,<8",
+    "nbclient>=0.10,<1",
+    "pypdf>=6,<7",
     "numpy>=2,<3",
 ]
 

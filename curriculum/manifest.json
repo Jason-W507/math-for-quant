@@ -35,9 +35,7 @@
           "oracle": "evidence/foundation/oracle.json",
           "command": [
             "{python}",
-            "notebooks/foundation/independent_oracle.py",
-            "--oracle",
-            "evidence/foundation/oracle.json"
+            "notebooks/foundation/independent_oracle.py"
           ]
         },
         "questions": "evidence/foundation/questions.md",

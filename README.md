@@ -17,14 +17,15 @@ uv run python tools/check_learning_unit.py `
 uv run python -m unittest discover -s tests -v
 ```
 
-期望看到 `evidence=4/4`，并由手算的 `1/150` 独立 oracle 核对 Python 输出。
+期望看到 `evidence=7/7`，并由手算的 `1/150` 独立 oracle 核对 Python 输出。
 
 ## 生成 notebook 出版产物
 
 ```powershell
 uv run python tools/build_notebook.py `
   --source notebooks/foundation/independent_oracle.py `
-  --output build/notebooks/foundation/independent_oracle.ipynb
+  --output build/notebooks/foundation/independent_oracle.ipynb `
+  --execute
 ```
 
 Jupytext 文本源是权威版本；生成的 `.ipynb` 不手工维护。
@@ -35,6 +36,9 @@ Jupytext 文本源是权威版本；生成的 `.ipynb` 不手工维护。
 
 ```powershell
 uv run python tools/build_books.py --volume all
+uv run python tools/check_learning_unit.py `
+  --manifest curriculum/manifest.json `
+  --volume all
 ```
 
 成品写入 `output/pdf/math-for-quant-upper.pdf` 与 `output/pdf/math-for-quant-lower.pdf`。原模板目录保持不变；项目内模板来源与兼容调整见 `docs/template-provenance.md`。
