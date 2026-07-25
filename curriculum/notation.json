@@ -26,6 +26,30 @@
       "first_unit": "upper.ch01"
     },
     {
+      "symbol": "d(x,y)",
+      "meaning": "度量空间中 x 与 y 的距离",
+      "domain": "nonnegative real",
+      "first_unit": "upper.ch02"
+    },
+    {
+      "symbol": "x_n",
+      "meaning": "序列或迭代的第 n 项",
+      "domain": "metric space",
+      "first_unit": "upper.ch02"
+    },
+    {
+      "symbol": "f_n",
+      "meaning": "函数序列的第 n 个函数",
+      "domain": "function space",
+      "first_unit": "upper.ch02"
+    },
+    {
+      "symbol": "q",
+      "meaning": "压缩映射的 Lipschitz 常数",
+      "domain": "real in [0,1)",
+      "first_unit": "upper.ch02"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",

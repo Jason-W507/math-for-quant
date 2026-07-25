@@ -32,6 +32,31 @@
       "definition": "数量所属的物理或金融单位类别，用于判断运算是否有意义。"
     },
     {
+      "zh": "度量空间",
+      "en": "metric space",
+      "definition": "配备满足分离、对称和三角不等式之距离函数的集合。"
+    },
+    {
+      "zh": "Cauchy 序列",
+      "en": "Cauchy sequence",
+      "definition": "尾部任意两项都能在给定度量下任意接近的序列。"
+    },
+    {
+      "zh": "完备性",
+      "en": "completeness",
+      "definition": "空间中每个 Cauchy 序列都收敛到空间内一点的性质。"
+    },
+    {
+      "zh": "一致收敛",
+      "en": "uniform convergence",
+      "definition": "同一索引阈值能同时控制定义域所有点误差的函数收敛。"
+    },
+    {
+      "zh": "压缩映射",
+      "en": "contraction mapping",
+      "definition": "以严格小于 1 的统一因子缩短任意两点距离的映射。"
+    },
+    {
       "zh": "样本外",
       "en": "out of sample",
       "definition": "未参与模型选择、拟合或阈值确定的数据区间。"

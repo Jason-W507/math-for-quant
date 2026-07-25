@@ -1,0 +1,115 @@
+\chapter{极限、连续、完备性与度量空间}
+\label{ch:analysis-foundations}
+
+\begin{introduction}
+  \item 先修：第 1 章的量词、必要与充分条件、反例和独立 oracle。
+  \item 学习产出：能判断一个迭代收敛论证究竟依赖度量、Cauchy 性、完备性还是连续性。
+  \item 研究连接：为优化器停止条件、数值不动点、估计量极限和函数逼近建立可审计边界。
+\end{introduction}
+
+Python 中“误差越来越小”常被当成收敛证据；数学上还必须回答：误差按什么距离计算，极限是否属于当前空间，结论针对每个点还是同时针对所有点，以及有限精度实验能排除哪些失败模式。本章用压缩迭代作正例，用 $f_n(x)=x^n$ 作反例。
+
+\section{度量把“接近”变成可检验关系}
+
+集合 $X$ 上的函数 $d:X\times X\to[0,\infty)$ 若满足非负与分离、对称及三角不等式，就称为度量，$(X,d)$ 称为\textbf{度量空间}：
+\[
+d(x,y)=0\Longleftrightarrow x=y,\qquad
+d(x,y)=d(y,x),\qquad
+d(x,z)\le d(x,y)+d(y,z).
+\]
+同一对象换一种度量，收敛问题可能改变。有限维向量上的常用范数诱导相同的收敛序列，但停止阈值的数值含义仍不同；研究报告必须同时写出度量和阈值。
+
+\begin{example}
+收益向量 $x,y\in\mathbb{R}^T$ 可用 $\lVert x-y\rVert_2$ 衡量整体误差，也可用 $\lVert x-y\rVert_\infty$ 控制最坏时点误差。前者小不等于每一项都满足同一个业务容差。
+\end{example}
+
+\section{序列极限、Cauchy 性与完备性}
+
+序列 $(x_n)$ 收敛到 $x$，记作 $x_n\to x$，是指
+\[
+\forall\varepsilon>0\;\exists N\;\forall n\ge N:\quad d(x_n,x)<\varepsilon.
+\]
+三角不等式保证极限唯一。若只比较序列内部，则得到 Cauchy 条件：
+\[
+\forall\varepsilon>0\;\exists N\;\forall m,n\ge N:\quad d(x_m,x_n)<\varepsilon.
+\]
+每个收敛序列都是 Cauchy 序列；反向需要空间\textbf{完备}。完备性是空间的性质，不是“某个序列看起来稳定”的性质。
+
+\begin{example}
+有理数截断序列 $1,1.4,1.41,1.414,\ldots$ 在通常距离下是 Cauchy 序列，却不在 $\mathbb{Q}$ 中收敛，因为其唯一实数极限是 $\sqrt2\notin\mathbb{Q}$。因此 $\mathbb{Q}$ 不完备，而 $\mathbb{R}$ 完备。
+\end{example}
+
+\section{连续性连接输入极限与输出极限}
+
+映射 $T:X\to Y$ 在 $x$ 连续，是指输入足够接近 $x$ 时，输出在 $Y$ 的度量下任意接近 $T(x)$。在度量空间中，这等价于序列判据：
+\[
+x_n\to x\quad\Longrightarrow\quad T(x_n)\to T(x).
+\]
+连续性允许把极限穿过映射，但不自动给出收敛速度，也不保证算法产生的序列收敛。若实现还包含排序、阈值或裁剪，边界点可能不连续，必须单独分析。
+
+\section{压缩映射为何给出可执行的收敛证明}
+
+设 $(X,d)$ 完备，映射 $T:X\to X$ 满足某个 $0\le q<1$ 及
+\[
+d(Tx,Ty)\le q\,d(x,y)\qquad(x,y\in X).
+\]
+从任意 $x_0$ 定义 $x_{n+1}=T(x_n)$。首先逐步使用压缩条件：
+\[
+d(x_{n+1},x_n)\le q^n d(x_1,x_0).
+\]
+对 $m>n$，三角不等式与几何级数给出
+\[
+d(x_m,x_n)
+\le\sum_{k=n}^{m-1}d(x_{k+1},x_k)
+\le\frac{q^n}{1-q}d(x_1,x_0).
+\]
+右侧随 $n\to\infty$ 趋于零，所以 $(x_n)$ 是 Cauchy 序列。完备性保证存在 $x^*\in X$ 使 $x_n\to x^*$；压缩条件蕴含连续性，故 $T(x^*)=x^*$。若还有另一个不动点 $y^*$，则
+\[
+d(x^*,y^*)=d(Tx^*,Ty^*)\le qd(x^*,y^*),
+\]
+而 $q<1$ 迫使两点距离为零。由此得到存在性、唯一性和误差上界，而不只是几次迭代的截图。
+
+\subsection{固定账本：仿射迭代}
+
+令 $T(x)=0.02+0.8x$、$x_0=0$。不动点由 $x^*=0.02+0.8x^*$ 手算为 $0.1$。五步迭代得到
+\[
+x_5=0.067232,\qquad |x^*-x_5|=0.032768,
+\]
+且上面的先验界恰为
+\[
+\frac{0.8^5}{1-0.8}|x_1-x_0|=0.032768.
+\]
+这组数值是 notebook 的独立 oracle；程序不得调用被测迭代函数生成 expected。
+
+\section{函数序列：逐点收敛不等于一致收敛}
+
+对函数 $f_n:E\to\mathbb{R}$，逐点收敛允许 $N$ 依赖点 $x$；一致收敛要求同一个 $N$ 同时控制所有 $x\in E$：
+\[
+\forall\varepsilon>0\;\exists N\;\forall n\ge N\;\forall x\in E:
+|f_n(x)-f(x)|<\varepsilon.
+\]
+在 $E=[0,1]$ 上取 $f_n(x)=x^n$。它逐点收敛到
+\[
+f(x)=\begin{cases}0,&0\le x<1,\\1,&x=1.\end{cases}
+\]
+但不一致收敛。对每个 $n$ 选择合法见证点 $x_n=2^{-1/n}<1$，则
+\[
+|f_n(x_n)-f(x_n)|=x_n^n=\frac12.
+\]
+因此取 $\varepsilon=0.4$ 时，不存在能同时控制所有 $x$ 的 $N$。见证点依赖 $n$ 正是对一致量词的否定，不是作弊。连续函数的一致极限仍连续，而这里的极限在 1 处不连续，也给出第二条诊断。
+
+\section{独立计算与数值边界}
+
+Notebook 复现 $x_5$、误差界，以及 $n=10,100$ 时的见证误差 $1/2$：
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch02
+\end{lstlisting}
+有限网格很可能漏掉靠近 1 的最坏点；浮点输出也不能证明“对所有 $n$、所有 $x$”。代码在这里是反例见证与算术审计，不是一般证明。
+
+\input{tex/upper/chapters/ch02-questions}
+\input{tex/upper/chapters/ch02-hints}
+
+\section*{本章小结与 Capstone 连接}
+
+度量定义误差，Cauchy 性描述内部稳定，完备性保证极限仍在空间内，连续性允许传递极限；一致收敛则控制整族输入。上册 Capstone 将用这条链审计迭代算法的停止规则、状态空间和失败见证。
