@@ -122,6 +122,31 @@
       "definition": "在可测矩形上取两个测度乘积并扩张到乘积 sigma 代数的测度。"
     },
     {
+      "zh": "多元可微",
+      "en": "multivariable differentiability",
+      "definition": "函数增量可由一个统一线性映射逼近且余项相对输入增量范数消失。"
+    },
+    {
+      "zh": "梯度",
+      "en": "gradient",
+      "definition": "表示标量函数一阶线性近似的偏导数组成的向量。"
+    },
+    {
+      "zh": "Jacobian",
+      "en": "Jacobian",
+      "definition": "表示向量值函数一阶线性近似并按约定排列输入输出偏导的矩阵。"
+    },
+    {
+      "zh": "Hessian",
+      "en": "Hessian",
+      "definition": "标量函数二阶偏导组成并描述局部曲率的方阵。"
+    },
+    {
+      "zh": "矩阵微分",
+      "en": "matrix differential",
+      "definition": "通过线性微分与形状账本推导标量、向量和矩阵导数的记法。"
+    },
+    {
       "zh": "样本外",
       "en": "out of sample",
       "definition": "未参与模型选择、拟合或阈值确定的数据区间。"

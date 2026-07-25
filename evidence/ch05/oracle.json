@@ -1,0 +1,23 @@
+{
+  "provenance": "hand-derived differentials for a nonsymmetric quadratic form and a two-stage vector composition",
+  "point": [0.5, -1.0],
+  "matrix": [[4.0, 2.0], [0.0, 3.0]],
+  "linear": [-1.0, 2.0],
+  "expected_quadratic_value": -1.0,
+  "expected_quadratic_gradient": [0.0, -0.5],
+  "expected_symmetric_hessian": [[4.0, 1.0], [1.0, 3.0]],
+  "expected_chain_gradient": [4.0, -6.5],
+  "finite_difference_step": 0.00001,
+  "maximum_gradient_error": 0.000000001,
+  "expected_abs_left_slope": -1.0,
+  "expected_abs_right_slope": 1.0,
+  "published_markers": [
+    "梯度为 $(0,-0.5)^T$",
+    "链式梯度为 $(4,-6.5)^T$",
+    "最大差异小于 $10^{-9}$",
+    "左差商为 $-1$",
+    "右差商为 $1$"
+  ],
+  "expected": -1.0,
+  "absolute_tolerance": 1e-12
+}

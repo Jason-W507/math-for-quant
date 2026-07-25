@@ -1,0 +1,105 @@
+\chapter{多元微积分与矩阵微分}
+\label{ch:matrix-calculus}
+
+\begin{introduction}
+  \item 先修：第 1 章的命题与量纲、第 2 章的极限和连续性。
+  \item 学习产出：能从微分定义推导梯度、Jacobian 与 Hessian，并用独立差分检查实现。
+  \item 研究连接：回归、组合优化、最大似然和机器学习训练都依赖一致的维度与导数约定。
+\end{introduction}
+
+Python 自动微分可以生成数值，但不会替研究者决定向量方向、损失标量性或不可微点。矩阵微分首先是一套形状契约，其次才是公式表。
+
+\section{从线性近似定义多元导数}
+
+对 $f:\mathbb R^d\to\mathbb R$，若存在线性映射使
+\[
+  f(x+h)=f(x)+\nabla f(x)^T h+o(\lVert h\rVert),
+\]
+则 $f$ 在 $x$ 可微。本文把向量与梯度都写成列向量；微分写作
+\[
+  df=\nabla f(x)^Tdx,
+\]
+所以 $df$ 是标量。偏导数存在并不自动推出可微；需要整个余项相对 $\lVert h\rVert$ 消失。
+
+对 $g:\mathbb R^d\to\mathbb R^m$，本文约定 Jacobian $J_g\in\mathbb R^{m\times d}$：第 $i$ 行对应第 $i$ 个输出，第 $j$ 列对应第 $j$ 个输入，且 $dg=J_gdx$。标量函数的 Hessian $H_f\in\mathbb R^{d\times d}$ 收集二阶偏导，并给出二阶局部曲率。
+
+\section{链式法则先检查形状}
+
+若 $y=g(x)\in\mathbb R^m$、$z=h(y)\in\mathbb R$，则
+\[
+  dz=\nabla h(y)^Tdy=\nabla h(y)^TJ_g(x)dx,
+\]
+比较 $dz=\nabla(h\circ g)(x)^Tdx$ 得
+\[
+  \nabla(h\circ g)(x)=J_g(x)^T\nabla h(g(x)).
+\]
+右侧形状依次为 $(d\times m)(m\times1)=d\times1$。若乘法形状对不上，应先修正约定或模型，而不是转置到程序能够运行。
+
+\section{用微分推导矩阵规则}
+
+设 $A\in\mathbb R^{d\times d}$、$b,x\in\mathbb R^d$，常量的微分为零，并有
+\[
+  d(Ax)=A\,dx,\qquad d(b^Tx)=b^Tdx.
+\]
+对二次型
+\[
+  f(x)=\frac12x^TAx+b^Tx,
+\]
+乘积法则给出
+\[
+  df=\frac12\bigl(dx^TAx+x^TAdx\bigr)+b^Tdx
+     =\left(\frac{A+A^T}{2}x+b\right)^Tdx.
+\]
+因此
+\[
+  \nabla f(x)=\frac{A+A^T}{2}x+b,
+  \qquad H_f=\frac{A+A^T}{2}.
+\]
+只有 $A$ 对称时才能直接写 $Ax+b$。反对称部分对标量二次型没有贡献。
+
+\begin{example}
+取 $A=\left(\begin{smallmatrix}4&2\\0&3\end{smallmatrix}\right)$、$b=(-1,2)^T$、$x=(0.5,-1)^T$。手算 $f(x)=-1$，梯度为 $(0,-0.5)^T$，Hessian 为 $\left(\begin{smallmatrix}4&1\\1&3\end{smallmatrix}\right)$。
+\end{example}
+
+\section{Jacobian 账本与复合梯度}
+
+令
+\[
+  g(x)=\begin{pmatrix}x_1x_2\\x_1+x_2^2\end{pmatrix},
+  \qquad h(y)=y_1^2+3y_2.
+\]
+则
+\[
+  J_g(x)=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix},
+  \qquad \nabla h(y)=\begin{pmatrix}2y_1\\3\end{pmatrix}.
+\]
+在 $x=(0.5,-1)^T$，链式梯度为 $(4,-6.5)^T$。每一步都保留输出维度，因而比背诵展开后的标量公式更不易出错。
+
+回归损失也遵循同一模式：若 $X\in\mathbb R^{n\times d}$、$\beta\in\mathbb R^d$、$y\in\mathbb R^n$，则
+\[
+  \ell(\beta)=\frac12\lVert X\beta-y\rVert_2^2,
+  \qquad \nabla\ell=X^T(X\beta-y)\in\mathbb R^d.
+\]
+错误写成 $X(X\beta-y)$ 时，$(n\times d)(n\times1)$ 通常根本没有定义；维度检查在数值运行前就能拒绝它。
+
+\section{有限差分是检查器，不是可微性证明}
+
+对第 $j$ 个坐标，中心差分
+\[
+  \frac{f(x+he_j)-f(x-he_j)}{2h}
+\]
+在光滑条件下具有 $O(h^2)$ 截断误差，但 $h$ 太小又会放大浮点消去误差。本章取 $h=10^{-5}$，二次型和复合函数的解析梯度与独立差分最大差异小于 $10^{-9}$，实际为 $2.62\times10^{-11}$。
+
+失败见证是 $a(t)=|t|$。在零点，左差商为 $-1$，右差商为 $1$，所以导数不存在；但对称中心差分恰好返回 0。单个数值检查不能替代左右极限与可微性假设。
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch05
+\end{lstlisting}
+
+\input{tex/upper/chapters/ch05-questions}
+\input{tex/upper/chapters/ch05-hints}
+
+\section*{本章小结与 Capstone 连接}
+
+微分是局部线性映射，Jacobian 与 Hessian 必须携带形状，链式法则通过矩阵乘法组合。上册 Capstone 将要求每个优化目标提交解析导数、维度账本、独立数值核验和不可微边界。

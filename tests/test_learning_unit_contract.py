@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=5\n"
+            "accepted-units=6\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -594,6 +594,68 @@ class LearningUnitContractTests(unittest.TestCase):
             "midpoint=0.333312988 error=0.000020345 bound=0.000020345 "
             "row_first=1 col_first=0 square10=1 rectangle10=0 abs10=19 "
             "square100=1 rectangle100=0 abs100=199\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_five_notebook_cross_checks_matrix_derivatives(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch05_matrix_calculus.py",
+                "--output",
+                "build/notebooks/upper/ch05_matrix_calculus.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch05_matrix_calculus.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed value=-1.000000 "
+            "gradient=(0.000000,-0.500000) chain=(4.000000,-6.500000) "
+            "max_error=2.620e-11 left=-1.0 right=1.0\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_five_with_derivative_cross_checks(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch05" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            oracle["published_markers"],
+            [
+                "梯度为 $(0,-0.5)^T$",
+                "链式梯度为 $(4,-6.5)^T$",
+                "最大差异小于 $10^{-9}$",
+                "左差商为 $-1$",
+                "右差商为 $1$",
+            ],
+        )
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch05",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch05\n"
+            "evidence=7/7\n"
+            "oracle=passed value=-1.000000 gradient=(0.000000,-0.500000) "
+            "chain=(4.000000,-6.500000) max_error=2.620e-11 "
+            "left=-1.0 right=1.0\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

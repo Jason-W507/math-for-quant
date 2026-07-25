@@ -92,6 +92,24 @@
       "first_unit": "upper.ch04"
     },
     {
+      "symbol": "\\nabla f(x)",
+      "meaning": "标量函数 f 在 x 处的列梯度",
+      "domain": "column vector",
+      "first_unit": "upper.ch05"
+    },
+    {
+      "symbol": "J_g(x)",
+      "meaning": "向量函数 g 在 x 处的 Jacobian，行对应输出、列对应输入",
+      "domain": "matrix",
+      "first_unit": "upper.ch05"
+    },
+    {
+      "symbol": "H_f",
+      "meaning": "标量函数 f 的 Hessian 矩阵",
+      "domain": "square matrix",
+      "first_unit": "upper.ch05"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",
