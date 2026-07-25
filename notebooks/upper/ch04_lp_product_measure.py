@@ -19,6 +19,15 @@ def coefficient(row: int, column: int) -> int:
     return 0
 
 
+def row_sum(row: int) -> int:
+    first_column = max(1, row - 1)
+    return sum(coefficient(row, column) for column in range(first_column, row + 1))
+
+
+def column_sum(column: int) -> int:
+    return sum(coefficient(row, column) for row in (column, column + 1))
+
+
 def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
     lp_norms = [
@@ -46,8 +55,19 @@ def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
             sum(abs(coefficient(row, column)) for row in range(1, size + 1) for column in range(1, size + 1))
         )
 
-    row_first = 1
-    column_first = 0
+    support_check_size = max(int(item) for item in oracle["section_sizes"])
+    row_sums = [row_sum(row) for row in range(1, support_check_size + 1)]
+    column_sums = [
+        column_sum(column) for column in range(1, support_check_size + 1)
+    ]
+    if any(value != 0 for value in row_sums[1:]) or any(
+        value != 0 for value in column_sums
+    ):
+        raise SystemExit(
+            f"unexpected iterated supports: rows={row_sums} columns={column_sums}"
+        )
+    row_first = sum(row_sums)
+    column_first = sum(column_sums)
     observed = [
         *lp_norms,
         midpoint_integral,
