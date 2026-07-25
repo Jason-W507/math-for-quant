@@ -151,6 +151,12 @@
     {"zh": "谱分解", "en": "spectral decomposition", "definition": "将实对称矩阵写成正交特征向量与实特征值的分解。"},
     {"zh": "奇异值分解", "en": "singular value decomposition", "definition": "将任意矩阵分解为左右正交方向与非负奇异值。"},
     {"zh": "条件数", "en": "condition number", "definition": "衡量问题输出对输入相对扰动最坏敏感度的数值。"},
+    {"zh": "概率空间", "en": "probability space", "definition": "由样本空间、事件 sigma 代数与总质量为一的概率测度组成的三元组。"},
+    {"zh": "随机变量", "en": "random variable", "definition": "从概率空间到目标可测空间的可测映射。"},
+    {"zh": "推前分布", "en": "pushforward distribution", "definition": "随机变量通过逆像把底层概率测度推到目标空间得到的概率测度。"},
+    {"zh": "联合分布", "en": "joint distribution", "definition": "随机向量在乘积空间上的推前概率分布。"},
+    {"zh": "边缘分布", "en": "marginal distribution", "definition": "从联合分布对其余坐标积分或求和得到的单坐标分布。"},
+    {"zh": "重尾分布", "en": "heavy-tailed distribution", "definition": "尾部衰减较慢并可能使某些矩不存在的分布。"},
     {
       "zh": "样本外",
       "en": "out of sample",

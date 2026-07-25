@@ -1,0 +1,30 @@
+{
+  "provenance": "finite-space fraction ledger; analytic Bernoulli moments and MGF; Poisson PGF; standard-normal MGF; and the Pareto alpha=1 truncated-mean integral",
+  "finite_values": [-1.0, 0.0, 2.0],
+  "finite_probabilities": [0.25, 0.5, 0.25],
+  "expected_mean": 0.25,
+  "expected_variance": 1.1875,
+  "joint_distribution": [[0.375, 0.125], [0.125, 0.375]],
+  "expected_marginals": [0.5, 0.5],
+  "bernoulli_p": 0.25,
+  "expected_bernoulli_mean": 0.25,
+  "expected_bernoulli_variance": 0.1875,
+  "expected_bernoulli_mgf_log2": 1.25,
+  "poisson_lambda": 2.0,
+  "poisson_pgf_argument": 0.5,
+  "expected_poisson_pgf": 0.36787944117144233,
+  "normal_mgf_argument": 0.5,
+  "expected_normal_mgf": 1.1331484530668263,
+  "pareto_cutoffs": [10.0, 1000.0],
+  "expected_pareto_truncated_means": [2.302585092994046, 6.907755278982137],
+  "published_markers": [
+    "期望为 $1/4$",
+    "方差为 $19/16$",
+    "$M_B(\\log 2)=5/4$",
+    "$G_N(1/2)=e^{-1}$",
+    "$M_Z(1/2)=e^{1/8}$",
+    "截断到 $10$ 与 $1000$ 时分别为 $2.302585$、$6.907755$"
+  ],
+  "expected": 0.25,
+  "absolute_tolerance": 1e-10
+}

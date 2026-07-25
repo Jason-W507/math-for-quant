@@ -128,9 +128,27 @@
       "first_unit": "upper.ch06"
     },
     {
+      "symbol": "(\\Omega,\\mathcal F,\\mathbb P)",
+      "meaning": "样本空间、事件 sigma 代数与概率测度组成的概率空间",
+      "domain": "probability space",
+      "first_unit": "upper.ch07"
+    },
+    {
+      "symbol": "\\mathcal L(X)",
+      "meaning": "随机变量 X 将概率测度推到目标空间得到的分布",
+      "domain": "probability measure",
+      "first_unit": "upper.ch07"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",
+      "first_unit": "upper.ch07"
+    },
+    {
+      "symbol": "M_X(t)",
+      "meaning": "随机变量 X 在参数 t 处的矩母函数",
+      "domain": "extended nonnegative real when defined",
       "first_unit": "upper.ch07"
     }
   ]

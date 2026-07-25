@@ -184,7 +184,29 @@
         "capstone_connection": "tex/upper/chapters/ch06.tex"
       }
     },
-    {"id":"upper.ch07","title":"概率空间、随机变量与分布","volume":"upper","state":"planned","prerequisites":["upper.ch04"]},
+    {
+      "id": "upper.ch07",
+      "title": "概率空间、随机变量与分布",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch04"],
+      "evidence": {
+        "notation_symbols": ["(\\Omega,\\mathcal F,\\mathbb P)", "\\mathcal L(X)", "\\mathbb{E}[X]", "M_X(t)"],
+        "glossary_terms": ["概率空间", "随机变量", "推前分布", "联合分布", "边缘分布", "重尾分布"],
+        "notation_and_assumptions": "tex/upper/chapters/ch07.tex",
+        "core_derivation": "tex/upper/chapters/ch07.tex",
+        "independent_oracle": {
+          "source": "notebooks/upper/ch07_probability_distributions.py",
+          "oracle": "evidence/ch07/oracle.json",
+          "command": ["{python}", "notebooks/upper/ch07_probability_distributions.py"]
+        },
+        "questions": "tex/upper/chapters/ch07-questions.tex",
+        "hints": "tex/upper/chapters/ch07-hints.tex",
+        "solutions": "tex/upper/solutions/ch07.tex",
+        "capstone_connection": "tex/upper/chapters/ch07.tex"
+      }
+    },
     {"id":"upper.ch08","title":"条件期望、独立性与概率核","volume":"upper","state":"planned","prerequisites":["upper.ch07"]},
     {"id":"upper.ch09","title":"概率收敛、极限定理与集中不等式","volume":"upper","state":"planned","prerequisites":["upper.ch08"]},
     {"id":"upper.ch10","title":"估计、检验、渐近、回归与多重检验","volume":"upper","state":"planned","prerequisites":["upper.ch06","upper.ch09"]},

@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=7\n"
+            "accepted-units=8\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -704,6 +704,57 @@ class LearningUnitContractTests(unittest.TestCase):
             "orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
             "amplification=1000001 relative=1.000001\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_seven_notebook_reproduces_distribution_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch07_probability_distributions.py",
+                "--output",
+                "build/notebooks/upper/ch07_probability_distributions.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch07_probability_distributions.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed mean=0.250000 variance=1.187500 "
+            "joint_mass=1.000000 marginals=(0.500000,0.500000) "
+            "bernoulli=(0.250000,0.187500,1.250000) "
+            "poisson_pgf=0.367879 normal_mgf=1.133148 "
+            "pareto_truncated=(2.302585,6.907755)\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_seven_with_distribution_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch07",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch07\n"
+            "evidence=7/7\n"
+            "oracle=passed mean=0.250000 variance=1.187500 "
+            "joint_mass=1.000000 marginals=(0.500000,0.500000) "
+            "bernoulli=(0.250000,0.187500,1.250000) "
+            "poisson_pgf=0.367879 normal_mgf=1.133148 "
+            "pareto_truncated=(2.302585,6.907755)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

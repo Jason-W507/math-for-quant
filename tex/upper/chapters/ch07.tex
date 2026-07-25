@@ -1,0 +1,85 @@
+\chapter{概率空间、随机变量与分布}
+\label{ch:probability-distributions}
+
+\begin{introduction}
+  \item 先修：第 4 章的可测函数、Lebesgue 积分与乘积测度。
+  \item 学习产出：能从概率空间构造随机变量及其分布，计算期望、边缘分布和常用变换，并识别矩不存在的重尾模型。
+  \item 研究连接：收益建模、风险度量、似然、模拟和极限定理都先要求说清“概率由谁定义、随机变量把它推到哪里”。
+\end{introduction}
+
+Python 数组只是已经观察到的数；概率模型还需要说明可能结果、可提问事件和事件权重。三元组
+\[
+  (\Omega,\mathcal F,\mathbb P)
+\]
+称为概率空间：$\Omega$ 是样本空间，$\mathcal F$ 是事件 $\sigma$ 代数，$\mathbb P$ 是满足 $\mathbb P(\Omega)=1$ 的测度。第 3、4 章的测度工具因此不是前奏，而是概率语言的底座。
+
+\section{随机变量是可测映射，分布是推前测度}
+
+随机变量 $X:(\Omega,\mathcal F)\to(\mathbb R,\mathcal B)$ 是可测函数。它的分布（或律）不是另一组样本，而是推前测度
+\[
+  \mathcal L(X)=X_\#\mathbb P,
+  \qquad \mathcal L(X)(B)=\mathbb P(X\in B).
+\]
+这一定义把“状态概率”转换为“数值概率”。不同的底层状态模型可以产生同一个 $\mathcal L(X)$；只研究单个 $X$ 的分布时它们不可区分，但研究联合关系时可能完全不同。
+
+固定有限账本令 $X$ 取 $-1,0,2$，概率分别为 $1/4,1/2,1/4$。其推前分布仍是这三项质量，故
+\[
+  \mathbb{E}[X]=\int_\Omega X\,d\mathbb P
+  =\int_{\mathbb R}x\,d\mathcal L(X)(x)
+  =-\frac14+0+\frac12=\frac14.
+\]
+同理 $\mathbb{E}[X^2]=5/4$，所以
+\[
+  \operatorname{Var}(X)=\mathbb{E}[X^2]-\mathbb{E}[X]^2
+  =\frac54-\frac1{16}=\frac{19}{16}.
+\]
+期望存在要求正负部分不能同时为无穷；方差存在还要求二阶矩有限。软件返回一个有限样本均值，并不能证明总体期望存在。
+
+\section{联合分布与边缘分布}
+
+对随机向量 $(X,Y)$，联合分布是从 $\Omega$ 推到乘积空间的测度。离散情形可写成质量表
+\[
+  p_{ij}=\mathbb P(X=x_i,Y=y_j),\qquad
+  p_X(x_i)=\sum_jp_{ij},\quad p_Y(y_j)=\sum_ip_{ij}.
+\]
+取联合表
+\[
+  \begin{pmatrix}3/8&1/8\\1/8&3/8\end{pmatrix}.
+\]
+总质量为 $1$，两个边缘都为 $(1/2,1/2)$，但联合表不等于边缘外积：边缘分布不足以确定依赖。连续情形把求和换成第 4 章乘积空间上的积分；只有在可积性假设满足时才能使用 Fubini 自由交换次序。
+
+\section{常用分布：参数、矩与变换}
+
+设矩母函数 $M_X(t)=\mathbb{E}[e^{tX}]$，概率母函数 $G_N(z)=\mathbb{E}[z^N]$。变换若在零点邻域存在，可通过求导产生矩；“写得出形式”不等于对所有 $t$ 都有限。
+
+\begin{itemize}[nosep]
+  \item $B\sim\operatorname{Bernoulli}(p)$：$\mathbb E[B]=p$，$\operatorname{Var}(B)=p(1-p)$，$M_B(t)=1-p+pe^t$。取 $p=1/4$，得均值 $1/4$、方差 $3/16$、$M_B(\log2)=5/4$。
+  \item $N\sim\operatorname{Poisson}(\lambda)$：均值与方差均为 $\lambda$，$G_N(z)=\exp\{\lambda(z-1)\}$。取 $\lambda=2,z=1/2$，得 $G_N(1/2)=e^{-1}$。
+  \item $Z\sim\mathcal N(0,1)$：均值 $0$、方差 $1$，配方可得 $M_Z(t)=e^{t^2/2}$，故 $M_Z(1/2)=e^{1/8}$。
+\end{itemize}
+
+这些分布承担不同机制：Bernoulli 表示一次事件，Poisson 表示固定区间计数，Normal 常来自许多小扰动的加总近似。根据均值和方差相同就默认 Normal，会抹掉偏度、尾部和离散结构。
+
+\section{重尾反例：总体均值并不存在}
+
+令 $W$ 服从 $\operatorname{Pareto}(1)$，密度
+\[
+  f_W(w)=w^{-2}\mathbf 1_{[1,\infty)}(w).
+\]
+它是合法分布，因为 $\int_1^\infty w^{-2}dw=1$；但
+\[
+  \mathbb{E}[W]=\int_1^\infty w\,w^{-2}dw
+  =\int_1^\infty\frac{dw}{w}=\infty.
+\]
+把积分截断到 $M$ 只得到 $\log M$，并不趋于有限常数。截断到 $10$ 与 $1000$ 时分别为 $2.302585$、$6.907755$。因此“大样本均值看起来稳定”不是矩存在的证明；在损失、成交量和持有期数据中，必须先做尾部诊断，再选择统计量和分布族。
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch07
+\end{lstlisting}
+
+\input{tex/upper/chapters/ch07-questions}
+\input{tex/upper/chapters/ch07-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+概率空间规定事件和权重，随机变量通过推前测度产生分布，联合分布保留依赖；上册 Capstone 将要求每个模拟或风险结论同时声明分布、矩存在条件与尾部限制。
