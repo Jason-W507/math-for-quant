@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -46,20 +47,40 @@ def main(oracle_path: Path = Path("evidence/ch08/oracle.json")) -> int:
     tower_mean = float(state_probabilities @ conditional_means)
 
     kernel = np.asarray(oracle["kernel"], dtype=float)
+    kernel_support = np.asarray(oracle["kernel_support"], dtype=float)
     conditioning_probabilities = np.asarray(
         oracle["conditioning_probabilities"], dtype=float
     )
     if (
         kernel.ndim != 2
+        or kernel_support.ndim != 1
+        or kernel.shape[1] != kernel_support.size
         or kernel.shape[0] != conditioning_probabilities.size
         or not np.all(np.isfinite(kernel))
+        or not np.all(np.isfinite(kernel_support))
         or np.any(kernel < 0.0)
     ):
         raise SystemExit("conditional kernel must be a finite nonnegative matrix")
+    if (
+        conditioning_probabilities.ndim != 1
+        or not np.all(np.isfinite(conditioning_probabilities))
+        or np.any(conditioning_probabilities < 0.0)
+        or abs(float(conditioning_probabilities.sum()) - 1.0) > tolerance
+        or not np.allclose(
+            conditioning_probabilities,
+            state_probabilities,
+            atol=tolerance,
+            rtol=0.0,
+        )
+    ):
+        raise SystemExit("kernel mixing weights must match nonnegative conditioning-state probabilities")
     kernel_rows = kernel.sum(axis=1)
     if not np.allclose(kernel_rows, 1.0, atol=tolerance, rtol=0.0):
         raise SystemExit("conditional kernel rows must sum to one")
     mixture = conditioning_probabilities @ kernel
+    expected_mixture = np.asarray(oracle["expected_mixture"], dtype=float)
+    if expected_mixture.shape != kernel_support.shape:
+        raise SystemExit("expected mixture shape must match kernel support")
 
     common_a = np.asarray(oracle["common_cause_a"], dtype=int)
     common_b = np.asarray(oracle["common_cause_b"], dtype=int)
@@ -107,4 +128,7 @@ def main(oracle_path: Path = Path("evidence/ch08/oracle.json")) -> int:
     return 0
 
 
-main()
+oracle_path = Path("evidence/ch08/oracle.json")
+if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+    oracle_path = Path(sys.argv[1])
+main(oracle_path)
