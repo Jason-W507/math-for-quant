@@ -20,7 +20,7 @@ d(x,z)\le d(x,y)+d(y,z).
 同一对象换一种度量，收敛问题可能改变。有限维向量上的常用范数诱导相同的收敛序列，但停止阈值的数值含义仍不同；研究报告必须同时写出度量和阈值。
 
 \begin{example}
-收益向量 $x,y\in\mathbb{R}^T$ 可用 $\lVert x-y\rVert_2$ 衡量整体误差，也可用 $\lVert x-y\rVert_\infty$ 控制最坏时点误差。前者小不等于每一项都满足同一个业务容差。
+收益向量 $x,y\in\mathbb{R}^T$ 可用 $\lVert x-y\rVert_2$ 衡量整体误差，也可用 $\lVert x-y\rVert_\infty$ 控制最坏时点误差。有限维中恒有 $\lVert x-y\rVert_\infty\le\lVert x-y\rVert_2$，所以二范数不超过 $\varepsilon$ 足以保证每项误差不超过 $\varepsilon$；但“归一化 RMSE 很小”不能推出每项满足同一业务容差，因为其阈值随样本长度缩放。
 \end{example}
 
 \section{序列极限、Cauchy 性与完备性}
@@ -41,9 +41,16 @@ d(x,z)\le d(x,y)+d(y,z).
 
 \section{连续性连接输入极限与输出极限}
 
-映射 $T:X\to Y$ 在 $x$ 连续，是指输入足够接近 $x$ 时，输出在 $Y$ 的度量下任意接近 $T(x)$。在度量空间中，这等价于序列判据：
+对度量空间 $(X,d_X)$、$(Y,d_Y)$，当 $x\to a$ 时映射 $T:X\to Y$ 的极限为 $L$，记作 $\lim_{x\to a}T(x)=L$，是指
 \[
-x_n\to x\quad\Longrightarrow\quad T(x_n)\to T(x).
+\forall\varepsilon>0\;\exists\delta>0\;\forall x:\quad
+0<d_X(x,a)<\delta\Longrightarrow d_Y(T(x),L)<\varepsilon.
+\]
+条件 $0<d_X(x,a)$ 表明函数极限只看 $a$ 附近，不要求 $T(a)$ 已定义或等于 $L$。在度量空间中，这等价于：每个满足 $x_n\to a$ 且 $x_n\ne a$ 的序列都有 $T(x_n)\to L$。
+
+映射 $T$ 在 $a$ 连续，是指 $T(a)$ 已定义且 $\lim_{x\to a}T(x)=T(a)$；等价的序列判据为
+\[
+x_n\to a\quad\Longrightarrow\quad T(x_n)\to T(a).
 \]
 连续性允许把极限穿过映射，但不自动给出收敛速度，也不保证算法产生的序列收敛。若实现还包含排序、阈值或裁剪，边界点可能不连续，必须单独分析。
 
