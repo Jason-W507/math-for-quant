@@ -92,8 +92,10 @@ def main(oracle_path: Path = Path("evidence/ch05/oracle.json")) -> int:
         raise SystemExit(f"finite-difference mismatch: max_error={max_error}")
 
     print(
-        "oracle=passed value=-1.000000 gradient=(0.000000,-0.500000) "
-        "chain=(4.000000,-6.500000) "
+        "oracle=passed "
+        f"value={observed[0]:.6f} "
+        f"gradient=({analytic_quadratic[0]:.6f},{analytic_quadratic[1]:.6f}) "
+        f"chain=({analytic_chain[0]:.6f},{analytic_chain[1]:.6f}) "
         f"max_error={max_error:.3e} left={abs_left:.1f} right={abs_right:.1f}"
     )
     return 0
