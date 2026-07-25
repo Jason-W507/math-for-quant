@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "question_levels": ["oral", "derivation", "computation", "research"],
+  "units": [
+    {
+      "id": "upper.ch02",
+      "state": "planned",
+      "prerequisites": ["upper.missing"]
+    }
+  ]
+}

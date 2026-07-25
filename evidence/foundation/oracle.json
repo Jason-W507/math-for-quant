@@ -1,0 +1,7 @@
+{
+  "provenance": "hand-derived fraction 1/150",
+  "numerator": 1,
+  "denominator": 150,
+  "expected": 0.006666666666666667,
+  "absolute_tolerance": 1e-15
+}

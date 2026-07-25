@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "question_levels": ["oral", "derivation", "computation", "research"],
+  "units": [
+    {"id": "upper.a", "state": "planned", "prerequisites": ["upper.b"]},
+    {"id": "upper.b", "state": "planned", "prerequisites": ["upper.a"]}
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "terms": [
+    {
+      "zh": "独立 oracle",
+      "en": "independent oracle",
+      "definition": "不由被测实现计算得出的期望结果。"
+    },
+    {
+      "zh": "样本外",
+      "en": "out of sample",
+      "definition": "未参与模型选择、拟合或阈值确定的数据区间。"
+    }
+  ]
+}

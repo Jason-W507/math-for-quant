@@ -1,0 +1,57 @@
+\documentclass[lang=cn,11pt,scheme=chinese]{elegantbook}
+
+\title{量化研究数学}
+\subtitle{下册：方向模型与实战项目}
+\author{Jason W.}
+\date{\today}
+\version{0.1.0}
+\extrainfo{按方向选择路线，用证据约束模型。}
+\cover{assets/cover.jpg}
+\setcounter{tocdepth}{2}
+
+\begin{document}
+
+\maketitle
+\frontmatter
+
+\chapter*{如何选择路线}
+下册包含多因子与计量、时间序列与统计套利、机器学习 Alpha、衍生品、组合与风险、高频与执行六条路线。每条路线先诊断，再通过桥接模块精确回到上册先修单元，不复制整章基础内容。
+
+\input{tex/common/evidence-contract}
+
+\tableofcontents
+\mainmatter
+
+\chapter{六条方向路线}
+
+\section{共同研究门禁}
+
+所有路线都必须检查时间泄漏、多重检验、样本外设计、交易成本与制度摩擦、数值稳定和可复现性。模型更复杂不能替代这些研究证据。
+
+\section{路线入口}
+
+\begin{enumerate}
+  \item 多因子与计量：从横截面信号到成本和容量；
+  \item 时间序列与统计套利：从动态模型到 walk-forward 验证；
+  \item 机器学习 Alpha：从泛化到漂移与校准；
+  \item 衍生品：从鞅与 It\^o 公式到定价和对冲；
+  \item 组合与风险：从协方差到稳健优化和压力测试；
+  \item 高频与执行：从订单流到事件时间仿真和控制。
+\end{enumerate}
+
+\begin{note}
+每条路线的 Capstone 是学习证据，不代表生产部署、实盘业绩或团队经验。
+\end{note}
+
+\appendix
+
+\chapter{共享符号表}
+\input{tex/common/notation}
+
+\chapter{共享术语表}
+\input{tex/common/glossary}
+
+\chapter{许可说明}
+原创代码采用 MIT License；原创书稿与图形采用 CC BY-NC-SA 4.0；ElegantBook 类文件沿用 LPPL；真实数据切片将在引入时分别记录来源与许可。
+
+\end{document}

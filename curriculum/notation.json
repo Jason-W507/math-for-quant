@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "symbols": [
+    {
+      "symbol": "r_t",
+      "meaning": "时点 t 的简单收益率",
+      "domain": "real",
+      "first_unit": "foundation.oracle-smoke"
+    },
+    {
+      "symbol": "\\mathbb{E}[X]",
+      "meaning": "随机变量 X 的期望",
+      "domain": "probability",
+      "first_unit": "upper.ch07"
+    }
+  ]
+}
