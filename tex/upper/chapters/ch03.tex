@@ -1,0 +1,117 @@
+\chapter{测度、可测函数与 Lebesgue 积分}
+\label{ch:measure-integration}
+
+\begin{introduction}
+  \item 先修：第 2 章的极限、完备性、函数列逐点与一致收敛。
+  \item 学习产出：能写出概率模型的可测结构，并判断极限与积分交换缺少哪条假设。
+  \item 研究连接：随机变量、期望、损失函数和连续时间模型都建立在同一测度积分语言上。
+\end{introduction}
+
+Riemann 积分从区间分割出发；概率与现代统计更需要从“哪些事件可测、事件有多大、函数如何由简单对象逼近”出发。测度论的作用不是把积分写得更抽象，而是让零概率例外、函数极限和期望交换具有可判定前提。
+
+\section{$\sigma$ 代数：先规定哪些集合可被提问}
+
+集合 $\Omega$ 上的集合族 $\mathcal{F}$ 若包含 $\Omega$，对补集封闭，并对可数并封闭，就称为 $\sigma$ 代数：
+\[
+\Omega\in\mathcal{F},\qquad
+A\in\mathcal{F}\Rightarrow A^c\in\mathcal{F},\qquad
+A_n\in\mathcal{F}\Rightarrow\bigcup_{n=1}^{\infty}A_n\in\mathcal{F}.
+\]
+由 De Morgan 律，它也对可数交封闭。$\mathbb{R}$ 上包含所有开集的最小 $\sigma$ 代数称为 Borel $\sigma$ 代数。它已经覆盖通常数据事件，但不等于幂集；Vitali 集说明，若坚持平移不变、可数可加且区间长度正确，就不能让每个子集都成为 Lebesgue 可测集。
+
+\begin{note}
+数据表中的“所有能写出的筛选条件”不是自动可测。实际模型应先声明样本空间、事件 $\sigma$ 代数以及数据生成变量的可测性。
+\end{note}
+
+\section{测度：从事件到可数可加的大小}
+
+测度 $\mu:\mathcal{F}\to[0,\infty]$ 满足 $\mu(\varnothing)=0$，且对两两不交的 $A_n$ 有
+\[
+\mu\!\left(\bigcup_{n=1}^{\infty}A_n\right)
+=\sum_{n=1}^{\infty}\mu(A_n).
+\]
+三元组 $(\Omega,\mathcal{F},\mu)$ 是测度空间。Lebesgue 测度给区间赋予长度；若 $\mu(\Omega)=1$，它就是概率测度。可数可加性推出单调性与从下连续性：若 $A_n\uparrow A$，则 $\mu(A_n)\uparrow\mu(A)$。
+
+\section{可测函数：用逆像连接数值与事件}
+
+函数 $f:(\Omega,\mathcal{F})\to(\mathbb{R},\mathcal{B})$ 可测，是指每个 Borel 集 $B$ 的逆像 $f^{-1}(B)$ 都属于 $\mathcal{F}$。等价地，只需检查所有阈值事件 $\{\omega:f(\omega)>t\}$。概率空间上的实值可测函数就是随机变量。
+
+逆像而非像集出现在定义中，因为事件必须留在 $\Omega$ 上。连续函数在 Borel $\sigma$ 代数下可测；可测函数的逐点极限仍可测。这使估计量极限仍是合法随机对象。
+
+\section{简单函数先建立积分账本}
+
+非负简单函数只有有限多个取值，可写成
+\[
+\phi=\sum_{k=1}^{K}a_k\mathbf{1}_{A_k},
+\qquad a_k\ge0,\quad A_k\in\mathcal{F},
+\]
+其中 $\mathbf{1}_{A}$ 是示性函数。若 $A_k$ 两两不交，则定义
+\[
+\int\phi\,d\mu=\sum_{k=1}^{K}a_k\mu(A_k).
+\]
+对任意非负可测函数 $f$，Lebesgue 积分由所有不超过它的简单函数从下逼近：
+\[
+\int f\,d\mu
+=\sup\left\{\int\phi\,d\mu:0\le\phi\le f,\ \phi\text{ 为简单函数}\right\}.
+\]
+
+\subsection{固定账本：逼近 $f(x)=x$}
+
+在 $[0,1]$ 上令 $\mu$ 为 Lebesgue 测度，并取
+\[
+\phi_m(x)=\frac{\lfloor2^m x\rfloor}{2^m}\quad(0\le x<1),
+\qquad \phi_m(1)=1.
+\]
+则 $0\le\phi_m\uparrow f$，且
+\[
+\int_0^1\phi_m(x)\,dx
+=\sum_{k=0}^{2^m-1}\frac{k}{2^m}\frac1{2^m}
+=\frac12-\frac1{2^{m+1}}\uparrow\frac12.
+\]
+因此 $m=2,4,8$ 时的独立结果分别为 $0.375$、$0.46875$ 和 $0.498046875$。
+
+\section{符号函数与可积性}
+
+对实值可测函数，写 $f=f^+-f^-$，其中 $f^+=\max(f,0)$、$f^-=\max(-f,0)$。若两部分积分至少有一个有限，扩展积分有定义；若
+\[
+\int|f|\,d\mu<\infty,
+\]
+则称 $f$ 可积，此时 $\int f\,d\mu=\int f^+\,d\mu-\int f^-\,d\mu$ 是有限数。不能把 $\infty-\infty$ 当成零；这也是重尾模型需要先检查绝对可积性的原因。
+
+\section{何时可以交换极限与积分}
+
+三条规则承担不同任务：Fatou 引理给非负函数列的下界；单调收敛定理允许 $0\le f_n\uparrow f$ 时交换；支配收敛定理要求 $f_n\to f$ 几乎处处，且存在可积 $g$ 使 $|f_n|\le g$，此时
+\[
+\lim_{n\to\infty}\int f_n\,d\mu=\int f\,d\mu.
+\]
+“几乎处处”表示失败集合的测度为零，不表示有限样本中从未出现。
+
+\subsection{失败见证：质量向零点集中}
+
+在 $[0,1]$ 上令
+\[
+f_n(x)=n\mathbf{1}_{(0,1/n]}(x).
+\]
+对每个固定 $x$，都有 $f_n(x)\to0$；但
+\[
+\int_0^1f_n(x)\,dx=n\cdot\frac1n=1,
+\qquad
+\int_0^1\lim_{n\to\infty}f_n(x)\,dx=0.
+\]
+所以极限与积分不能交换。该函数列没有共同的可积支配函数：峰值不断增高并向零点集中。缺失的不是更多网格，而是支配条件。
+
+\section{独立计算与数值边界}
+
+Notebook 用有限求和复现三个简单函数积分，并核对尖峰在 $n=10,100$ 时积分仍为 1、固定点 $x=0.2$ 的函数值已为零：
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch03
+\end{lstlisting}
+离散网格若没有采到 $(0,1/n]$，甚至会把尖峰积分误报为零；解析区间宽度才是本例 oracle。
+
+\input{tex/upper/chapters/ch03-questions}
+\input{tex/upper/chapters/ch03-hints}
+
+\section*{本章小结与 Capstone 连接}
+
+$\sigma$ 代数规定合法事件，测度给事件大小，可测函数把数值问题拉回事件，简单函数构造积分，收敛定理则规定极限交换门禁。上册 Capstone 将据此审计期望、损失与模拟估计中的可测性、可积性和支配条件。

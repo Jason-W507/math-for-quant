@@ -92,7 +92,29 @@
         "capstone_connection": "tex/upper/chapters/ch02.tex"
       }
     },
-    {"id":"upper.ch03","title":"测度、可测函数与 Lebesgue 积分","volume":"upper","state":"planned","prerequisites":["upper.ch02"]},
+    {
+      "id": "upper.ch03",
+      "title": "测度、可测函数与 Lebesgue 积分",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch02"],
+      "evidence": {
+        "notation_symbols": ["\\mathcal{F}", "\\mu(A)", "\\mathbf{1}_{A}", "\\int f\\,d\\mu"],
+        "glossary_terms": ["sigma 代数", "测度", "可测函数", "简单函数", "Lebesgue 积分", "几乎处处"],
+        "notation_and_assumptions": "tex/upper/chapters/ch03.tex",
+        "core_derivation": "tex/upper/chapters/ch03.tex",
+        "independent_oracle": {
+          "source": "notebooks/upper/ch03_measure_integration.py",
+          "oracle": "evidence/ch03/oracle.json",
+          "command": ["{python}", "notebooks/upper/ch03_measure_integration.py"]
+        },
+        "questions": "tex/upper/chapters/ch03-questions.tex",
+        "hints": "tex/upper/chapters/ch03-hints.tex",
+        "solutions": "tex/upper/solutions/ch03.tex",
+        "capstone_connection": "tex/upper/chapters/ch03.tex"
+      }
+    },
     {"id":"upper.ch04","title":"Lp 空间、收敛定理与乘积测度","volume":"upper","state":"planned","prerequisites":["upper.ch03"]},
     {"id":"upper.ch05","title":"多元微积分与矩阵微分","volume":"upper","state":"planned","prerequisites":["upper.ch01"]},
     {"id":"upper.ch06","title":"线性代数、分解、投影与条件数","volume":"upper","state":"planned","prerequisites":["upper.ch01"]},

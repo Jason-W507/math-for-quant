@@ -50,6 +50,30 @@
       "first_unit": "upper.ch02"
     },
     {
+      "symbol": "\\mathcal{F}",
+      "meaning": "样本空间上的事件 sigma 代数",
+      "domain": "collection of subsets",
+      "first_unit": "upper.ch03"
+    },
+    {
+      "symbol": "\\mu(A)",
+      "meaning": "可测集 A 的测度",
+      "domain": "extended nonnegative real",
+      "first_unit": "upper.ch03"
+    },
+    {
+      "symbol": "\\mathbf{1}_{A}",
+      "meaning": "集合 A 的示性函数",
+      "domain": "zero or one",
+      "first_unit": "upper.ch03"
+    },
+    {
+      "symbol": "\\int f\\,d\\mu",
+      "meaning": "函数 f 关于测度 mu 的 Lebesgue 积分",
+      "domain": "extended real when defined",
+      "first_unit": "upper.ch03"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",

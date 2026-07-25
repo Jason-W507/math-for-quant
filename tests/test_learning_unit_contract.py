@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=3\n"
+            "accepted-units=4\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -461,6 +461,56 @@ class LearningUnitContractTests(unittest.TestCase):
             "evidence=7/7\n"
             "oracle=passed contraction_x5=0.067232 error=0.032768 "
             "bound=0.032768 witness10=0.500000 witness100=0.500000\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_three_notebook_reproduces_simple_and_spike_oracles(
+        self,
+    ) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch03_measure_integration.py",
+                "--output",
+                "build/notebooks/upper/ch03_measure_integration.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch03_measure_integration.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed simple_m2=0.375000 "
+            "simple_m4=0.468750 simple_m8=0.498047 "
+            "spike10=1.000000 spike100=1.000000 "
+            "point10=0.000000 point100=0.000000 gap=1.000000\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_three_with_simple_and_spike_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch03",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch03\n"
+            "evidence=7/7\n"
+            "oracle=passed simple_m2=0.375000 simple_m4=0.468750 "
+            "simple_m8=0.498047 spike10=1.000000 spike100=1.000000 "
+            "point10=0.000000 point100=0.000000 gap=1.000000\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

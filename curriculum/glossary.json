@@ -57,6 +57,36 @@
       "definition": "以严格小于 1 的统一因子缩短任意两点距离的映射。"
     },
     {
+      "zh": "sigma 代数",
+      "en": "sigma algebra",
+      "definition": "包含全集并对补集和可数并封闭的事件集合族。"
+    },
+    {
+      "zh": "测度",
+      "en": "measure",
+      "definition": "在 sigma 代数上取值并满足可数可加性的非负集合函数。"
+    },
+    {
+      "zh": "可测函数",
+      "en": "measurable function",
+      "definition": "目标可测集的逆像始终属于定义域 sigma 代数的函数。"
+    },
+    {
+      "zh": "简单函数",
+      "en": "simple function",
+      "definition": "只取有限多个值并可写为可测示性函数有限和的函数。"
+    },
+    {
+      "zh": "Lebesgue 积分",
+      "en": "Lebesgue integral",
+      "definition": "由简单函数从下逼近构造并扩展到可积符号函数的积分。"
+    },
+    {
+      "zh": "几乎处处",
+      "en": "almost everywhere",
+      "definition": "除一个零测集外性质均成立。"
+    },
+    {
       "zh": "样本外",
       "en": "out of sample",
       "definition": "未参与模型选择、拟合或阈值确定的数据区间。"
