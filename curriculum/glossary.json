@@ -7,6 +7,31 @@
       "definition": "不由被测实现计算得出的期望结果。"
     },
     {
+      "zh": "命题",
+      "en": "proposition",
+      "definition": "具有确定真假值、需要证明或反驳的陈述。"
+    },
+    {
+      "zh": "必要条件",
+      "en": "necessary condition",
+      "definition": "结论成立时必须满足的条件。"
+    },
+    {
+      "zh": "充分条件",
+      "en": "sufficient condition",
+      "definition": "一旦满足即可推出结论的条件。"
+    },
+    {
+      "zh": "反例",
+      "en": "counterexample",
+      "definition": "满足命题假设但使结论失败的合法对象。"
+    },
+    {
+      "zh": "量纲",
+      "en": "dimension",
+      "definition": "数量所属的物理或金融单位类别，用于判断运算是否有意义。"
+    },
+    {
       "zh": "样本外",
       "en": "out of sample",
       "definition": "未参与模型选择、拟合或阈值确定的数据区间。"

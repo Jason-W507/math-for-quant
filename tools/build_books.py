@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -16,8 +17,8 @@ FATAL_LOG_MARKERS = (
     "LaTeX Error:",
     "There were undefined references",
     "Missing character:",
-    "Overfull \\hbox",
 )
+MAX_OVERFULL_POINTS = 10.0
 
 
 def parse_args() -> argparse.Namespace:
@@ -73,6 +74,22 @@ def build_volume(volume: dict[str, str]) -> Path:
     failures = [marker for marker in FATAL_LOG_MARKERS if marker in log]
     if failures:
         raise RuntimeError(f"{identifier} log contains: {', '.join(failures)}")
+    overfull = [
+        float(value)
+        for value in re.findall(r"Overfull \\hbox \(([0-9.]+)pt too wide\)", log)
+    ]
+    severe = [value for value in overfull if value > MAX_OVERFULL_POINTS]
+    if severe:
+        raise RuntimeError(
+            f"{identifier} log contains Overfull hbox above "
+            f"{MAX_OVERFULL_POINTS:.1f}pt: max={max(severe):.3f}pt"
+        )
+    for value in overfull:
+        print(
+            f"warning: {identifier} Overfull hbox {value:.3f}pt "
+            f"(allowed <= {MAX_OVERFULL_POINTS:.1f}pt)",
+            file=sys.stderr,
+        )
 
     built_pdf = build_directory / f"{job_name}.pdf"
     if not built_pdf.is_file() or built_pdf.stat().st_size == 0:

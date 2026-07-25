@@ -1,0 +1,144 @@
+\chapter{数学语言、证明、反例与量纲}
+\label{ch:language-proof-dimension}
+
+\section*{学习产出与先修}
+
+完成本章后，你应能把一句研究主张改写为带量词和假设的命题，区分定义、必要条件与充分条件，用证明或反例处理真假，并在运行代码之前用量纲排除无意义的运算。先修只包括高中代数、有限求和与 Python 数组基础。
+
+\section{从研究句子到数学命题}
+
+研究讨论中常听到“分散化降低风险”“相关性高意味着协整”“收益越高越好”。这些句子缺少对象、量词、条件或评价口径，还不是可以证明的数学命题。数学语言首先要求回答四个问题：讨论什么对象，允许哪些输入，声称对全部对象还是某个样本成立，结论用什么标准判定。
+
+\begin{definition}
+\textbf{定义（definition）}规定一个术语在当前语境中的含义；\textbf{命题（proposition）}是具有确定真假值的陈述。定义本身不靠数据“验证”，命题则需要证明、反例或声明误差的计算证据。
+\end{definition}
+
+例如，“组合简单收益定义为 $R_p=\sum_{i=1}^n w_i r_i$”是定义；“若 $w_i\geq 0$ 且 $\sum_i w_i=1$，则 $R_p$ 不超过最大的分量收益”是命题。后者写出了对象、条件和可判定结论。
+
+\subsection{量词决定你需要什么证据}
+
+“对本文件的三行数据成立”只需核对三行；“对所有实数收益向量成立”必须给出一般证明。数值实验可以发现错误、验证一个算例，却不能用有限次通过代替全称命题的证明。反过来，一个合法反例就足以推翻全称命题。
+
+\begin{example}
+“价格上涨时策略一定盈利”是全称命题。只要构造一个价格上涨但交易成本超过毛收益的合法情形，就已反驳它；没有必要枚举所有价格路径。
+\end{example}
+
+\section{必要、充分与充要条件}
+
+设条件 $A$ 推出结论 $B$，写作 $A\Rightarrow B$。此时 $A$ 是 $B$ 的\textbf{充分条件（sufficient condition）}，$B$ 是 $A$ 的\textbf{必要条件（necessary condition）}。只有两个方向都成立，才能写 $A\Leftrightarrow B$。
+
+一个常见错误是从 $A\Rightarrow B$ 反推 $B\Rightarrow A$。例如，“矩阵正定 $\Rightarrow$ 可逆”成立，但“矩阵可逆 $\Rightarrow$ 正定”不成立；旋转矩阵可以逆，却未必正定。写证明前先画箭头，往往比立即展开代数更有效。
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+表达 & 要证明的方向 & 反驳方法 \\
+\midrule
+$A$ 对 $B$ 充分 & $A\Rightarrow B$ & 找到 $A$ 真、$B$ 假 \\
+$A$ 对 $B$ 必要 & $B\Rightarrow A$ & 找到 $B$ 真、$A$ 假 \\
+$A$ 与 $B$ 充要 & 两个方向 & 破坏任一方向 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{标杆命题：凸组合收益的上下界}
+
+设 $r_i\in\mathbb{R}$ 是资产简单收益，$w_i$ 是组合权重。令
+\[
+  R_p=\sum_{i=1}^n w_i r_i,\qquad
+  m=\min_i r_i,\qquad M=\max_i r_i.
+\]
+
+\begin{theorem}[凸组合界]
+在 $\sum_i w_i=1$ 的前提下，以下两件事等价：
+\begin{enumerate}
+  \item 对所有实数向量 $(r_1,\ldots,r_n)$，都有 $m\leq R_p\leq M$；
+  \item 对每个 $i$，都有 $w_i\geq 0$。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+先证充分性。若 $w_i\geq0$，则
+\[
+ R_p-m=\sum_i w_i(r_i-m)\geq0,
+ \qquad
+ M-R_p=\sum_i w_i(M-r_i)\geq0.
+\]
+两个不等式分别给出 $R_p\geq m$ 和 $R_p\leq M$。
+
+再证必要性。若存在 $w_j<0$，令 $r_j=0$，其余 $r_i=1$。因为权重和为 1，
+\[
+ R_p=\sum_{i\ne j}w_i=1-w_j>1=M,
+\]
+与“对所有收益向量保持上下界”矛盾。因此所有权重必须非负。
+\end{proof}
+
+这一定理中的“对所有收益向量”不能删掉。某个含负权重的组合可能碰巧在某一日仍落在样本范围内；定理声称的是一种对任意输入都成立的结构保证。
+
+\subsection{删除假设，反例必须可观察}
+
+取
+\[
+ r=(0.02,-0.01,0.03),\quad
+ w=(0.5,0.3,0.2).
+\]
+手算得到
+\[
+ R_p=0.5(0.02)+0.3(-0.01)+0.2(0.03)=0.013,
+\]
+确实落在 $[-0.01,0.03]$。若保留权重和为 1、删除非负性，改用 $w'=(1.5,-0.5,0)$，则
+\[
+ R'_p=1.5(0.02)-0.5(-0.01)=0.035>0.03.
+\]
+它不是“程序异常”，而是准确展示假设被删除后的数学行为。
+
+\section{量纲：运行代码前的零成本检查}
+
+量纲（dimension）回答一个数量属于货币、价格、股数、时间还是无量纲比率。只有同量纲的量才能直接相加；相乘和相除则会产生新量纲。
+
+设持仓 $q=200\ \mathrm{share}$，价格变动 $\Delta p=0.5\ \mathrm{USD/share}$，则
+\[
+ [q\Delta p]=\mathrm{share}\times\frac{\mathrm{USD}}{\mathrm{share}}
+ =\mathrm{USD},\qquad \mathrm{P\&L}=100\ \mathrm{USD}.
+\]
+若初始价格为 $p_0=100\ \mathrm{USD/share}$，资本基数是 $qp_0=20000\ \mathrm{USD}$，对应收益为
+\[
+ \frac{q\Delta p}{qp_0}=\frac{\Delta p}{p_0}=0.005,
+\]
+它才是可与其他收益相加或比较的无量纲量。把 $100$ 美元 P\&L 与 $2\%$ 收益相加，即使 Python 能运行，也没有数学意义。
+
+\begin{note}
+量纲一致只是必要检查，不是结论正确的充分证据。时间错位、未来信息、忽略成本和估计不确定性都可能存在于量纲完全正确的公式中。
+\end{note}
+
+\section{独立计算：代码不能给自己出答案}
+
+本章先在证据文件中冻结手算值 $0.013$、区间端点和反例 $0.035$，再由 NumPy 实现读取同一输入进行矩阵乘法。验收命令是：
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch01
+\end{lstlisting}
+
+通过时必须同时报告正常值、上下界与反例。若被测程序再次调用自身来生成 expected，测试即使绿色也只是自我对照，不是独立 oracle。
+
+\subsection{Python 表达与数学表达的边界}
+
+数学中的 $w^\top r$ 默认维度匹配；NumPy 的 \texttt{weights @ returns} 只会检查数组形状，不知道元素是否真是权重、收益或美元金额。因此程序边界还要验证长度、权重和、单位约定与数据时间点。本章用固定小数组隔离数学命题，真实数据校验留给后续研究有效性单元。
+
+\section{四级问题与即时练习}
+
+\begin{enumerate}
+  \item \textbf{口述概念：}区分定义、命题、必要条件、充分条件和反例，并各举一个量化例子。
+  \item \textbf{笔试推导：}不看正文，重写凸组合界的两个证明方向。
+  \item \textbf{数值编程：}把收益改为 $(0.04,-0.02,0.01)$，设计一组凸组合权重与一组越界负权重；先手算，再运行程序。
+  \item \textbf{研究判断：}审查“100 美元 P\&L 加 2\% 收益”的报告，并说明修正量纲后还需哪些证据。
+\end{enumerate}
+
+\subsection*{分级提示}
+
+先判断题目要求证明哪个箭头；构造反例时只需满足仍被保留的假设。量纲题先写每个变量的单位，再做代数。完整分层答案见附录~\ref{app:ch01-solutions}。
+
+\section*{本章小结与研究连接}
+
+可信研究从可判定的命题开始：定义对象，写出量词和假设，判断必要或充分方向，用证明建立一般结论，用反例暴露失效边界，再以独立计算检查具体实现。量纲检查是最便宜的错误门禁。本章形成的“主张---假设---证明---反例---oracle”结构将在上册 Capstone 中用于审计每个结果表。

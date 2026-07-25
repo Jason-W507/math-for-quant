@@ -8,6 +8,24 @@
       "first_unit": "foundation.oracle-smoke"
     },
     {
+      "symbol": "r_i",
+      "meaning": "资产 i 的简单收益率",
+      "domain": "real, dimensionless",
+      "first_unit": "upper.ch01"
+    },
+    {
+      "symbol": "w_i",
+      "meaning": "资产 i 的组合权重",
+      "domain": "real, dimensionless",
+      "first_unit": "upper.ch01"
+    },
+    {
+      "symbol": "R_p",
+      "meaning": "组合 p 的简单收益率",
+      "domain": "real, dimensionless",
+      "first_unit": "upper.ch01"
+    },
+    {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
       "domain": "probability",

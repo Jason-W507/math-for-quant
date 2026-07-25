@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=1\n"
+            "accepted-units=2\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -340,6 +340,24 @@ class LearningUnitContractTests(unittest.TestCase):
             result.stderr,
             "foundation.oracle-smoke: unregistered notation symbol x_t\n",
         )
+
+    def test_accepts_chapter_one_with_bound_and_counterexample_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch01",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch01\n"
+            "evidence=7/7\n"
+            "oracle=passed weighted_return=0.013000 lower=-0.010000 "
+            "upper=0.030000 counterexample=0.035000\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
 
 
 if __name__ == "__main__":

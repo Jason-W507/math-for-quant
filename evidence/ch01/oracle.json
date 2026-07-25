@@ -1,0 +1,12 @@
+{
+  "provenance": "hand-derived convex-combination ledger",
+  "returns": [0.02, -0.01, 0.03],
+  "weights": [0.5, 0.3, 0.2],
+  "counterexample_weights": [1.5, -0.5, 0.0],
+  "expected_weighted_return": 0.013,
+  "expected_lower": -0.01,
+  "expected_upper": 0.03,
+  "expected_counterexample": 0.035,
+  "expected": 0.013,
+  "absolute_tolerance": 1e-12
+}
