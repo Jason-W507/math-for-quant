@@ -99,6 +99,14 @@ def validate_content(
     for field in ("expected", "absolute_tolerance", "provenance"):
         if field not in oracle_data:
             return f"{identifier}: oracle evidence missing {field}"
+    published_markers = oracle_data.get("published_markers", [])
+    if not isinstance(published_markers, list) or any(
+        not isinstance(marker, str) or not marker for marker in published_markers
+    ):
+        return f"{identifier}: oracle published_markers must be non-empty strings"
+    for marker in published_markers:
+        if marker not in documents["solutions"]:
+            return f"{identifier}: solutions missing published oracle marker {marker}"
     return None
 
 

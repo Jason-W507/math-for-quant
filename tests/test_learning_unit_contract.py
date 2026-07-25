@@ -359,6 +359,35 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_rejects_solution_without_published_oracle_markers(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        unit = next(item for item in manifest["units"] if item["id"] == "upper.ch01")
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch01" / "oracle.json").read_text(encoding="utf-8")
+        )
+        oracle["published_markers"] = ["oracle-only-marker"]
+        oracle_path = ROOT / "build" / "test-evidence" / "missing-answer-marker.json"
+        oracle_path.parent.mkdir(parents=True, exist_ok=True)
+        oracle_path.write_text(json.dumps(oracle), encoding="utf-8")
+        unit["evidence"]["independent_oracle"]["oracle"] = oracle_path.relative_to(
+            ROOT
+        ).as_posix()
+        fixture = ROOT / "build" / "test-manifests" / "missing-answer-marker.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture.relative_to(ROOT).as_posix(), "--unit", "upper.ch01"
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "upper.ch01: solutions missing published oracle marker oracle-only-marker\n",
+        )
+
     def test_rejects_detached_feedback_for_a_published_unit(self) -> None:
         manifest = json.loads(
             (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")

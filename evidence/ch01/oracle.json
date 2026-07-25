@@ -7,6 +7,7 @@
   "expected_lower": -0.01,
   "expected_upper": 0.03,
   "expected_counterexample": 0.035,
+  "published_markers": ["0.013", "0.035"],
   "expected": 0.013,
   "absolute_tolerance": 1e-12
 }
