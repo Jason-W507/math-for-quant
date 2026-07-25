@@ -359,6 +359,33 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_rejects_detached_feedback_for_a_published_unit(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        detached = ROOT / "build" / "test-evidence" / "detached-questions.md"
+        detached.parent.mkdir(parents=True, exist_ok=True)
+        detached.write_text(
+            "# 四级问题组\n\n"
+            "1. 口述概念\n2. 笔试推导\n3. 数值编程\n4. 研究判断\n",
+            encoding="utf-8",
+        )
+        unit = next(item for item in manifest["units"] if item["id"] == "upper.ch01")
+        unit["evidence"]["questions"] = detached.relative_to(ROOT).as_posix()
+        fixture = ROOT / "build" / "test-manifests" / "detached-feedback.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(manifest), encoding="utf-8")
+
+        result = self.run_contract(
+            fixture.relative_to(ROOT).as_posix(), "--unit", "upper.ch01"
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "upper.ch01: published evidence field questions must reference tex source\n",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

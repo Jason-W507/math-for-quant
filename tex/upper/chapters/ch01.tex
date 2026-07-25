@@ -128,17 +128,14 @@ uv run python tools/check_learning_unit.py \
 
 \section{四级问题与即时练习}
 
-\begin{enumerate}
-  \item \textbf{口述概念：}区分定义、命题、必要条件、充分条件和反例，并各举一个量化例子。
-  \item \textbf{笔试推导：}不看正文，重写凸组合界的两个证明方向。
-  \item \textbf{数值编程：}把收益改为 $(0.04,-0.02,0.01)$，设计一组凸组合权重与一组越界负权重；先手算，再运行程序。
-  \item \textbf{研究判断：}审查“100 美元 P\&L 加 2\% 收益”的报告，并说明修正量纲后还需哪些证据。
-\end{enumerate}
+\input{tex/upper/chapters/ch01-questions}
 
 \subsection*{分级提示}
 
-先判断题目要求证明哪个箭头；构造反例时只需满足仍被保留的假设。量纲题先写每个变量的单位，再做代数。完整分层答案见附录~\ref{app:ch01-solutions}。
+\input{tex/upper/chapters/ch01-hints}
+
+完整分层答案见附录~\ref{app:ch01-solutions}。
 
 \section*{本章小结与研究连接}
 
-可信研究从可判定的命题开始：定义对象，写出量词和假设，判断必要或充分方向，用证明建立一般结论，用反例暴露失效边界，再以独立计算检查具体实现。量纲检查是最便宜的错误门禁。本章形成的“主张---假设---证明---反例---oracle”结构将在上册 Capstone 中用于审计每个结果表。
+可信研究从可判定命题开始：定义对象、量词与假设，辨别必要或充分方向，以证明建结论、反例显边界、独立 oracle 验实现。量纲是最低成本门禁；上册 Capstone 将复用此结构。

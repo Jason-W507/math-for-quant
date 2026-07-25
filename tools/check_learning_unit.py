@@ -58,6 +58,20 @@ def main() -> int:
                 return fail(
                     f"{unit.get('id', '<unknown>')}: missing evidence field {field}"
                 )
+        if unit.get("published"):
+            for field in (
+                "notation_and_assumptions",
+                "core_derivation",
+                "questions",
+                "hints",
+                "solutions",
+                "capstone_connection",
+            ):
+                if not str(evidence[field]).startswith("tex/"):
+                    return fail(
+                        f"{unit.get('id')}: published evidence field {field} "
+                        "must reference tex source"
+                    )
         try:
             paths = artifact_paths(evidence)
         except (KeyError, TypeError, ValueError) as error:

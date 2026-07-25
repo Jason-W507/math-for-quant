@@ -56,7 +56,7 @@ def validate_content(
         if term not in registered_terms:
             return f"{identifier}: unregistered glossary term {term}"
 
-    markdown = {
+    documents = {
         field: (root / str(evidence[field])).read_text(encoding="utf-8")
         for field in (
             "notation_and_assumptions",
@@ -68,20 +68,25 @@ def validate_content(
         )
     }
     for symbol in declared_symbols:
-        if symbol not in markdown["notation_and_assumptions"]:
+        if symbol not in documents["notation_and_assumptions"]:
             return f"{identifier}: declared notation symbol absent from evidence {symbol}"
 
     question_labels = ("口述概念", "笔试推导", "数值编程", "研究判断")
-    if any(label not in markdown["questions"] for label in question_labels):
+    if any(label not in documents["questions"] for label in question_labels):
         return f"{identifier}: questions must include " + ", ".join(question_labels)
     for field in ("hints", "solutions"):
-        if len(re.findall(r"(?m)^\s*[1-4][.)、]", markdown[field])) < 4:
+        markdown_items = len(re.findall(r"(?m)^\s*[1-4][.)、]", documents[field]))
+        tex_items = documents[field].count("\\item")
+        tex_sections = documents[field].count("\\section*")
+        if max(markdown_items, tex_items, tex_sections) < 4:
             return f"{identifier}: {field} must address all four question levels"
-    if not markdown["notation_and_assumptions"].lstrip().startswith("#"):
+    notation_text = documents["notation_and_assumptions"].lstrip()
+    if not notation_text.startswith("#") and "\\chapter" not in notation_text:
         return f"{identifier}: notation and assumptions must have a heading"
-    if "=" not in markdown["core_derivation"] or "#" not in markdown["core_derivation"]:
+    derivation = documents["core_derivation"]
+    if "=" not in derivation or ("#" not in derivation and "\\chapter" not in derivation):
         return f"{identifier}: core derivation must contain a heading and derivation"
-    if "capstone" not in markdown["capstone_connection"].casefold():
+    if "capstone" not in documents["capstone_connection"].casefold():
         return f"{identifier}: capstone connection must name the Capstone boundary"
 
     oracle = evidence["independent_oracle"]

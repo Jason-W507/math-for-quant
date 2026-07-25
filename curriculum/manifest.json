@@ -56,17 +56,17 @@
       "evidence": {
         "notation_symbols": ["r_i", "w_i", "R_p"],
         "glossary_terms": ["命题", "必要条件", "充分条件", "反例", "量纲"],
-        "notation_and_assumptions": "evidence/ch01/notation-and-assumptions.md",
-        "core_derivation": "evidence/ch01/core-derivation.md",
+        "notation_and_assumptions": "tex/upper/chapters/ch01.tex",
+        "core_derivation": "tex/upper/chapters/ch01.tex",
         "independent_oracle": {
           "source": "notebooks/upper/ch01_convex_bound.py",
           "oracle": "evidence/ch01/oracle.json",
           "command": ["{python}", "notebooks/upper/ch01_convex_bound.py"]
         },
-        "questions": "evidence/ch01/questions.md",
-        "hints": "evidence/ch01/hints.md",
-        "solutions": "evidence/ch01/solutions.md",
-        "capstone_connection": "evidence/ch01/capstone-connection.md"
+        "questions": "tex/upper/chapters/ch01-questions.tex",
+        "hints": "tex/upper/chapters/ch01-hints.tex",
+        "solutions": "tex/upper/solutions/ch01.tex",
+        "capstone_connection": "tex/upper/chapters/ch01.tex"
       }
     },
     {"id":"upper.ch02","title":"极限、连续、完备性与度量空间","volume":"upper","state":"planned","prerequisites":["upper.ch01"]},
