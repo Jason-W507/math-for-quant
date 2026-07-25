@@ -162,6 +162,13 @@
     {"zh": "独立性", "en": "independence", "definition": "相关事件的联合概率对所有可测集合均分解为边缘概率乘积。"},
     {"zh": "条件独立", "en": "conditional independence", "definition": "给定指定信息后联合条件分布分解为条件边缘分布乘积。"},
     {"zh": "概率核", "en": "probability kernel", "definition": "对状态可测、对事件为概率测度的条件分布映射。"},
+    {"zh": "几乎处处收敛", "en": "almost sure convergence", "definition": "除零概率状态外逐点收敛。"},
+    {"zh": "依概率收敛", "en": "convergence in probability", "definition": "偏差超过任意正阈值的概率趋于零。"},
+    {"zh": "Lp 收敛", "en": "Lp convergence", "definition": "差的 p 次绝对矩趋于零。"},
+    {"zh": "分布收敛", "en": "convergence in distribution", "definition": "分布函数在极限分布连续点处收敛。"},
+    {"zh": "大数定律", "en": "law of large numbers", "definition": "在明确矩与依赖条件下样本平均趋近总体均值的定理。"},
+    {"zh": "中心极限定理", "en": "central limit theorem", "definition": "在明确正则条件下标准化和趋近正态分布的定理。"},
+    {"zh": "集中不等式", "en": "concentration inequality", "definition": "有限样本下控制随机量偏离中心概率的非渐近上界。"},
     {
       "zh": "样本外",
       "en": "out of sample",

@@ -230,7 +230,25 @@
         "capstone_connection": "tex/upper/chapters/ch08.tex"
       }
     },
-    {"id":"upper.ch09","title":"概率收敛、极限定理与集中不等式","volume":"upper","state":"planned","prerequisites":["upper.ch08"]},
+    {
+      "id": "upper.ch09",
+      "title": "概率收敛、极限定理与集中不等式",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch08"],
+      "evidence": {
+        "notation_symbols": ["X_n\\xrightarrow{a.s.}X", "X_n\\xrightarrow{\\mathbb P}X", "X_n\\xrightarrow d X", "\\bar X_n"],
+        "glossary_terms": ["几乎处处收敛", "依概率收敛", "Lp 收敛", "分布收敛", "大数定律", "中心极限定理", "集中不等式"],
+        "notation_and_assumptions": "tex/upper/chapters/ch09.tex",
+        "core_derivation": "tex/upper/chapters/ch09.tex",
+        "independent_oracle": {"source": "notebooks/upper/ch09_limit_theorems.py", "oracle": "evidence/ch09/oracle.json", "command": ["{python}", "notebooks/upper/ch09_limit_theorems.py"]},
+        "questions": "tex/upper/chapters/ch09-questions.tex",
+        "hints": "tex/upper/chapters/ch09-hints.tex",
+        "solutions": "tex/upper/solutions/ch09.tex",
+        "capstone_connection": "tex/upper/chapters/ch09.tex"
+      }
+    },
     {"id":"upper.ch10","title":"估计、检验、渐近、回归与多重检验","volume":"upper","state":"planned","prerequisites":["upper.ch06","upper.ch09"]},
     {"id":"upper.ch11","title":"随机过程、Markov、鞅、Poisson 与 Brownian","volume":"upper","state":"planned","prerequisites":["upper.ch08","upper.ch09"]},
     {"id":"upper.ch12","title":"时间序列与状态空间基础","volume":"upper","state":"planned","prerequisites":["upper.ch10","upper.ch11"]},

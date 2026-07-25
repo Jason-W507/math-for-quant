@@ -1,0 +1,30 @@
+{
+  "provenance": "analytic Bernoulli mean and variance, exact binomial tail enumeration, Hoeffding's bound, a fixed-seed independent Monte Carlo design, and standard-Cauchy stability under averaging",
+  "seed": 20260725,
+  "bernoulli_p": 0.3,
+  "sample_size": 200,
+  "repetitions": 20000,
+  "expected_mean": 0.3,
+  "expected_standard_error": 0.0324037034920393,
+  "normal_coverage_threshold": 1.96,
+  "expected_normal_coverage": 0.95,
+  "tail_deviation": 0.1,
+  "expected_exact_binomial_tail": 0.002565119882035408,
+  "expected_hoeffding_bound": 0.03663127777746833,
+  "mean_tolerance": 0.002,
+  "standard_error_tolerance": 0.002,
+  "coverage_tolerance": 0.015,
+  "tail_probability_tolerance": 0.001,
+  "cauchy_repetitions": 8000,
+  "cauchy_sample_sizes": [10, 1000],
+  "cauchy_median_band": [0.7, 1.3],
+  "published_markers": [
+    "理论标准误为 $0.032404$",
+    "精确尾概率为 $0.002565$",
+    "Hoeffding 上界为 $0.036631$",
+    "覆盖率容差为 $0.015$",
+    "中位绝对均值分别为 $0.980865$ 与 $1.029577$"
+  ],
+  "expected": 0.3,
+  "absolute_tolerance": 1e-10
+}

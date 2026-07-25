@@ -164,6 +164,15 @@
       "first_unit": "upper.ch08"
     },
     {
+      "symbol": "X_n\\xrightarrow{a.s.}X",
+      "meaning": "随机变量序列几乎处处收敛到 X",
+      "domain": "mode of convergence",
+      "first_unit": "upper.ch09"
+    },
+    {"symbol": "X_n\\xrightarrow{\\mathbb P}X", "meaning": "随机变量序列依概率收敛到 X", "domain": "mode of convergence", "first_unit": "upper.ch09"},
+    {"symbol": "X_n\\xrightarrow d X", "meaning": "随机变量序列依分布收敛到 X", "domain": "mode of convergence", "first_unit": "upper.ch09"},
+    {"symbol": "\\bar X_n", "meaning": "前 n 个观察的样本均值", "domain": "random variable", "first_unit": "upper.ch09"},
+    {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",
       "domain": "extended nonnegative real when defined",

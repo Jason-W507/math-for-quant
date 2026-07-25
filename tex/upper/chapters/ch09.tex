@@ -1,0 +1,62 @@
+\chapter{概率收敛、极限定理与集中不等式}
+\label{ch:limit-theorems}
+
+\begin{introduction}
+  \item 先修：第 8 章的条件期望、独立性与概率核。
+  \item 学习产出：能区分几乎处处、依概率、$L^p$ 与分布收敛，核对 LLN、CLT 和集中界的假设，并用重尾或依赖反例阻止机械套用。
+  \item 研究连接：样本均值、置信区间、回测误差和模拟精度都依赖正确的极限制度。
+\end{introduction}
+
+\section{四种收敛回答不同问题}
+
+对随机变量序列 $X_n$ 与 $X$：
+\begin{itemize}[nosep]
+  \item $X_n\xrightarrow{a.s.}X$：除零概率状态外逐点收敛；
+  \item $X_n\xrightarrow{\mathbb P}X$：任意 $\varepsilon>0$ 下，偏差超阈值的概率趋零；
+  \item $X_n\xrightarrow{L^p}X$：$\mathbb{E}|X_n-X|^p\to0$；
+  \item $X_n\xrightarrow{d}X$：分布函数在 $X$ 的连续点收敛。
+\end{itemize}
+基本蕴含为
+\[
+  X_n\xrightarrow{a.s.}X\Rightarrow X_n\xrightarrow{\mathbb P}X
+  \Rightarrow X_n\xrightarrow d X,
+  \qquad X_n\xrightarrow{L^p}X\Rightarrow X_n\xrightarrow{\mathbb P}X.
+\]
+在概率空间上 $q\ge p$ 时，$L^q$ 收敛推出 $L^p$ 收敛；反向和未列出的箭头一般不成立。
+
+反例一是 $[0,1]$ 上依次扫过每层二进区间的“打字机序列”：事件长度趋零，所以依概率趋零；但每个点被无限多层覆盖，不几乎处处趋零。反例二令 $X$ 为对称 $\pm1$，且每个 $X_n=-X$：$X_n$ 与 $X$ 分布相同，故分布收敛成立，但 $\mathbb P(|X_n-X|>1)=1$，不依概率收敛。
+
+\section{LLN 与 CLT：先写假设再标准化}
+
+若 $X_i$ 独立同分布且 $\mathbb{E}|X_1|<\infty$，强大数定律给出 $\bar X_n\xrightarrow{a.s.}\mu$。若进一步方差 $0<\sigma^2<\infty$，经典 CLT 给出
+\[
+  \frac{\sqrt n(\bar X_n-\mu)}{\sigma}\xrightarrow d\mathcal N(0,1).
+\]
+独立、同分布和有限矩不是装饰；更一般定理可替换它们，但必须写出对应的 Lindeberg、混合或鞅差条件。
+
+固定实验取 Bernoulli$(0.3)$、$n=200$、重复 $20000$ 次。理论标准误为 $0.032404$，模拟均值为 $0.299794$、标准差为 $0.032672$；标准化后落在 $[-1.96,1.96]$ 的比例为 $0.943100$，相对 $0.95$ 的覆盖率容差为 $0.015$。固定种子只保证复现，理论值仍来自解析账本。
+
+\section{集中界是有限样本保证，不是正态近似}
+
+若独立变量落在 $[0,1]$，Hoeffding 不等式给出
+\[
+  \mathbb P(|\bar X_n-\mu|\ge t)\le2e^{-2nt^2}.
+\]
+取 $n=200,t=0.1$，精确二项枚举的尾概率为 $0.002565$，模拟为 $0.002850$，Hoeffding 上界为 $0.036631$。上界保守并不代表错误；它交换了分布细节，换取非渐近保证。若数据相关或无界，不能原样套用该式。
+
+\section{重尾与依赖为何破坏机械套用}
+
+标准 Cauchy 的均值不存在，且独立样本平均仍服从标准 Cauchy。实验对 $n=10$ 与 $n=1000$ 各做 $8000$ 次，样本均值绝对值的中位数并未按 $1/\sqrt n$ 缩小：中位绝对均值分别为 $0.980865$ 与 $1.029577$。因此 CLT 的有限方差前提失败。
+
+依赖反例令所有 $X_i=Y$，其中 $Y\sim\operatorname{Bernoulli}(p)$。每项边缘分布相同，但 $\bar X_n=Y$ 永不集中到 $p$；独立性缺失使 LLN 和 Hoeffding 的机械应用同时失效。
+
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch09
+\end{lstlisting}
+
+\input{tex/upper/chapters/ch09-questions}
+\input{tex/upper/chapters/ch09-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+收敛模式决定结论强度，极限定理决定可用近似，集中界提供有限样本上界；上册 Capstone 将要求每个误差条带同时声明矩、独立或依赖条件与统计容差。

@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=9\n"
+            "accepted-units=10\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -865,6 +865,53 @@ class LearningUnitContractTests(unittest.TestCase):
             "mixture=(0.250000,0.500000,0.250000) "
             "marginal_joint=0.500000 marginal_product=0.250000 "
             "conditional_error=0.000e+00\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_nine_notebook_reproduces_limit_theorem_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch09_limit_theorems.py",
+                "--output",
+                "build/notebooks/upper/ch09_limit_theorems.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch09_limit_theorems.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed mean=0.299794 theory_sd=0.032404 "
+            "observed_sd=0.032672 clt_coverage=0.943100 exact_tail=0.002565 "
+            "simulated_tail=0.002850 hoeffding=0.036631 "
+            "cauchy_medians=(0.980865,1.029577)\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_nine_with_limit_theorem_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch09",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch09\n"
+            "evidence=7/7\n"
+            "oracle=passed mean=0.299794 theory_sd=0.032404 "
+            "observed_sd=0.032672 clt_coverage=0.943100 exact_tail=0.002565 "
+            "simulated_tail=0.002850 hoeffding=0.036631 "
+            "cauchy_medians=(0.980865,1.029577)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
