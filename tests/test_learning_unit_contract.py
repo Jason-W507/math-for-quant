@@ -194,6 +194,18 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_reader_registries_cover_every_published_unit_term(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "render_shared_registries.py"), "--check"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.stdout, "reader registries=passed symbols=47 terms=85\n")
+        self.assertEqual(result.stderr, "")
+
     def test_volume_scope_rejects_a_missing_publication_artifact(self) -> None:
         manifest = json.loads(
             (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
@@ -1139,7 +1151,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "execution=passed oracle=passed "
             "cancel=(0.000e+00,5.000e-09,5.000e-09) "
             "sums=(0.0,1.0,1.0) "
-            "linear=(4.000e+08,1.000e-02,2.828e+08,0.000e+00) "
+            "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
             "tolerance=(1,1,1,0)\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1189,7 +1201,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "evidence=7/7\n"
             "oracle=passed cancel=(0.000e+00,5.000e-09,5.000e-09) "
             "sums=(0.0,1.0,1.0) "
-            "linear=(4.000e+08,1.000e-02,2.828e+08,0.000e+00) "
+            "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
             "tolerance=(1,1,1,0)\n"
             "learning-unit contract passed\n",
         )

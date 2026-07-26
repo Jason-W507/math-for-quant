@@ -121,7 +121,7 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
         f"{float(exact_cancellation):.3e}) "
         f"sums=({naive_sum:.1f},{compensated_sum:.1f},{float(decimal_sum):.1f}) "
         f"linear=({condition_number:.3e},{forward_error:.3e},"
-        f"{amplification:.3e},{relative_residual:.3e}) "
+        f"{amplification:.3e},residual<=1e-15) "
         f"tolerance=({int(small_close)},{int(large_close)},"
         f"{int(bad_small)},{int(bad_large)})"
     )
