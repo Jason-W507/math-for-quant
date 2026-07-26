@@ -41,7 +41,7 @@
   \item[决策时间 $t_d$] 策略冻结特征并形成订单意图的时间；
   \item[目标起点 $t_y$] 被预测收益开始累积的时间。
 \end{description}
-无前视协议是两条不等式：
+本章案例把所有时间写成带偏移量的 ISO 8601 字符串，市场时区固定为 \texttt{Asia/Shanghai}（\texttt{+08:00}），并用版本为 \texttt{2024-07-v1} 的教学交易日历列出三个允许决策日。真实研究应使用可追溯的交易所日历快照，而不是把“周一至周五”当作交易日。无前视协议是两条不等式：
 \[
   t_e\le t_a\le t_d<t_y.
 \]
@@ -176,9 +176,9 @@ Bonferroni 方法用并集界控制族错误率（family-wise error rate）：
 \texttt{uv run python notebooks/upper/ch16\_research\_validity.py}
 \end{center}
 程序读取独立 oracle，逐行检查
-$t_e\le t_a\le t_d<t_y$，检查训练期严格早于测试期，计算 Bonferroni 阈值，并复核 $0.04-0.006=0.034$ 的手算账本。正常输出包含：
+$t_e\le t_a\le t_d<t_y$，拒绝缺少 \texttt{+08:00} 的时间，核验决策日属于版本化交易日历，检查训练期严格早于测试期，计算 Bonferroni 阈值，并复核 $0.04-0.006=0.034$ 的手算账本。正常输出包含：
 \begin{center}
-\small\texttt{oracle=passed timeline=passed split=passed ... performance=(gross=0.040000,cost=0.006000,net=0.034000)}
+\small\texttt{oracle=passed timeline=passed timezone=Asia/Shanghai calendar=2024-07-v1 ... net=0.034000}
 \end{center}
 它不从程序自身生成期望值。把第一行可得时间改到决策之后，程序必须报告 timeline gate failed；把 $p$ 值改成 $0.003$，必须报告 multiple-testing gate failed。负例证明门禁会对关键假设敏感，而不只是打印成功。
 
@@ -188,4 +188,3 @@ $t_e\le t_a\le t_d<t_y$，检查训练期严格早于测试期，计算 Bonferro
 \section{章末产出：研究审计卡}
 
 提交一张可由陌生人执行的研究审计卡：目标参数与适用市场；四时间字段；point-in-time 资产池；训练、选择、最终测试边界；完整尝试数与错误率目标；毛收益到净收益账本；成交、容量和 A 股条件协议；数值容差；数据与代码版本；一个泄漏负例和一个选择偏差负例。下一章 Capstone 将把这张卡应用到一个完整研究包，并要求审计者在不阅读内部实现的情况下复现成功与失败路径。
-

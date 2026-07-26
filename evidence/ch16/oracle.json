@@ -1,6 +1,13 @@
 {
   "provenance": "The timeline inequalities, Bonferroni threshold 0.05/20, and three-trade gross-cost-net ledger are independently hand calculated; friction fields encode universal and A-share-conditional assumptions",
   "absolute_tolerance": 1e-12,
+  "market_timezone": "Asia/Shanghai",
+  "market_utc_offset": "+08:00",
+  "trading_calendar": {
+    "id": "CN-A-share-teaching-fixture",
+    "version": "2024-07-v1",
+    "trading_dates": ["2024-07-01", "2024-07-02", "2024-07-03"]
+  },
   "training_end": "2024-06-28",
   "test_start": "2024-07-01",
   "family_alpha": 0.05,
@@ -13,24 +20,24 @@
   },
   "test_rows": [
     {
-      "event_at": "2024-07-01T07:30:00",
-      "available_at": "2024-07-01T08:00:00",
-      "decision_at": "2024-07-01T09:25:00",
-      "target_start": "2024-07-01T09:30:00",
+      "event_at": "2024-07-01T07:30:00+08:00",
+      "available_at": "2024-07-01T08:00:00+08:00",
+      "decision_at": "2024-07-01T09:25:00+08:00",
+      "target_start": "2024-07-01T09:30:00+08:00",
       "gross_return": 0.02
     },
     {
-      "event_at": "2024-07-02T07:30:00",
-      "available_at": "2024-07-02T08:00:00",
-      "decision_at": "2024-07-02T09:25:00",
-      "target_start": "2024-07-02T09:30:00",
+      "event_at": "2024-07-02T07:30:00+08:00",
+      "available_at": "2024-07-02T08:00:00+08:00",
+      "decision_at": "2024-07-02T09:25:00+08:00",
+      "target_start": "2024-07-02T09:30:00+08:00",
       "gross_return": -0.01
     },
     {
-      "event_at": "2024-07-03T07:30:00",
-      "available_at": "2024-07-03T08:00:00",
-      "decision_at": "2024-07-03T09:25:00",
-      "target_start": "2024-07-03T09:30:00",
+      "event_at": "2024-07-03T07:30:00+08:00",
+      "available_at": "2024-07-03T08:00:00+08:00",
+      "decision_at": "2024-07-03T09:25:00+08:00",
+      "target_start": "2024-07-03T09:30:00+08:00",
       "gross_return": 0.03
     }
   ],

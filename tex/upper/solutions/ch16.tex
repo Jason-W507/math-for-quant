@@ -39,7 +39,7 @@
 \begin{center}
 \texttt{uv run python notebooks/upper/ch16\_research\_validity.py}
 \end{center}
-正常路径必须同时给出 timeline、split、multiplicity、performance 和 friction 五类通过证据。随后复制 oracle：先把第一行 \path{available_at} 改到 \path{decision_at} 之后，确认时间门禁失败；再恢复时间并把 \path{selected_raw_p_value} 改为 $0.003$，确认多重检验门禁失败。恢复完成的标准不是“改回能跑”，而是能解释两个负例分别破坏了哪个研究假设，以及为什么增加样本或更换随机 seed 都无法修复。
+正常路径必须同时给出 timeline、timezone、calendar、split、multiplicity、performance 和 friction 七类通过证据。随后复制 oracle：先把第一行 \path{available_at} 改到 \path{decision_at} 之后，确认时间门禁失败；再恢复时间并把 \path{selected_raw_p_value} 改为 $0.003$，确认多重检验门禁失败。把任一时间改成错误 UTC offset 或把决策日移出 \path{2024-07-v1} 日历，也必须稳定失败。恢复完成的标准不是“改回能跑”，而是能解释负例分别破坏了哪个研究假设，以及为什么增加样本或更换随机 seed 都无法修复。
 
 \section*{独立 oracle 证据对照}
 本章的发布证据固定为：\textbf{事件时间、可得时间、决策时间与收益起点}满足先后约束；Bonferroni 阈值为 $0.0025$；三笔交易的\textbf{总成本为 $0.006$}；\textbf{成本后收益为 $0.034$}。市场条件协议要求逐研究期核验\textbf{T+1、涨跌停成交、停牌、复权可得性与融券资格}，而不是把当前规则参数当作跨时期常数。

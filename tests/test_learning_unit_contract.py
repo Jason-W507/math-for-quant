@@ -5,6 +5,7 @@ import subprocess
 import sys
 import unittest
 from pathlib import Path
+from typing import Any, Callable
 
 from pypdf import PdfWriter
 
@@ -27,6 +28,40 @@ class LearningUnitContractTests(unittest.TestCase):
             capture_output=True,
             check=False,
         )
+
+    def run_chapter_sixteen_fixture(
+        self,
+        fixture_name: str,
+        mutate: Callable[[dict[str, Any]], None],
+    ) -> subprocess.CompletedProcess[str]:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch16" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        mutate(oracle)
+        fixture = ROOT / "build" / "test-fixtures" / fixture_name
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            return subprocess.run(
+                [
+                    sys.executable,
+                    str(
+                        ROOT
+                        / "notebooks"
+                        / "upper"
+                        / "ch16_research_validity.py"
+                    ),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
 
     def test_rejects_an_accepted_unit_without_derivation_evidence(self) -> None:
         result = self.run_contract(
@@ -1377,7 +1412,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "notebook=build/notebooks/upper/ch16_research_validity.ipynb\n"
             "roundtrip=passed cells=2\n"
             "execution=passed oracle=passed "
-            "timeline=passed split=passed "
+            "timeline=passed timezone=Asia/Shanghai calendar=2024-07-v1 split=passed "
             "multiplicity=(tests=20,threshold=0.002500,p=0.002000) "
             "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
             "frictions=passed a_share=conditional\n",
@@ -1385,29 +1420,12 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
 
     def test_chapter_sixteen_rejects_point_in_time_leakage(self) -> None:
-        oracle = json.loads(
-            (ROOT / "evidence" / "ch16" / "oracle.json").read_text(
-                encoding="utf-8"
-            )
+        result = self.run_chapter_sixteen_fixture(
+            "ch16-leakage.json",
+            lambda oracle: oracle["test_rows"][0].__setitem__(
+                "available_at", "2024-07-01T09:31:00+08:00"
+            ),
         )
-        oracle["test_rows"][0]["available_at"] = "2024-07-01T09:31:00"
-        fixture = ROOT / "build" / "test-fixtures" / "ch16-leakage.json"
-        fixture.parent.mkdir(parents=True, exist_ok=True)
-        fixture.write_text(json.dumps(oracle), encoding="utf-8")
-        try:
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(ROOT / "notebooks" / "upper" / "ch16_research_validity.py"),
-                    str(fixture),
-                ],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-        finally:
-            fixture.unlink(missing_ok=True)
 
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(
@@ -1416,34 +1434,60 @@ class LearningUnitContractTests(unittest.TestCase):
         )
 
     def test_chapter_sixteen_rejects_an_uncorrected_multiple_test(self) -> None:
-        oracle = json.loads(
-            (ROOT / "evidence" / "ch16" / "oracle.json").read_text(
-                encoding="utf-8"
-            )
+        result = self.run_chapter_sixteen_fixture(
+            "ch16-multiplicity.json",
+            lambda oracle: oracle.__setitem__("selected_raw_p_value", 0.003),
         )
-        oracle["selected_raw_p_value"] = 0.003
-        fixture = ROOT / "build" / "test-fixtures" / "ch16-multiplicity.json"
-        fixture.parent.mkdir(parents=True, exist_ok=True)
-        fixture.write_text(json.dumps(oracle), encoding="utf-8")
-        try:
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(ROOT / "notebooks" / "upper" / "ch16_research_validity.py"),
-                    str(fixture),
-                ],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-        finally:
-            fixture.unlink(missing_ok=True)
 
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(
             result.stderr,
             "multiple-testing gate failed: selected p-value exceeds 0.002500\n",
+        )
+
+    def test_chapter_sixteen_rejects_an_incomplete_friction_protocol(self) -> None:
+        result = self.run_chapter_sixteen_fixture(
+            "ch16-missing-friction.json",
+            lambda oracle: oracle["universal_friction_protocol"].pop(
+                "market_impact"
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "friction protocol failed: missing universal field market_impact\n",
+        )
+
+    def test_chapter_sixteen_rejects_a_timestamp_with_wrong_offset(self) -> None:
+        result = self.run_chapter_sixteen_fixture(
+            "ch16-wrong-offset.json",
+            lambda oracle: oracle["test_rows"][0].__setitem__(
+                "available_at", "2024-07-01T00:00:00+00:00"
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "timezone gate failed: row 1 available_at is not Asia/Shanghai (+08:00)\n",
+        )
+
+    def test_chapter_sixteen_rejects_a_nontrading_decision_date(self) -> None:
+        def move_first_row_to_saturday(oracle: dict[str, Any]) -> None:
+            row = oracle["test_rows"][0]
+            for field in ("event_at", "available_at", "decision_at", "target_start"):
+                row[field] = row[field].replace("2024-07-01", "2024-07-06")
+
+        result = self.run_chapter_sixteen_fixture(
+            "ch16-nontrading-date.json",
+            move_first_row_to_saturday,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "calendar gate failed: row 1 decision date is not in calendar 2024-07-v1\n",
         )
 
     def test_accepts_chapter_sixteen_with_research_audit_oracles(self) -> None:
@@ -1457,7 +1501,8 @@ class LearningUnitContractTests(unittest.TestCase):
             result.stdout,
             "unit=upper.ch16\n"
             "evidence=7/7\n"
-            "oracle=passed timeline=passed split=passed "
+            "oracle=passed timeline=passed timezone=Asia/Shanghai "
+            "calendar=2024-07-v1 split=passed "
             "multiplicity=(tests=20,threshold=0.002500,p=0.002000) "
             "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
             "frictions=passed a_share=conditional\n"
