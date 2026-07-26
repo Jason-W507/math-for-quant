@@ -306,7 +306,25 @@
         "capstone_connection": "tex/upper/chapters/ch12.tex"
       }
     },
-    {"id":"upper.ch13","title":"凸优化、KKT 与对偶","volume":"upper","state":"planned","prerequisites":["upper.ch05","upper.ch06"]},
+    {
+      "id": "upper.ch13",
+      "title": "凸优化、KKT 与对偶",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch05", "upper.ch06"],
+      "evidence": {
+        "notation_symbols": ["L(x,\\lambda,\\nu)", "q(\\lambda,\\nu)"],
+        "glossary_terms": ["凸集", "凸函数", "约束资格", "KKT 条件", "Lagrange 对偶", "强对偶"],
+        "notation_and_assumptions": "tex/upper/chapters/ch13.tex",
+        "core_derivation": "tex/upper/chapters/ch13.tex",
+        "independent_oracle": {"source": "notebooks/upper/ch13_convex_optimization.py", "oracle": "evidence/ch13/oracle.json", "command": ["{python}", "notebooks/upper/ch13_convex_optimization.py"]},
+        "questions": "tex/upper/chapters/ch13-questions.tex",
+        "hints": "tex/upper/chapters/ch13-hints.tex",
+        "solutions": "tex/upper/solutions/ch13.tex",
+        "capstone_connection": "tex/upper/chapters/ch13.tex"
+      }
+    },
     {"id":"upper.ch14","title":"浮点数、数值线代与病态问题","volume":"upper","state":"planned","prerequisites":["upper.ch06"]},
     {"id":"upper.ch15","title":"Monte Carlo、bootstrap 与方差缩减","volume":"upper","state":"planned","prerequisites":["upper.ch09","upper.ch14"]},
     {"id":"upper.ch16","title":"研究有效性、样本外与交易摩擦","volume":"upper","state":"planned","prerequisites":["upper.ch10","upper.ch12","upper.ch13","upper.ch15"]},

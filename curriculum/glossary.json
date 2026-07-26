@@ -189,6 +189,12 @@
     {"zh": "Kalman 滤波", "en": "Kalman filter", "definition": "在线性高斯状态空间模型中按预测与更新步骤递推条件均值和协方差的算法。"},
     {"zh": "伪回归", "en": "spurious regression", "definition": "非平稳序列因共同随机趋势呈现高拟合或显著性但缺少稳定关系的现象。"},
     {"zh": "结构变化", "en": "structural break", "definition": "数据生成过程的参数或分布在时间上发生持久改变。"},
+    {"zh": "凸集", "en": "convex set", "definition": "任意两点之间整条线段仍属于该集合的集合。"},
+    {"zh": "凸函数", "en": "convex function", "definition": "在凸定义域上函数的弦不低于函数图形的函数。"},
+    {"zh": "约束资格", "en": "constraint qualification", "definition": "保证局部最优点存在有效一阶乘子表示的一组正则条件。"},
+    {"zh": "KKT 条件", "en": "Karush-Kuhn-Tucker conditions", "definition": "由原可行、对偶可行、驻点和互补松弛组成的一阶最优性条件。"},
+    {"zh": "Lagrange 对偶", "en": "Lagrange duality", "definition": "通过对原变量极小化 Lagrangian 构造原问题下界的框架。"},
+    {"zh": "强对偶", "en": "strong duality", "definition": "原问题与对偶问题最优值相等、对偶间隙为零的性质。"},
     {
       "zh": "样本外",
       "en": "out of sample",

@@ -1,0 +1,56 @@
+\chapter{凸优化、KKT 与对偶}
+\label{ch:convex-optimization}
+
+\begin{introduction}
+  \item 先修：第 5 章的梯度与 Hessian，第 6 章的正定性与投影。
+  \item 学习产出：能验证凸性，写出约束资格与 KKT 条件，构造 Lagrange 对偶，并用独立最优性残差审计数值解。
+  \item 研究连接：组合权重、风险预算、交易成本和暴露中性都首先是约束建模问题，而不是“调用优化器”的问题。
+\end{introduction}
+
+\section{凸性把局部证据升级为全局证据}
+
+集合 $C$ 为凸集，若任意 $x,y\in C$ 与 $\theta\in[0,1]$ 都有 $\theta x+(1-\theta)y\in C$。函数 $f:C\to\mathbb R$ 为凸函数，若
+\[
+ f(\theta x+(1-\theta)y)\le \theta f(x)+(1-\theta)f(y).
+\]
+可微时一阶下界 $f(y)\ge f(x)+\nabla f(x)^T(y-x)$ 刻画凸性；二阶可微时 $H_f(x)\succeq0$ 是等价条件。凸目标加凸不等式约束 $g_i(x)\le0$ 与仿射等式约束构成凸优化问题。在此结构下，满足 KKT 的可行点是全局最优；非凸问题没有这个保证。
+
+\section{KKT 是四本同时对平的账}
+
+对 $\min_x f(x)$，约束 $g_i(x)\le0$、$h_j(x)=0$，Lagrangian 为
+\[
+  L(x,\lambda,\nu)=f(x)+\sum_i\lambda_i g_i(x)+\sum_j\nu_jh_j(x).
+\]
+KKT 条件包括：原可行 $g_i(x^*)\le0,h_j(x^*)=0$；对偶可行 $\lambda_i^*\ge0$；驻点
+\[
+  \nabla f(x^*)+\sum_i\lambda_i^*\nabla g_i(x^*)
+  +\sum_j\nu_j^*\nabla h_j(x^*)=0;
+\]
+以及互补松弛 $\lambda_i^*g_i(x^*)=0$。KKT 成为局部最优的必要条件还需要约束资格；凸问题中，存在严格满足不等式的 Slater 点是常用充分条件。
+对偶函数定义为 $q(\lambda,\nu)=\inf_x L(x,\lambda,\nu)$；它对乘子总是凹的，并给出原最小化问题的下界。
+
+\section{手算二次规划与对偶间隙}
+
+考虑
+\[
+  \min_{x,y}\ \tfrac12(x^2+y^2),\qquad x+y\ge1,quad x,y\ge0.
+\]
+对活跃约束 $g(x,y)=1-x-y\le0$，驻点给出 $x=y=\lambda$，互补松弛给出 $x+y=1$。所以手算最优解为 $(0.5,0.5)$，最优乘子 $\lambda^*=0.5$。将 $x,y$ 极小化后，对偶函数为
+\[
+  q(\lambda)=\lambda-\lambda^2,\qquad \lambda\ge0,
+\]
+其最大值也在 $\lambda=0.5$ 取得。原问题与对偶目标均为 $0.25$，对偶间隙为零；点 $(1,1)$ 严格可行，Slater 条件保证强对偶。
+
+从 $(2,0)$ 出发，梯度步后投影到 $\{x,y\ge0,x+y\ge1\}$，500 步得到数值解为 $(0.500000,0.500000)$。验收不比较“优化器成功”字符串，而是独立检查原可行、对偶可行、驻点、互补松弛和对偶间隙。
+
+\section{边界：驻点不等于最优，最优也未必有乘子}
+
+非凸目标 $f(x)=(x^2-1)^2$ 在 $x=0$ 满足 $f'(x)=0$，但驻点 $x=0$ 的目标值为 1，而 $x=\pm1$ 的全局最优值为 0；KKT/一阶驻点不能提供全局证书。
+
+约束资格也不能省略。问题 $\min_x x$、约束 $x^2\le0$ 的唯一可行点 $x=0$ 必然最优，但活跃约束梯度为零，KKT 驻点方程是 $1+\lambda\cdot0=0$，KKT 驻点残差恒为 1。这里 Slater 失败，不能用“不存在乘子”否定最优点。
+
+\input{tex/upper/chapters/ch13-questions}
+\input{tex/upper/chapters/ch13-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+凸性决定局部证据能否成为全局证书，约束资格决定 KKT 必要性，对偶间隙提供可计算的最优性界。上册 Capstone 将要求优化结果同时提交建模单位、活跃约束、残差、对偶间隙与失败案例。

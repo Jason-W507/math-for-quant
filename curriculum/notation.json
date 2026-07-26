@@ -184,6 +184,8 @@
     {"symbol": "\\varepsilon_t", "meaning": "时点 t 相对于过去信息的创新", "domain": "zero-mean random variable", "first_unit": "upper.ch12"},
     {"symbol": "x_{t\\mid t}", "meaning": "使用截至 t 时点观测得到的状态滤波均值", "domain": "state estimate", "first_unit": "upper.ch12"},
     {"symbol": "K_t", "meaning": "时点 t 的 Kalman 增益", "domain": "real in [0,1] in the scalar model", "first_unit": "upper.ch12"},
+    {"symbol": "L(x,\\lambda,\\nu)", "meaning": "原目标与不等式、等式约束乘子组成的 Lagrangian", "domain": "extended real-valued function", "first_unit": "upper.ch13"},
+    {"symbol": "q(\\lambda,\\nu)", "meaning": "对原变量极小化 Lagrangian 得到的对偶函数", "domain": "concave extended real-valued function", "first_unit": "upper.ch13"},
     {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",

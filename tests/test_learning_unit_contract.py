@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=13\n"
+            "accepted-units=14\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1061,6 +1061,56 @@ class LearningUnitContractTests(unittest.TestCase):
             "kalman=(0.555556,0.084615,0.152494,0.410431) "
             "spurious=(0.344011,0.000216) "
             "split_mse=(1.436939,2.226153)\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_thirteen_notebook_reproduces_optimization_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch13_convex_optimization.py",
+                "--output",
+                "build/notebooks/upper/ch13_convex_optimization.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch13_convex_optimization.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed "
+            "analytic=(0.500000,0.500000,0.500000) "
+            "numeric=(0.500000,0.500000) "
+            "values=(0.250000,0.250000,0.000e+00) "
+            "kkt=(0.000e+00,0.000e+00,0.000e+00) "
+            "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_thirteen_with_optimization_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch13",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch13\n"
+            "evidence=7/7\n"
+            "oracle=passed analytic=(0.500000,0.500000,0.500000) "
+            "numeric=(0.500000,0.500000) "
+            "values=(0.250000,0.250000,0.000e+00) "
+            "kkt=(0.000e+00,0.000e+00,0.000e+00) "
+            "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
