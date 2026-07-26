@@ -65,6 +65,35 @@ class LearningUnitContractTests(unittest.TestCase):
         finally:
             fixture.unlink(missing_ok=True)
 
+    def run_chapter_one_fixture(
+        self,
+        fixture_name: str,
+        mutate: Callable[[dict[str, Any]], None],
+    ) -> subprocess.CompletedProcess[str]:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch01" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        mutate(oracle)
+        fixture = ROOT / "build" / "test-fixtures" / fixture_name
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            return subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch01_convex_bound.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
     def run_chapter_seventeen_package_fixture(
         self,
         fixture_name: str,
@@ -466,6 +495,66 @@ class LearningUnitContractTests(unittest.TestCase):
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_one_rejects_weights_that_do_not_sum_to_one(self) -> None:
+        result = self.run_chapter_one_fixture(
+            "ch01-nonnormalized-weights.json",
+            lambda oracle: oracle.update({"weights": [0.5, 0.3, 0.3]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "assumption gate failed: weights must sum to one\n",
+        )
+
+    def test_chapter_one_rejects_a_counterexample_that_changes_two_assumptions(
+        self,
+    ) -> None:
+        def change_two_assumptions(oracle: dict[str, Any]) -> None:
+            oracle["counterexample_weights"] = [2.0, 0.0, 0.0]
+            oracle["expected_counterexample"] = 0.04
+
+        result = self.run_chapter_one_fixture(
+            "ch01-invalid-counterexample.json",
+            change_two_assumptions,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "counterexample gate failed: weights must sum to one\n",
+        )
+
+    def test_chapter_one_rejects_a_counterexample_that_keeps_nonnegativity(
+        self,
+    ) -> None:
+        def keep_nonnegativity(oracle: dict[str, Any]) -> None:
+            oracle["counterexample_weights"] = [1.0, 0.0, 0.0]
+            oracle["expected_counterexample"] = 0.02
+
+        result = self.run_chapter_one_fixture(
+            "ch01-nonnegative-counterexample.json",
+            keep_nonnegativity,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "counterexample gate failed: deleted nonnegativity assumption is absent\n",
+        )
+
+    def test_chapter_one_rejects_mismatched_vector_lengths(self) -> None:
+        result = self.run_chapter_one_fixture(
+            "ch01-mismatched-vectors.json",
+            lambda oracle: oracle.update({"weights": [0.5, 0.5]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "assumption gate failed: returns and weights must have equal length\n",
+        )
 
     def test_rejects_solution_without_published_oracle_markers(self) -> None:
         manifest = json.loads(

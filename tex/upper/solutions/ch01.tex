@@ -2,18 +2,66 @@
 \label{app:ch01-solutions}
 
 \section*{口述概念}
-定义规定术语，命题具有真假值；在 $A\Rightarrow B$ 中，$A$ 对 $B$ 充分、$B$ 对 $A$ 必要。反例满足全部假设却否定结论。面试回答应同时给出一个正确例子和一个容易混淆的反例。
+\begin{enumerate}[leftmargin=*]
+  \item 定义规定本书如何使用一个符号或术语，本身不是待判真的经验陈述；命题在给定定义和假设后具有真假值。“$R_p=\sum_iw_ir_i$”选定了本章的组合简单收益口径。凸组合界则声称该对象满足上下界，必须由证明建立一般性，或被一个合法反例推翻。
+  \item $A\Rightarrow B$ 表示 $A$ 对 $B$ 充分，$B$ 对 $A$ 必要。若“没有未来信息”是可信回测的必要条件，那么发现未来信息足以否决回测；但没有发现未来信息并不能证明成本、选择偏差与统计不确定性都合格。通过必要门禁只意味着“尚未因此被否决”。
+  \item 合法反例必须属于原定义域、满足原命题全部假设，却让结论失败。研究某一假设的必要性时，最好只删除这一条。$w=(2,0,0)$ 虽非标准凸权重并可能越界，但其权重和为 2，同时破坏归一化；它不能把越界归因于非负性，因为三个权重仍非负。
+\end{enumerate}
 
 \section*{笔试推导}
-充分性分别展开 $R_p-m$ 与 $M-R_p$，利用每一项非负。必要性使用反证：若 $w_j<0$，令其对应收益为 0、其余为 1，则 $R_p=1-w_j>1$。注意结论针对所有收益向量；若漏写量词，必要性并不成立。
+\begin{enumerate}[leftmargin=*]
+  \item 否定式为
+  \[
+    \exists x\in\mathcal D:\quad A(x)\land\neg B(x).
+  \]
+  因此反例一方面必须满足 $A(x)$，另一方面必须让 $B(x)$ 为假。只给一个 $B$ 为假的对象却不检查 $A$，不能反驳原命题。
+  \item 设 $m=\min_i r_i,M=\max_i r_i$。利用 $\sum_iw_i=1$，
+  \[
+    R_p-m=\sum_iw_i(r_i-m)\geq0,
+    \qquad
+    M-R_p=\sum_iw_i(M-r_i)\geq0.
+  \]
+  每项非负来自 $w_i\geq0$、$r_i-m\geq0$ 与 $M-r_i\geq0$。$R_p=m$ 当且仅当每个 $w_i>0$ 的资产都满足 $r_i=m$；上界取等同理要求所有正权重资产都取得 $M$。
+  \item 用逆否命题。若存在 $w_j<0$，因为结论声称对所有收益向量成立，可以专门取 $r_j=0$、其余 $r_i=1$。此时 $m=0,M=1$，而
+  \[
+    R_p=\sum_{i\ne j}w_i=1-w_j>1=M,
+  \]
+  所以上界失败。“对所有”正是在允许选择这条见证时使用的；若结论只针对一个固定样本，就不能任意替换 $r$。
+\end{enumerate}
 
 \section*{数值编程}
-一种合法选择是
-\[
- r=(0.02,-0.01,0.03),\quad w=(0.5,0.3,0.2),\quad
- R_p=0.013\in[-0.01,0.03].
-\]
-令 $w'=(1.5,-0.5,0)$，则 $R'_p=0.035>0.03$。期望值应先手算记录，再让程序比较，不应由同一函数生成。
+本章独立手算标记为 $0.013$ 与 $0.035$。
+\begin{enumerate}[leftmargin=*]
+  \item 三项贡献分别为 $0.010,-0.003,0.006$，所以 $R_p=0.013$；分量最小值为 $-0.01$、最大值为 $0.03$。运行
+  \begin{center}
+  \texttt{uv run python notebooks/upper/ch01\_convex\_bound.py}
+  \end{center}
+  应逐字包含以下字段：
+  \begin{lstlisting}
+oracle=passed weighted_return=0.013000
+lower=-0.010000 upper=0.030000
+counterexample=0.035000
+  \end{lstlisting}
+  \item 三种输入分别给出以下稳定类别：
+  \begin{lstlisting}
+assumption gate failed
+deleted nonnegativity assumption is absent
+returns and weights must have equal length
+  \end{lstlisting}
+  它们依次保护定理前提、受控反例的删除对象，以及点积定义域。
+  \item 可用 \texttt{Fraction} 保存整数基点收益与有理权重。对每组输入先用循环累加 $\sum_iw_ir_i$，再独立取最小值、最大值并比较。期望结果必须来自分数算术或纸面表格，而不是调用待验收的 NumPy 点积。若权重非负且和为 1，任何越界都应作为程序或输入错误报告；若主动加入负权重，则记录权重、收益与越界方向作为失败见证。
+\end{enumerate}
 
 \section*{研究判断}
-美元 P\&L 与无量纲收益不能直接相加。先选择明确资本基数，把 P\&L 转成收益，或把收益乘以同口径资本转成美元。量纲修复后仍要检查时间对齐、交易成本、样本外协议、统计不确定性和数据可得性。
+\begin{enumerate}[leftmargin=*]
+  \item 可写成“可信回测 $\Rightarrow$ 已合理建模手续费”，即手续费门禁是可信性的必要条件之一，而非充分条件。即使通过，仍可能存在未来信息、幸存者偏差、参数选择泄漏、容量不足或不恰当的统计检验。
+  \item $100$ 美元是货币，$2\%$ 日收益是无量纲但带一日持有期，$15\%$ 年化波动率带年化时间尺度，三者不能直接相加。替代报告可分栏展示：美元 P\&L；以明确资本基数换算的同期收益；由明确日频样本、年化规则与假设得到的波动率；最后另报风险调整指标及其定义，不制造无单位依据的“综合分”。
+  \item 一百万次随机搜索没有发现反例，只能说明抽到的有限样本通过，不能覆盖连续定义域。更强证据包包含：一般证明，明确每条假设；独立手算 oracle 验证代表性算例；只删除非负性并保留归一化的 $w'=(1.5,-0.5,0)$，产生 $0.035>0.03$；以及会拒绝伪反例和错维输入的程序门禁。证明负责普遍性，oracle 负责实现一致性，失败见证负责边界。
+\end{enumerate}
+
+\section*{恢复路径}
+先运行
+\begin{center}
+\texttt{uv run python tools/check\_learning\_unit.py --manifest curriculum/manifest.json --unit upper.ch01}
+\end{center}
+确认正常证据包通过。随后复制 \path{evidence/ch01/oracle.json} 到临时文件，依次修改权重和、反例非负性与向量长度，并把临时文件路径传给本章 Python 程序。恢复完成的标准不是“最终又变绿”，而是能够解释每条失败信息对应哪一个数学定义或假设。

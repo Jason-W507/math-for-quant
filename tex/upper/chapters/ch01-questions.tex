@@ -1,8 +1,30 @@
+\section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}区分定义、命题、必要条件、充分条件和反例，并各举一个量化例子。
-  \item \textbf{笔试推导：}不看正文，重写凸组合界的两个证明方向。
-  \item \textbf{数值编程：}复现 $r=(0.02,-0.01,0.03)$ 下的 $R_p=0.013$ 与负权重反例 $R'_p=0.035$；先手算，再运行程序。
-  \item \textbf{研究判断：}审查“100 美元 P\&L 加 2\% 收益”的报告，并说明修正量纲后还需哪些证据。
+  \item 区分定义与命题。为什么“组合收益定义为 $R_p=\sum_iw_ir_i$”不能用样本数据证明，而凸组合界需要证明？
+  \item 在 $A\Rightarrow B$ 中，分别说明必要条件与充分条件，并解释为什么通过一个必要门禁不能推出研究结论可信。
+  \item 什么是合法反例？为什么 $w=(2,0,0)$ 不是“删除权重非负性后凸组合界失效”的受控反例？
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 写出全称命题 $\forall x\in\mathcal D,A(x)\Rightarrow B(x)$ 的否定，并据此说明一个反例必须满足哪两件事。
+  \item 不看正文，证明：若 $w_i\geq0$ 且 $\sum_iw_i=1$，则 $\min_i r_i\leq\sum_iw_ir_i\leq\max_i r_i$；同时给出上下界取等条件。
+  \item 在 $\sum_iw_i=1$ 下证明：若凸组合界对所有 $r\in\mathbb R^n$ 成立，则每个 $w_i\geq0$。指出证明中哪里使用了“对所有”。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 手算 $r=(0.02,-0.01,0.03)$、$w=(0.5,0.3,0.2)$ 的组合收益与区间，再运行本章程序核对精确证据行。
+  \item 修改 oracle，分别令正常权重和不为 1、反例权重全非负、收益与权重长度不同；记录三个稳定失败类别，并解释每个门禁保护的数学定义。
+  \item 写一个不调用被测矩阵乘法的枚举 oracle：对整数基点收益和有理权重使用分数运算，验证至少五组凸组合，并输出任何越界见证。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 研究员说“回测包含手续费，因此结果可信”。把这句话写成逻辑箭头，判断手续费门禁是必要、充分还是充要条件，并列出两个仍可能失败的原因。
+  \item 报告把 100 美元 P\&L、2\% 日收益和 15\% 年化波动率相加得到“综合得分”。逐项审查量纲和时间尺度，给出一个有意义的替代报告结构。
+  \item 某人用一百万组随机收益都没有找到凸组合界反例，于是声称定理已被程序证明。评价证据强度，并设计“证明 + oracle + 失败见证”的更强证据包。
 \end{enumerate}
 \endgroup

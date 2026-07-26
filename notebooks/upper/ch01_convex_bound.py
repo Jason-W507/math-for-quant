@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 
 import numpy as np
 
@@ -19,12 +20,28 @@ def main(oracle_path: Path = Path("evidence/ch01/oracle.json")) -> int:
     counterexample_weights = np.array(
         oracle["counterexample_weights"], dtype=np.float64
     )
+    tolerance = float(oracle["absolute_tolerance"])
+    if returns.size != weights.size:
+        raise SystemExit(
+            "assumption gate failed: returns and weights must have equal length"
+        )
+    if returns.size != counterexample_weights.size:
+        raise SystemExit(
+            "counterexample gate failed: returns and weights must have equal length"
+        )
+    if abs(float(np.sum(weights)) - 1.0) > tolerance:
+        raise SystemExit("assumption gate failed: weights must sum to one")
+    if abs(float(np.sum(counterexample_weights)) - 1.0) > tolerance:
+        raise SystemExit("counterexample gate failed: weights must sum to one")
+    if not np.any(counterexample_weights < 0.0):
+        raise SystemExit(
+            "counterexample gate failed: deleted nonnegativity assumption is absent"
+        )
 
     weighted_return = float(weights @ returns)
     lower = float(np.min(returns))
     upper = float(np.max(returns))
     counterexample = float(counterexample_weights @ returns)
-    tolerance = float(oracle["absolute_tolerance"])
     observed = (weighted_return, lower, upper, counterexample)
     expected = (
         float(oracle["expected_weighted_return"]),
@@ -47,4 +64,7 @@ def main(oracle_path: Path = Path("evidence/ch01/oracle.json")) -> int:
     return 0
 
 
-main()
+oracle_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(
+    "evidence/ch01/oracle.json"
+)
+main(oracle_path)
