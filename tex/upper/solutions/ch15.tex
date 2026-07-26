@@ -2,14 +2,46 @@
 \label{app:ch15-solutions}
 
 \section*{口述概念}
-seed 只使同一伪随机序列可重放。标准误描述有限样本随机波动，偏差描述估计目标的系统偏离，实现错误则可能让程序根本没有计算所声明的估计量；三者需要不同证据。
+\begin{enumerate}[leftmargin=*]
+  \item seed 只使同一伪随机序列可重放。程序可以稳定地重放错误分布、错误支付函数或错误单位；正确性还需要独立 oracle、误差率与失败测试。
+  \item 模型误差来自目标分布不对；离散化偏差来自时间步或网格；抽样误差来自有限随机样本；数值误差来自浮点和病态计算；实现错误来自代码没有计算定义的对象。增加 $N$ 主要降低第三项。
+  \item Monte Carlo 在给定模型 $P$ 下近似 $\mathbb E_P[g(X)]$。IID bootstrap 条件于观测样本，从经验分布 $\hat F_n$ 重抽样，近似统计量的条件抽样分布；它还依赖可交换性和统计量正则性。
+\end{enumerate}
 
 \section*{笔试推导}
-独立性使均值方差中的非对角协方差为零，故 $\operatorname{Var}(\hat\mu_N)=\sigma^2/N$，标准误按 $N^{-1/2}$ 缩小。对控制变量展开
-$\operatorname{Var}(g)-2\beta\operatorname{Cov}(g,h)+\beta^2\operatorname{Var}(h)$，求导得到 $\beta^*=\operatorname{Cov}(g,h)/\operatorname{Var}(h)$。在 $g(U)=U^2,h(U)=U$ 中解析最优系数为 $1$，理论方差缩减倍数为 $16$。
+\begin{enumerate}[leftmargin=*]
+  \item
+  \[
+    \operatorname{Var}(N^{-1}\textstyle\sum_iY_i)
+    =N^{-2}\sum_{i,j}\operatorname{Cov}(Y_i,Y_j).
+  \]
+  IID 时非对角项为零，留下 $N\sigma^2/N^2=\sigma^2/N$。相关样本的非对角项保留，标准误不再简单等于 $\sigma/\sqrt N$。
+  \item 展开
+  $V(\beta)=\operatorname{Var}(g)-2\beta\operatorname{Cov}(g,h)+\beta^2\operatorname{Var}(h)$，令
+  $V'(\beta)=0$ 得 $\beta^*=\operatorname{Cov}(g,h)/\operatorname{Var}(h)$。最小方差为
+  $\operatorname{Var}(g)(1-\rho^2)$。对 $g(U)=U^2,h(U)=U$，解析最优系数为 $1$，调整后方差 $1/180$，理论方差缩减倍数为 $16$。
+  \item 三次抽样和的频数依次为
+  $(3,4,5,6,7,8,9,10,12)\mapsto(1,3,3,4,6,3,3,3,1)$。除以 3 得到均值分布；按频数计算一阶、二阶中心矩，得到 $\mathbb E_*(\bar X^*)=7/3$、$\operatorname{Var}_*(\bar X^*)=14/27$。
+\end{enumerate}
 
 \section*{数值编程}
-解析 oracle 是 $\mathbb E[U^2]=1/3$ 与 $\operatorname{Var}(U^2)=4/45$。证据程序只验收估计误差不超过四个标准误、两个样本量的 RMSE 比接近理论平方根比例，以及控制变量样本方差缩减超过预设下界。对 $(1,2,4)$ 穷举 27 个重抽样均值，条件均值为 $7/3$，bootstrap 方差为 $14/27$。
+证据摘要为：标准误按 $N^{-1/2}$ 缩小；解析最优系数为 $1$；理论方差缩减倍数为 $16$；穷举 27 个重抽样均值时，bootstrap 方差为 $14/27$。
+\begin{enumerate}[leftmargin=*]
+  \item 独立 oracle 是 $\mathbb E[U^2]=1/3$ 与 $\operatorname{Var}(U^2)=4/45$。对每个 $N$ 保存独立重复的均方根误差，检查大样本与小样本 RMSE 比接近样本量比的平方根；单次结果只要求落在预先声明的多个标准误内。
+  \item 正确调整量为 $U^2-(U-1/2)$。把中心改为 $0.6$ 后，调整量整体增加 $0.1$；加常数不改变方差，因此 VRF 仍约 16，但期望从 $1/3$ 变为 $1/3+0.1$。这证明方差缩减验收必须同时检查目标均值。
+  \item 先用有理数笛卡尔积生成全部 27 个状态并保存精确频数，再用 $B$ 次随机重抽样比较每个支持点概率或均值、方差。随机误差应随 $B^{-1/2}$ 缩小，但精确答案不能由随机版本生成。
+\end{enumerate}
 
 \section*{研究判断}
-逐日 IID 重抽样破坏了收益的序列依赖，从而通常低估均值、Sharpe 或回撤统计量的不确定性。应先声明依赖单位和目标统计量，再选择有依据的 block 长度或依赖模型；同时用模拟覆盖率、不同 block 规则和时间外样本检查结论敏感性。若样本短且结构变化明显，应降低区间解释强度。
+\begin{enumerate}[leftmargin=*]
+  \item 逐日 IID 重抽样破坏自相关、波动聚集和路径依赖，通常低估 Sharpe 或回撤不确定性。应说明 block 长度依据，比较移动块/平稳 bootstrap、时间外样本和模拟覆盖率；结构变化明显时降低区间解释强度。
+  \item 重要性权重巨大说明 $Q$ 与目标重要区域匹配不佳，估计可能由极少路径支配。应检查支撑覆盖、权重尾部、最大权重、有效样本量、二阶矩是否有限，并比较多个提议分布与独立 seeds。
+  \item 只对最终因子 bootstrap 忽略了从五百个候选中选择这一随机步骤，区间是选择后条件区间而非完整研究流程的不确定性。需要在每次重抽样中重做筛选，或使用嵌套/样本分割方案，并把多重检验与样本外验证纳入报告。
+\end{enumerate}
+
+\section*{代码恢复路径}
+在仓库根目录运行
+\begin{center}
+\texttt{uv run python notebooks/upper/ch15\_monte\_carlo.py}
+\end{center}
+正常输出只给稳定证据类别：Monte Carlo 误差位于四标准误内、误差率检查通过、控制变量均值与方差门禁通过、bootstrap 精确枚举为 27 个状态。随后分别把 oracle 中的 \texttt{control\_known\_mean} 改成 $0.6$、把 \texttt{bootstrap\_observations\_iid} 改成 false；前者应报告目标均值被改变，后者应拒绝 IID 重抽样。完成恢复时应能解释每个失败为什么不能靠增加样本量或重复次数修复。

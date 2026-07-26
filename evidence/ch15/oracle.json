@@ -11,6 +11,7 @@
   "rate_ratio_min": 3.5,
   "rate_ratio_max": 4.5,
   "minimum_sample_variance_reduction": 10.0,
+  "control_known_mean": 0.5,
   "bootstrap_sample": [1, 2, 4],
   "bootstrap_observations_iid": true,
   "expected": {

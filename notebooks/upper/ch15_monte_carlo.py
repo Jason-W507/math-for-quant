@@ -43,6 +43,7 @@ def main(oracle_path: Path) -> int:
     analytic_integral = Fraction(1, 3)
     analytic_integrand_variance = Fraction(4, 45)
     analytic_control_beta = Fraction(1, 1)
+    analytic_control_variance = Fraction(1, 180)
     analytic_control_vrf = Fraction(16, 1)
     rng = np.random.default_rng(int(oracle["seed"]))
     sample = rng.random(int(oracle["sample_size"]))
@@ -53,7 +54,16 @@ def main(oracle_path: Path) -> int:
         abs(estimate - float(analytic_integral)) <= multiplier * standard_error
     )
 
-    adjusted = values - (sample - 0.5)
+    adjusted = values - (sample - float(oracle["control_known_mean"]))
+    adjusted_standard_error = math.sqrt(
+        float(analytic_control_variance) / adjusted.size
+    )
+    adjusted_mean_passed = (
+        abs(float(adjusted.mean()) - float(analytic_integral))
+        <= multiplier * adjusted_standard_error
+    )
+    if not adjusted_mean_passed:
+        raise SystemExit("control variate invalid: adjusted mean changed target")
     sample_vrf = float(values.var(ddof=1) / adjusted.var(ddof=1))
 
     rate_rng = np.random.default_rng(int(oracle["rate_seed"]))
@@ -84,6 +94,7 @@ def main(oracle_path: Path) -> int:
         <= absolute_tolerance,
         abs(float(expected["control_variance_reduction"]) - float(analytic_control_vrf))
         <= absolute_tolerance,
+        adjusted_mean_passed,
         sample_vrf >= float(oracle["minimum_sample_variance_reduction"]),
         bootstrap_mean == exact_bootstrap_mean,
         bootstrap_variance == exact_bootstrap_variance,
@@ -99,7 +110,7 @@ def main(oracle_path: Path) -> int:
     print(
         "oracle=passed "
         "mc=(error<=4se,rate=passed) "
-        "control=(beta=1.0,theory_vrf=16.0,sample_vrf>=10) "
+        "control=(beta=1.0,mean_error<=4se,theory_vrf=16.0,sample_vrf>=10) "
         f"bootstrap=(mean={float(bootstrap_mean):.6f},"
         f"var={float(bootstrap_variance):.6f},states={bootstrap_states})"
     )

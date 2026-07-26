@@ -1239,7 +1239,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "roundtrip=passed cells=2\n"
             "execution=passed oracle=passed "
             "mc=(error<=4se,rate=passed) "
-            "control=(beta=1.0,theory_vrf=16.0,sample_vrf>=10) "
+            "control=(beta=1.0,mean_error<=4se,theory_vrf=16.0,sample_vrf>=10) "
             "bootstrap=(mean=2.333333,var=0.518519,states=27)\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1306,6 +1306,37 @@ class LearningUnitContractTests(unittest.TestCase):
             "invalid Monte Carlo tolerance: use at least three standard errors\n",
         )
 
+    def test_chapter_fifteen_rejects_a_miscentered_control_variate(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch15" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["control_known_mean"] = 0.6
+        fixture = ROOT / "build" / "test-fixtures" / "ch15-control-mean.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch15_monte_carlo.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "control variate invalid: adjusted mean changed target\n",
+        )
+
     def test_accepts_chapter_fifteen_with_simulation_oracles(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",
@@ -1318,7 +1349,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "unit=upper.ch15\n"
             "evidence=7/7\n"
             "oracle=passed mc=(error<=4se,rate=passed) "
-            "control=(beta=1.0,theory_vrf=16.0,sample_vrf>=10) "
+            "control=(beta=1.0,mean_error<=4se,theory_vrf=16.0,sample_vrf>=10) "
             "bootstrap=(mean=2.333333,var=0.518519,states=27)\n"
             "learning-unit contract passed\n",
         )
