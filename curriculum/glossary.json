@@ -175,6 +175,13 @@
     {"zh": "异方差稳健标准误", "en": "heteroskedasticity-robust standard error", "definition": "不要求条件误差方差恒定、用三明治协方差估计得到的标准误。"},
     {"zh": "族错误率", "en": "family-wise error rate", "definition": "一族真零假设中至少错误拒绝一个的概率。"},
     {"zh": "错误发现率", "en": "false discovery rate", "definition": "拒绝集合中错误发现比例期望值的控制目标。"},
+    {"zh": "随机过程", "en": "stochastic process", "definition": "同一概率空间上由时间或其他索引参数化的随机变量族。"},
+    {"zh": "滤过", "en": "filtration", "definition": "随索引递增、表示可用信息增长的 sigma 代数族。"},
+    {"zh": "Markov 性", "en": "Markov property", "definition": "给定当前状态后未来条件分布不再依赖更早历史的性质。"},
+    {"zh": "鞅", "en": "martingale", "definition": "给定当前信息时下一时点条件期望等于当前值的可积适应过程。"},
+    {"zh": "Poisson 过程", "en": "Poisson process", "definition": "具有独立平稳增量且计数增量服从 Poisson 分布的计数过程。"},
+    {"zh": "Brownian 运动", "en": "Brownian motion", "definition": "从零开始、具有连续路径及独立平稳高斯增量的过程。"},
+    {"zh": "二次变差", "en": "quadratic variation", "definition": "沿越来越细分割对路径增量平方求和得到的极限对象。"},
     {
       "zh": "样本外",
       "en": "out of sample",

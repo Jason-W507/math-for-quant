@@ -1,0 +1,66 @@
+\chapter{随机过程、Markov、鞅、Poisson 与 Brownian}
+\label{ch:stochastic-processes}
+
+\begin{introduction}
+  \item 先修：第 8 章的条件期望与概率核，第 9 章的收敛和极限定理。
+  \item 学习产出：能用统一符号描述随机过程、有限维分布、路径和滤过，核对 Markov、鞅、Poisson 与 Brownian 性质，并构造条件结构反例。
+  \item 研究连接：状态建模、事件到达、随机积分、衍生品定价和高频订单流都从这些对象出发。
+\end{introduction}
+
+\section{过程同时包含分布、时间和路径}
+
+随机过程 $(X_t)_{t\in T}$ 是同一概率空间上的随机变量族，$T$ 是索引集，$X_t$ 取值于状态空间 $E$。任取 $t_1<\cdots<t_k$ 得到有限维分布
+\[
+  \mathcal L(X_{t_1},\ldots,X_{t_k}),
+\]
+而固定 $\omega$ 后的 $t\mapsto X_t(\omega)$ 是样本路径。有限维分布说明任意有限时点的联合律；连续、右连续、跳跃和总变差则是路径性质，不能只凭一组边缘直方图判断。
+
+滤过 $(\mathcal F_t)_{t\ge0}$ 满足 $\mathcal F_s\subseteq\mathcal F_t$（$s\le t$），表示信息随时间增加。若 $X_t$ 对 $\mathcal F_t$ 可测，称过程适应；若决策在 $t$ 时使用 $\mathcal F_{t+1}$，数学上就是未来信息泄漏。
+
+\section{Markov 性是给定当前后遗忘过去}
+
+离散链的 Markov 性写为
+\[
+  \mathbb P(X_{n+1}=j\mid X_0,\ldots,X_n)
+  =\mathbb P(X_{n+1}=j\mid X_n)=P_{ij}.
+\]
+转移矩阵 $P=(P_{ij})$ 每行非负且和为一；$n$ 步转移由 Chapman--Kolmogorov 关系给出 $P^n$。稳态分布 $\pi$ 满足 $\pi P=\pi$，但稳态存在不自动保证从任意初值收敛，还需不可约、非周期等条件。
+
+实验取
+\[
+  P=\begin{pmatrix}0.8&0.2\\0.3&0.7\end{pmatrix},\qquad X_0=0.
+\]
+$P^5$ 给出 $(0.612500,0.387500)$，稳态分布为 $(0.600000,0.400000)$；$30000$ 条长度 50 的路径在状态 1 的末期比例为 $0.397433$。
+
+反例令 $U,V$ 为独立 Bernoulli$(1/2)$，并取 $(X_0,X_1,X_2)=(U,V,U)$。给定 $X_1$ 时 $\mathbb P(X_2=1\mid X_1)=0.5$，但再知道 $X_0=1$ 后条件概率为 $1$。相邻变量独立并不使整个过程成为 Markov 链；条件概率分别为 $0.5$ 与 $1$。
+
+\section{鞅把公平性绑定到指定信息集}
+
+可积、适应过程 $(M_n)$ 若满足
+\[
+  \mathbb E[M_{n+1}\mid\mathcal F_n]=M_n,
+\]
+就是关于 $(\mathcal F_n)$ 的鞅。对对称随机游走 $S_n=\sum_{i=1}^n\xi_i$，给定 $S_1=-1$ 或 $1$ 时，$\mathbb E[S_2\mid S_1]$ 分别为 $-1$、$1$。但 $S_n^2$ 不是鞅，因为
+\[
+  \mathbb E[S_{n+1}^2\mid\mathcal F_n]=S_n^2+1;
+\]
+$S_n^2-n$ 才是鞅。可选停止定理还需要有界停止时刻、可积性或一致可积等条件；“公平过程在任意策略下期望不变”是错误概括。
+
+\section{Poisson 计数与 Brownian 连续噪声}
+
+强度 $\lambda$ 的 Poisson 过程 $(N_t)$ 从零开始，具有独立平稳增量，且 $N_t-N_s\sim\operatorname{Poisson}(\lambda(t-s))$。因此 $\mathbb E[N_t]=\operatorname{Var}(N_t)=\lambda t$。取 $\lambda=2,t=3$，模拟计数的均值与方差为 $5.980833$ 与 $5.988466$，对应解析值均为 $6$。
+
+标准 Brownian 运动 $(W_t)$ 从零开始，路径几乎处处连续，并具有独立平稳高斯增量
+\[
+  W_t-W_s\sim\mathcal N(0,t-s),\qquad
+  \operatorname{Cov}(W_s,W_t)=\min(s,t).
+\]
+在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。Brownian 路径连续却几乎处处不可微；沿等距分割的二次变差收敛到 $t$。在 $[0,1]$ 上用 256 段模拟，二次变差均值为 $1.000731$、方差为 $0.007781$，解析方差 $2/256$。
+
+独立增量是关于不相交时间区间的联合断言，不是“任意由路径构造的量都独立”。例如 $W_1$ 与 $W_2-W_1$ 独立，但 $W_1^2$ 与 $W_2^2-W_1^2$ 一般不独立。
+
+\input{tex/upper/chapters/ch11-questions}
+\input{tex/upper/chapters/ch11-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+有限维分布与路径性质回答不同问题，滤过规定可用信息，Markov 性压缩条件历史，鞅描述条件公平，Poisson 与 Brownian 则提供跳跃和连续噪声基线。上册 Capstone 将要求每个动态结论同时声明状态、信息集、增量结构与失败边界。

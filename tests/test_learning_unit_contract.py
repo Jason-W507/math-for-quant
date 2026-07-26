@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=11\n"
+            "accepted-units=12\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -961,6 +961,56 @@ class LearningUnitContractTests(unittest.TestCase):
             "true_se=0.393283 empirical_se=0.394608 "
             "naive_coverage=0.868900 robust_coverage=0.938900 "
             "naive_fwer=0.639975 bonferroni_fwer=0.047400\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_eleven_notebook_reproduces_process_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch11_stochastic_processes.py",
+                "--output",
+                "build/notebooks/upper/ch11_stochastic_processes.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch11_stochastic_processes.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed "
+            "markov_p5=(0.612500,0.387500) "
+            "stationary=(0.600000,0.400000) simulated_state1=0.397433 "
+            "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
+            "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
+            "nonmarkov=(0.5,1.0)\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_eleven_with_process_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch11",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch11\n"
+            "evidence=7/7\n"
+            "oracle=passed markov_p5=(0.612500,0.387500) "
+            "stationary=(0.600000,0.400000) simulated_state1=0.397433 "
+            "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
+            "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
+            "nonmarkov=(0.5,1.0)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
