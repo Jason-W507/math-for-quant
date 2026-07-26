@@ -69,29 +69,45 @@ class LearningUnitContractTests(unittest.TestCase):
         self,
         fixture_name: str,
         mutate: Callable[[Path, dict[str, Any]], None],
+        *,
+        use_declared_command: bool = False,
     ) -> subprocess.CompletedProcess[str]:
         fixture_root = ROOT / "build" / "test-packages" / fixture_name
         if fixture_root.exists():
             shutil.rmtree(fixture_root)
-        shutil.copytree(ROOT / "data" / "ch17", fixture_root / "data" / "ch17")
-        shutil.copytree(
-            ROOT / "evidence" / "ch17", fixture_root / "evidence" / "ch17"
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch17" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
         )
+        for relative in oracle["package_files"]:
+            source = ROOT / relative
+            target = fixture_root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
         oracle_path = fixture_root / "evidence" / "ch17" / "oracle.json"
         oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
         mutate(fixture_root, oracle)
         oracle_path.write_text(json.dumps(oracle), encoding="utf-8")
         try:
-            return subprocess.run(
-                [
+            if use_declared_command:
+                command = list(oracle["command"])
+                command[0] = shutil.which(command[0]) or command[0]
+            else:
+                command = [
                     sys.executable,
                     str(
-                        ROOT / "notebooks" / "upper" / "ch17_research_audit.py"
+                        fixture_root
+                        / "notebooks"
+                        / "upper"
+                        / "ch17_research_audit.py"
                     ),
                     str(oracle_path),
                     str(fixture_root),
-                ],
-                cwd=ROOT,
+                ]
+            return subprocess.run(
+                command,
+                cwd=fixture_root,
                 text=True,
                 capture_output=True,
                 check=False,
@@ -1581,6 +1597,7 @@ class LearningUnitContractTests(unittest.TestCase):
         result = self.run_chapter_seventeen_package_fixture(
             "clean",
             lambda _root, _oracle: None,
+            use_declared_command=True,
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)

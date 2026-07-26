@@ -14,7 +14,23 @@
     "research_runtime": "Python standard library",
     "notebook_builder": "project uv.lock"
   },
-  "command": "uv run python notebooks/upper/ch17_research_audit.py",
+  "package_files": [
+    "pyproject.toml",
+    "uv.lock",
+    "notebooks/upper/ch17_research_audit.py",
+    "data/ch17/README.md",
+    "data/ch17/research_rows.csv",
+    "evidence/ch17/oracle.json",
+    "evidence/ch17/limitations.md"
+  ],
+  "command": [
+    "uv",
+    "run",
+    "--quiet",
+    "--frozen",
+    "python",
+    "notebooks/upper/ch17_research_audit.py"
+  ],
   "market_timezone": "Asia/Shanghai",
   "market_utc_offset": "+08:00",
   "trading_calendar": {

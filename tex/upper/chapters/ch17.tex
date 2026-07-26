@@ -136,9 +136,9 @@ CSV 必须恰好包含 observation id、事件时间、可得时间、决策时�
 
 \section{执行与预期证据}
 
-在仓库根目录运行
+在仓库根目录或按 oracle 清单复制出的独立包根目录运行
 \begin{center}
-\texttt{uv run python notebooks/upper/ch17\_research\_audit.py}
+\texttt{uv run --quiet --frozen python notebooks/upper/ch17\_research\_audit.py}
 \end{center}
 成功摘要必须包含：
 \begin{center}
@@ -154,4 +154,3 @@ CSV 必须恰好包含 observation id、事件时间、可得时间、决策时�
 提交物包括：复现记录、手算页、成功与失败终端摘要、证据矩阵、限制报告和一页审计意见。每条证据标明文件、命令与观察结果；每条限制标明若要解除还需什么新数据或实验。
 
 完成本章后，你拥有的是“能审查量化研究证据”的上册能力，而不是某条方向的完整模型。进入下册时，六条路线会复用这套门禁：多因子增加横截面与中性化，统计套利增加 rolling 与衰减，机器学习增加嵌套选择，衍生品增加定价与对冲误差，组合增加估计误差与约束，高频增加事件时间与排队成交。任何路线都不能绕过本章审计卡。
-

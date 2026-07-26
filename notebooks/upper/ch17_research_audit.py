@@ -39,6 +39,9 @@ def audit(oracle_path: Path, package_root: Path) -> int:
         fail("environment gate failed: Python version is below declared minimum")
     if environment["research_runtime"] != "Python standard library":
         fail("environment gate failed: research runtime is not reproducible")
+    for relative in oracle["package_files"]:
+        if not (package_root / relative).is_file():
+            fail(f"package gate failed: missing declared file {relative}")
 
     data_path = package_root / oracle["data_path"]
     if not data_path.is_file():
