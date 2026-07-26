@@ -189,6 +189,9 @@
     {"symbol": "u", "meaning": "浮点系统在正常范围内的单位舍入误差", "domain": "positive real", "first_unit": "upper.ch14"},
     {"symbol": "\\hat\\mu_N", "meaning": "N 个独立样本构成的 Monte Carlo 均值估计", "domain": "random estimator", "first_unit": "upper.ch15"},
     {"symbol": "\\hat F_n", "meaning": "n 个观察定义的经验分布", "domain": "discrete probability measure", "first_unit": "upper.ch15"},
+    {"symbol": "\\mathcal I_t", "meaning": "在决策时点 t 可被研究者合法使用的信息集合", "domain": "information set", "first_unit": "upper.ch16"},
+    {"symbol": "R^{\\mathrm{net}}", "meaning": "从毛收益贡献扣除声明交易摩擦后的净收益贡献", "domain": "real, dimensionless", "first_unit": "upper.ch16"},
+    {"symbol": "\\alpha/m", "meaning": "对 m 项假设检验控制族错误率的 Bonferroni 单项阈值", "domain": "unit interval", "first_unit": "upper.ch16"},
     {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",

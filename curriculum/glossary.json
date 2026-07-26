@@ -265,6 +265,51 @@
       "zh": "IID bootstrap",
       "en": "IID bootstrap",
       "definition": "把观察视为独立同分布并从经验分布逐点有放回重抽样的 bootstrap。"
+    },
+    {
+      "zh": "时点数据",
+      "en": "point-in-time data",
+      "definition": "保留值、资产池和元数据在历史决策时刻实际可得版本的数据。"
+    },
+    {
+      "zh": "数据泄漏",
+      "en": "data leakage",
+      "definition": "模型拟合、选择或评估使用了在声明决策边界本不应可得的信息。"
+    },
+    {
+      "zh": "滚动向前验证",
+      "en": "walk-forward validation",
+      "definition": "保持时间方向、在连续过去窗口拟合并在紧随其后的未来窗口评估的验证设计。"
+    },
+    {
+      "zh": "研究自由度",
+      "en": "research degrees of freedom",
+      "definition": "研究者在信号、样本、参数、指标和停止规则上可作出的结果相关选择。"
+    },
+    {
+      "zh": "交易成本",
+      "en": "transaction cost",
+      "definition": "把订单意图转成持仓时产生的佣金、价差、冲击、借券和其他费用。"
+    },
+    {
+      "zh": "换手率",
+      "en": "turnover",
+      "definition": "组合权重或持仓在相邻再平衡时发生变化的规模；使用时必须声明单边或双边口径。"
+    },
+    {
+      "zh": "市场冲击",
+      "en": "market impact",
+      "definition": "订单自身通过消耗流动性或传递信息而引起的成交价格不利变化。"
+    },
+    {
+      "zh": "容量",
+      "en": "capacity",
+      "definition": "在成交量、冲击和风险约束下仍能满足声明净绩效目标的可部署资金规模。"
+    },
+    {
+      "zh": "实现差额",
+      "en": "implementation shortfall",
+      "definition": "相对决策基准衡量实际成交、延迟、冲击和未成交机会成本的执行损失。"
     }
   ]
 }

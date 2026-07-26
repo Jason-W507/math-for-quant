@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=16\n"
+            "accepted-units=17\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1351,6 +1351,116 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed mc=(error<=4se,rate=passed) "
             "control=(beta=1.0,mean_error<=4se,theory_vrf=16.0,sample_vrf>=10) "
             "bootstrap=(mean=2.333333,var=0.518519,states=27)\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_sixteen_notebook_reproduces_research_audit_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch16_research_validity.py",
+                "--output",
+                "build/notebooks/upper/ch16_research_validity.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch16_research_validity.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed "
+            "timeline=passed split=passed "
+            "multiplicity=(tests=20,threshold=0.002500,p=0.002000) "
+            "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
+            "frictions=passed a_share=conditional\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_sixteen_rejects_point_in_time_leakage(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch16" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["test_rows"][0]["available_at"] = "2024-07-01T09:31:00"
+        fixture = ROOT / "build" / "test-fixtures" / "ch16-leakage.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch16_research_validity.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "timeline gate failed: row 1 was not available before the decision\n",
+        )
+
+    def test_chapter_sixteen_rejects_an_uncorrected_multiple_test(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch16" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["selected_raw_p_value"] = 0.003
+        fixture = ROOT / "build" / "test-fixtures" / "ch16-multiplicity.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch16_research_validity.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "multiple-testing gate failed: selected p-value exceeds 0.002500\n",
+        )
+
+    def test_accepts_chapter_sixteen_with_research_audit_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch16",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch16\n"
+            "evidence=7/7\n"
+            "oracle=passed timeline=passed split=passed "
+            "multiplicity=(tests=20,threshold=0.002500,p=0.002000) "
+            "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
+            "frictions=passed a_share=conditional\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

@@ -1,0 +1,85 @@
+# %% [markdown]
+# # 研究有效性、样本外与交易摩擦
+#
+# 时间不等式、多重检验阈值和 gross-cost-net 手算账本提供独立 oracle。
+
+# %%
+from __future__ import annotations
+
+from datetime import date, datetime
+import json
+from pathlib import Path
+import sys
+
+
+def main(oracle_path: Path) -> int:
+    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+    tolerance = float(oracle["absolute_tolerance"])
+
+    training_end = date.fromisoformat(oracle["training_end"])
+    test_start = date.fromisoformat(oracle["test_start"])
+    if training_end >= test_start:
+        raise SystemExit("split gate failed: training period overlaps the test period")
+
+    rows = oracle["test_rows"]
+    for index, row in enumerate(rows, start=1):
+        event_at = datetime.fromisoformat(row["event_at"])
+        available_at = datetime.fromisoformat(row["available_at"])
+        decision_at = datetime.fromisoformat(row["decision_at"])
+        target_start = datetime.fromisoformat(row["target_start"])
+        if not event_at <= available_at <= decision_at:
+            raise SystemExit(
+                f"timeline gate failed: row {index} was not available before the decision"
+            )
+        if not decision_at < target_start:
+            raise SystemExit(
+                f"timeline gate failed: row {index} target begins before the decision"
+            )
+        if decision_at.date() < test_start:
+            raise SystemExit(f"split gate failed: row {index} is not in the test period")
+
+    tested_hypotheses = int(oracle["tested_hypotheses"])
+    threshold = float(oracle["family_alpha"]) / tested_hypotheses
+    selected_p = float(oracle["selected_raw_p_value"])
+    if selected_p > threshold:
+        raise SystemExit(
+            f"multiple-testing gate failed: selected p-value exceeds {threshold:.6f}"
+        )
+
+    costs = oracle["cost_components_per_trade"]
+    cost_per_trade = sum(float(value) for value in costs.values())
+    gross_return = sum(float(row["gross_return"]) for row in rows)
+    total_cost = cost_per_trade * len(rows)
+    net_return = gross_return - total_cost
+    expected = oracle["expected"]
+
+    universal_fields = oracle["universal_friction_protocol"]
+    a_share_fields = oracle["a_share_conditional_protocol"]
+    checks = [
+        tested_hypotheses > 1,
+        abs(threshold - float(expected["bonferroni_threshold"])) <= tolerance,
+        abs(gross_return - float(expected["gross_return"])) <= tolerance,
+        abs(total_cost - float(expected["total_cost"])) <= tolerance,
+        abs(net_return - float(expected["net_return"])) <= tolerance,
+        set(costs) == {"commission", "spread", "impact"},
+        all(value is True for value in universal_fields.values()),
+        all(value is True for value in a_share_fields.values()),
+    ]
+    if not all(checks):
+        raise SystemExit("research-validity oracle or friction protocol failed")
+
+    print(
+        "oracle=passed timeline=passed split=passed "
+        f"multiplicity=(tests={tested_hypotheses},threshold={threshold:.6f},"
+        f"p={selected_p:.6f}) "
+        f"performance=(gross={gross_return:.6f},cost={total_cost:.6f},"
+        f"net={net_return:.6f}) "
+        "frictions=passed a_share=conditional"
+    )
+    return 0
+
+
+oracle_path = Path("evidence/ch16/oracle.json")
+if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+    oracle_path = Path(sys.argv[1])
+main(oracle_path)

@@ -1,0 +1,45 @@
+\chapter{第 16 章分层答案}
+\label{app:ch16-solutions}
+
+\section*{口述概念}
+\begin{enumerate}[leftmargin=*]
+  \item $t_e$ 是事件发生，$t_a$ 是值首次可用，$t_d$ 是形成决策，$t_y$ 是标签开始。$t_a\le t_d$ 阻止使用尚未可得的数据，$t_d<t_y$ 阻止特征窗口进入未来标签；完整协议还要求 $t_e\le t_a$。
+  \item 测试集的职责是评估冻结流程。研究者若根据测试结果修改特征、窗口、阈值或叙事，测试信息就参与了选择；后续得分是开发证据，不再是一次性确认性证据。应另留最终区间，或诚实地重新定义研究阶段。
+  \item 复现问“同一输入能否得到同一输出”；统计有效问“在声明假设下推断是否控制误差”；可交易问“订单在约束、流动性和成本下能否实现”。可复现的泄漏回测仍无效，统计显著的纸面信号也可能无法成交。
+\end{enumerate}
+
+\section*{笔试推导}
+\begin{enumerate}[leftmargin=*]
+  \item 独立真零假设下，每次不误拒概率为 $1-\alpha$，全部不误拒为 $(1-\alpha)^m$，所以至少一次误拒为 $1-(1-\alpha)^m$。代入得 $1-0.95^{20}\approx0.6415$。
+  \item 令 $A_j=\{p_j\le\alpha/m\}$。并集界给出
+  $\Pr(\cup_jA_j)\le\sum_j\Pr(A_j)\le m(\alpha/m)=\alpha$，不需要检验独立。阈值为 $0.0025$，所以 $0.002$ 通过、$0.003$ 拒绝。
+  \item $R^{\mathrm{gross}}=0.04$。单笔成本为 $0.002$，三笔总成本 $C=0.006$，故 $R^{\mathrm{net}}=0.034$。若观察是连续持有期收益，应复利；若资本权重不同，应先加权；若交易重叠，还需处理同时占用资本与净额成交。
+\end{enumerate}
+
+\section*{数值编程}
+\begin{enumerate}[leftmargin=*]
+  \item 解析 ISO 时间后逐行检查两个复合条件。正常行必须满足 $t_e\le t_a\le t_d$ 且 $t_d<t_y$；把第一行 $t_a$ 改为 9:31，而 $t_d$ 保持 9:25，应稳定失败为“row 1 was not available before the decision”。不要把当前日期或机器时区作为 oracle。
+  \item 把每个样本标签表示为半开区间 $[s_i,e_i)$。验证折为 $V$ 时，从训练候选中删除所有满足
+  \[
+    [s_i,e_i)\cap[s_j,e_j)\ne\varnothing,\qquad j\in V
+  \]
+  的样本。反例可取相邻两日信号都使用未来五日收益：随机分到两折后仍共享四个未来价格。
+  \item 为每个订单记录决策基准价、可成交数量、实际成交均价和期末基准价。成交部分扣佣金、价差与规模冲击；未成交部分的机会成本按预先声明的基准计算。分别报告 executed-only P\&L 与 implementation shortfall，不能把未成交订单当作零成本成交。
+\end{enumerate}
+
+\section*{研究判断}
+\begin{enumerate}[leftmargin=*]
+  \item 缺失证据包括：完整 500 次及其变体的尝试账本；预先声明的错误率控制；选择过程被纳入重抽样或嵌套切分；完全未参与选择的最终时间外测试；成本、容量和泄漏审计。可把探索期与确认期分开，在开发折内完成筛选和超参数选择，只在冻结后打开最终测试，并同时报告赢家与搜索规模。
+  \item 可能改变成交结论的包括：买入后可售时间、涨跌幅和有效申报价格、停复牌、交易日历、复权可得时间、融资融券标的与券源。条件期望、误差控制、样本外定义和成本账本等数学原则仍通用，但输入约束与可行集合必须按市场和研究期重写。
+  \item 应拒绝“十倍资金仍保持原净表现”和据此得到的容量结论。需要按订单规模、成交量参与率、波动率与执行时长估计冲击，报告盘口/成交量覆盖、未成交、实现差额、压力情景和净绩效随资金规模的曲线，并说明模型不能覆盖的极端流动性状态。
+\end{enumerate}
+
+\section*{代码恢复路径}
+在仓库根目录运行
+\begin{center}
+\texttt{uv run python notebooks/upper/ch16\_research\_validity.py}
+\end{center}
+正常路径必须同时给出 timeline、split、multiplicity、performance 和 friction 五类通过证据。随后复制 oracle：先把第一行 \path{available_at} 改到 \path{decision_at} 之后，确认时间门禁失败；再恢复时间并把 \path{selected_raw_p_value} 改为 $0.003$，确认多重检验门禁失败。恢复完成的标准不是“改回能跑”，而是能解释两个负例分别破坏了哪个研究假设，以及为什么增加样本或更换随机 seed 都无法修复。
+
+\section*{独立 oracle 证据对照}
+本章的发布证据固定为：\textbf{事件时间、可得时间、决策时间与收益起点}满足先后约束；Bonferroni 阈值为 $0.0025$；三笔交易的\textbf{总成本为 $0.006$}；\textbf{成本后收益为 $0.034$}。市场条件协议要求逐研究期核验\textbf{T+1、涨跌停成交、停牌、复权可得性与融券资格}，而不是把当前规则参数当作跨时期常数。

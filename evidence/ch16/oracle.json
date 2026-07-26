@@ -1,0 +1,64 @@
+{
+  "provenance": "The timeline inequalities, Bonferroni threshold 0.05/20, and three-trade gross-cost-net ledger are independently hand calculated; friction fields encode universal and A-share-conditional assumptions",
+  "absolute_tolerance": 1e-12,
+  "training_end": "2024-06-28",
+  "test_start": "2024-07-01",
+  "family_alpha": 0.05,
+  "tested_hypotheses": 20,
+  "selected_raw_p_value": 0.002,
+  "cost_components_per_trade": {
+    "commission": 0.0005,
+    "spread": 0.0007,
+    "impact": 0.0008
+  },
+  "test_rows": [
+    {
+      "event_at": "2024-07-01T07:30:00",
+      "available_at": "2024-07-01T08:00:00",
+      "decision_at": "2024-07-01T09:25:00",
+      "target_start": "2024-07-01T09:30:00",
+      "gross_return": 0.02
+    },
+    {
+      "event_at": "2024-07-02T07:30:00",
+      "available_at": "2024-07-02T08:00:00",
+      "decision_at": "2024-07-02T09:25:00",
+      "target_start": "2024-07-02T09:30:00",
+      "gross_return": -0.01
+    },
+    {
+      "event_at": "2024-07-03T07:30:00",
+      "available_at": "2024-07-03T08:00:00",
+      "decision_at": "2024-07-03T09:25:00",
+      "target_start": "2024-07-03T09:30:00",
+      "gross_return": 0.03
+    }
+  ],
+  "universal_friction_protocol": {
+    "point_in_time_calendar": true,
+    "commission": true,
+    "spread": true,
+    "market_impact": true,
+    "borrow_and_short_availability": true
+  },
+  "a_share_conditional_protocol": {
+    "t_plus_one_inventory": true,
+    "price_limit_fill_model": true,
+    "suspension_calendar": true,
+    "point_in_time_corporate_actions": true,
+    "short_sale_eligibility": true
+  },
+  "expected": {
+    "bonferroni_threshold": 0.0025,
+    "gross_return": 0.04,
+    "total_cost": 0.006,
+    "net_return": 0.034
+  },
+  "published_markers": [
+    "事件时间、可得时间、决策时间与收益起点",
+    "Bonferroni 阈值为 $0.0025$",
+    "总成本为 $0.006$",
+    "成本后收益为 $0.034$",
+    "T+1、涨跌停成交、停牌、复权可得性与融券资格"
+  ]
+}

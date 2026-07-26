@@ -1,0 +1,31 @@
+\section{四级问题与即时练习}
+\begingroup\small
+\subsection*{口述概念}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 区分事件时间、可得时间、决策时间与目标起点；哪两个不等式直接阻止前视？
+  \item 为什么反复查看一个“测试集”后，它不再是最终样本外？
+  \item 复现、统计有效和可交易三者分别回答什么问题？为何互不替代？
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 在独立真零假设下推导 $m$ 次水平 $\alpha$ 检验至少一次假阳性的概率，并计算 $m=20,\alpha=0.05$。
+  \item 用并集界证明 Bonferroni 阈值 $\alpha/m$ 控制族错误率；判断 $p=0.002$ 与 $p=0.003$ 是否通过本章协议。
+  \item 三笔等资本收益贡献为 $0.02,-0.01,0.03$，每笔佣金、价差、冲击为 $0.0005,0.0007,0.0008$。推导毛收益、总成本和净收益，并说明何时不能直接相加。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 为每行实现 $t_e\le t_a\le t_d<t_y$ 门禁；构造一个只改可得时间的泄漏 fixture，验证非零退出与稳定诊断。
+  \item 给滚动标签区间实现 overlap 检查，自动生成 purge 集合；用一个反例证明随机切分会共享未来价格。
+  \item 扩展本章 oracle：加入未成交比例和规模相关冲击，分别报告成交条件下净收益与包含机会成本的实现差额。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 研究者尝试 500 个因子，只报告最佳者的 $p=0.01$ 和一次 bootstrap 区间。列出至少四个缺失证据，并设计修复协议。
+  \item 美股日频策略直接迁移到 A 股，假定每日收盘价全部成交且可立即卖出。哪些结论可能被制度边界改变？哪些数学结论仍是通用的？
+  \item 一个策略成本前 Sharpe 很高，成本后仍为正，但资金扩大十倍后仍沿用固定 5bp 成本。你会拒绝哪项结论，要求哪些容量证据？
+\end{enumerate}
+\endgroup
+
