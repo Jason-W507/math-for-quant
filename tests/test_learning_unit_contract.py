@@ -1090,7 +1090,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "analytic=(0.500000,0.500000,0.500000) "
             "numeric=(0.500000,0.500000) "
             "values=(0.250000,0.250000,0.000e+00) "
-            "kkt=(0.000e+00,0.000e+00,0.000e+00) "
+            "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1109,7 +1109,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed analytic=(0.500000,0.500000,0.500000) "
             "numeric=(0.500000,0.500000) "
             "values=(0.250000,0.250000,0.000e+00) "
-            "kkt=(0.000e+00,0.000e+00,0.000e+00) "
+            "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n"
             "learning-unit contract passed\n",
         )

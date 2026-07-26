@@ -40,15 +40,25 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
     stationarity = float(
         np.max(np.abs(analytic - np.array([multiplier, multiplier])))
     )
-    primal_residual = max(0.0, constraint)
+    primal_residual = max(0.0, constraint, -analytic[0], -analytic[1])
+    dual_residual = max(0.0, -multiplier)
     complementarity = abs(multiplier * constraint)
 
     nonconvex_stationary_value = float((0.0**2 - 1.0) ** 2)
     nonconvex_global_value = float((1.0**2 - 1.0) ** 2)
     # min x subject to x^2 <= 0 has the sole feasible optimum x=0.
-    # Its active-constraint gradient is zero, so stationarity is
-    # 1 + lambda*0 = 0 and cannot hold for any multiplier.
-    cq_stationarity_residual = 1.0
+    # Compute the best nonnegative multiplier from the actual gradients.
+    cq_point = 0.0
+    objective_gradient = 1.0
+    constraint_gradient = 2.0 * cq_point
+    cq_multiplier = (
+        max(0.0, -objective_gradient / constraint_gradient)
+        if constraint_gradient != 0.0
+        else 0.0
+    )
+    cq_stationarity_residual = abs(
+        objective_gradient + cq_multiplier * constraint_gradient
+    )
 
     tolerance = float(oracle["absolute_tolerance"])
     checks = [
@@ -58,6 +68,7 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
         abs(duality_gap - float(oracle["expected_duality_gap"])) <= tolerance,
         stationarity <= tolerance,
         primal_residual <= tolerance,
+        dual_residual <= tolerance,
         complementarity <= tolerance,
         nonconvex_stationary_value > nonconvex_global_value,
         cq_stationarity_residual == float(oracle["expected_cq_residual"]),
@@ -71,7 +82,7 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
         f"numeric=({point[0]:.6f},{point[1]:.6f}) "
         f"values=({primal_value:.6f},{dual_value:.6f},{duality_gap:.3e}) "
         f"kkt=({stationarity:.3e},{primal_residual:.3e},"
-        f"{complementarity:.3e}) "
+        f"{dual_residual:.3e},{complementarity:.3e}) "
         f"nonconvex=({nonconvex_stationary_value:.6f},"
         f"{nonconvex_global_value:.6f}) "
         f"cq_residual={cq_stationarity_residual:.6f}"
