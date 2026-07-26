@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "template": "ElegantBook-4.7",
-  "external_source": "D:/Latex/ElegantBook",
+  "external_source": "D:/Latex/Templates/ElegantBook",
   "files": [
     {
       "source": "elegantbook.cls",

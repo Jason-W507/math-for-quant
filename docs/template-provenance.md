@@ -1,6 +1,6 @@
 # ElegantBook template provenance
 
-- Source directory: external, read-only `D:\Latex\ElegantBook`
+- Source directory: external, read-only `D:\Latex\Templates\ElegantBook`
 - Template version: ElegantBook 4.7 (2026-05-01)
 - Machine-readable baseline: `docs/template-provenance.json`
 

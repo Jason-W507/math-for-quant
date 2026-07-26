@@ -162,7 +162,7 @@ class LearningUnitContractTests(unittest.TestCase):
                 sys.executable,
                 str(ROOT / "tools" / "check_template_provenance.py"),
                 "--source",
-                "D:/Latex/ElegantBook",
+                "D:/Latex/Templates/ElegantBook",
             ],
             cwd=ROOT,
             text=True,
@@ -203,7 +203,7 @@ class LearningUnitContractTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertEqual(result.stdout, "reader registries=passed symbols=47 terms=85\n")
+        self.assertEqual(result.stdout, "reader registries=passed symbols=47 terms=91\n")
         self.assertEqual(result.stderr, "")
 
     def test_volume_scope_rejects_a_missing_publication_artifact(self) -> None:

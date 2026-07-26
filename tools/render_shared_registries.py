@@ -30,10 +30,17 @@ def first_teaching(unit_id: str) -> str:
     return f"{volume_name}第 {int(chapter)} 章"
 
 
+def unit_order(unit_id: str) -> tuple[int, int]:
+    if unit_id == "foundation.oracle-smoke":
+        return (0, 0)
+    volume, chapter = unit_id.split(".ch", maxsplit=1)
+    return ({"upper": 1, "lower": 2}[volume], int(chapter))
+
+
 def render_notation() -> str:
     registry = json.loads(NOTATION_SOURCE.read_text(encoding="utf-8"))
     rows = []
-    for entry in registry["symbols"]:
+    for entry in sorted(registry["symbols"], key=lambda item: unit_order(item["first_unit"])):
         rows.append(
             f"${entry['symbol']}$ & {tex_text(entry['meaning'])} & "
             f"{first_teaching(entry['first_unit'])} \\\\"
