@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=14\n"
+            "accepted-units=15\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1111,6 +1111,86 @@ class LearningUnitContractTests(unittest.TestCase):
             "values=(0.250000,0.250000,0.000e+00) "
             "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_fourteen_notebook_reproduces_numerical_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch14_numerical_stability.py",
+                "--output",
+                "build/notebooks/upper/ch14_numerical_stability.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch14_numerical_stability.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed "
+            "cancel=(0.000e+00,5.000e-09,5.000e-09) "
+            "sums=(0.0,1.0,1.0) "
+            "linear=(4.000e+08,1.000e-02,2.828e+08,0.000e+00) "
+            "tolerance=(1,1,1,0)\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_fourteen_rejects_an_absolute_only_tolerance_policy(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch14" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["relative_tolerance"] = 0.0
+        oracle["absolute_tolerance"] = 1e-6
+        fixture = ROOT / "build" / "test-fixtures" / "ch14-absolute-only.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch14_numerical_stability.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "invalid tolerance policy: equal relative errors disagree across scales\n",
+        )
+
+    def test_accepts_chapter_fourteen_with_numerical_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch14",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch14\n"
+            "evidence=7/7\n"
+            "oracle=passed cancel=(0.000e+00,5.000e-09,5.000e-09) "
+            "sums=(0.0,1.0,1.0) "
+            "linear=(4.000e+08,1.000e-02,2.828e+08,0.000e+00) "
+            "tolerance=(1,1,1,0)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

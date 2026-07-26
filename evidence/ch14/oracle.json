@@ -1,0 +1,32 @@
+{
+  "provenance": "80-digit Decimal cancellation and summation values, analytic eigenvalues of the symmetric two-by-two matrix, and a closed-form perturbed solution provide independent high-precision oracles",
+  "decimal_precision": 80,
+  "cancellation_input": "1e16",
+  "summation_values": ["1e16", "1", "-1e16"],
+  "matrix_delta": "1e-8",
+  "rhs_perturbation": "1e-10",
+  "relative_tolerance": 1e-6,
+  "absolute_tolerance": 0.0,
+  "misconfigured_absolute_tolerance": 1e-6,
+  "decimal_tolerance": "1e-23",
+  "linear_relative_tolerance": 1e-7,
+  "linear_forward_tolerance": 2e-9,
+  "minimum_amplification": 2e8,
+  "maximum_residual": 1e-15,
+  "expected": {
+    "cancellation_exact": "4.999999999999999875000000000000006249999999999999609375e-9",
+    "cancellation_naive": 0.0,
+    "summation_naive": 0.0,
+    "summation_compensated": 1.0,
+    "summation_exact": "1.0",
+    "tolerance_flags": [true, true, true, false]
+  },
+  "published_markers": [
+    "直接相减得到 $0$",
+    "稳定改写与高精度值均为 $5.000\\times10^{-9}$",
+    "普通求和得到 $0$，补偿求和与 Decimal 均得到 $1$",
+    "条件数约为 $4.000\\times10^8$",
+    "前向误差为 $1.000\\times10^{-2}$",
+    "相对残差为零"
+  ]
+}

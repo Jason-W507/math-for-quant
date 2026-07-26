@@ -195,6 +195,12 @@
     {"zh": "KKT 条件", "en": "Karush-Kuhn-Tucker conditions", "definition": "由原可行、对偶可行、驻点和互补松弛组成的一阶最优性条件。"},
     {"zh": "Lagrange 对偶", "en": "Lagrange duality", "definition": "通过对原变量极小化 Lagrangian 构造原问题下界的框架。"},
     {"zh": "强对偶", "en": "strong duality", "definition": "原问题与对偶问题最优值相等、对偶间隙为零的性质。"},
+    {"zh": "机器精度", "en": "unit roundoff", "definition": "浮点正常范围内正确舍入一次基本运算的标准相对误差界。"},
+    {"zh": "前向误差", "en": "forward error", "definition": "数值答案与精确答案之间经过尺度化的差异。"},
+    {"zh": "后向误差", "en": "backward error", "definition": "使数值答案成为精确解所需的最小输入扰动。"},
+    {"zh": "算法稳定性", "en": "algorithmic stability", "definition": "算法结果可解释为邻近输入之精确答案的性质。"},
+    {"zh": "病态问题", "en": "ill-conditioned problem", "definition": "精确答案对微小输入扰动高度敏感的问题。"},
+    {"zh": "补偿求和", "en": "compensated summation", "definition": "显式追踪加法舍入中丢失低位以降低累计误差的求和方法。"},
     {
       "zh": "样本外",
       "en": "out of sample",

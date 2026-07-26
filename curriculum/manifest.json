@@ -325,7 +325,25 @@
         "capstone_connection": "tex/upper/chapters/ch13.tex"
       }
     },
-    {"id":"upper.ch14","title":"浮点数、数值线代与病态问题","volume":"upper","state":"planned","prerequisites":["upper.ch06"]},
+    {
+      "id": "upper.ch14",
+      "title": "浮点数、数值线代与病态问题",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch06"],
+      "evidence": {
+        "notation_symbols": ["u", "\\kappa_2(A)"],
+        "glossary_terms": ["机器精度", "前向误差", "后向误差", "算法稳定性", "病态问题", "补偿求和"],
+        "notation_and_assumptions": "tex/upper/chapters/ch14.tex",
+        "core_derivation": "tex/upper/chapters/ch14.tex",
+        "independent_oracle": {"source": "notebooks/upper/ch14_numerical_stability.py", "oracle": "evidence/ch14/oracle.json", "command": ["{python}", "notebooks/upper/ch14_numerical_stability.py"]},
+        "questions": "tex/upper/chapters/ch14-questions.tex",
+        "hints": "tex/upper/chapters/ch14-hints.tex",
+        "solutions": "tex/upper/solutions/ch14.tex",
+        "capstone_connection": "tex/upper/chapters/ch14.tex"
+      }
+    },
     {"id":"upper.ch15","title":"Monte Carlo、bootstrap 与方差缩减","volume":"upper","state":"planned","prerequisites":["upper.ch09","upper.ch14"]},
     {"id":"upper.ch16","title":"研究有效性、样本外与交易摩擦","volume":"upper","state":"planned","prerequisites":["upper.ch10","upper.ch12","upper.ch13","upper.ch15"]},
     {"id":"upper.ch17","title":"可复现研究审计","volume":"upper","state":"planned","prerequisites":["upper.ch16"]}
