@@ -42,10 +42,10 @@ ARMA 模型把当前值写成过去状态和创新的有限线性组合：
 
 标量局部水平模型为
 \[
-  x_t=x_{t-1}+w_t,\quad w_t\sim(0,Q),
-  \qquad y_t=x_t+v_t,\quad v_t\sim(0,R),
+  x_t=x_{t-1}+w_t,\quad w_t\sim\mathcal N(0,Q),
+  \qquad y_t=x_t+v_t,\quad v_t\sim\mathcal N(0,R),
 \]
-并假设两类噪声跨期且彼此不相关。Kalman 滤波先预测，再用新观测修正：
+并假设两类噪声跨期且彼此独立，也与初始状态独立。在这些线性高斯假设下，Kalman 滤波递推条件均值与条件方差；它先预测，再用新观测修正：
 \[
   P_{t\mid t-1}=P_{t-1\mid t-1}+Q,
   \quad K_t=\frac{P_{t\mid t-1}}{P_{t\mid t-1}+R},
