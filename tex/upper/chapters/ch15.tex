@@ -1,0 +1,66 @@
+\chapter{Monte Carlo、bootstrap 与方差缩减}
+\label{ch:monte-carlo}
+
+\begin{introduction}
+  \item 先修：第 9 章的大数定律与中心极限定理，第 14 章的浮点误差和容差。
+  \item 学习产出：能从积分或期望推导 Monte Carlo 估计量及标准误，使用独立 oracle 与统计容差验收模拟，选择控制变量，并判断 IID bootstrap 何时失效。
+  \item 研究连接：衍生品定价、风险度量、策略不确定性与执行仿真都需要把抽样误差、模型误差和实现错误分开记账。
+\end{introduction}
+
+\section{先写期望，再运行随机数}
+
+设 $X_1,\ldots,X_N$ 独立同分布，$\mu=\mathbb E[g(X)]$ 且
+$\sigma^2=\operatorname{Var}(g(X))<\infty$。Monte Carlo 估计量和标准误为
+\[
+  \hat\mu_N=\frac1N\sum_{i=1}^N g(X_i),\qquad
+  \operatorname{SE}(\hat\mu_N)=\frac{\sigma}{\sqrt N}.
+\]
+线性期望给出 $\mathbb E[\hat\mu_N]=\mu$；独立性使协方差项消失，从而
+$\operatorname{Var}(\hat\mu_N)=\sigma^2/N$。所以把标准误减半通常需要四倍样本，固定 seed 只能复现实验，不能改善这个误差率。
+
+证据实验取 $U\sim\operatorname{Unif}(0,1)$、$g(U)=U^2$。解析积分给出
+\[
+  \mu=\int_0^1u^2\,du=\frac13,\qquad
+  \sigma^2=\frac15-\frac19=\frac4{45}.
+\]
+程序使用固定随机源，但不锁死某次估计值：它要求误差不超过四个样本标准误，并用两组样本量验证标准误按 $N^{-1/2}$ 缩小。四倍标准误不是“永远正确”的保证；它是有限方差、近似正态误差下的显式预算。重尾、稀有事件或自相关样本必须另作诊断。
+
+\section{误差预算不只包含抽样方差}
+
+一份可审计的模拟报告至少分开记录：离散化或模型偏差、Monte Carlo 方差、浮点误差、伪随机数与并行分块规则、实现错误。解析解或可枚举小问题先验证实现；再用独立 seeds 或子流评估抽样不确定性。只展示一条“收敛得很平滑”的路径会把随机波动和选择性汇报藏起来。
+
+对置信区间还应说明使用的是已知方差、样本方差、渐近正态近似还是非渐近界。若估计对象是分位数、最大回撤或罕见违约概率，均值的中心极限定理不能自动证明相同区间有效。
+
+\section{控制变量：用已知期望换取更小方差}
+
+若 $h(X)$ 的期望 $m$ 已知，可构造
+\[
+  Y_\beta=g(X)-\beta\{h(X)-m\},\qquad
+  \mathbb E[Y_\beta]=\mathbb E[g(X)].
+\]
+展开方差并对 $\beta$ 求导，得到
+\[
+  \beta^*=\frac{\operatorname{Cov}(g,h)}{\operatorname{Var}(h)}.
+\]
+对 $g(U)=U^2$、$h(U)=U$，有 $m=1/2$、
+$\operatorname{Cov}(U^2,U)=1/12=\operatorname{Var}(U)$，故解析最优系数为 $1$。
+原方差为 $4/45$，调整后方差为 $1/180$，理论方差缩减倍数为 $16$。同一随机样本上的实测缩减只作交叉验证；若用同一批数据估计 $\beta$ 和夸大收益，还应报告估计误差或用独立 pilot 样本。
+
+反变量、分层抽样、重要性抽样和共同随机数也通过改变协方差或抽样分配降低方差，但都必须保持目标期望不变并重新推导权重。较小的样本方差不能补偿错误的目标分布。
+
+\section{Bootstrap 是条件于样本的重抽样}
+
+IID bootstrap 用经验分布
+\[
+  \hat F_n=\frac1n\sum_{i=1}^n\delta_{X_i}
+\]
+替代未知总体分布，再从 $\hat F_n$ 有放回抽取大小为 $n$ 的样本。对原样本
+$(1,2,4)$，共有 $3^3=27$ 个等概率重抽样；穷举 27 个重抽样均值可得条件均值 $7/3$，bootstrap 方差为 $14/27$。这是一项离散精确 oracle，不依赖随机 seed 或大量重复次数。
+
+IID bootstrap 的关键假设是观察可交换且目标统计量对经验分布足够规则。时间序列、订单流和面板簇具有依赖时，逐点重抽样会破坏相关结构，应根据数据生成过程考虑移动块、平稳、簇或参数 bootstrap。极值、边界参数、小样本重尾统计量和经过模型选择的估计量也可能不满足普通 bootstrap 的一致性条件。证据程序因此在数据声明为有依赖时稳定拒绝 IID bootstrap，而不是悄悄给出过窄区间。
+
+\input{tex/upper/chapters/ch15-questions}
+\input{tex/upper/chapters/ch15-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+Monte Carlo 的 $N^{-1/2}$ 误差率来自方差推导；方差缩减必须保持目标期望；bootstrap 近似的是条件抽样分布，不能脱离依赖和正则性假设。上册 Capstone 将要求模拟结论附带解析/枚举 oracle、误差预算、随机源协议和失败边界。

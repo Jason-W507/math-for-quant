@@ -235,6 +235,36 @@
       "zh": "出版产物",
       "en": "publication artifact",
       "definition": "由权威 TeX 或 Jupytext 源生成、供读者使用但不作为第二份手工来源维护的 PDF 或 notebook。"
+    },
+    {
+      "zh": "Monte Carlo",
+      "en": "Monte Carlo",
+      "definition": "用随机样本平均近似期望或积分并显式量化抽样误差的方法。"
+    },
+    {
+      "zh": "标准误",
+      "en": "standard error",
+      "definition": "估计量在重复抽样下标准差的理论值或估计值。"
+    },
+    {
+      "zh": "方差缩减",
+      "en": "variance reduction",
+      "definition": "在保持目标期望不变的前提下减少模拟估计量方差的方法。"
+    },
+    {
+      "zh": "控制变量",
+      "en": "control variate",
+      "definition": "利用已知期望且与目标相关的变量构造更低方差估计量的方法。"
+    },
+    {
+      "zh": "bootstrap",
+      "en": "bootstrap",
+      "definition": "从经验分布或拟合模型重复重抽样以近似统计量抽样分布的方法。"
+    },
+    {
+      "zh": "IID bootstrap",
+      "en": "IID bootstrap",
+      "definition": "把观察视为独立同分布并从经验分布逐点有放回重抽样的 bootstrap。"
     }
   ]
 }

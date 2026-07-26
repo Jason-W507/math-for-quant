@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=15\n"
+            "accepted-units=16\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -203,7 +203,16 @@ class LearningUnitContractTests(unittest.TestCase):
             check=False,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertEqual(result.stdout, "reader registries=passed symbols=47 terms=91\n")
+        symbol_count = len(
+            json.loads((ROOT / "curriculum" / "notation.json").read_text(encoding="utf-8"))["symbols"]
+        )
+        term_count = len(
+            json.loads((ROOT / "curriculum" / "glossary.json").read_text(encoding="utf-8"))["terms"]
+        )
+        self.assertEqual(
+            result.stdout,
+            f"reader registries=passed symbols={symbol_count} terms={term_count}\n",
+        )
         self.assertEqual(result.stderr, "")
 
     def test_volume_scope_rejects_a_missing_publication_artifact(self) -> None:
@@ -1203,6 +1212,114 @@ class LearningUnitContractTests(unittest.TestCase):
             "sums=(0.0,1.0,1.0) "
             "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
             "tolerance=(1,1,1,0)\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_fifteen_notebook_reproduces_simulation_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch15_monte_carlo.py",
+                "--output",
+                "build/notebooks/upper/ch15_monte_carlo.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch15_monte_carlo.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed "
+            "mc=(error<=4se,rate=passed) "
+            "control=(beta=1.0,theory_vrf=16.0,sample_vrf>=10) "
+            "bootstrap=(mean=2.333333,var=0.518519,states=27)\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_fifteen_rejects_iid_bootstrap_for_dependent_data(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch15" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["bootstrap_observations_iid"] = False
+        fixture = ROOT / "build" / "test-fixtures" / "ch15-dependent.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch15_monte_carlo.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "iid bootstrap invalid: observations are dependent; use a dependence-aware resampling scheme\n",
+        )
+
+    def test_chapter_fifteen_rejects_an_unreasonably_tight_mc_budget(self) -> None:
+        oracle = json.loads(
+            (ROOT / "evidence" / "ch15" / "oracle.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        oracle["confidence_multiplier"] = 1.0
+        fixture = ROOT / "build" / "test-fixtures" / "ch15-tight-budget.json"
+        fixture.parent.mkdir(parents=True, exist_ok=True)
+        fixture.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "notebooks" / "upper" / "ch15_monte_carlo.py"),
+                    str(fixture),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            fixture.unlink(missing_ok=True)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "invalid Monte Carlo tolerance: use at least three standard errors\n",
+        )
+
+    def test_accepts_chapter_fifteen_with_simulation_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch15",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch15\n"
+            "evidence=7/7\n"
+            "oracle=passed mc=(error<=4se,rate=passed) "
+            "control=(beta=1.0,theory_vrf=16.0,sample_vrf>=10) "
+            "bootstrap=(mean=2.333333,var=0.518519,states=27)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

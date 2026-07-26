@@ -344,7 +344,25 @@
         "capstone_connection": "tex/upper/chapters/ch14.tex"
       }
     },
-    {"id":"upper.ch15","title":"Monte Carlo、bootstrap 与方差缩减","volume":"upper","state":"planned","prerequisites":["upper.ch09","upper.ch14"]},
+    {
+      "id": "upper.ch15",
+      "title": "Monte Carlo、bootstrap 与方差缩减",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch09", "upper.ch14"],
+      "evidence": {
+        "notation_symbols": ["\\hat\\mu_N", "\\hat F_n"],
+        "glossary_terms": ["Monte Carlo", "标准误", "方差缩减", "控制变量", "bootstrap", "IID bootstrap"],
+        "notation_and_assumptions": "tex/upper/chapters/ch15.tex",
+        "core_derivation": "tex/upper/chapters/ch15.tex",
+        "independent_oracle": {"source": "notebooks/upper/ch15_monte_carlo.py", "oracle": "evidence/ch15/oracle.json", "command": ["{python}", "notebooks/upper/ch15_monte_carlo.py"]},
+        "questions": "tex/upper/chapters/ch15-questions.tex",
+        "hints": "tex/upper/chapters/ch15-hints.tex",
+        "solutions": "tex/upper/solutions/ch15.tex",
+        "capstone_connection": "tex/upper/chapters/ch15.tex"
+      }
+    },
     {"id":"upper.ch16","title":"研究有效性、样本外与交易摩擦","volume":"upper","state":"planned","prerequisites":["upper.ch10","upper.ch12","upper.ch13","upper.ch15"]},
     {"id":"upper.ch17","title":"可复现研究审计","volume":"upper","state":"planned","prerequisites":["upper.ch16"]}
   ],

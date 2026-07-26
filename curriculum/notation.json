@@ -187,6 +187,8 @@
     {"symbol": "L(x,\\lambda,\\nu)", "meaning": "原目标与不等式、等式约束乘子组成的 Lagrangian", "domain": "extended real-valued function", "first_unit": "upper.ch13"},
     {"symbol": "q(\\lambda,\\nu)", "meaning": "对原变量极小化 Lagrangian 得到的对偶函数", "domain": "concave extended real-valued function", "first_unit": "upper.ch13"},
     {"symbol": "u", "meaning": "浮点系统在正常范围内的单位舍入误差", "domain": "positive real", "first_unit": "upper.ch14"},
+    {"symbol": "\\hat\\mu_N", "meaning": "N 个独立样本构成的 Monte Carlo 均值估计", "domain": "random estimator", "first_unit": "upper.ch15"},
+    {"symbol": "\\hat F_n", "meaning": "n 个观察定义的经验分布", "domain": "discrete probability measure", "first_unit": "upper.ch15"},
     {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",
