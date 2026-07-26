@@ -182,6 +182,13 @@
     {"zh": "Poisson 过程", "en": "Poisson process", "definition": "具有独立平稳增量且计数增量服从 Poisson 分布的计数过程。"},
     {"zh": "Brownian 运动", "en": "Brownian motion", "definition": "从零开始、具有连续路径及独立平稳高斯增量的过程。"},
     {"zh": "二次变差", "en": "quadratic variation", "definition": "沿越来越细分割对路径增量平方求和得到的极限对象。"},
+    {"zh": "弱平稳", "en": "weak stationarity", "definition": "均值不随时间变化且协方差只依赖时间差的有限二阶矩过程性质。"},
+    {"zh": "白噪声", "en": "white noise", "definition": "零均值、常方差且不同时点互不相关的过程。"},
+    {"zh": "创新", "en": "innovation", "definition": "相对于指定过去信息条件均值为零的新预测误差。"},
+    {"zh": "状态空间模型", "en": "state-space model", "definition": "用状态转移方程和观测方程分离不可见动态状态与测量噪声的模型。"},
+    {"zh": "Kalman 滤波", "en": "Kalman filter", "definition": "在线性高斯状态空间模型中按预测与更新步骤递推条件均值和协方差的算法。"},
+    {"zh": "伪回归", "en": "spurious regression", "definition": "非平稳序列因共同随机趋势呈现高拟合或显著性但缺少稳定关系的现象。"},
+    {"zh": "结构变化", "en": "structural break", "definition": "数据生成过程的参数或分布在时间上发生持久改变。"},
     {
       "zh": "样本外",
       "en": "out of sample",

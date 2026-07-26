@@ -189,7 +189,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=12\n"
+            "accepted-units=13\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1011,6 +1011,56 @@ class LearningUnitContractTests(unittest.TestCase):
             "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
             "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
             "nonmarkov=(0.5,1.0)\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_twelve_notebook_reproduces_time_series_oracles(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch12_time_series.py",
+                "--output",
+                "build/notebooks/upper/ch12_time_series.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch12_time_series.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed "
+            "ar1=(-0.013814,2.764404,0.799071) "
+            "forecast=(0.512000,2.049600) "
+            "kalman=(0.555556,0.084615,0.152494,0.410431) "
+            "spurious=(0.344011,0.000216) "
+            "split_mse=(1.436939,2.226153)\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_accepts_chapter_twelve_with_time_series_oracles(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch12",
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch12\n"
+            "evidence=7/7\n"
+            "oracle=passed ar1=(-0.013814,2.764404,0.799071) "
+            "forecast=(0.512000,2.049600) "
+            "kalman=(0.555556,0.084615,0.152494,0.410431) "
+            "spurious=(0.344011,0.000216) "
+            "split_mse=(1.436939,2.226153)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

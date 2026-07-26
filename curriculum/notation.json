@@ -180,6 +180,10 @@
     {"symbol": "P_{ij}", "meaning": "Markov 链从状态 i 到状态 j 的一步转移概率", "domain": "unit interval", "first_unit": "upper.ch11"},
     {"symbol": "N_t", "meaning": "截至时点 t 的 Poisson 过程计数", "domain": "nonnegative integer", "first_unit": "upper.ch11"},
     {"symbol": "W_t", "meaning": "时点 t 的标准 Brownian 运动值", "domain": "real random variable", "first_unit": "upper.ch11"},
+    {"symbol": "\\gamma(h)", "meaning": "平稳时间序列相隔 h 期的自协方差", "domain": "real", "first_unit": "upper.ch12"},
+    {"symbol": "\\varepsilon_t", "meaning": "时点 t 相对于过去信息的创新", "domain": "zero-mean random variable", "first_unit": "upper.ch12"},
+    {"symbol": "x_{t\\mid t}", "meaning": "使用截至 t 时点观测得到的状态滤波均值", "domain": "state estimate", "first_unit": "upper.ch12"},
+    {"symbol": "K_t", "meaning": "时点 t 的 Kalman 增益", "domain": "real in [0,1] in the scalar model", "first_unit": "upper.ch12"},
     {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",
