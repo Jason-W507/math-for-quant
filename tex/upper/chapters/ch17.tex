@@ -110,7 +110,7 @@ CSV 必须恰好包含 observation id、事件时间、可得时间、决策时�
 
 本章成本只有佣金、价差和冲击三项固定教学值。审计程序要求这三个 key 恰好存在；删除一个或添加未解释项都失败。但固定值没有成交量、参与率、波动率和未成交路径，因此不能产生容量结论。A 股的 T+1、涨跌幅、停牌、复权可得性和融券资格仍按第 16 章条件化协议核验，本数据包不声称实现交易所级撮合。
 
-许可审计检查数据 README 中的 SPDX 标识 \texttt{CC0-1.0}。它只覆盖这三行原创合成数据，不自动覆盖代码、书稿、ElegantBook 或未来真实数据。报告应逐资产列出来源和许可，而不是用仓库根 LICENSE 一句话替代。
+许可审计读取 \path{evidence/ch17/licenses.json}，逐项核验四类资产：三行合成数据使用 \texttt{CC0-1.0}，审计代码使用 MIT，原创章节与题解使用 \texttt{CC BY-NC-SA 4.0}，ElegantBook 类文件使用 \texttt{LPPL-1.3c}。每项记录实际路径、许可文件、稳定标识与作用域；数据许可只覆盖三行原创合成数据，代码许可不自动覆盖书稿或模板。报告不能用仓库根 LICENSE 一句话替代逐资产边界。
 
 限制报告有六项，并由哈希冻结。报告必须回答“这个项目不能证明什么”：真实资产表现、广泛泛化、复利收益、校准成本、官方日历和未来盈利。删掉限制会使包看起来更强，却让证据更弱。
 
@@ -142,7 +142,7 @@ CSV 必须恰好包含 observation id、事件时间、可得时间、决策时�
 \end{center}
 成功摘要必须包含：
 \begin{center}
-\small\texttt{oracle=passed audit=passed package=upper-capstone-v1 data=research\_rows.csv rows=3 ... net=0.034000 ... license=CC0-1.0 limitations=6}
+\small\texttt{oracle=passed audit=passed package=upper-capstone-v1 data=research\_rows.csv rows=3 ... net=0.034000 ... license=CC0-1.0 licenses=4 limitations=6}
 \end{center}
 统一 notebook 构建入口还要证明文本源与 \texttt{.ipynb} 往返语义一致。干净副本测试、泄漏测试和限制报告篡改测试分别证明依赖边界、内容门禁和报告完整性。
 

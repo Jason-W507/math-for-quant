@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "data",
+      "paths": ["data/ch17/research_rows.csv"],
+      "license_id": "CC0-1.0",
+      "license_file": "data/ch17/README.md",
+      "required_marker": "SPDX-License-Identifier: CC0-1.0",
+      "scope": "The three original synthetic research rows only."
+    },
+    {
+      "id": "code",
+      "paths": ["notebooks/upper/ch17_research_audit.py"],
+      "license_id": "MIT",
+      "license_file": "LICENSE",
+      "required_marker": "MIT License",
+      "scope": "The original Chapter 17 audit program."
+    },
+    {
+      "id": "manuscript",
+      "paths": [
+        "tex/upper/chapters/ch17.tex",
+        "tex/upper/chapters/ch17-questions.tex",
+        "tex/upper/chapters/ch17-hints.tex",
+        "tex/upper/solutions/ch17.tex"
+      ],
+      "license_id": "CC-BY-NC-SA-4.0",
+      "license_file": "LICENSE-CONTENT.md",
+      "required_marker": "CC BY-NC-SA 4.0",
+      "scope": "The original Chapter 17 manuscript, questions, hints and solutions."
+    },
+    {
+      "id": "template",
+      "paths": ["vendor/elegantbook/elegantbook.cls"],
+      "license_id": "LPPL-1.3c",
+      "license_file": "vendor/elegantbook/LPPL-License.txt",
+      "required_marker": "LPPL Version 1.3c",
+      "scope": "The vendored ElegantBook class used to typeset the publication."
+    }
+  ]
+}

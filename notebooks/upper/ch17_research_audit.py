@@ -123,12 +123,37 @@ def audit(oracle_path: Path, package_root: Path) -> int:
     if math.fsum(probe) != float(expected["stable_probe_sum"]):
         fail("numeric gate failed: stable sum does not match independent oracle")
 
-    license_path = package_root / oracle["data_license_path"]
-    license_marker = f"SPDX-License-Identifier: {oracle['license_id']}"
-    if not license_path.is_file() or license_marker not in license_path.read_text(
-        encoding="utf-8"
+    license_manifest_path = package_root / oracle["license_manifest_path"]
+    if not license_manifest_path.is_file():
+        fail("license gate failed: asset license manifest is missing")
+    license_manifest_bytes = license_manifest_path.read_bytes()
+    if (
+        hashlib.sha256(license_manifest_bytes).hexdigest()
+        != oracle["license_manifest_sha256"]
     ):
-        fail("license gate failed: declared data license is missing")
+        fail("license gate failed: asset license manifest checksum mismatch")
+    license_manifest = json.loads(license_manifest_bytes)
+    licensed_assets = license_manifest.get("assets", [])
+    if {asset.get("id") for asset in licensed_assets} != {
+        "data",
+        "code",
+        "manuscript",
+        "template",
+    }:
+        fail("license gate failed: required asset classes are incomplete")
+    for asset in licensed_assets:
+        asset_id = str(asset["id"])
+        scope = str(asset.get("scope", "")).strip()
+        if not scope:
+            fail(f"license gate failed: {asset_id} scope is missing")
+        for relative in asset["paths"]:
+            if not (package_root / relative).is_file():
+                fail(f"license gate failed: {asset_id} asset is missing")
+        license_path = package_root / asset["license_file"]
+        if not license_path.is_file() or asset["required_marker"] not in (
+            license_path.read_text(encoding="utf-8")
+        ):
+            fail(f"license gate failed: {asset_id} license marker is missing")
 
     limitations_path = package_root / oracle["limitations_path"]
     if not limitations_path.is_file():
@@ -150,7 +175,8 @@ def audit(oracle_path: Path, package_root: Path) -> int:
         "multiplicity=passed "
         f"performance=(gross={gross_return:.6f},cost={total_cost:.6f},"
         f"net={net_return:.6f}) numeric=passed "
-        f"license={oracle['license_id']} limitations={len(limitations)}"
+        f"license={oracle['license_id']} licenses={len(licensed_assets)} "
+        f"limitations={len(limitations)}"
     )
     return 0
 

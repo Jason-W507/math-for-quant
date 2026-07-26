@@ -6,6 +6,8 @@
   "data_sha256": "5a2561b90d4e692e1100c84d2689199bd9f008f811a45b442524996290d8c2f0",
   "data_license_path": "data/ch17/README.md",
   "license_id": "CC0-1.0",
+  "license_manifest_path": "evidence/ch17/licenses.json",
+  "license_manifest_sha256": "b79b5fbd64febc0c63162925d0183d59b825f4b160c8d9895cb4441f4b487207",
   "limitations_path": "evidence/ch17/limitations.md",
   "limitations_sha256": "37575ac921df97d8f2f2e1744141af9bb75636a57806b3d9f83472393faf7c23",
   "expected_limitations": 6,
@@ -21,7 +23,16 @@
     "data/ch17/README.md",
     "data/ch17/research_rows.csv",
     "evidence/ch17/oracle.json",
-    "evidence/ch17/limitations.md"
+    "evidence/ch17/limitations.md",
+    "evidence/ch17/licenses.json",
+    "LICENSE",
+    "LICENSE-CONTENT.md",
+    "tex/upper/chapters/ch17.tex",
+    "tex/upper/chapters/ch17-questions.tex",
+    "tex/upper/chapters/ch17-hints.tex",
+    "tex/upper/solutions/ch17.tex",
+    "vendor/elegantbook/elegantbook.cls",
+    "vendor/elegantbook/LPPL-License.txt"
   ],
   "command": [
     "uv",
@@ -62,6 +73,6 @@
     "package=upper-capstone-v1",
     "data=research_rows.csv rows=3",
     "gross=0.040000,cost=0.006000,net=0.034000",
-    "numeric=passed license=CC0-1.0 limitations=6"
+    "numeric=passed license=CC0-1.0 licenses=4 limitations=6"
   ]
 }

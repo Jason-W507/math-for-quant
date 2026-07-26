@@ -1589,7 +1589,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "data=research_rows.csv rows=3 timeline=passed split=passed "
             "multiplicity=passed "
             "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
-            "numeric=passed license=CC0-1.0 limitations=6\n",
+            "numeric=passed license=CC0-1.0 licenses=4 limitations=6\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -1607,7 +1607,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "data=research_rows.csv rows=3 timeline=passed split=passed "
             "multiplicity=passed "
             "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
-            "numeric=passed license=CC0-1.0 limitations=6\n",
+            "numeric=passed license=CC0-1.0 licenses=4 limitations=6\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -1654,6 +1654,24 @@ class LearningUnitContractTests(unittest.TestCase):
             "report gate failed: limitation report checksum mismatch\n",
         )
 
+    def test_chapter_seventeen_rejects_a_missing_code_license(self) -> None:
+        def remove_code_license(root: Path, _oracle: dict[str, Any]) -> None:
+            (root / "LICENSE").write_text(
+                "No license declaration.\n",
+                encoding="utf-8",
+            )
+
+        result = self.run_chapter_seventeen_package_fixture(
+            "missing-code-license",
+            remove_code_license,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "license gate failed: code license marker is missing\n",
+        )
+
     def test_accepts_chapter_seventeen_with_capstone_audit(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",
@@ -1670,7 +1688,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "data=research_rows.csv rows=3 timeline=passed split=passed "
             "multiplicity=passed "
             "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
-            "numeric=passed license=CC0-1.0 limitations=6\n"
+            "numeric=passed license=CC0-1.0 licenses=4 limitations=6\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
