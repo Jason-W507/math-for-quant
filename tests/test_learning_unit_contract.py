@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import shutil
 import subprocess
 import sys
 import unittest
@@ -62,6 +64,40 @@ class LearningUnitContractTests(unittest.TestCase):
             )
         finally:
             fixture.unlink(missing_ok=True)
+
+    def run_chapter_seventeen_package_fixture(
+        self,
+        fixture_name: str,
+        mutate: Callable[[Path, dict[str, Any]], None],
+    ) -> subprocess.CompletedProcess[str]:
+        fixture_root = ROOT / "build" / "test-packages" / fixture_name
+        if fixture_root.exists():
+            shutil.rmtree(fixture_root)
+        shutil.copytree(ROOT / "data" / "ch17", fixture_root / "data" / "ch17")
+        shutil.copytree(
+            ROOT / "evidence" / "ch17", fixture_root / "evidence" / "ch17"
+        )
+        oracle_path = fixture_root / "evidence" / "ch17" / "oracle.json"
+        oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+        mutate(fixture_root, oracle)
+        oracle_path.write_text(json.dumps(oracle), encoding="utf-8")
+        try:
+            return subprocess.run(
+                [
+                    sys.executable,
+                    str(
+                        ROOT / "notebooks" / "upper" / "ch17_research_audit.py"
+                    ),
+                    str(oracle_path),
+                    str(fixture_root),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+        finally:
+            shutil.rmtree(fixture_root, ignore_errors=True)
 
     def test_rejects_an_accepted_unit_without_derivation_evidence(self) -> None:
         result = self.run_contract(
@@ -224,7 +260,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "question-levels=passed count=4\n"
             "registries=passed count=2\n"
             "course-graph=passed units=18\n"
-            "accepted-units=17\n"
+            "accepted-units=18\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
@@ -1506,6 +1542,118 @@ class LearningUnitContractTests(unittest.TestCase):
             "multiplicity=(tests=20,threshold=0.002500,p=0.002000) "
             "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
             "frictions=passed a_share=conditional\n"
+            "learning-unit contract passed\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_seventeen_notebook_reproduces_clean_research_package(
+        self,
+    ) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "build_notebook.py"),
+                "--source",
+                "notebooks/upper/ch17_research_audit.py",
+                "--output",
+                "build/notebooks/upper/ch17_research_audit.ipynb",
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "notebook=build/notebooks/upper/ch17_research_audit.ipynb\n"
+            "roundtrip=passed cells=2\n"
+            "execution=passed oracle=passed audit=passed package=upper-capstone-v1 "
+            "data=research_rows.csv rows=3 timeline=passed split=passed "
+            "multiplicity=passed "
+            "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
+            "numeric=passed license=CC0-1.0 limitations=6\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_seventeen_package_runs_from_a_clean_copy(self) -> None:
+        result = self.run_chapter_seventeen_package_fixture(
+            "clean",
+            lambda _root, _oracle: None,
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "oracle=passed audit=passed package=upper-capstone-v1 "
+            "data=research_rows.csv rows=3 timeline=passed split=passed "
+            "multiplicity=passed "
+            "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
+            "numeric=passed license=CC0-1.0 limitations=6\n",
+        )
+        self.assertEqual(result.stderr, "")
+
+    def test_chapter_seventeen_rejects_leakage_after_integrity_update(self) -> None:
+        def introduce_leakage(root: Path, oracle: dict[str, Any]) -> None:
+            data_path = root / oracle["data_path"]
+            text = data_path.read_text(encoding="utf-8").replace(
+                "2024-07-01T08:00:00+08:00",
+                "2024-07-01T09:31:00+08:00",
+                1,
+            )
+            data_path.write_text(text, encoding="utf-8")
+            oracle["data_sha256"] = hashlib.sha256(data_path.read_bytes()).hexdigest()
+
+        result = self.run_chapter_seventeen_package_fixture(
+            "leakage",
+            introduce_leakage,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "timeline gate failed: row 1 was unavailable at decision\n",
+        )
+
+    def test_chapter_seventeen_rejects_a_changed_limitation_report(self) -> None:
+        def change_limitations(root: Path, oracle: dict[str, Any]) -> None:
+            limitations = root / oracle["limitations_path"]
+            text = limitations.read_text(encoding="utf-8").replace(
+                "cannot establish generalization",
+                "proves broad generalization",
+                1,
+            )
+            limitations.write_text(text, encoding="utf-8")
+
+        result = self.run_chapter_seventeen_package_fixture(
+            "changed-limitations",
+            change_limitations,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "report gate failed: limitation report checksum mismatch\n",
+        )
+
+    def test_accepts_chapter_seventeen_with_capstone_audit(self) -> None:
+        result = self.run_contract(
+            "curriculum/manifest.json",
+            "--unit",
+            "upper.ch17",
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "unit=upper.ch17\n"
+            "evidence=7/7\n"
+            "oracle=passed audit=passed package=upper-capstone-v1 "
+            "data=research_rows.csv rows=3 timeline=passed split=passed "
+            "multiplicity=passed "
+            "performance=(gross=0.040000,cost=0.006000,net=0.034000) "
+            "numeric=passed license=CC0-1.0 limitations=6\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

@@ -310,6 +310,31 @@
       "zh": "实现差额",
       "en": "implementation shortfall",
       "definition": "相对决策基准衡量实际成交、延迟、冲击和未成交机会成本的执行损失。"
+    },
+    {
+      "zh": "可复现研究包",
+      "en": "reproducible research package",
+      "definition": "包含版本化输入、环境、命令、独立 oracle、失败协议与限制报告，使陌生审计者能从干净位置重建声明证据的研究交付物。"
+    },
+    {
+      "zh": "数据来源追踪",
+      "en": "data provenance",
+      "definition": "记录数据来源、取得时间、版本、变换、许可与责任边界，使每项输入能够追溯。"
+    },
+    {
+      "zh": "校验值",
+      "en": "checksum",
+      "definition": "由文件字节确定性计算、用于检测内容意外或未经声明变化的摘要值。"
+    },
+    {
+      "zh": "审计轨迹",
+      "en": "audit trail",
+      "definition": "按时间保存输入、命令、决策、输出、失败与修复的可追溯证据序列。"
+    },
+    {
+      "zh": "限制报告",
+      "en": "limitations report",
+      "definition": "明确当前数据、模型和实验不能支持哪些结论，以及解除限制仍需何种证据的报告。"
     }
   ]
 }

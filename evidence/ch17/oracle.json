@@ -1,0 +1,51 @@
+{
+  "package_id": "upper-capstone-v1",
+  "absolute_tolerance": 1e-12,
+  "provenance": "The CSV checksum, four-time inequalities, Bonferroni threshold, gross-cost-net ledger, cancellation probe, license identifier, and limitation count are independently declared before the auditor runs",
+  "data_path": "data/ch17/research_rows.csv",
+  "data_sha256": "5a2561b90d4e692e1100c84d2689199bd9f008f811a45b442524996290d8c2f0",
+  "data_license_path": "data/ch17/README.md",
+  "license_id": "CC0-1.0",
+  "limitations_path": "evidence/ch17/limitations.md",
+  "limitations_sha256": "37575ac921df97d8f2f2e1744141af9bb75636a57806b3d9f83472393faf7c23",
+  "expected_limitations": 6,
+  "environment": {
+    "python_minimum": [3, 11],
+    "research_runtime": "Python standard library",
+    "notebook_builder": "project uv.lock"
+  },
+  "command": "uv run python notebooks/upper/ch17_research_audit.py",
+  "market_timezone": "Asia/Shanghai",
+  "market_utc_offset": "+08:00",
+  "trading_calendar": {
+    "id": "CN-A-share-teaching-fixture",
+    "version": "2024-07-v1",
+    "trading_dates": ["2024-07-01", "2024-07-02", "2024-07-03"]
+  },
+  "training_end": "2024-06-28",
+  "test_start": "2024-07-01",
+  "family_alpha": 0.05,
+  "tested_hypotheses": 20,
+  "selected_raw_p_value": 0.002,
+  "cost_components_per_trade": {
+    "commission": 0.0005,
+    "spread": 0.0007,
+    "impact": 0.0008
+  },
+  "numeric_probe": [10000000000000000.0, 1.0, -10000000000000000.0],
+  "expected": {
+    "rows": 3,
+    "bonferroni_threshold": 0.0025,
+    "gross_return": 0.04,
+    "total_cost": 0.006,
+    "net_return": 0.034,
+    "naive_probe_sum": 0.0,
+    "stable_probe_sum": 1.0
+  },
+  "published_markers": [
+    "package=upper-capstone-v1",
+    "data=research_rows.csv rows=3",
+    "gross=0.040000,cost=0.006000,net=0.034000",
+    "numeric=passed license=CC0-1.0 limitations=6"
+  ]
+}

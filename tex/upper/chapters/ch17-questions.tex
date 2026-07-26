@@ -1,0 +1,31 @@
+\section{四级问题与 Capstone 答辩}
+\begingroup\small
+\subsection*{口述概念}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 区分字节完整性、机械复现、统计有效性与可交易性，并各举一个“前者通过、后者失败”的例子。
+  \item 为什么“限制报告有六条”不等于“限制报告没有被篡改”？
+  \item 审计者为什么要在运行程序前完成独立手算？
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 从假设族和成本分项完整推导阈值 $0.0025$ 与净贡献 $0.034$，写明每个等式的假设。
+  \item 给出 $t_e\le t_a\le t_d<t_y$ 与版本化日历的审计谓词，并说明哈希为何不能推出该谓词。
+  \item 对 $(10^{16},1,-10^{16})$ 模拟 IEEE 双精度左到右累加，解释为何稳定和应为 $1$。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 从空目录复制声明资产并运行 Capstone；证明删掉原仓库数据后临时包仍能独立执行。
+  \item 修改第一行可得时间并更新 CSV 哈希，确认审计因时间泄漏而不是哈希失败。
+  \item 保持限制条数不变，把“不能建立泛化”改成“证明广泛泛化”，确认报告哈希门禁拒绝。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 当前包通过全部门禁。写出三条可以声称、三条不可声称的结论，并为每条定位证据或缺口。
+  \item 如果研究者说实际尝试了 200 个配置而非 20 个，你如何更新阈值、报告与样本外流程？
+  \item 若把合成数据换成真实分钟数据，现有证据矩阵还缺哪些数据、成交、许可和数值审计？
+\end{enumerate}
+\endgroup
+

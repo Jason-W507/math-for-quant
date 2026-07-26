@@ -386,7 +386,29 @@
         "capstone_connection": "tex/upper/chapters/ch16.tex"
       }
     },
-    {"id":"upper.ch17","title":"可复现研究审计","volume":"upper","state":"planned","prerequisites":["upper.ch16"]}
+    {
+      "id": "upper.ch17",
+      "title": "可复现研究审计",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch16"],
+      "evidence": {
+        "notation_symbols": ["h(D)", "R^{\\mathrm{net}}"],
+        "glossary_terms": ["可复现研究包", "数据来源追踪", "校验值", "审计轨迹", "限制报告"],
+        "notation_and_assumptions": "tex/upper/chapters/ch17.tex",
+        "core_derivation": "tex/upper/chapters/ch17.tex",
+        "independent_oracle": {
+          "source": "notebooks/upper/ch17_research_audit.py",
+          "oracle": "evidence/ch17/oracle.json",
+          "command": ["{python}", "notebooks/upper/ch17_research_audit.py"]
+        },
+        "questions": "tex/upper/chapters/ch17-questions.tex",
+        "hints": "tex/upper/chapters/ch17-hints.tex",
+        "solutions": "tex/upper/solutions/ch17.tex",
+        "capstone_connection": "tex/upper/chapters/ch17.tex"
+      }
+    }
   ],
   "tracks": [
     {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch10","upper.ch13","upper.ch16"]},

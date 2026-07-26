@@ -192,6 +192,7 @@
     {"symbol": "\\mathcal I_t", "meaning": "在决策时点 t 可被研究者合法使用的信息集合", "domain": "information set", "first_unit": "upper.ch16"},
     {"symbol": "R^{\\mathrm{net}}", "meaning": "从毛收益贡献扣除声明交易摩擦后的净收益贡献", "domain": "real, dimensionless", "first_unit": "upper.ch16"},
     {"symbol": "\\alpha/m", "meaning": "对 m 项假设检验控制族错误率的 Bonferroni 单项阈值", "domain": "unit interval", "first_unit": "upper.ch16"},
+    {"symbol": "h(D)", "meaning": "数据或报告字节串 D 的密码学哈希摘要", "domain": "fixed-length digest", "first_unit": "upper.ch17"},
     {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",

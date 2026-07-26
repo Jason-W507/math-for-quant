@@ -1,0 +1,43 @@
+\chapter{第 17 章 Capstone 分层答案}
+\label{app:ch17-solutions}
+
+\section*{口述概念}
+\begin{enumerate}[leftmargin=*]
+  \item 字节完整性说明文件与冻结哈希一致；机械复现说明同一包得到同一输出；统计有效性说明错误率与估计在假设下可信；可交易性说明订单在市场约束和成本下可实现。哈希正确的数据仍可泄漏；可复现的 $p$ 值仍可漏算尝试；统计显著信号仍可能无法成交。
+  \item 条数只约束结构。攻击者可把一条限制改成夸大声明而保持六个 bullet；对报告字节做校验值，才能检测这种保持计数的篡改。哈希仍不判断限制是否充分，内容审查不可省略。
+  \item 手算把期望值从被测实现中分离。若程序先算净收益，再让测试读取该输出作为 oracle，符号、单位或成本遗漏会同时污染结果与预期。独立账本能与实现真正发生分歧。
+\end{enumerate}
+
+\section*{笔试推导}
+\begin{enumerate}[leftmargin=*]
+  \item 假设族完整且目标为 Bonferroni FWER 时，阈值 $0.05/20=0.0025$；$0.002$ 通过。三项是同一资本基数的可加收益贡献，故毛贡献 $0.04$。三笔都发生且固定单笔成本 $0.002$，总成本 $0.006$，净贡献 $0.034$。若复利、权重或成交状态改变，等式须重写。
+  \item 对每行解析带时区时间并要求 $t_e\le t_a\le t_d<t_y$，再要求 $t_d$ 的本地日期属于冻结日历且不早于测试起点。哈希只比较文件字节，无法理解时间语义；泄漏 CSV 可以拥有完全合法的新哈希。
+  \item 双精度在 $10^{16}$ 附近的相邻可表示数间隔大于 $1$，所以第一步 $10^{16}+1$ 舍入回 $10^{16}$，再加 $-10^{16}$ 得 $0$。精确和为 $1$；稳定归约保留低位贡献并返回 $1$。
+\end{enumerate}
+
+\section*{数值编程}
+\begin{enumerate}[leftmargin=*]
+  \item 测试复制 \path{data/ch17} 与 \path{evidence/ch17} 到独立 root，再显式传入 oracle 与 package root。成功输出仍为 \texttt{package=upper-capstone-v1} 和 \texttt{net=0.034000}，证明不依赖原输入目录。
+  \item 把 8:00 改为 9:31 后重算 SHA-256，完整性门禁通过，时间门禁以非零状态报告第一行在决策时不可得。若不更新哈希，只能测到 checksum mismatch，不能证明泄漏检查有效。
+  \item 保持六个 bullet，只替换泛化措辞。程序应报告 \texttt{report gate failed: limitation report checksum mismatch}。恢复原字节后再运行，确认不是路径或编码问题。
+\end{enumerate}
+
+\section*{研究判断}
+\begin{enumerate}[leftmargin=*]
+  \item 可以声称：当前合成 CSV 与冻结哈希一致；三行满足声明时间门禁；给定固定账本可复现净贡献 $0.034$。不可声称：真实市场有该收益；样本足以泛化；十倍资金仍保持净绩效。前三项分别由哈希、timeline 和 ledger 输出证明；后三项被合成数据、小样本与无容量模型直接限制。
+  \item 若完整族为 200，Bonferroni 阈值改为 $0.05/200=0.00025$，原 $p=0.002$ 不通过。应更新 append-only 尝试账本与 oracle，承认先前报告低估搜索；若最终测试已被反复观察，应退回开发证据并另设未见时间区间，而不是只改阈值。
+  \item 真实分钟数据还需：供应商与字段许可、原始文件校验、时区与交易日历、历史资产池和公司行动、报价/成交 schema、延迟和未成交、价差与冲击校准、容量压力情景、缺失/异常处理、聚合与浮点稳定、数据版本和下载时间。真实数据不能成为自身正确性的唯一 oracle。
+\end{enumerate}
+
+\section*{代码恢复路径与提交模板}
+依次保存三条命令结果：正常 notebook 构建；独立 package root 的直接审计；时间泄漏或报告篡改负例。最终证据摘要逐行保留以下四个标记：
+\begin{quote}
+\small\ttfamily
+package=upper-capstone-v1\\
+data=research\_rows.csv rows=3\\
+gross=0.040000,cost=0.006000,net=0.034000\\
+numeric=passed license=CC0-1.0 limitations=6
+\end{quote}
+% published-marker: data=research_rows.csv rows=3
+
+提交模板分四段：\textbf{声明}只写当前包能证明的结果；\textbf{证据}列文件、哈希、命令与输出；\textbf{失败}列注入方式、非零状态和稳定诊断；\textbf{限制}逐条保留合成数据、小样本、加法收益、固定成本、教学日历和非盈利证明。任何删除限制换取更漂亮叙事的修改，都必须被审计拒绝。
