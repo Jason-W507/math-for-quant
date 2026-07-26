@@ -71,8 +71,29 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
     qv_mean = float(quadratic_variation.mean())
     qv_variance = float(quadratic_variation.var(ddof=1))
 
-    martingale_conditional_means = np.array([-1.0, 1.0])
-    nonmarkov_probabilities = np.array([0.5, 1.0])
+    walk_outcomes = np.array(
+        [(first, second) for first in (-1.0, 1.0) for second in (-1.0, 1.0)]
+    )
+    walk_s1 = walk_outcomes[:, 0]
+    walk_s2 = walk_outcomes.sum(axis=1)
+    martingale_conditional_means = np.array(
+        [walk_s2[walk_s1 == state].mean() for state in (-1.0, 1.0)]
+    )
+
+    uv_outcomes = np.array(
+        [(u, v) for u in (0.0, 1.0) for v in (0.0, 1.0)]
+    )
+    x0 = uv_outcomes[:, 0]
+    x1 = uv_outcomes[:, 1]
+    x2 = x0.copy()
+    given_x1_zero = x1 == 0.0
+    given_x1_zero_x0_one = given_x1_zero & (x0 == 1.0)
+    nonmarkov_probabilities = np.array(
+        [
+            np.mean(x2[given_x1_zero] == 1.0),
+            np.mean(x2[given_x1_zero_x0_one] == 1.0),
+        ]
+    )
 
     simulation_tolerance = float(oracle["simulation_tolerance"])
     expected_horizon = np.asarray(oracle["expected_horizon_distribution"])

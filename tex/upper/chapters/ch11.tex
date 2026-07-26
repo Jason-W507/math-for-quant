@@ -21,8 +21,8 @@
 
 离散链的 Markov 性写为
 \[
-  \mathbb P(X_{n+1}=j\mid X_0,\ldots,X_n)
-  =\mathbb P(X_{n+1}=j\mid X_n)=P_{ij}.
+  \mathbb P(X_{n+1}=j\mid X_0=i_0,\ldots,X_n=i)
+  =\mathbb P(X_{n+1}=j\mid X_n=i)=P_{ij}.
 \]
 转移矩阵 $P=(P_{ij})$ 每行非负且和为一；$n$ 步转移由 Chapman--Kolmogorov 关系给出 $P^n$。稳态分布 $\pi$ 满足 $\pi P=\pi$，但稳态存在不自动保证从任意初值收敛，还需不可约、非周期等条件。
 
