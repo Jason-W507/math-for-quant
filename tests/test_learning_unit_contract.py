@@ -1697,6 +1697,36 @@ class LearningUnitContractTests(unittest.TestCase):
             "license gate failed: code asset paths are missing\n",
         )
 
+    def test_chapter_seventeen_rejects_a_license_path_outside_the_package(
+        self,
+    ) -> None:
+        def escape_to_original_checkout(root: Path, oracle: dict[str, Any]) -> None:
+            (root / "LICENSE").write_text(
+                "No license declaration.\n",
+                encoding="utf-8",
+            )
+            manifest_path = root / oracle["license_manifest_path"]
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            code = next(
+                asset for asset in manifest["assets"] if asset["id"] == "code"
+            )
+            code["license_file"] = str((ROOT / "LICENSE").resolve())
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            oracle["license_manifest_sha256"] = hashlib.sha256(
+                manifest_path.read_bytes()
+            ).hexdigest()
+
+        result = self.run_chapter_seventeen_package_fixture(
+            "escaped-code-license",
+            escape_to_original_checkout,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "license gate failed: code license file escapes package root\n",
+        )
+
     def test_accepts_chapter_seventeen_with_capstone_audit(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",

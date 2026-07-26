@@ -36,7 +36,28 @@ def fail(message: str) -> None:
     raise SystemExit(message)
 
 
+def package_path(package_root: Path, relative: object, error: str) -> Path:
+    if not isinstance(relative, str) or not relative.strip() or "\\" in relative:
+        fail(error)
+    declared = Path(relative)
+    if declared.is_absolute() or ".." in declared.parts:
+        fail(error)
+    root = package_root.resolve()
+    resolved = (root / declared).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        fail(error)
+    return resolved
+
+
 def audit(oracle_path: Path, package_root: Path) -> int:
+    package_root = package_root.resolve()
+    oracle_path = oracle_path.resolve()
+    try:
+        oracle_path.relative_to(package_root)
+    except ValueError:
+        fail("package gate failed: oracle escapes package root")
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
     tolerance = float(oracle["absolute_tolerance"])
 
@@ -45,11 +66,23 @@ def audit(oracle_path: Path, package_root: Path) -> int:
         fail("environment gate failed: Python version is below declared minimum")
     if environment["research_runtime"] != "Python standard library":
         fail("environment gate failed: research runtime is not reproducible")
-    for relative in oracle["package_files"]:
-        if not (package_root / relative).is_file():
+    package_files = oracle.get("package_files")
+    if not isinstance(package_files, list) or not package_files:
+        fail("package gate failed: declared file list is missing")
+    for relative in package_files:
+        declared_file = package_path(
+            package_root,
+            relative,
+            "package gate failed: declared path escapes package root",
+        )
+        if not declared_file.is_file():
             fail(f"package gate failed: missing declared file {relative}")
 
-    data_path = package_root / oracle["data_path"]
+    data_path = package_path(
+        package_root,
+        oracle["data_path"],
+        "data gate failed: declared path escapes package root",
+    )
     if not data_path.is_file():
         fail("data gate failed: declared research input is missing")
     observed_hash = hashlib.sha256(data_path.read_bytes()).hexdigest()
@@ -129,7 +162,11 @@ def audit(oracle_path: Path, package_root: Path) -> int:
     if math.fsum(probe) != float(expected["stable_probe_sum"]):
         fail("numeric gate failed: stable sum does not match independent oracle")
 
-    license_manifest_path = package_root / oracle["license_manifest_path"]
+    license_manifest_path = package_path(
+        package_root,
+        oracle["license_manifest_path"],
+        "license gate failed: manifest path escapes package root",
+    )
     if not license_manifest_path.is_file():
         fail("license gate failed: asset license manifest is missing")
     license_manifest_bytes = license_manifest_path.read_bytes()
@@ -170,15 +207,28 @@ def audit(oracle_path: Path, package_root: Path) -> int:
         if not isinstance(required_marker, str) or not required_marker.strip():
             fail(f"license gate failed: {asset_id} license marker is missing")
         for relative in paths:
-            if not (package_root / relative).is_file():
+            asset_path = package_path(
+                package_root,
+                relative,
+                f"license gate failed: {asset_id} asset path escapes package root",
+            )
+            if not asset_path.is_file():
                 fail(f"license gate failed: {asset_id} asset is missing")
-        license_path = package_root / license_file
+        license_path = package_path(
+            package_root,
+            license_file,
+            f"license gate failed: {asset_id} license file escapes package root",
+        )
         if not license_path.is_file() or required_marker not in (
             license_path.read_text(encoding="utf-8")
         ):
             fail(f"license gate failed: {asset_id} license marker is missing")
 
-    limitations_path = package_root / oracle["limitations_path"]
+    limitations_path = package_path(
+        package_root,
+        oracle["limitations_path"],
+        "report gate failed: limitation path escapes package root",
+    )
     if not limitations_path.is_file():
         fail("report gate failed: limitation report is missing")
     limitations_bytes = limitations_path.read_bytes()
