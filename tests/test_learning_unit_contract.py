@@ -1672,6 +1672,31 @@ class LearningUnitContractTests(unittest.TestCase):
             "license gate failed: code license marker is missing\n",
         )
 
+    def test_chapter_seventeen_rejects_a_vacuous_code_license_entry(self) -> None:
+        def empty_code_protocol(root: Path, oracle: dict[str, Any]) -> None:
+            manifest_path = root / oracle["license_manifest_path"]
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            code = next(
+                asset for asset in manifest["assets"] if asset["id"] == "code"
+            )
+            code["paths"] = []
+            code["required_marker"] = ""
+            manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+            oracle["license_manifest_sha256"] = hashlib.sha256(
+                manifest_path.read_bytes()
+            ).hexdigest()
+
+        result = self.run_chapter_seventeen_package_fixture(
+            "vacuous-code-license",
+            empty_code_protocol,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "license gate failed: code asset paths are missing\n",
+        )
+
     def test_accepts_chapter_seventeen_with_capstone_audit(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",

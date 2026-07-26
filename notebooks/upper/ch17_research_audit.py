@@ -24,6 +24,12 @@ REQUIRED_COLUMNS = {
     "gross_return",
 }
 REQUIRED_COSTS = {"commission", "spread", "impact"}
+REQUIRED_LICENSES = {
+    "data": "CC0-1.0",
+    "code": "MIT",
+    "manuscript": "CC-BY-NC-SA-4.0",
+    "template": "LPPL-1.3c",
+}
 
 
 def fail(message: str) -> None:
@@ -134,23 +140,40 @@ def audit(oracle_path: Path, package_root: Path) -> int:
         fail("license gate failed: asset license manifest checksum mismatch")
     license_manifest = json.loads(license_manifest_bytes)
     licensed_assets = license_manifest.get("assets", [])
-    if {asset.get("id") for asset in licensed_assets} != {
-        "data",
-        "code",
-        "manuscript",
-        "template",
-    }:
+    if not isinstance(licensed_assets, list):
+        fail("license gate failed: asset records must be a list")
+    if not all(isinstance(asset, dict) for asset in licensed_assets):
+        fail("license gate failed: asset record is invalid")
+    asset_ids = [asset.get("id") for asset in licensed_assets]
+    if not all(isinstance(asset_id, str) and asset_id for asset_id in asset_ids):
+        fail("license gate failed: asset class is invalid")
+    if len(asset_ids) != len(set(asset_ids)):
+        fail("license gate failed: duplicate asset class")
+    if set(asset_ids) != set(REQUIRED_LICENSES):
         fail("license gate failed: required asset classes are incomplete")
     for asset in licensed_assets:
         asset_id = str(asset["id"])
+        if asset.get("license_id") != REQUIRED_LICENSES[asset_id]:
+            fail(f"license gate failed: {asset_id} license id is invalid")
         scope = str(asset.get("scope", "")).strip()
         if not scope:
             fail(f"license gate failed: {asset_id} scope is missing")
-        for relative in asset["paths"]:
+        paths = asset.get("paths")
+        if not isinstance(paths, list) or not paths or not all(
+            isinstance(relative, str) and relative.strip() for relative in paths
+        ):
+            fail(f"license gate failed: {asset_id} asset paths are missing")
+        license_file = asset.get("license_file")
+        if not isinstance(license_file, str) or not license_file.strip():
+            fail(f"license gate failed: {asset_id} license file is missing")
+        required_marker = asset.get("required_marker")
+        if not isinstance(required_marker, str) or not required_marker.strip():
+            fail(f"license gate failed: {asset_id} license marker is missing")
+        for relative in paths:
             if not (package_root / relative).is_file():
                 fail(f"license gate failed: {asset_id} asset is missing")
-        license_path = package_root / asset["license_file"]
-        if not license_path.is_file() or asset["required_marker"] not in (
+        license_path = package_root / license_file
+        if not license_path.is_file() or required_marker not in (
             license_path.read_text(encoding="utf-8")
         ):
             fail(f"license gate failed: {asset_id} license marker is missing")
