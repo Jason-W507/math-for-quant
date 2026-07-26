@@ -68,7 +68,9 @@ def render_glossary() -> str:
     registry = json.loads(GLOSSARY_SOURCE.read_text(encoding="utf-8"))
     items = []
     for entry in registry["terms"]:
-        label = f"{tex_text(entry['zh'])}（{tex_text(entry['en'])}）"
+        zh = tex_text(entry["zh"])
+        en = tex_text(entry["en"])
+        label = zh if zh == en else f"{zh}（{en}）"
         items.append(f"  \\item[{label}] {tex_text(entry['definition'])}")
     body = "\n".join(items)
     return (
