@@ -5,7 +5,7 @@
 \begin{enumerate}[leftmargin=*]
   \item seed 只使同一伪随机序列可重放。程序可以稳定地重放错误分布、错误支付函数或错误单位；正确性还需要独立 oracle、误差率与失败测试。
   \item 模型误差来自目标分布不对；离散化偏差来自时间步或网格；抽样误差来自有限随机样本；数值误差来自浮点和病态计算；实现错误来自代码没有计算定义的对象。增加 $N$ 主要降低第三项。
-  \item Monte Carlo 在给定模型 $P$ 下近似 $\mathbb E_P[g(X)]$。IID bootstrap 条件于观测样本，从经验分布 $\hat F_n$ 重抽样，近似统计量的条件抽样分布；它还依赖可交换性和统计量正则性。
+  \item Monte Carlo 在给定模型 $P$ 下近似 $\mathbb E_P[g(X)]$。IID bootstrap 条件于观测样本，从经验分布 $\hat F_n$ 重抽样，近似统计量的条件抽样分布；它要求 IID 样本或另有理论保证的等价设计，并要求统计量满足相应正则性。交换性本身不保证独立。
 \end{enumerate}
 
 \section*{笔试推导}
