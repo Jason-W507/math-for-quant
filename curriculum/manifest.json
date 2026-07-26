@@ -249,7 +249,25 @@
         "capstone_connection": "tex/upper/chapters/ch09.tex"
       }
     },
-    {"id":"upper.ch10","title":"估计、检验、渐近、回归与多重检验","volume":"upper","state":"planned","prerequisites":["upper.ch06","upper.ch09"]},
+    {
+      "id": "upper.ch10",
+      "title": "估计、检验、渐近、回归与多重检验",
+      "volume": "upper",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch06", "upper.ch09"],
+      "evidence": {
+        "notation_symbols": ["\\operatorname{Bias}(\\hat\\theta)", "\\operatorname{se}(\\hat\\theta)", "p_{(j)}"],
+        "glossary_terms": ["估计量", "一致性", "渐近分布", "异方差稳健标准误", "族错误率", "错误发现率"],
+        "notation_and_assumptions": "tex/upper/chapters/ch10.tex",
+        "core_derivation": "tex/upper/chapters/ch10.tex",
+        "independent_oracle": {"source": "notebooks/upper/ch10_statistical_inference.py", "oracle": "evidence/ch10/oracle.json", "command": ["{python}", "notebooks/upper/ch10_statistical_inference.py"]},
+        "questions": "tex/upper/chapters/ch10-questions.tex",
+        "hints": "tex/upper/chapters/ch10-hints.tex",
+        "solutions": "tex/upper/solutions/ch10.tex",
+        "capstone_connection": "tex/upper/chapters/ch10.tex"
+      }
+    },
     {"id":"upper.ch11","title":"随机过程、Markov、鞅、Poisson 与 Brownian","volume":"upper","state":"planned","prerequisites":["upper.ch08","upper.ch09"]},
     {"id":"upper.ch12","title":"时间序列与状态空间基础","volume":"upper","state":"planned","prerequisites":["upper.ch10","upper.ch11"]},
     {"id":"upper.ch13","title":"凸优化、KKT 与对偶","volume":"upper","state":"planned","prerequisites":["upper.ch05","upper.ch06"]},

@@ -1,0 +1,68 @@
+\chapter{估计、检验、渐近、回归与多重检验}
+\label{ch:statistical-inference}
+
+\begin{introduction}
+  \item 先修：第 6 章的投影与条件数，第 9 章的概率收敛与 CLT。
+  \item 学习产出：能区分估计量的偏差、方差与一致性，说明检验和置信区间的名义性质，审计回归标准误，并控制多重尝试产生的假阳性。
+  \item 研究连接：因子显著性、回归暴露、模型筛选和回测搜索都需要同一套统计证据账本。
+\end{introduction}
+
+\section{估计量不是一个数字，而是一条抽样规则}
+
+设样本来自分布 $P_\theta$，估计量 $\hat\theta_n=T(X_1,\ldots,X_n)$ 是随机变量。偏差、方差与均方误差分别为
+\[
+  \operatorname{Bias}_\theta(\hat\theta_n)=\mathbb E_\theta[\hat\theta_n]-\theta,
+  \qquad
+  \operatorname{MSE}_\theta(\hat\theta_n)
+  =\operatorname{Var}_\theta(\hat\theta_n)+\operatorname{Bias}_\theta(\hat\theta_n)^2.
+\]
+不强调参数下标时，偏差简记为 $\operatorname{Bias}(\hat\theta)$。
+无偏是有限样本性质；一致性是 $\hat\theta_n\xrightarrow{\mathbb P}\theta$ 的渐近性质。两者互不等价：有偏估计量可以一致，无偏序列也可能方差不消失而不一致。
+
+若存在尺度 $a_n\to\infty$ 使
+\[
+  a_n(\hat\theta_n-\theta)\xrightarrow d Z,
+\]
+就得到渐近分布。常见情形为 $a_n=\sqrt n$、$Z\sim\mathcal N(0,V)$；标准误 $\operatorname{se}(\hat\theta_n)$ 必须估计正确的 $V/n$，否则“渐近正态”仍不能挽救错误区间。
+
+Bernoulli$(0.4)$ 的样本均值无偏，理论方差为 $0.000960$（$n=250$）。固定种子重复 $20000$ 次得到均值 $0.399938$、经验方差 $0.000966$，CLT 区间覆盖率 $0.954700$。这些观察值验证名义性质，但不证明所有分布下均成立。
+
+\section{检验、区间、功效与效应大小}
+
+检验先写零假设 $H_0$、备择 $H_1$、统计量与拒绝域。第一类错误概率为 $\alpha$；第二类错误概率为 $\beta(\theta)$，功效为 $1-\beta(\theta)$。$p$ 值是在 $H_0$ 下观察到至少同样极端统计量的概率，不是 $H_0$ 为真的概率，也不是收益可交易的概率。
+
+双侧 Wald 检验拒绝 $H_0:\theta=\theta_0$ 当
+\[
+  \left|\frac{\hat\theta-\theta_0}{\operatorname{se}(\hat\theta)}\right|>z_{1-\alpha/2}.
+\]
+同一标准误下，这与 $(1-\alpha)$ 置信区间不包含 $\theta_0$ 对偶。样本量增大可让极小效应显著；量化研究还必须报告效应大小、样本外衰减、换手、成本和容量。
+
+\section{回归假设决定系数与标准误能说什么}
+
+线性模型写为 $y=X\beta+\varepsilon$。$X$ 满列秩保证 OLS 唯一；$\mathbb E[\varepsilon\mid X]=0$ 支持条件无偏；同方差 $\operatorname{Var}(\varepsilon\mid X)=\sigma^2I$ 才给出经典协方差
+\[
+  \operatorname{Var}(\hat\beta\mid X)=\sigma^2(X^TX)^{-1}.
+\]
+异方差下系数仍可能无偏，但经典标准误错误。三明治协方差用
+\[
+  (X^TX)^{-1}X^T\widehat\Omega X(X^TX)^{-1}
+\]
+替代同方差公式；它修复的是方差估计，不会修复遗漏变量、反向因果、未来信息或错误函数形式。
+
+固定设计实验令真实斜率为 $1.5$，误差标准差随 $|x|$ 增大。$10000$ 次模拟的斜率均值为 $1.496775$，解析真标准误 $0.393283$、经验标准差 $0.394608$。异方差下朴素区间覆盖率为 $0.868900$，稳健区间覆盖率为 $0.938900$：系数均值接近真值并不代表显著性报告可靠。
+
+\section{多重检验：一次搜索就是一个检验族}
+
+同时检验 $m$ 个独立真零假设、每个都用水平 $\alpha$ 时，至少一个假阳性的概率为
+\[
+  \operatorname{FWER}=1-(1-\alpha)^m.
+\]
+Bonferroni 用每项阈值 $\alpha/m$，不要求独立并保证 FWER 不超过 $\alpha$。若目标是控制假发现比例，将第 $j$ 个排序 $p$ 值记为 $p_{(j)}$，并把 $p_{(1)}\le\cdots\le p_{(m)}$ 与 $j\alpha/m$ 比较，得到 Benjamini--Hochberg 的拒绝集合；其依赖条件与目标不同于 FWER。
+
+在 $m=20,\alpha=0.05$ 的全局零假设实验中，未经校正的 FWER 为 $0.639975$，Bonferroni 后为 $0.047400$；解析值分别约为 $0.641514$ 与 $0.048830$。只汇报最显著因子而隐藏尝试次数，就是可复现的数据挖掘负例。
+
+\input{tex/upper/chapters/ch10-questions}
+\input{tex/upper/chapters/ch10-hints}
+
+\noindent\textbf{本章小结与 Capstone 连接}\quad
+估计量需要偏差、方差与渐近账本；检验需要错误率、功效和效应大小；回归需要条件矩与标准误假设；搜索需要把尝试次数纳入同一检验族。上册 Capstone 将据此审计显著性、样本外、成本和不可声称的因果结论。

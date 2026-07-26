@@ -169,6 +169,12 @@
     {"zh": "大数定律", "en": "law of large numbers", "definition": "在明确矩与依赖条件下样本平均趋近总体均值的定理。"},
     {"zh": "中心极限定理", "en": "central limit theorem", "definition": "在明确正则条件下标准化和趋近正态分布的定理。"},
     {"zh": "集中不等式", "en": "concentration inequality", "definition": "有限样本下控制随机量偏离中心概率的非渐近上界。"},
+    {"zh": "估计量", "en": "estimator", "definition": "把样本映射为参数估计、因而在重复抽样下本身是随机变量的规则。"},
+    {"zh": "一致性", "en": "consistency", "definition": "样本量增大时估计量依概率收敛到目标参数的性质。"},
+    {"zh": "渐近分布", "en": "asymptotic distribution", "definition": "估计误差经过适当中心化与缩放后得到的极限分布。"},
+    {"zh": "异方差稳健标准误", "en": "heteroskedasticity-robust standard error", "definition": "不要求条件误差方差恒定、用三明治协方差估计得到的标准误。"},
+    {"zh": "族错误率", "en": "family-wise error rate", "definition": "一族真零假设中至少错误拒绝一个的概率。"},
+    {"zh": "错误发现率", "en": "false discovery rate", "definition": "拒绝集合中错误发现比例期望值的控制目标。"},
     {
       "zh": "样本外",
       "en": "out of sample",
