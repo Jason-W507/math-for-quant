@@ -2,61 +2,187 @@
 \label{ch:limit-theorems}
 
 \begin{introduction}
-  \item 先修：第 8 章的条件期望、独立性与概率核。
-  \item 学习产出：能区分几乎处处、依概率、$L^p$ 与分布收敛，核对 LLN、CLT 和集中界的假设，并用重尾或依赖反例阻止机械套用。
-  \item 研究连接：样本均值、置信区间、回测误差和模拟精度都依赖正确的极限制度。
+  \item 先修：第 7 章的分布与矩、第 8 章的条件期望和独立性。
+  \item 学习产出：能区分四种概率收敛，证明常用蕴含，识别反向箭头为何失败，并在使用 LLN、CLT 或集中界前逐项核对矩与依赖条件。
+  \item 研究连接：样本均值、风险指标、回测误差与模拟精度都依赖正确的极限制度；“样本很多”本身不是正态近似或独立性的证据。
 \end{introduction}
 
-\section{四种收敛回答不同问题}
+\section{四种收敛不是四种写法}
 
-对随机变量序列 $X_n$ 与 $X$：
-\begin{itemize}[nosep]
-  \item $X_n\xrightarrow{a.s.}X$：除零概率状态外逐点收敛；
-  \item $X_n\xrightarrow{\mathbb P}X$：任意 $\varepsilon>0$ 下，偏差超阈值的概率趋零；
-  \item $X_n\xrightarrow{L^p}X$：$\mathbb{E}|X_n-X|^p\to0$；
-  \item $X_n\xrightarrow{d}X$：分布函数在 $X$ 的连续点收敛。
-\end{itemize}
-基本蕴含为
+设 $X_n,X$ 定义在同一概率空间上，$p>0$。四种常用收敛分别是
+\begin{align*}
+ X_n\xrightarrow{a.s.}X
+ &\iff \mathbb P\!\left(\{\omega:X_n(\omega)\to X(\omega)\}\right)=1,\\
+ X_n\xrightarrow{\mathbb P}X
+ &\iff \forall\varepsilon>0,\quad
+ \mathbb P(|X_n-X|>\varepsilon)\to0,\\
+ X_n\xrightarrow{L^p}X
+ &\iff \mathbb E|X_n-X|^p\to0,\\
+ X_n\xrightarrow d X
+ &\iff F_{X_n}(x)\to F_X(x)
+ \quad\text{对 $F_X$ 的每个连续点 $x$}.
+\end{align*}
+前三种比较同一概率空间上的随机变量；分布收敛只比较概率律，所以 $X_n$ 与 $X$ 甚至不必先放在同一空间。概率极限与几乎处处极限在其意义下唯一；分布极限只唯一确定概率律。
+
+对概率测度，$q\ge p>0$ 时由 Lyapunov/Hölder 不等式
 \[
-  X_n\xrightarrow{a.s.}X\Rightarrow X_n\xrightarrow{\mathbb P}X
-  \Rightarrow X_n\xrightarrow d X,
-  \qquad X_n\xrightarrow{L^p}X\Rightarrow X_n\xrightarrow{\mathbb P}X.
+ \|Y\|_p\le \|Y\|_q,
 \]
-在概率空间上 $q\ge p$ 时，$L^q$ 收敛推出 $L^p$ 收敛；反向和未列出的箭头一般不成立。
+故 $L^q$ 收敛推出 $L^p$ 收敛。这里“概率空间总质量为一”不可省略。
 
-反例一是 $[0,1]$ 上依次扫过每层二进区间的“打字机序列”：事件长度趋零，所以依概率趋零；但每个点被无限多层覆盖，不几乎处处趋零。反例二令 $X$ 为对称 $\pm1$，且每个 $X_n=-X$：$X_n$ 与 $X$ 分布相同，故分布收敛成立，但 $\mathbb P(|X_n-X|>1)=1$，不依概率收敛。
+\noindent\textbf{即时练习}\quad
+如果只知道每个 $X_n\sim\mathcal N(0,1)$，能否判断 $X_n-X\to0$？先问 $X_n$ 与 $X$ 如何耦合；边缘分布相同不等于样本路径接近。
 
-\section{LLN 与 CLT：先写假设再标准化}
+\section{蕴含图：每条箭头都要有证明}
 
-若 $X_i$ 独立同分布且 $\mathbb{E}|X_1|<\infty$，强大数定律给出 $\bar X_n\xrightarrow{a.s.}\mu$。若进一步方差 $0<\sigma^2<\infty$，经典 CLT 给出
+标准蕴含图为
 \[
-  \frac{\sqrt n(\bar X_n-\mu)}{\sigma}\xrightarrow d\mathcal N(0,1).
+ X_n\xrightarrow{a.s.}X\Longrightarrow X_n\xrightarrow{\mathbb P}X
+ \Longrightarrow X_n\xrightarrow dX,
+ \qquad
+ X_n\xrightarrow{L^p}X\Longrightarrow X_n\xrightarrow{\mathbb P}X.
 \]
-独立、同分布和有限矩不是装饰；更一般定理可替换它们，但必须写出对应的 Lindeberg、混合或鞅差条件。
 
-固定实验取 Bernoulli$(0.3)$、$n=200$、重复 $20000$ 次。理论标准误为 $0.032404$，模拟均值为 $0.299794$、标准差为 $0.032672$；标准化后落在 $[-1.96,1.96]$ 的比例为 $0.943100$，相对 $0.95$ 的覆盖率容差为 $0.015$。固定种子只保证复现，理论值仍来自解析账本。
-
-\section{集中界是有限样本保证，不是正态近似}
-
-若独立变量落在 $[0,1]$，Hoeffding 不等式给出
+$L^p\Rightarrow\mathbb P$ 直接来自 Markov 不等式：
 \[
-  \mathbb P(|\bar X_n-\mu|\ge t)\le2e^{-2nt^2}.
+ \mathbb P(|X_n-X|>\varepsilon)
+ \le \frac{\mathbb E|X_n-X|^p}{\varepsilon^p}\to0.
 \]
-取 $n=200,t=0.1$，精确二项枚举的尾概率为 $0.002565$，模拟为 $0.002850$，Hoeffding 上界为 $0.036631$。上界保守并不代表错误；它交换了分布细节，换取非渐近保证。若数据相关或无界，不能原样套用该式。
+若 $X_n\to X$ 几乎处处，则指标
+$\mathbf 1_{\{|X_n-X|>\varepsilon\}}\to0$ 几乎处处，且被 $1$ 控制；支配收敛定理给出其期望趋零，故得到依概率收敛。依概率推出分布收敛可由 Portmanteau 定理证明：对 $X$ 的连续集或连续点，偏差事件把 $X_n$ 与 $X$ 的概率夹在任意小的邻域之间。
 
-\section{重尾与依赖为何破坏机械套用}
+一个很有用的刻画是：
+\[
+ X_n\xrightarrow{\mathbb P}X
+ \quad\Longleftrightarrow\quad
+ \text{每个子列都有一个进一步子列几乎处处收敛到 $X$}.
+\]
+正向可递归选取子列使
+$\mathbb P(|X_{n_k}-X|>2^{-k})\le2^{-k}$，再用 Borel--Cantelli；反向若失败，就能选出偏差概率统一大于某个正数的子列，和“存在进一步的几乎处处收敛子列”矛盾。
 
-标准 Cauchy 的均值不存在，且独立样本平均仍服从标准 Cauchy。实验对 $n=10$ 与 $n=1000$ 各做 $8000$ 次，样本均值绝对值的中位数并未按 $1/\sqrt n$ 缩小：中位绝对均值分别为 $0.980865$ 与 $1.029577$。因此 CLT 的有限方差前提失败。
+依概率收敛若再加 $\{|X_n-X|\}$ 的一致可积性，则推出 $L^1$ 收敛；这正是把“概率质量趋小”升级成“平均损失趋小”所缺的尾部条件。
 
-依赖反例令所有 $X_i=Y$，其中 $Y\sim\operatorname{Bernoulli}(p)$。每项边缘分布相同，但 $\bar X_n=Y$ 永不集中到 $p$；独立性缺失使 LLN 和 Hoeffding 的机械应用同时失效。
+\section{反向箭头为什么断裂}
+
+\noindent\textbf{依概率不推出几乎处处}\quad
+在 $[0,1)$ 上按层枚举二进区间：第 $m$ 层依次取
+$[j2^{-m},(j+1)2^{-m})$ 的指标。每项取一的概率为 $2^{-m}\to0$，所以依概率趋零；但每个点每层恰被覆盖一次，序列沿路径反复出现 $1$，不几乎处处收敛。它常被称为打字机序列。
+
+\noindent\textbf{依概率不推出 $L^1$}\quad
+令 $U\sim\operatorname{Uniform}(0,1)$ 且
+\[
+ X_n=n\mathbf1_{\{U\le1/n\}}.
+\]
+对任意固定 $\varepsilon>0$，充分大时
+$\mathbb P(|X_n|>\varepsilon)=1/n\to0$；但
+$\mathbb E|X_n|=n(1/n)=1$。本章固定 $n=(10,100,1000)$，超阈概率为 $(0.1,0.01,0.001)$，而稀有尖峰的 $L^1$ 距离恒为 $1$。同一例子也几乎处处趋零，却不 $L^1$ 收敛。
+
+\noindent\textbf{$L^1$ 不推出 $L^2$}\quad
+改取 $Y_n=\sqrt n\mathbf1_{\{U\le1/n\}}$，则
+$\mathbb E|Y_n|=n^{-1/2}\to0$，但
+$\mathbb E|Y_n|^2=1$。反向需要更高阶矩的统一控制，不能只看样本中“多数时候为零”。
+
+\noindent\textbf{分布收敛不推出依概率}\quad
+令 $X$ 取对称的 $\pm1$，并令每个 $X_n=-X$。则 $X_n$ 与 $X$ 同分布，故 $X_n\xrightarrow dX$；然而
+$\mathbb P(|X_n-X|>1)=1$。如果分布极限是常数 $c$，则例外地有
+$X_n\xrightarrow dc\Longleftrightarrow X_n\xrightarrow{\mathbb P}c$。
+
+\section{连续映射与 Slutsky：怎样传递极限}
+
+若 $X_n\xrightarrow dX$ 且 $g$ 在 $X$ 几乎处处取值的集合上连续，则连续映射定理给出
+$g(X_n)\xrightarrow d g(X)$。若
+$X_n\xrightarrow dX$、$Y_n\xrightarrow{\mathbb P}c$，Slutsky 定理给出
+\[
+ X_n+Y_n\xrightarrow dX+c,
+ \quad X_nY_n\xrightarrow dcX,
+ \quad \frac{X_n}{Y_n}\xrightarrow d\frac Xc\quad(c\ne0).
+\]
+
+例如，若收益样本满足合适 CLT，样本波动率一致收敛到 $\sigma>0$，则学生化均值可用 Slutsky 得到标准正态极限。若真实波动率可能为零、估计器被截断，或分母和分子受同一选择事件影响，除法映射在边界不连续，不能机械套用。渐近分布说明重复抽样近似，不证明策略收益、成本后可交易性或跨制度稳定性。
+
+\section{大数定律：均值收敛需要什么}
+
+若 $X_i$ 独立同分布、$\mathbb E X_i=\mu$、
+$\operatorname{Var}(X_i)=\sigma^2<\infty$，则
+\[
+ \operatorname{Var}(\bar X_n)=\frac{\sigma^2}{n},
+ \qquad
+ \mathbb P(|\bar X_n-\mu|\ge\varepsilon)
+ \le\frac{\sigma^2}{n\varepsilon^2}\to0.
+\]
+这用 Chebyshev 不等式证明了弱大数定律。强大数定律在 iid 且
+$\mathbb E|X_1|<\infty$ 下给出
+$\bar X_n\xrightarrow{a.s.}\mu$；有限方差不是这一定理最弱的矩条件。
+
+依赖数据需要另一套条件。若所有 $X_i=Y$ 且
+$Y\sim\operatorname{Bernoulli}(0.3)$，则
+$\bar X_n=Y$，方差恒为 $0.21$；iid 情形在 $n=200$ 时方差是 $0.00105$。样本量增长没有创造新信息。对平稳 AR(1) 型相关的粗略诊断常写
+\[
+ n_{\mathrm{eff}}\approx n\frac{1-\rho}{1+\rho},
+\]
+但它只是特定相关结构下的近似，不替代混合条件、长程依赖或结构变化诊断。
+
+\section{CLT：极限形状与有限样本误差}
+
+经典 iid CLT 要求 $0<\sigma^2<\infty$：
+\[
+ \frac{\sqrt n(\bar X_n-\mu)}{\sigma}\xrightarrow d\mathcal N(0,1).
+\]
+证明的特征函数路线先中心化并令
+$\varphi(t)=1-\sigma^2t^2/2+o(t^2)$，于是
+\[
+ \left[\varphi\!\left(\frac{t}{\sigma\sqrt n}\right)\right]^n
+ =\left(1-\frac{t^2}{2n}+o(n^{-1})\right)^n
+ \longrightarrow e^{-t^2/2},
+\]
+再由 Lévy 连续性定理识别标准正态极限。三角阵列或非同分布和需要 Lindeberg 等条件来排除单项支配；“每项方差有限”并不足以自动得到同一个 CLT。
+
+若三阶绝对中心矩 $\rho_3<\infty$，Berry--Esseen 型界量化有限样本误差：
+\[
+ \sup_x\left|\mathbb P\!\left(
+ \frac{\sqrt n(\bar X_n-\mu)}{\sigma}\le x\right)-\Phi(x)\right|
+ \le C\frac{\rho_3}{\sigma^3\sqrt n}.
+\]
+本章用保守常数 $C=0.56$。Bernoulli$(0.3)$、$n=200$ 的精确正态 CDF 最大距离为 $0.034809$，界为 $0.050118$。极限定理给方向，误差界才回答“当前样本量够不够”。
+
+一个警示例是 Bernoulli$(0.01)$、$n=10$：零次成功的精确概率为 $0.904382$，朴素正态区间甚至为 $[-0.05167,0.07167]$，越过概率参数的合法边界。此时应使用精确二项方法或适合稀有事件的近似。
+
+\section{集中不等式：从矩到有界性}
+
+集中界是有限样本保证，必须连同假设一起引用：
+\begin{align*}
+ &\text{Markov:}&&
+ \mathbb P(Y\ge t)\le\frac{\mathbb EY}{t},\quad Y\ge0;\\
+ &\text{Chebyshev:}&&
+ \mathbb P(|Y-\mathbb EY|\ge t)\le\frac{\operatorname{Var}(Y)}{t^2};\\
+ &\text{Hoeffding:}&&
+ \mathbb P(|\bar X_n-\mu|\ge t)\le2e^{-2nt^2},
+ \quad X_i\in[0,1]\text{ 独立};\\
+ &\text{Bernstein:}&&
+ \mathbb P(|\bar X_n-\mu|\ge t)
+ \le2\exp\!\left[-\frac{nt^2}{2\sigma^2+2t/3}\right],
+ \quad |X_i-\mu|\le1\text{ 独立}.
+\end{align*}
+
+对 Bernoulli$(0.3)$、$n=200$、$t=0.1$，精确二项尾概率为 $0.002565$；Chebyshev、Hoeffding 与 Bernstein 界分别为 $0.105000$、$0.036631$、$0.032829$。上界比精确概率大不是错误；它们以较少分布信息换取可证明保证。比较界时必须保持同一事件、单双尾约定和严格/非严格阈值。
+
+\section{重尾、依赖与模拟账本}
+
+标准 Cauchy 的均值不存在，且 iid Cauchy 样本平均仍服从标准 Cauchy。本章在固定种子下，对 $n=10$ 与 $n=1000$ 各重复 $8000$ 次，中位绝对均值分别为 $0.980865$ 与 $1.029577$，没有出现 $n^{-1/2}$ 收缩。这不是“模拟不够多”，而是有限方差 CLT 的前提不存在。
+
+主实验取 Bernoulli$(0.3)$、$n=200$、重复 $20000$ 次。理论标准误为 $0.032404$，模拟均值为 $0.299794$、标准差为 $0.032672$；标准化后落在 $[-1.96,1.96]$ 的比例为 $0.943100$，相对 $0.95$ 的覆盖率容差为 $0.015$。模拟只验证实现；理论均值、精确尾概率、各集中界与 Berry--Esseen 账本均独立计算。
 
 \begin{lstlisting}[language=bash]
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch09
 \end{lstlisting}
 
+\section{量化研究中的使用边界}
+
+重叠持有期收益、滚动特征和成交簇会制造序列依赖；横截面共同暴露会制造簇相关；筛选幸存样本会改变概率律。研究报告至少应给出：信息时间与抽样单位、尾部与自相关诊断、有效样本量假设、HAC/分块方法的块长敏感性、滚动制度稳定性，以及失败时采用的稳健统计或压力界。渐近 $p$ 值小不代表成本后有效，集中界窄也不代表数据生成机制稳定。
+
 \input{tex/upper/chapters/ch09-questions}
 \input{tex/upper/chapters/ch09-hints}
 
 \noindent\textbf{本章小结与 Capstone 连接}\quad
-收敛模式决定结论强度，极限定理决定可用近似，集中界提供有限样本上界；上册 Capstone 将要求每个误差条带同时声明矩、独立或依赖条件与统计容差。
+收敛模式决定结论强度，极限定理给出可传递的近似，集中界给出有限样本上界；上册 Capstone 将要求每条误差声明同时标注矩、独立或依赖条件、统计容差与可证伪的失效实验。

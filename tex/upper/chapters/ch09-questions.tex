@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}画出四种收敛的有效蕴含箭头，并为两个不可逆箭头给出反例。
-  \item \textbf{笔试推导：}写出 Bernoulli 样本均值的均值、标准误、CLT 标准化与 Hoeffding 上界。
-  \item \textbf{数值编程：}独立报告理论值、精确二项尾概率、模拟观察值、种子与每项统计容差。
-  \item \textbf{研究判断：}收益均值的置信区间在分块重采样后显著变宽，应如何区分依赖、重尾和结构变化？
+  \item 定义几乎处处、依概率、$L^p$ 与分布收敛；哪些定义需要随机变量位于同一概率空间？
+  \item 画出有效蕴含图，解释一致可积性为何是“依概率升级到 $L^1$”的关键尾部条件。
+  \item 区分 WLLN、SLLN、经典 iid CLT、Berry--Esseen 界与集中不等式分别回答的问题。
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 用 Markov 证明 $L^p\Rightarrow\mathbb P$，再证明依概率收敛的子列刻画。
+  \item 对 iid 有限方差变量用 Chebyshev 推导 WLLN；对 Bernoulli$(0.3)$、$n=200$ 推导标准误和三种集中界。
+  \item 写出经典 CLT 的特征函数证明骨架，并计算 Bernoulli 的三阶绝对中心矩与 Berry--Esseen 上界。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 实现打字机、稀有尖峰与 $L^1$ 非 $L^2$ 三个反例账本，逐项报告偏差概率和矩。
+  \item 精确枚举二项尾概率与标准化 CDF 距离；独立计算 Chebyshev、Hoeffding、Bernstein 和 Berry--Esseen 界。
+  \item 用固定种子复现 Bernoulli 与 Cauchy 实验，并注入伪造尾概率、放宽容差、改变 canonical 设计和完全依赖方差。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 日频策略使用 20 日重叠收益却按 iid 报告 CLT 区间。应如何重定义抽样单位、诊断依赖并给出稳健证据？
+  \item 一个稀有违约模型给出对称正态区间且下界为负。为什么“大样本渐近”仍可能误导？应改用什么验证？
+  \item 样本均值随样本增长看似稳定，但不同制度期漂移且尾部极重。怎样区分 LLN、结构变化与稳健统计问题？
 \end{enumerate}
 \endgroup

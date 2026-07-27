@@ -1914,10 +1914,115 @@ class LearningUnitContractTests(unittest.TestCase):
             "roundtrip=passed cells=2\n"
             "execution=passed oracle=passed mean=0.299794 theory_sd=0.032404 "
             "observed_sd=0.032672 clt_coverage=0.943100 exact_tail=0.002565 "
-            "simulated_tail=0.002850 hoeffding=0.036631 "
+            "simulated_tail=0.002850 bounds=(0.105000,0.036631,0.032829) "
+            "normal=(0.034809,0.050118) rare_zero=0.904382 "
+            "variances=(0.001050,0.210000) "
+            "rare_spike=(0.100,0.010,0.001;l1=1.0) "
             "cauchy_medians=(0.980865,1.029577)\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_nine_rejects_a_false_rare_spike_l1_claim(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-rare-spike-l1.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_rare_spike_l1": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("rare-spike L1", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_bernstein_bound(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-bernstein.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_bernstein_bound": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Bernstein bound", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_normal_approximation_distance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-normal-distance.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_normal_cdf_distance": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("normal approximation distance", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_perfect_dependence_variance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-dependent-variance.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_dependent_mean_variance": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("perfect-dependence variance", result.stderr)
+
+    def test_chapter_nine_rejects_a_missing_oracle_field(self) -> None:
+        def remove_berry_esseen_bound(oracle: dict[str, Any]) -> None:
+            del oracle["expected_berry_esseen_bound"]
+
+        result = self.run_oracle_fixture(
+            "ch09-missing-field.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            remove_berry_esseen_bound,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle missing required fields", result.stderr)
+
+    def test_chapter_nine_rejects_a_nonfinite_oracle_value(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-nonfinite.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_mean": float("nan")}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric inputs must be finite", result.stderr)
+
+    def test_chapter_nine_rejects_a_widened_tolerance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-wide-tolerance.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"absolute_tolerance": 1.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("absolute tolerance must equal 1e-10", result.stderr)
+
+    def test_chapter_nine_rejects_a_noncanonical_bernoulli_design(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-noncanonical-bernoulli.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"bernoulli_p": 0.4}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("canonical Bernoulli experiment", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_exact_binomial_tail(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-exact-tail.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_exact_binomial_tail": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("exact binomial tail", result.stderr)
 
     def test_accepts_chapter_nine_with_limit_theorem_oracles(self) -> None:
         result = self.run_contract(
@@ -1932,7 +2037,10 @@ class LearningUnitContractTests(unittest.TestCase):
             "evidence=7/7\n"
             "oracle=passed mean=0.299794 theory_sd=0.032404 "
             "observed_sd=0.032672 clt_coverage=0.943100 exact_tail=0.002565 "
-            "simulated_tail=0.002850 hoeffding=0.036631 "
+            "simulated_tail=0.002850 bounds=(0.105000,0.036631,0.032829) "
+            "normal=(0.034809,0.050118) rare_zero=0.904382 "
+            "variances=(0.001050,0.210000) "
+            "rare_spike=(0.100,0.010,0.001;l1=1.0) "
             "cauchy_medians=(0.980865,1.029577)\n"
             "learning-unit contract passed\n",
         )

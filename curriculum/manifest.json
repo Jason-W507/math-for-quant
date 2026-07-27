@@ -238,8 +238,8 @@
       "published": true,
       "prerequisites": ["upper.ch08"],
       "evidence": {
-        "notation_symbols": ["X_n\\xrightarrow{a.s.}X", "X_n\\xrightarrow{\\mathbb P}X", "X_n\\xrightarrow d X", "\\bar X_n"],
-        "glossary_terms": ["几乎处处收敛", "依概率收敛", "Lp 收敛", "分布收敛", "大数定律", "中心极限定理", "集中不等式"],
+        "notation_symbols": ["X_n\\xrightarrow{a.s.}X", "X_n\\xrightarrow{\\mathbb P}X", "X_n\\xrightarrow{L^p}X", "X_n\\xrightarrow d X", "\\bar X_n", "\\rho_3", "n_{\\mathrm{eff}}"],
+        "glossary_terms": ["几乎处处收敛", "依概率收敛", "Lp 收敛", "分布收敛", "一致可积", "连续映射定理", "Slutsky 定理", "大数定律", "中心极限定理", "Berry-Esseen 界", "集中不等式", "有效样本量"],
         "notation_and_assumptions": "tex/upper/chapters/ch09.tex",
         "core_derivation": "tex/upper/chapters/ch09.tex",
         "independent_oracle": {"source": "notebooks/upper/ch09_limit_theorems.py", "oracle": "evidence/ch09/oracle.json", "command": ["{python}", "notebooks/upper/ch09_limit_theorems.py"]},
