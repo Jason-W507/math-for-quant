@@ -63,11 +63,20 @@
   \item[Berry-Esseen 界（Berry-Esseen bound）] 在有限三阶绝对中心矩下控制标准化和与正态分布 CDF 距离的有限样本上界。
   \item[有效样本量（effective sample size）] 在明确依赖模型下与独立样本估计精度等价的近似样本数量。
   \item[估计量（estimator）] 把样本映射为参数估计、因而在重复抽样下本身是随机变量的规则。
+  \item[均方误差（mean squared error）] 估计误差平方的期望，等于估计量方差与偏差平方之和。
   \item[一致性（consistency）] 样本量增大时估计量依概率收敛到目标参数的性质。
   \item[渐近分布（asymptotic distribution）] 估计误差经过适当中心化与缩放后得到的极限分布。
+  \item[Delta 方法（Delta method）] 用可微变换的一阶展开把估计量的渐近分布传递到参数函数的方法。
+  \item[检验功效（test power）] 在指定备择参数下统计检验拒绝零假设的概率。
   \item[异方差稳健标准误（heteroskedasticity-robust standard error）] 不要求条件误差方差恒定、用三明治协方差估计得到的标准误。
+  \item[HAC 标准误（HAC standard error）] 对异方差与声明滞后范围内序列相关稳健的协方差估计所产生的标准误。
+  \item[簇稳健标准误（cluster-robust standard error）] 允许簇内误差相关、依赖簇间独立与足够簇数的三明治标准误。
+  \item[遗漏变量偏差（omitted-variable bias）] 遗漏与已含回归量相关且影响结果的变量时，系数目标发生的系统偏移。
   \item[族错误率（family-wise error rate）] 一族真零假设中至少错误拒绝一个的概率。
+  \item[Holm 方法（Holm procedure）] 按排序 p 值逐步缩放阈值并在首次不拒绝处停止的强 FWER 控制方法。
   \item[错误发现率（false discovery rate）] 拒绝集合中错误发现比例期望值的控制目标。
+  \item[Benjamini-Hochberg 方法（Benjamini-Hochberg procedure）] 把排序 p 值与线性阶梯阈值比较以在相应依赖条件下控制 FDR 的方法。
+  \item[选择偏差（selection bias）] 因样本、模型或结果的选择机制与目标量相关而导致的系统偏差。
   \item[随机过程（stochastic process）] 同一概率空间上由时间或其他索引参数化的随机变量族。
   \item[滤过（filtration）] 随索引递增、表示可用信息增长的 sigma 代数族。
   \item[Markov 性（Markov property）] 给定当前状态后未来条件分布不再依赖更早历史的性质。

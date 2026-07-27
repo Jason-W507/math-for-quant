@@ -2,67 +2,179 @@
 \label{ch:statistical-inference}
 
 \begin{introduction}
-  \item 先修：第 6 章的投影与条件数，第 9 章的概率收敛与 CLT。
-  \item 学习产出：能区分估计量的偏差、方差与一致性，说明检验和置信区间的名义性质，审计回归标准误，并控制多重尝试产生的假阳性。
-  \item 研究连接：因子显著性、回归暴露、模型筛选和回测搜索都需要同一套统计证据账本。
+  \item 先修：第 6 章的投影与条件数，第 9 章的概率收敛、CLT 与有效样本量。
+  \item 学习产出：从抽样规则推导偏差、方差、MSE 与渐近分布；从投影推导 OLS；为异方差、序列相关和聚类选择标准误；把因子搜索登记为一个检验族。
+  \item 研究连接：本章回答“估计对象是什么、误差如何量化、显著性是否可信”；它不把统计显著偷换成因果或成本后可交易性。
 \end{introduction}
 
-\section{估计量不是一个数字，而是一条抽样规则}
+\section{估计量是抽样规则，不是屏幕上的数}
 
-设样本来自分布 $P_\theta$，估计量 $\hat\theta_n=T(X_1,\ldots,X_n)$ 是随机变量。偏差、方差与均方误差分别为
+设 $X_1,\ldots,X_n\sim P_\theta$，估计量
+$\hat\theta_n=T_n(X_1,\ldots,X_n)$ 是随机变量。它的偏差、方差与风险账本为
+\begin{align*}
+ \operatorname{Bias}_\theta(\hat\theta_n)
+ &=\mathbb E_\theta\hat\theta_n-\theta,\\
+ \operatorname{MSE}_\theta(\hat\theta_n)
+ &=\mathbb E_\theta(\hat\theta_n-\theta)^2
+ =\operatorname{Var}_\theta(\hat\theta_n)
+  +\operatorname{Bias}_\theta(\hat\theta_n)^2.
+\end{align*}
+不需要强调参数与样本量时，也简写为
+$\operatorname{Bias}(\hat\theta)$。
+最后一个等式不是定义。令
+$b=\mathbb E\hat\theta_n-\theta$，把误差写成
+$(\hat\theta_n-\mathbb E\hat\theta_n)+b$；平方取期望后，交叉项因中心化为零，便得到分解。
+
+\subsection*{有偏估计也可能更好}
+若无偏估计量 $\bar X$ 估计 $\theta=1$，且
+$\operatorname{Var}(\bar X)=0.25$，考虑收缩估计
+$\tilde\theta=0.8\bar X$。它的偏差为 $-0.2$、方差为
+$0.8^2\times0.25=0.16$，所以 MSE 是
+$0.16+(-0.2)^2=0.20$，小于无偏估计的 $0.25$。本章 oracle 固定输出
+\texttt{mse=(0.250000,0.200000)}。无偏不是“最佳”的同义词；比较估计量必须先声明损失函数与参数范围。
+
+反过来，无偏也不保证一致。若 $X_i\sim\mathcal N(\theta,1)$，取
+$T_n=X_1$，则对每个 $n$ 都有 $\mathbb ET_n=\theta$，但
+$\operatorname{Var}(T_n)=1$ 永不收缩，因此
+$T_n\not\xrightarrow{\mathbb P}\theta$。oracle 的
+\texttt{inconsistent\_var=1.000000} 是这一反例的解析账本，而不是模拟印象。
+
+\noindent\textbf{Python 边界}\quad
+数组中一个估计值只是一轮样本的结果。要谈偏差、方差或覆盖率，必须明确重复抽样机制；固定随机种子保证复现，不会把 Monte Carlo 观察变成数学证明。
+
+\section{一致性、渐近正态与 Delta 方法}
+
+一致性要求 $\hat\theta_n\xrightarrow{\mathbb P}\theta$；渐近正态通常写成
 \[
-  \operatorname{Bias}_\theta(\hat\theta_n)=\mathbb E_\theta[\hat\theta_n]-\theta,
-  \qquad
-  \operatorname{MSE}_\theta(\hat\theta_n)
-  =\operatorname{Var}_\theta(\hat\theta_n)+\operatorname{Bias}_\theta(\hat\theta_n)^2.
+ \sqrt n(\hat\theta_n-\theta)\xrightarrow d\mathcal N(0,V).
 \]
-不强调参数下标时，偏差简记为 $\operatorname{Bias}(\hat\theta)$。
-无偏是有限样本性质；一致性是 $\hat\theta_n\xrightarrow{\mathbb P}\theta$ 的渐近性质。两者互不等价：有偏估计量可以一致，无偏序列也可能方差不消失而不一致。
+前者说明误差最终集中，后者给出局部缩放后的近似形状与收敛速率。若两个一致估计量有相同目标和正则条件，才可用较小的渐近方差谈相对效率；不同目标、不同损失或不同模型类不能只比一个标准误。
+估计标准误简记为 $\operatorname{se}(\hat\theta)$，它必须对应实际抽样与依赖结构。
 
-若存在尺度 $a_n\to\infty$ 使
+若 $g$ 在 $\theta$ 可微，由一阶 Taylor 展开
 \[
-  a_n(\hat\theta_n-\theta)\xrightarrow d Z,
+ g(\hat\theta_n)-g(\theta)
+ =g'(\theta)(\hat\theta_n-\theta)+o_{\mathbb P}(n^{-1/2}),
 \]
-就得到渐近分布。常见情形为 $a_n=\sqrt n$、$Z\sim\mathcal N(0,V)$；标准误 $\operatorname{se}(\hat\theta_n)$ 必须估计正确的 $V/n$，否则“渐近正态”仍不能挽救错误区间。
-
-Bernoulli$(0.4)$ 的样本均值无偏，理论方差为 $0.000960$（$n=250$）。固定种子重复 $20000$ 次得到均值 $0.399938$、经验方差 $0.000966$，CLT 区间覆盖率 $0.954700$。这些观察值验证名义性质，但不证明所有分布下均成立。
-
-\section{检验、区间、功效与效应大小}
-
-检验先写零假设 $H_0$、备择 $H_1$、统计量与拒绝域。第一类错误概率为 $\alpha$；第二类错误概率为 $\beta(\theta)$，功效为 $1-\beta(\theta)$。$p$ 值是在 $H_0$ 下观察到至少同样极端统计量的概率，不是 $H_0$ 为真的概率，也不是收益可交易的概率。
-
-双侧 Wald 检验拒绝 $H_0:\theta=\theta_0$ 当
+再用 Slutsky 定理得到 Delta 方法：
 \[
-  \left|\frac{\hat\theta-\theta_0}{\operatorname{se}(\hat\theta)}\right|>z_{1-\alpha/2}.
+ \sqrt n\{g(\hat\theta_n)-g(\theta)\}
+ \xrightarrow d\mathcal N\!\left(0,[g'(\theta)]^2V\right).
 \]
-同一标准误下，这与 $(1-\alpha)$ 置信区间不包含 $\theta_0$ 对偶。样本量增大可让极小效应显著；量化研究还必须报告效应大小、样本外衰减、换手、成本和容量。
+以 Bernoulli 概率 $p=0.4$、$g(p)=p^2$、$n=250$ 为例，
+$\mathbb E(\hat p^2)-p^2=p(1-p)/n=0.000960$；Delta 近似方差为
+$4p^2p(1-p)/n=0.0006144$。这说明 plug-in 一致不等于有限样本无偏，也说明导数在边界为零时一阶 Delta 方法可能退化。
 
-\section{回归假设决定系数与标准误能说什么}
+主模拟中 Bernoulli$(0.4)$ 样本均值的理论方差为 $0.000960$；固定种子重复 $20000$ 次得到均值 $0.399938$、经验方差 $0.000966$，正态区间覆盖率为 $0.954700$。模拟检验实现与有限样本表现；解析矩才是独立 oracle。
 
-线性模型写为 $y=X\beta+\varepsilon$。$X$ 满列秩保证 OLS 唯一；$\mathbb E[\varepsilon\mid X]=0$ 支持条件无偏；同方差 $\operatorname{Var}(\varepsilon\mid X)=\sigma^2I$ 才给出经典协方差
+\section{检验、区间、功效与经济效应}
+
+检验协议至少包含 $H_0,H_1$、统计量、拒绝域、显著性水平和停止规则。检验的\textbf{大小}是零假设参数集合上误拒概率的上确界；在具体备择 $\theta$ 下，功效为
+$\mathbb P_\theta(\text{拒绝 }H_0)$。$p$ 值是在 $H_0$ 下取得“至少同样极端”统计量的概率，不是 $H_0$ 为真的概率。
+
+双侧 Wald 检验在
 \[
-  \operatorname{Var}(\hat\beta\mid X)=\sigma^2(X^TX)^{-1}.
+ \left|\frac{\hat\theta-\theta_0}{\widehat{\operatorname{se}}(\hat\theta)}\right|
+ >z_{1-\alpha/2}
 \]
-异方差下系数仍可能无偏，但经典标准误错误。三明治协方差用
+时拒绝；使用同一标准误时，它与 $(1-\alpha)$ 置信区间不含
+$\theta_0$ 对偶。区间是一个随机集合：覆盖率描述重复抽样中覆盖固定真值的比例，不是“参数以 95\% 概率位于已经算出的频率学区间内”。
+
+样本量很大时，极小效应也可显著。量化报告必须并列给出效应大小、置信区间、样本外衰减、换手、成本、冲击与容量。若每看一次结果都用 $0.05$ 阈值，并在十次独立查看中首次显著便停止，则全局零假设下至少一次误拒概率为
+$1-0.95^{10}=0.401263$。停止规则属于实验设计，不能在看完路径后删除。
+
+\noindent\textbf{即时练习}\quad
+把“$p=0.003$，所以策略有效”改写成可审计结论：注明检验族、停止规则、效应和区间，再列出成本后仍需验证的量。
+
+\section{OLS 是投影；识别与方差估计是两件事}
+
+对 $y\in\mathbb R^n$、满列秩 $X\in\mathbb R^{n\times k}$，OLS 最小化
+$Q(b)=\lVert y-Xb\rVert_2^2$。求梯度得
 \[
-  (X^TX)^{-1}X^T\widehat\Omega X(X^TX)^{-1}
+ \nabla Q(b)=-2X^T(y-Xb).
 \]
-替代同方差公式；它修复的是方差估计，不会修复遗漏变量、反向因果、未来信息或错误函数形式。
-
-固定设计实验令真实斜率为 $1.5$，误差标准差随 $|x|$ 增大。$10000$ 次模拟的斜率均值为 $1.496775$，解析真标准误 $0.393283$、经验标准差 $0.394608$。异方差下朴素区间覆盖率为 $0.868900$，稳健区间覆盖率为 $0.938900$：系数均值接近真值并不代表显著性报告可靠。
-
-\section{多重检验：一次搜索就是一个检验族}
-
-同时检验 $m$ 个独立真零假设、每个都用水平 $\alpha$ 时，至少一个假阳性的概率为
+一阶条件给出正规方程 $X^TX\hat\beta=X^Ty$，所以
 \[
-  \operatorname{FWER}=1-(1-\alpha)^m.
+ \hat\beta=(X^TX)^{-1}X^Ty,
+ \qquad X^T\hat\varepsilon=0.
 \]
-Bonferroni 用每项阈值 $\alpha/m$，不要求独立并保证 FWER 不超过 $\alpha$。若目标是控制假发现比例，将第 $j$ 个排序 $p$ 值记为 $p_{(j)}$，并把 $p_{(1)}\le\cdots\le p_{(m)}$ 与 $j\alpha/m$ 比较，得到 Benjamini--Hochberg 的拒绝集合；其依赖条件与目标不同于 FWER。
+几何上，$X\hat\beta$ 是 $y$ 到 $\operatorname{col}(X)$ 的正交投影。满秩保证系数表示唯一；数值上仍应优先用 QR/SVD 求解，而不是显式形成逆矩阵。
 
-在 $m=20,\alpha=0.05$ 的全局零假设实验中，未经校正的 FWER 为 $0.639975$，Bonferroni 后为 $0.047400$；解析值分别约为 $0.641514$ 与 $0.048830$。只汇报最显著因子而隐藏尝试次数，就是可复现的数据挖掘负例。
+模型 $y=X\beta+\varepsilon$ 下，条件外生
+$\mathbb E(\varepsilon\mid X)=0$ 支持条件无偏与一致性论证；同方差且条件不相关
+$\operatorname{Var}(\varepsilon\mid X)=\sigma^2I$ 才给出经典协方差
+\[
+ \operatorname{Var}(\hat\beta\mid X)=\sigma^2(X^TX)^{-1}.
+\]
+“系数估计了什么”属于识别问题；“这个系数抽样波动多大”属于协方差估计问题。修正后一项不会自动修正前一项。
+
+\section{四类标准误各自修什么}
+
+令 $x_i^T$ 是第 $i$ 行设计向量。异方差稳健三明治协方差的基本形式是
+\[
+ (X^TX)^{-1}\left(\sum_i x_ix_i^T\hat\varepsilon_i^2\right)(X^TX)^{-1},
+\]
+有限样本中还有 HC0--HC3 等杠杆修正。固定设计实验中，真实斜率为 $1.5$；解析真标准误为 $0.393283$、模拟经验标准差为 $0.394608$。异方差下朴素区间覆盖率为 $0.868900$，稳健区间覆盖率为 $0.938900$。
+
+若误差按时间相关，HAC/Newey--West 用带宽 $L$ 和核权重组合残差得分的滞后协方差；结论必须报告带宽敏感性。若观察在公司、日期或事件内相关，簇稳健协方差先在簇内汇总得分，再跨簇求和；有效簇数而非行数控制精度，少簇需要额外修正。若同时存在横截面和时间相关，可能需要双向聚类或更明确的过程模型。
+
+一个解析均值例子把差异量化：$n=100$、单位边际方差下，iid 方差是 $0.010000$；AR(1) 相关系数 $0.6$ 时均值方差为
+\[
+ \frac{n+2\sum_{h=1}^{n-1}(n-h)0.6^h}{n^2}=0.039250;
+\]
+簇大小 $5$、簇内相关 $0.4$ 时为
+$[1+(5-1)0.4]/100=0.026000$。把它们都当 iid 会系统性低估不确定性。
+
+\section{稳健标准误不修复遗漏变量}
+
+真实模型为 $y=\beta_xx+\beta_zz+\varepsilon$，却只回归 $y$ 对 $x$。在相应矩存在且外生时，简单回归斜率的概率极限为
+\[
+ \operatorname{plim}\hat\beta_x^{\rm short}
+ =\beta_x+\beta_z\frac{\operatorname{Cov}(x,z)}{\operatorname{Var}(x)}.
+\]
+取 $\beta_x=1,\beta_z=2,\operatorname{Cov}(x,z)=0.5$、
+$\operatorname{Var}(x)=1$，遗漏后的斜率是 $2$，偏差是 $1$。三明治、HAC 或聚类标准误只会更诚实地描述这个错误目标的抽样波动；它们不会修复遗漏变量、反向因果、未来信息、错误函数形式或选择偏差。
+
+加入控制变量后系数稳定也不是因果证明：控制变量可能测量误差严重、是碰撞点或处于处理之后。因果解释还需要时间顺序、可辩护的识别假设和相应设计。
+
+\section{多重检验：先登记检验族，再看最小 p 值}
+
+同时检验 $m$ 个独立真零假设、每项水平为 $\alpha$ 时，
+\[
+ \operatorname{FWER}=1-(1-\alpha)^m.
+\]
+Bonferroni 用阈值 $\alpha/m$，在任意依赖下由并集界控制 FWER。Holm 方法把
+第 $j$ 小的值记为 $p_{(j)}$，并将
+$p_{(1)}\le\cdots\le p_{(m)}$ 依次与
+$\alpha/(m-j+1)$ 比较，遇到首次不拒绝即停止；它同样强控制 FWER，且不比 Bonferroni 更保守。
+
+Benjamini--Hochberg（BH）控制的是
+\[
+ \operatorname{FDR}=\mathbb E\!\left[\frac{V}{R\vee1}\right],
+\]
+其中 $V$ 是错误拒绝数、$R$ 是总拒绝数。找最大 $k$ 使
+$p_{(k)}\le kq/m$，拒绝前 $k$ 项。在独立或特定正依赖条件下有标准保证；任意依赖不能机械沿用同一结论。
+
+对固定序列 $(0.001,0.009,0.021,0.040,0.200)$ 与水平 $0.05$，
+Bonferroni、Holm、BH 分别拒绝 $(2,2,4)$ 项。BH 多发现两个候选不表示它们可交易，只表示采用了不同错误目标。
+
+在 $m=20,\alpha=0.05$ 的全局零假设实验中，未经校正的 FWER 为 $0.639975$，Bonferroni 后为 $0.047400$；解析值分别为 $0.641514$ 与 $0.048830$。只发布最显著结果会造成 winner's curse：入选效应向上偏，普通区间也忽略了选择事件。
+
+\section{从发现到确认：冻结选择，保留独立样本}
+
+可审计协议是：先登记假设族、特征与参数网格、停止规则和错误率目标；在探索集上选择；冻结全部选择；只在未参与选择的时间后移 holdout 上做一次确认。若数据有限，可用嵌套或滚动样本分割，但最外层评估不得回流到选择。样本分割降低估计精度，却换来对选择偏差的隔离。
+
+量化数据还要求时点正确的资产池与特征、重叠收益的 HAC 或分块处理、横截面/日期聚类，以及退市、停牌和制度变化记录。确认结果最终还要过经济效应门：成本、换手、冲击、容量与样本外稳定性。FDR 控制不是盈利保证，稳健标准误也不是因果识别。
+
+本章可执行证据为：
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch10
+\end{lstlisting}
+它同时核对解析账本、固定种子模拟、规范输入、版本和容差；篡改期望值与放宽门槛会以非零状态失败。
 
 \input{tex/upper/chapters/ch10-questions}
 \input{tex/upper/chapters/ch10-hints}
 
 \noindent\textbf{本章小结与 Capstone 连接}\quad
-估计量需要偏差、方差与渐近账本；检验需要错误率、功效和效应大小；回归需要条件矩与标准误假设；搜索需要把尝试次数纳入同一检验族。上册 Capstone 将据此审计显著性、样本外、成本和不可声称的因果结论。
+估计量需要损失与抽样账本，检验需要预先声明的错误率与停止规则，回归需要把识别和协方差估计分开，多重搜索需要独立确认。上册 Capstone 将要求每项显著性声明可追溯到时点数据、检验族、依赖结构、效应大小、成本和明确限制。

@@ -1,9 +1,17 @@
 \section{四级问题与即时练习}
 \begingroup\small
-\begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}比较无偏、一致、渐近正态与有效；说明它们为何不能互相替代。
-  \item \textbf{笔试推导：}推导样本均值的 MSE 分解，并证明 $m$ 个独立水平 $\alpha$ 检验的 FWER 为 $1-(1-\alpha)^m$。
-  \item \textbf{数值编程：}复现异方差固定设计，分别报告真标准误、朴素标准误与稳健标准误的覆盖率及容差。
-  \item \textbf{研究判断：}研究员从 200 个信号中选出 $p<0.01$ 的一个并报告显著盈利；列出在讨论可交易性前必须补交的证据。
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{口述概念：}无偏、一致、渐近正态和渐近有效分别约束什么？给出一个无偏但不一致的估计量。
+  \item \textbf{口述概念：}区分检验大小、功效、$p$ 值、置信区间覆盖率与经济效应大小。
+  \item \textbf{口述概念：}经典、异方差稳健、HAC 和簇稳健标准误各允许哪类误差结构？它们共同不能修复什么？
+  \item \textbf{笔试推导：}证明 MSE 分解，并计算 $0.8\bar X$ 在 $\theta=1$、$\operatorname{Var}(\bar X)=0.25$ 时的偏差、方差和 MSE。
+  \item \textbf{笔试推导：}从最小化 $\lVert y-Xb\rVert^2$ 推导正规方程，并证明残差与 $X$ 的每一列正交。
+  \item \textbf{笔试推导：}推导简单回归的遗漏变量偏差公式；代入本章固定参数解释为何稳健标准误不能把斜率 $2$ 变回 $1$。
+  \item \textbf{数值编程：}扩展 oracle，使其验证 plug-in $\hat p^2$ 的有限样本偏差与 Delta 方差；用独立公式写死期望值。
+  \item \textbf{数值编程：}实现 Bonferroni、Holm 与 BH，复现固定 $p$ 值序列的拒绝数 $(2,2,4)$，并为排序或停止规则错误写负例。
+  \item \textbf{数值编程：}对同一均值比较 iid、AR(1) 与簇相关的解析方差；说明为什么不能用 iid bootstrap 为后两者背书。
+  \item \textbf{研究判断：}研究员每天查看一次同一策略的 $p$ 值，显著即停止。设计一个包含登记、停止和确认样本的修复协议。
+  \item \textbf{研究判断：}加入行业控制后因子系数稳定且 HC3 显著。列出仍不能声称因果的理由与所需证据。
+  \item \textbf{研究判断：}从 500 个候选因子中用 BH 选出 20 个。设计从统计发现到成本后可交易结论的证据链。
 \end{enumerate}
 \endgroup

@@ -1,9 +1,17 @@
 \subsection*{分级提示}
 \begingroup\small
-\begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}先分有限样本和渐近性质，再区分中心位置、收缩速度与极限分布。
-  \item \textbf{笔试推导：}加入并减去 $\mathbb E\hat\theta$；FWER 用“没有任何拒绝”的补事件。
-  \item \textbf{数值编程：}固定 $X$ 与误差方差函数；解析真方差不能由被测稳健实现反算。
-  \item \textbf{研究判断：}追问尝试总数、时间切分、标准误、效应大小、成本、容量与失败结果。
+\begin{enumerate}[leftmargin=*]
+  \item 分开有限样本中心、概率收缩、缩放后极限形状与同类估计量的渐近方差。
+  \item 大小在零假设下定义，功效在备择下定义；区间覆盖是重复抽样频率。
+  \item 先画误差相关矩阵；最后问系数目标本身是否已被正确识别。
+  \item 加减 $\mathbb E\hat\theta$，交叉项因中心化消失；收缩会同时改变偏差与方差。
+  \item 对 $b$ 求梯度；把一阶条件改写为 $X^T(y-X\hat\beta)=0$。
+  \item 将 $z$ 对 $x$ 的线性投影系数代入真实模型；标准误不改变概率极限。
+  \item 用 $\mathbb E\hat p^2=p^2+\operatorname{Var}(\hat p)$；Delta 方法使用 $g'(p)=2p$。
+  \item Holm 遇到首次失败便停止；BH 找满足阶梯线的最大索引。
+  \item AR(1) 要累加所有滞后协方差；簇相关用设计效应 $1+(m-1)\rho$。
+  \item 十次独立查看的误拒概率是 $1-0.95^{10}$；确认集不得参与选择。
+  \item 检查遗漏变量、碰撞点、处理后控制、未来信息、函数形式与测量误差。
+  \item 把检验族、选择、样本外、依赖标准误、效应、成本、容量和限制串成不可回流的流程。
 \end{enumerate}
 \endgroup

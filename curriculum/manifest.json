@@ -257,8 +257,8 @@
       "published": true,
       "prerequisites": ["upper.ch06", "upper.ch09"],
       "evidence": {
-        "notation_symbols": ["\\operatorname{Bias}(\\hat\\theta)", "\\operatorname{se}(\\hat\\theta)", "p_{(j)}"],
-        "glossary_terms": ["估计量", "一致性", "渐近分布", "异方差稳健标准误", "族错误率", "错误发现率"],
+        "notation_symbols": ["\\operatorname{Bias}(\\hat\\theta)", "\\operatorname{MSE}_\\theta(\\hat\\theta_n)", "\\operatorname{se}(\\hat\\theta)", "p_{(j)}", "\\operatorname{FDR}"],
+        "glossary_terms": ["估计量", "均方误差", "一致性", "渐近分布", "Delta 方法", "检验功效", "异方差稳健标准误", "HAC 标准误", "簇稳健标准误", "遗漏变量偏差", "族错误率", "Holm 方法", "错误发现率", "Benjamini-Hochberg 方法", "选择偏差"],
         "notation_and_assumptions": "tex/upper/chapters/ch10.tex",
         "core_derivation": "tex/upper/chapters/ch10.tex",
         "independent_oracle": {"source": "notebooks/upper/ch10_statistical_inference.py", "oracle": "evidence/ch10/oracle.json", "command": ["{python}", "notebooks/upper/ch10_statistical_inference.py"]},

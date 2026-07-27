@@ -2205,9 +2205,132 @@ class LearningUnitContractTests(unittest.TestCase):
             "empirical_var=0.000966 clt_coverage=0.954700 slope=1.496775 "
             "true_se=0.393283 empirical_se=0.394608 "
             "naive_coverage=0.868900 robust_coverage=0.938900 "
-            "naive_fwer=0.639975 bonferroni_fwer=0.047400\n",
+            "naive_fwer=0.639975 bonferroni_fwer=0.047400 "
+            "mse=(0.250000,0.200000) inconsistent_var=1.000000 "
+            "plugin=(0.000960,0.000614) ovb=(2.000000,1.000000) "
+            "dependent=(0.010000,0.039250,0.026000) ordered=(2,2,4) "
+            "optional=0.401263\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_ten_rejects_a_false_shrinkage_mse(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-shrinkage-mse.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update({"expected_shrinkage_mse": 0.0}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("shrinkage MSE", result.stderr)
+
+    def test_chapter_ten_rejects_a_false_unbiased_inconsistent_variance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-inconsistent-variance.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update(
+                {"expected_unbiased_inconsistent_variance": 0.0}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unbiased inconsistent estimator", result.stderr)
+
+    def test_chapter_ten_rejects_a_false_omitted_variable_bias(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-ovb.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update({"expected_omitted_slope": 1.5}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("omitted-variable bias", result.stderr)
+
+    def test_chapter_ten_rejects_a_false_dependent_error_variance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-dependent-variance.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update(
+                {"expected_ar1_mean_variance": 0.01}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("dependent-error variance", result.stderr)
+
+    def test_chapter_ten_rejects_a_false_ordered_p_value_ledger(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-ordered-p-values.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update({"expected_bh_rejections": 3}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("expected_bh_rejections", result.stderr)
+
+    def test_chapter_ten_rejects_malformed_or_widened_oracle_contracts(self) -> None:
+        cases = (
+            (
+                "ch10-missing-field.json",
+                lambda oracle: oracle.pop("expected_shrinkage_mse"),
+                "oracle missing required fields",
+            ),
+            (
+                "ch10-nonfinite.json",
+                lambda oracle: oracle.update({"true_slope": float("nan")}),
+                "oracle numeric inputs must be finite",
+            ),
+            (
+                "ch10-fractional-integer.json",
+                lambda oracle: oracle.update({"sample_size": 250.5}),
+                "oracle sample_size must be an integer",
+            ),
+            (
+                "ch10-wide-tolerance.json",
+                lambda oracle: oracle.update({"absolute_tolerance": 1.0}),
+                "absolute tolerance must equal",
+            ),
+            (
+                "ch10-synchronized-forgery.json",
+                lambda oracle: oracle.update(
+                    {"expected_simulated_mean": 0.9, "mean_tolerance": 1.0}
+                ),
+                "simulation gates must match",
+            ),
+            (
+                "ch10-altered-p-values.json",
+                lambda oracle: oracle.update(
+                    {"ordered_p_values": [0.001, 0.009, 0.021, 0.05, 0.2]}
+                ),
+                "ordered p-values must match",
+            ),
+            (
+                "ch10-wrong-numpy.json",
+                lambda oracle: oracle.update({"numpy_version": "unfrozen"}),
+                "NumPy version must equal",
+            ),
+            (
+                "ch10-altered-design.json",
+                lambda oracle: oracle.update({"bernoulli_p": 0.5}),
+                "canonical inference design must not change",
+            ),
+            (
+                "ch10-altered-marker.json",
+                lambda oracle: oracle["published_markers"].__setitem__(
+                    0, "forged"
+                ),
+                "published markers must match",
+            ),
+        )
+        for fixture, mutate, diagnostic in cases:
+            with self.subTest(fixture=fixture):
+                result = self.run_oracle_fixture(
+                    fixture,
+                    "evidence/ch10/oracle.json",
+                    "notebooks/upper/ch10_statistical_inference.py",
+                    mutate,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
 
     def test_accepts_chapter_ten_with_inference_oracles(self) -> None:
         result = self.run_contract(
@@ -2224,7 +2347,11 @@ class LearningUnitContractTests(unittest.TestCase):
             "empirical_var=0.000966 clt_coverage=0.954700 slope=1.496775 "
             "true_se=0.393283 empirical_se=0.394608 "
             "naive_coverage=0.868900 robust_coverage=0.938900 "
-            "naive_fwer=0.639975 bonferroni_fwer=0.047400\n"
+            "naive_fwer=0.639975 bonferroni_fwer=0.047400 "
+            "mse=(0.250000,0.200000) inconsistent_var=1.000000 "
+            "plugin=(0.000960,0.000614) ovb=(2.000000,1.000000) "
+            "dependent=(0.010000,0.039250,0.026000) ordered=(2,2,4) "
+            "optional=0.401263\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
