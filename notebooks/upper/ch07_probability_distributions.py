@@ -17,6 +17,8 @@ import numpy as np
 FIXED_VALUES = [-1.0, 0.0, 2.0]
 FIXED_PROBABILITIES = [0.25, 0.5, 0.25]
 FIXED_JOINT = [[0.375, 0.125], [0.125, 0.375]]
+FIXED_MOMENT_MATCH_VALUES = [-math.sqrt(2.0), 0.0, math.sqrt(2.0)]
+FIXED_MOMENT_MATCH_PROBABILITIES = [0.25, 0.5, 0.25]
 FIXED_CDF_POINTS = [-1.0, 0.0, 1.0, 2.0]
 FIXED_CUTOFFS = [10.0, 1000.0]
 FIXED_TOLERANCE = 1e-10
@@ -61,6 +63,13 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
         "expected_dependence_gap",
         "expected_covariance",
         "expected_correlation",
+        "moment_match_values",
+        "moment_match_probabilities",
+        "expected_moment_match_mean",
+        "expected_moment_match_variance",
+        "expected_moment_match_discrete_fourth",
+        "expected_normal_fourth",
+        "expected_moment_match_atom_at_zero",
         "bernoulli_p",
         "expected_bernoulli_mean",
         "expected_bernoulli_variance",
@@ -96,6 +105,14 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
     )
     joint = finite_array(oracle["joint_distribution"], "joint_distribution", (2, 2))
     joint_support = finite_array(oracle["joint_support"], "joint_support", (2,))
+    moment_match_values = finite_array(
+        oracle["moment_match_values"], "moment_match_values", (3,)
+    )
+    moment_match_probabilities = finite_array(
+        oracle["moment_match_probabilities"],
+        "moment_match_probabilities",
+        (3,),
+    )
     cdf_points = finite_array(oracle["cdf_points"], "cdf_points", (4,))
     cutoffs = finite_array(oracle["pareto_cutoffs"], "pareto_cutoffs", (2,))
     uniform_bounds = finite_array(oracle["uniform_bounds"], "uniform_bounds", (2,))
@@ -104,13 +121,22 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
     )
     tolerance = finite_scalar(oracle["absolute_tolerance"], "absolute_tolerance")
     published_expected = finite_scalar(oracle["expected"], "expected")
-    if np.any(probabilities < 0.0) or np.any(joint < 0.0):
+    if (
+        np.any(probabilities < 0.0)
+        or np.any(joint < 0.0)
+        or np.any(moment_match_probabilities < 0.0)
+    ):
         raise SystemExit("probability mass must be nonnegative")
     if (
         values.tolist() != FIXED_VALUES
         or probabilities.tolist() != FIXED_PROBABILITIES
         or joint.tolist() != FIXED_JOINT
         or joint_support.tolist() != [-1.0, 1.0]
+        or not np.array_equal(
+            moment_match_values, np.asarray(FIXED_MOMENT_MATCH_VALUES)
+        )
+        or moment_match_probabilities.tolist()
+        != FIXED_MOMENT_MATCH_PROBABILITIES
         or cdf_points.tolist() != FIXED_CDF_POINTS
         or cutoffs.tolist() != FIXED_CUTOFFS
         or uniform_bounds.tolist() != [-1.0, 3.0]
@@ -130,6 +156,8 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
         raise SystemExit("finite probability mass does not sum to one")
     if abs(float(joint.sum()) - 1.0) > tolerance:
         raise SystemExit("joint probability mass does not sum to one")
+    if abs(float(moment_match_probabilities.sum()) - 1.0) > tolerance:
+        raise SystemExit("moment-match probability mass does not sum to one")
 
     expected_mean = finite_scalar(oracle["expected_mean"], "expected_mean")
     expected_variance = finite_scalar(oracle["expected_variance"], "expected_variance")
@@ -155,6 +183,11 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
         "expected_dependence_gap",
         "expected_covariance",
         "expected_correlation",
+        "expected_moment_match_mean",
+        "expected_moment_match_variance",
+        "expected_moment_match_discrete_fourth",
+        "expected_normal_fourth",
+        "expected_moment_match_atom_at_zero",
         "expected_bernoulli_mean",
         "expected_bernoulli_variance",
         "expected_bernoulli_mgf_log2",
@@ -192,6 +225,19 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
     y_variance = float(column_marginal @ ((joint_support - y_mean) ** 2))
     correlation = covariance / math.sqrt(x_variance * y_variance)
 
+    moment_match_mean = float(moment_match_probabilities @ moment_match_values)
+    moment_match_variance = float(
+        moment_match_probabilities
+        @ ((moment_match_values - moment_match_mean) ** 2)
+    )
+    moment_match_discrete_fourth = float(
+        moment_match_probabilities @ (moment_match_values**4)
+    )
+    normal_fourth = 3.0
+    moment_match_atom_at_zero = float(
+        moment_match_probabilities[moment_match_values == 0.0].sum()
+    )
+
     p = 0.25
     bernoulli_mean = p
     bernoulli_variance = p * (1.0 - p)
@@ -216,6 +262,11 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
         "expected_dependence_gap": dependence_gap,
         "expected_covariance": covariance,
         "expected_correlation": correlation,
+        "expected_moment_match_mean": moment_match_mean,
+        "expected_moment_match_variance": moment_match_variance,
+        "expected_moment_match_discrete_fourth": moment_match_discrete_fourth,
+        "expected_normal_fourth": normal_fourth,
+        "expected_moment_match_atom_at_zero": moment_match_atom_at_zero,
         "expected_bernoulli_mean": bernoulli_mean,
         "expected_bernoulli_variance": bernoulli_variance,
         "expected_bernoulli_mgf_log2": bernoulli_mgf,
@@ -242,9 +293,21 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
     ]
     if any(float(np.max(np.abs(a - b))) > tolerance for a, b in array_checks):
         raise SystemExit("distribution transform or marginal ledger mismatch")
+    same_moment_names = {
+        "expected_moment_match_mean",
+        "expected_moment_match_variance",
+        "expected_moment_match_discrete_fourth",
+        "expected_normal_fourth",
+        "expected_moment_match_atom_at_zero",
+    }
     if any(
         abs(observed_scalars[name] - expected_scalars[name]) > tolerance
-        for name in scalar_names
+        for name in same_moment_names
+    ):
+        raise SystemExit("same-moment counterexample ledger mismatch")
+    if any(
+        abs(observed_scalars[name] - expected_scalars[name]) > tolerance
+        for name in set(scalar_names) - same_moment_names
     ):
         raise SystemExit("analytic distribution oracle mismatch")
 
@@ -254,6 +317,9 @@ def main(oracle_path: Path = Path("evidence/ch07/oracle.json")) -> int:
         f"cdf=({cdf[0]:.2f},{cdf[1]:.2f},{cdf[2]:.2f},{cdf[3]:.2f}) "
         f"square=({squared_probabilities[0]:.2f},{squared_probabilities[1]:.2f},{squared_probabilities[2]:.2f}) "
         f"dependence={dependence_gap:.3f} covariance={covariance:.3f} "
+        f"same_moments=({moment_match_mean:.3f},{moment_match_variance:.3f}) "
+        f"fourth=({moment_match_discrete_fourth:.3f},{normal_fourth:.3f}) "
+        f"atom0={moment_match_atom_at_zero:.3f} "
         f"bernoulli=({bernoulli_mean:.3f},{bernoulli_variance:.4f},{bernoulli_mgf:.3f}) "
         f"poisson={poisson_pgf:.6f} normal=({normal_mgf:.6f},{normal_cdf_at_one:.6f}) "
         f"uniform=({uniform_mean:.3f},{uniform_variance:.6f}) "

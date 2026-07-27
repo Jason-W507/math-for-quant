@@ -72,6 +72,22 @@ Python 数组是已经观察到的数；概率模型还必须描述未观察但�
 \]
 离散分布的分位数不一定唯一对应概率等式；因此 VaR 的符号、损失/收益方向与分位数约定必须明确。
 
+均值和方差不能唯一确定分布。令离散变量 $D$ 取
+$-\sqrt2,0,\sqrt2$，概率分别为 $1/4,1/2,1/4$；再令
+$Z\sim\mathcal N(0,1)$。由对称性与有限求和，
+\[
+  \mathbb E[D]=\mathbb E[Z]=0,
+  \qquad \operatorname{Var}(D)=\operatorname{Var}(Z)=1.
+\]
+但二者绝非同分布：离散变量在零点有原子
+$\mathbb P(D=0)=1/2$，连续 Normal 满足 $\mathbb P(Z=0)=0$；而且
+\[
+  \mathbb E[D^4]
+  =\frac14(\sqrt2)^4+\frac14(-\sqrt2)^4=2,
+  \qquad \mathbb E[Z^4]=3.
+\]
+所以“前两阶矩相同”只给出两个约束，不能推出相同的 CDF、尾部或风险。
+
 \section{变量变换：从原像而不是直觉出发}
 
 令 $Y=g(X)$。最稳妥的起点是
@@ -144,7 +160,7 @@ uv run python notebooks/upper/ch07_probability_distributions.py
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch07
 \end{lstlisting}
-程序只复算手工账本：有限分布矩与 CDF、平方推前律、联合依赖/协方差、七类解析分布量和 Pareto 截断积分。它固定形状、参数与 $10^{-10}$ 容差；NaN expected、缺字段、错误边缘形状、负质量、替换后的固定值、宽容差和伪造发布标签都会失败。
+程序只复算手工账本：有限分布矩与 CDF、平方推前律、联合依赖/协方差、同均值方差反例、七类解析分布量和 Pareto 截断积分。它固定形状、参数与 $10^{-10}$ 容差；NaN expected、缺字段、错误边缘形状、负质量、替换后的固定值、伪造四阶矩、宽容差和伪造发布标签都会失败。
 
 \begin{note}
 经验分布是样本对象，参数分布是模型族，拟合参数是估计结果。选择分布时同时报告支持集、离散/连续机制、矩存在条件、尾部诊断、参数不确定性和样本外失败；不要以“均值方差接近”替代分布检验，也不要删除极端值后再证明轻尾。

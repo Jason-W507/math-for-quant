@@ -1545,6 +1545,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "execution=passed oracle=passed mean=0.250000 variance=1.187500 "
             "cdf=(0.25,0.75,0.75,1.00) square=(0.50,0.25,0.25) "
             "dependence=0.125 covariance=0.500 "
+            "same_moments=(0.000,1.000) fourth=(2.000,3.000) atom0=0.500 "
             "bernoulli=(0.250,0.1875,1.250) poisson=0.367879 "
             "normal=(1.133148,0.841345) uniform=(1.000,1.333333) "
             "exponential=(0.500,0.135335) lognormal=(1.133148,0.364696) "
@@ -1642,6 +1643,19 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("oracle numeric tolerance is fixed", result.stderr)
 
+    def test_chapter_seven_rejects_a_false_same_moment_counterexample(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch07-false-same-moment-counterexample.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            lambda oracle: oracle.update(
+                {"expected_moment_match_discrete_fourth": 3.0}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("same-moment counterexample ledger mismatch", result.stderr)
+
     def test_chapter_seven_rejects_a_false_published_expected_label(self) -> None:
         result = self.run_oracle_fixture(
             "ch07-false-published-expected.json",
@@ -1668,6 +1682,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed mean=0.250000 variance=1.187500 "
             "cdf=(0.25,0.75,0.75,1.00) square=(0.50,0.25,0.25) "
             "dependence=0.125 covariance=0.500 "
+            "same_moments=(0.000,1.000) fourth=(2.000,3.000) atom0=0.500 "
             "bernoulli=(0.250,0.1875,1.250) poisson=0.367879 "
             "normal=(1.133148,0.841345) uniform=(1.000,1.333333) "
             "exponential=(0.500,0.135335) lognormal=(1.133148,0.364696) "
