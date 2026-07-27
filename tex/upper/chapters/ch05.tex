@@ -2,104 +2,238 @@
 \label{ch:matrix-calculus}
 
 \begin{introduction}
-  \item 先修：第 1 章的命题与量纲、第 2 章的极限和连续性。
-  \item 学习产出：能从微分定义推导梯度、Jacobian 与 Hessian，并用独立差分检查实现。
-  \item 研究连接：回归、组合优化、最大似然和机器学习训练都依赖一致的维度与导数约定。
+  \item 先修：第 1 章的命题与量纲、第 2 章的极限和连续性、第 4 章的范数语言。
+  \item 学习产出：能从线性近似定义推导梯度、Jacobian 与 Hessian，使用微分和迹规则计算矩阵导数，并用独立差分检查实现。
+  \item Python 边界：自动微分和有限差分只能核对给定点的程序，不能决定行列约定、可微性或模型目标是否正确。
+  \item 研究连接：回归、组合优化、最大似然、风险敏感度和机器学习训练都依赖一致的形状与导数契约。
 \end{introduction}
 
-Python 自动微分可以生成数值，但不会替研究者决定向量方向、损失标量性或不可微点。矩阵微分首先是一套形状契约，其次才是公式表。
+Python 可以在一行代码中返回梯度，但它不会替研究者判断目标是不是标量、参数采用行向量还是列向量、不可微点怎样处理，也不会证明某个数值梯度对应正确的经济目标。矩阵微分首先是一套局部线性映射与形状契约，其次才是公式表。
 
-\section{从线性近似定义多元导数}
+\section{可微的核心是统一线性近似}
 
-对 $f:\mathbb R^d\to\mathbb R$，若存在线性映射使
+设 $f:\mathbb R^d\to\mathbb R^m$。若存在线性映射 $A:\mathbb R^d\to\mathbb R^m$，使
 \[
-  f(x+h)=f(x)+\nabla f(x)^T h+o(\lVert h\rVert),
+ f(x+h)=f(x)+Ah+r(h),
+ \qquad
+ \frac{\lVert r(h)\rVert}{\lVert h\rVert}\longrightarrow0,
 \]
-则 $f$ 在 $x$ 可微。本文把向量与梯度都写成列向量；微分写作
+则称 $f$ 在 $x$ Fréchet 可微，导数记为 $Df(x)=A$。要求同一个线性映射同时控制所有趋近方向；这比逐坐标求偏导强。
+
+当 $m=1$ 时，本文把向量和梯度都写成列向量，唯一线性映射可写为
 \[
-  df=\nabla f(x)^Tdx,
+ Df(x)h=\nabla f(x)^Th,
+ \qquad df=\nabla f(x)^Tdx.
 \]
-所以 $df$ 是标量。偏导数存在并不自动推出可微；需要整个余项相对 $\lVert h\rVert$ 消失。
+$df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times d}$：第 $i$ 行对应第 $i$ 个输出，第 $j$ 列对应第 $j$ 个输入，且 $df=J_f(x)dx$。
 
-对 $g:\mathbb R^d\to\mathbb R^m$，本文约定 Jacobian $J_g\in\mathbb R^{m\times d}$：第 $i$ 行对应第 $i$ 个输出，第 $j$ 列对应第 $j$ 个输入，且 $dg=J_gdx$。标量函数的 Hessian $H_f\in\mathbb R^{d\times d}$ 收集二阶偏导，并给出二阶局部曲率。
+\subsection{方向导数、偏导与可微性}
 
-\section{链式法则先检查形状}
-
-若 $y=g(x)\in\mathbb R^m$、$z=h(y)\in\mathbb R$，则
+方向 $v$ 上的方向导数是
 \[
-  dz=\nabla h(y)^Tdy=\nabla h(y)^TJ_g(x)dx,
+ D_vf(x)=\lim_{t\to0}\frac{f(x+tv)-f(x)}{t}.
+\]
+偏导只是 $v=e_j$ 的特殊情形。若 $f$ 可微，则所有方向导数存在且 $D_vf(x)=Df(x)v$；反向不自动成立，因为不同方向上的数值可能无法拼成一个对所有小 $h$ 都有效的线性映射。
+
+\subsection{失败见证：偏导存在仍不可微}
+
+定义
+\[
+ f(x,y)=
+ \begin{cases}
+ \dfrac{x^2y}{x^4+y^2},&(x,y)\neq(0,0),\\[4pt]
+ 0,&(x,y)=(0,0).
+ \end{cases}
+\]
+沿两条坐标轴函数恒为零，所以原点的两个偏导都存在且为零。但沿抛物线 $y=x^2$，有 $f(x,x^2)=1/2$，故函数在原点甚至不连续，更不可能可微。逐坐标检查通过不是全微分证据。
+
+\section{链式法则先乘线性映射}
+
+设 $g:\mathbb R^d\to\mathbb R^m$ 在 $x$ 可微，$h:\mathbb R^m\to\mathbb R^k$ 在 $g(x)$ 可微。写
+\[
+ g(x+u)=g(x)+Au+r_g(u),\qquad
+ h(y+v)=h(y)+Bv+r_h(v).
+\]
+代入 $v=Au+r_g(u)$，主线性项为 $BAu$。因为可微蕴含局部连续且 $v=O(\lVert u\rVert)$，两部分余项除以 $\lVert u\rVert$ 后都趋零，所以
+\[
+ D(h\circ g)(x)=Dh(g(x))Dg(x).
+\]
+
+若外层 $h:\mathbb R^m\to\mathbb R$ 为标量函数，则
+\[
+ dz=\nabla h(y)^Tdy
+ =\nabla h(y)^TJ_g(x)dx,
 \]
 比较 $dz=\nabla(h\circ g)(x)^Tdx$ 得
 \[
-  \nabla(h\circ g)(x)=J_g(x)^T\nabla h(g(x)).
+ \nabla(h\circ g)(x)=J_g(x)^T\nabla h(g(x)).
 \]
-右侧形状依次为 $(d\times m)(m\times1)=d\times1$。若乘法形状对不上，应先修正约定或模型，而不是转置到程序能够运行。
+形状为 $(d\times m)(m\times1)=d\times1$。若乘法形状不匹配，应修正约定或模型，不应随意增加转置让程序运行。
 
-\section{用微分推导矩阵规则}
-
-设 $A\in\mathbb R^{d\times d}$、$b,x\in\mathbb R^d$，常量的微分为零，并有
-\[
-  d(Ax)=A\,dx,\qquad d(b^Tx)=b^Tdx.
-\]
-对二次型
-\[
-  f(x)=\frac12x^TAx+b^Tx,
-\]
-乘积法则给出
-\[
-  df=\frac12\bigl(dx^TAx+x^TAdx\bigr)+b^Tdx
-     =\left(\frac{A+A^T}{2}x+b\right)^Tdx.
-\]
-因此
-\[
-  \nabla f(x)=\frac{A+A^T}{2}x+b,
-  \qquad H_f=\frac{A+A^T}{2}.
-\]
-只有 $A$ 对称时才能直接写 $Ax+b$。反对称部分对标量二次型没有贡献。
-
-\begin{example}
-取 $A=\left(\begin{smallmatrix}4&2\\0&3\end{smallmatrix}\right)$、$b=(-1,2)^T$、$x=(0.5,-1)^T$。手算 $f(x)=-1$，梯度为 $(0,-0.5)^T$，Hessian 为 $\left(\begin{smallmatrix}4&1\\1&3\end{smallmatrix}\right)$。
-\end{example}
-
-\section{Jacobian 账本与复合梯度}
+\subsection{完整链式账本}
 
 令
 \[
-  g(x)=\begin{pmatrix}x_1x_2\\x_1+x_2^2\end{pmatrix},
-  \qquad h(y)=y_1^2+3y_2.
+ g(x)=\begin{pmatrix}x_1x_2\\x_1+x_2^2\end{pmatrix},
+ \qquad h(y)=y_1^2+3y_2.
 \]
 则
 \[
-  J_g(x)=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix},
-  \qquad \nabla h(y)=\begin{pmatrix}2y_1\\3\end{pmatrix}.
+ J_g(x)=\begin{pmatrix}x_2&x_1\\1&2x_2\end{pmatrix},
+ \qquad \nabla h(y)=\begin{pmatrix}2y_1\\3\end{pmatrix}.
 \]
-在 $x=(0.5,-1)^T$，链式梯度为 $(4,-6.5)^T$。每一步都保留输出维度，因而比背诵展开后的标量公式更不易出错。
-
-回归损失也遵循同一模式：若 $X\in\mathbb R^{n\times d}$、$\beta\in\mathbb R^d$、$y\in\mathbb R^n$，则
+在 $x=(0.5,-1)^T$，$g(x)=(-0.5,1.5)^T$，故
 \[
-  \ell(\beta)=\frac12\lVert X\beta-y\rVert_2^2,
-  \qquad \nabla\ell=X^T(X\beta-y)\in\mathbb R^d.
+ \nabla(h\circ g)(x)
+ =\begin{pmatrix}-1&1\\0.5&-2\end{pmatrix}
+  \begin{pmatrix}-1\\3\end{pmatrix}
+ =\begin{pmatrix}4\\-6.5\end{pmatrix}.
 \]
-错误写成 $X(X\beta-y)$ 时，$(n\times d)(n\times1)$ 通常根本没有定义；维度检查在数值运行前就能拒绝它。
+每一步保留输入输出形状，比背诵展开后的标量公式更不易出错。
 
-\section{有限差分是检查器，不是可微性证明}
+\section{二阶导数、Hessian 与 Taylor 展开}
 
-对第 $j$ 个坐标，中心差分
+对标量函数 $f:\mathbb R^d\to\mathbb R$，若梯度可微，其 Jacobian 是 Hessian：
 \[
-  \frac{f(x+he_j)-f(x-he_j)}{2h}
+ H_f(x)=D(\nabla f)(x)
+ =\left[\frac{\partial^2f}{\partial x_i\partial x_j}\right]_{i,j}.
 \]
-在光滑条件下具有 $O(h^2)$ 截断误差，但 $h$ 太小又会放大浮点消去误差。本章取 $h=10^{-5}$，二次型和复合函数的解析梯度与独立差分最大差异小于 $10^{-9}$，实际为 $2.62\times10^{-11}$。
+若二阶偏导在邻域内连续，Clairaut 定理给 $H_f=H_f^T$。只有二阶偏导在一点存在而缺少邻域连续性时，不能无条件引用混合偏导对称。
 
-失败见证是 $a(t)=|t|$。在零点，左差商为 $-1$，右差商为 $1$，所以导数不存在；但对称中心差分恰好返回 0。单个数值检查不能替代左右极限与可微性假设。
+二阶 Taylor 公式写成
+\[
+ f(x+h)=f(x)+\nabla f(x)^Th
+ +\frac12h^TH_f(x)h+o(\lVert h\rVert^2).
+\]
+$v^TH_fv$ 是方向 $v$ 上的局部曲率。Hessian 正定表示每个非零方向二阶曲率为正，但“某点 Hessian 正定”只给局部信息，不能单独证明全局最优。
+
+\section{用微分推导向量规则}
+
+常量的微分为零。对常量矩阵 $A$、向量 $b$ 与变量 $x$，
+\[
+ d(Ax)=A\,dx,
+ \qquad d(b^Tx)=b^Tdx.
+\]
+对二次型
+\[
+ f(x)=\frac12x^TAx+b^Tx,
+\]
+乘积法则给
+\[
+ \begin{aligned}
+ df
+ &=\frac12\bigl(dx^TAx+x^TAdx\bigr)+b^Tdx\\
+ &=\left(\frac{A+A^T}{2}x+b\right)^Tdx.
+ \end{aligned}
+\]
+因此
+\[
+ \nabla f(x)=\frac{A+A^T}{2}x+b,
+ \qquad H_f=\frac{A+A^T}{2}.
+\]
+只有 $A$ 对称时才能直接写 $Ax+b$。反对称部分满足 $x^T(A-A^T)x=0$，对标量二次型没有贡献。
+
+取
+\[
+ A=\begin{pmatrix}4&2\\0&3\end{pmatrix},\quad
+ b=\begin{pmatrix}-1\\2\end{pmatrix},\quad
+ x=\begin{pmatrix}0.5\\-1\end{pmatrix}.
+\]
+手算 $f(x)=-1$，梯度为 $(0,-0.5)^T$，Hessian 为
+$\left(\begin{smallmatrix}4&1\\1&3\end{smallmatrix}\right)$。这个非对称 $A$ 会立即暴露“忘记对称化”的错误公式。
+
+\section{迹技巧统一矩阵变量的微分}
+
+当变量本身是矩阵 $X\in\mathbb R^{m\times n}$，使用 Frobenius 内积
+\[
+ \langle U,V\rangle_F=\operatorname{tr}(U^TV),
+ \qquad df=\operatorname{tr}((\nabla_Xf)^T dX)
+\]
+定义梯度形状。迹的循环性质 $\operatorname{tr}(ABC)=\operatorname{tr}(BCA)$ 只能循环移动因子，不能任意交换顺序。
+
+对固定 $A$，
+\[
+ f(X)=\operatorname{tr}(A^TX)
+ \Longrightarrow df=\operatorname{tr}(A^TdX),
+ \quad \nabla_Xf=A.
+\]
+若 $X$ 可逆，由 $X^{-1}X=I$ 微分得
+\[
+ d(X^{-1})=-X^{-1}(dX)X^{-1}.
+\]
+若 $X$ 正定，Jacobi 公式给
+\[
+ d\log\det X=\operatorname{tr}(X^{-1}dX),
+ \qquad \nabla_X\log\det X=X^{-T}.
+\]
+对称正定时 $X^{-T}=X^{-1}$。协方差似然和风险模型常同时出现逆矩阵与 log-determinant；维度和转置必须跟随微分，而不是凭记忆选择。
+
+\section{最小二乘是链式法则的矩阵版本}
+
+设 $X\in\mathbb R^{n\times d}$、$\beta\in\mathbb R^d$、$y\in\mathbb R^n$，残差 $r=X\beta-y$，损失
+\[
+ \ell(\beta)=\frac12\lVert r\rVert_2^2
+ =\frac12r^Tr.
+\]
+因为 $dr=X\,d\beta$，
+\[
+ d\ell=r^Tdr=r^TX\,d\beta
+ =[X^T(X\beta-y)]^Td\beta,
+\]
+所以
+\[
+ \nabla\ell=X^T(X\beta-y)\in\mathbb R^d,
+ \qquad H_\ell=X^TX.
+\]
+错误写成 $X(X\beta-y)$ 时，$(n\times d)(n\times1)$ 通常没有定义。即使广播让代码运行，结果也不再是该标量损失的梯度。
+
+\section{量化算例：均值--方差目标}
+
+给定对称协方差矩阵 $\Sigma\in\mathbb R^{d\times d}$、期望收益 $\mu\in\mathbb R^d$ 与风险收益权衡 $\lambda>0$，考虑
+\[
+ L(w)=\frac12w^T\Sigma w-\lambda\mu^Tw.
+\]
+微分直接给出
+\[
+ \nabla L(w)=\Sigma w-\lambda\mu,
+ \qquad H_L=\Sigma.
+\]
+若 $\Sigma$ 正定，无约束驻点唯一：$w^*=\lambda\Sigma^{-1}\mu$。但实际组合还有预算、杠杆、换手与交易成本约束；本章只建立导数账本，第 13 章再讨论约束优化。若样本协方差病态，解析公式形式正确也可能数值不稳定，这属于第 6 与第 14 章的线性代数和数值门禁。
+
+\section{有限差分是检查器，不是证明}
+
+第 $j$ 个坐标的中心差分
+\[
+ \frac{f(x+he_j)-f(x-he_j)}{2h}
+\]
+在足够光滑时具有 $O(h^2)$ 截断误差；但 $h$ 太小会让两个近似相等的浮点数相减，舍入误差约按 $\epsilon_{\rm mach}/h$ 放大。因此应扫描多个 $h$，寻找截断误差下降、随后舍入误差上升的区间，而不是只选一个最小步长。
+
+固定账本取 $h=10^{-5}$。二次型和复合函数的解析梯度与独立中心差分最大差异为 $2.62\times10^{-11}$，小于预先声明的 $10^{-9}$。expected 来自手推公式，不由被测解析梯度函数生成。
+
+不可微函数 $a(t)=|t|$ 在零点的左差商为 $-1$、右差商为 $1$，所以导数不存在；对称中心差分却恰好返回 0。数值“对称”可以掩盖尖点，单个差分值不能替代左右极限。
+
+\subsection{自动微分的正确边界}
+
+自动微分精确应用程序执行图中的链式法则，通常优于有限差分的舍入误差，但仍只回答“这段程序的局部导数是什么”。它不能发现损失缩放写错、未来数据泄漏、约束遗漏或在尖点选择的次梯度不符合研究协议。可靠流程是：手推形状和关键公式，自动微分核对实现，再用少量独立差分或闭式算例做第三方检查。
+
+\section{固定 oracle 与失败门禁}
+
+本章脚本绑定点 $(0.5,-1)$、非对称矩阵 $A$、向量 $b$、步长 $10^{-5}$、绝对容差 $10^{-12}$ 与梯度误差上限 $10^{-9}$。它检查二次型值、解析梯度、对称 Hessian、链式梯度、左右差商和有限差分误差。
+
+公开 CLI 会拒绝非有限或非数值标量、错误维度、改写的输入账本、期望数组截断、放宽的容差以及与解析值不符的发布标签。这样 `zip` 截断、`NaN` 比较和“扩大 tolerance 后同步改 expected”都不能产生伪通过。
 
 \begin{lstlisting}[language=bash]
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch05
 \end{lstlisting}
 
+\section{研究中的导数审计}
+
+提交梯度前依次记录：输入、输出与每个中间量的形状；导数约定；可微性或次梯度协议；解析推导的独立来源；自动微分对应的实际程序；有限差分步长扫描；目标的单位与总和/均值缩放；病态矩阵和约束边界；至少一个故意失败见证。若只有“框架没有报错”，证据仍不完整。
+
 \input{tex/upper/chapters/ch05-questions}
 \input{tex/upper/chapters/ch05-hints}
 
 \section*{本章小结与 Capstone 连接}
 
-微分是局部线性映射，Jacobian 与 Hessian 必须携带形状，链式法则通过矩阵乘法组合。上册 Capstone 将要求每个优化目标提交解析导数、维度账本、独立数值核验和不可微边界。
+Fréchet 导数把可微性定义为统一线性近似；Jacobian 按形状组合链式法则；Hessian 描述二阶曲率；微分和迹技巧把向量、矩阵目标放在同一语言中。上册 Capstone 会要求每个优化或估计目标提交解析导数、维度账本、独立数值核验、不可微协议和失败证据。

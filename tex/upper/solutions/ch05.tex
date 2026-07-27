@@ -2,13 +2,45 @@
 \label{app:ch05-solutions}
 
 \section*{口述概念}
-梯度表示标量函数的一阶线性近似；Jacobian 表示向量映射的一阶线性近似；Hessian 是标量函数梯度的 Jacobian。偏导全部存在仍可能不可微。本文 Jacobian 的行对应输出、列对应输入。
+\begin{enumerate}[leftmargin=*]
+  \item 偏导是沿坐标基向量的方向导数；方向导数逐方向给一个标量或向量极限。Fréchet 可微要求存在同一个线性映射 $A$，使余项为 $o(\lVert h\rVert)$。标量函数用列梯度表示该线性映射，向量函数用 Jacobian 表示。正文反例沿坐标轴偏导为零，却沿 $y=x^2$ 跳到 $1/2$，说明偏导存在甚至不保证连续。
+  \item 本文向量和梯度为列向量，$J_g$ 的行对应输出、列对应输入，所以 $dg=J_gdx$。外层标量函数满足 $dh=\nabla h^Tdg=\nabla h^TJ_gdx$；与 $dh=\nabla(h\circ g)^Tdx$ 比较后转置整个系数，得到 $\nabla(h\circ g)=J_g^T\nabla h$。矩阵变量梯度由 $df=\operatorname{tr}((\nabla_Xf)^TdX)$ 定义。
+  \item 若混合二阶偏导在邻域连续，Clairaut 定理保证 Hessian 对称；只在一点存在不够。解析推导能给一般公式和假设；自动微分能精确求执行图的局部导数，但不能验证目标语义；有限差分是独立数值检查，却受步长、舍入和不可微点影响。三者互补，不能互相替代。
+\end{enumerate}
 
 \section*{笔试推导}
-$d(x^TAx)=dx^TAx+x^TAdx=x^T(A^T+A)dx$，故梯度使用 $A$ 的对称部分。账本中 $A+A^T$ 是 $d\times d$，乘 $x$ 后为 $d\times1$，与 $b$ 同形，最终 $df=\nabla f^Tdx$ 为标量。
+\begin{enumerate}[leftmargin=*]
+  \item 写 $g(x+u)=g(x)+Au+r_g(u)$，其中 $\lVert r_g(u)\rVert=o(\lVert u\rVert)$；再写 $h(y+v)=h(y)+Bv+r_h(v)$。取 $v=Au+r_g(u)=O(\lVert u\rVert)$，则
+  \[
+   h(g(x+u))-h(g(x))=BAu+B r_g(u)+r_h(v).
+  \]
+  后两项除以 $\lVert u\rVert$ 趋零，故导数为 $BA$。若 $h$ 标量值，$J_g^T\nabla h$ 的形状是 $(d\times m)(m\times1)=d\times1$。
+  \item
+  \[
+   d(x^TAx)=dx^TAx+x^TAdx=x^T(A^T+A)dx.
+  \]
+  因此 $\nabla f=((A+A^T)/2)x+b$，$H_f=(A+A^T)/2$。二阶 Taylor 主项为 $\tfrac12h^TH_fh$；反对称部分在该二次型中消失。
+  \item 令 $r=X\beta-y$，则 $dr=X,d\beta$，故 $d\ell=r^TX,d\beta=[X^Tr]^Td\beta$，梯度为 $X^T(X\beta-y)$。由 $X^{-1}X=I$ 微分，$(dX^{-1})X+X^{-1}dX=0$，左右整理得 $dX^{-1}=-X^{-1}(dX)X^{-1}$。Jacobi 公式给 $d\log\det X=\operatorname{tr}(X^{-1}dX)$，与矩阵梯度定义比较得 $\nabla_X\log\det X=X^{-T}$。
+\end{enumerate}
 
 \section*{数值编程}
-手算二次型值为 $-1$，梯度为 $(0,-0.5)^T$；链式梯度为 $(4,-6.5)^T$。$h=10^{-5}$ 的中心差分与两组解析梯度最大差异小于 $10^{-9}$。对 $|t|$，左差商为 $-1$、右差商为 $1$，所以中心差分的零值不是导数证据。
+\begin{enumerate}[leftmargin=*]
+  \item 手算二次型值为 $-1$，梯度为 $(0,-0.5)^T$；链式梯度为 $(4,-6.5)^T$。固定 $h=10^{-5}$ 时最大差异为 $2.62\times10^{-11}$，最大差异小于 $10^{-9}$。对 $|t|$，左差商为 $-1$、右差商为 $1$，因此零点不可微。继续扫描 $10^{-2}$ 至 $10^{-8}$：较大 $h$ 由截断误差主导，极小 $h$ 由消去误差主导；报告机器与数据类型，因为最低点并非普适常数。
+  \item `NaN` 触发稳定 numeric gate；错误点触发 analytic-ledger 诊断；错误步长触发 fixed-step 诊断；长度错配触发 fixed-dimensions；放宽容差触发 numeric-tolerances；错误发布标签触发 expected=-1。恢复时只还原临时 JSON，不得用 observed 改写 expected。
+  \item 取非对称 $A$，正确梯度为 $((A+A^T)/2)w-\lambda\mu$，错误实现为 $Aw-\lambda\mu$。在正文固定 $A$ 与 $w=(0.5,-1)^T$ 上，两者不同；中心差分匹配正确的对称化公式。若只用对称矩阵，错误实现会被测试掩盖，因此测试数据必须激活被检查的分支。
+\end{enumerate}
 
 \section*{研究判断}
-先核对标量目标、行列向量和 Jacobian 方向；再对照逐项微分与独立差分。随后检查平均损失与总损失的缩放、广播、原地修改和不可微算子。最后扫描多个步长，区分截断误差与浮点消去；不得通过随意转置或放宽容差隐藏结构错误。
+\begin{enumerate}[leftmargin=*]
+  \item 先固定最小标量目标、参数点和 dtype；列出每个中间量形状及 Jacobian 约定；手算闭式结果。再比较自动微分与手推，检查 detach、原地修改、广播、转置和不可微算子；最后扫描中心差分步长并比较左右差商。每次只改变一个因素，保留退出状态与完整输出，不通过随意转置或放宽容差隐藏错误。
+  \item 先写损失是 $\sum_i\ell_i$ 还是 $n^{-1}\sum_i\ell_i$，手算两者梯度相差 $n$。然后用单样本和重复样本测试观察缩放是否线性；检查广播是否把 $(n,1)$ 与 $(n,)$ 扩成 $(n,n)$；最后核对研究定义究竟要求总成本还是平均风险。单位分析可进一步发现收益、基点和金额混用。
+  \item 第一层用有限差分/自动微分确认 $\nabla L=\Sigma w-\lambda\mu$，这是导数正确性。第二层检查 $\Sigma$ 的特征值、条件数和扰动放大，使用分解或正则化处理病态性。第三层审查期望收益估计误差、样本外稳定性、预算/杠杆/换手约束和交易成本；闭式解极端即使数学和数值都正确，也可能没有研究可用性。
+\end{enumerate}
+
+\section*{恢复路径}
+先运行
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch05
+\end{lstlisting}
+再复制 `evidence/ch05/oracle.json` 到临时文件逐项注入坏值，从公开 CLI 记录稳定诊断。若自动微分、差分和手推不一致，先回到固定非对称二次型与形状账本；只有该闭式案例一致后，才把复杂模型逐层接回。

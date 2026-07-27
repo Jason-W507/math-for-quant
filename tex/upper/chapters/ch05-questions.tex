@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}说明偏导、梯度、Jacobian、Hessian 和可微性的关系，并声明本文 Jacobian 约定。
-  \item \textbf{笔试推导：}用微分推导非对称 $A$ 下 $\nabla(\tfrac12x^TAx+b^Tx)$，再核对每个矩阵形状。
-  \item \textbf{数值编程：}复现二次型与复合函数梯度，报告中心差分步长、最大差异和不可微反例的左右差商。
-  \item \textbf{研究判断：}自动微分与手推梯度不一致时，按优先级列出约定、实现和数值诊断步骤。
+  \item 区分偏导、方向导数、Fréchet 可微、梯度和 Jacobian；为什么偏导全部存在仍不够？
+  \item 声明本文 Jacobian 与矩阵梯度约定，并解释链式法则中转置从哪里出现。
+  \item Hessian 对称需要什么条件？自动微分、有限差分和解析推导分别能证明什么、不能证明什么？
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 从可微余项定义证明链式法则，并核对 $J_g^T\nabla h$ 的形状。
+  \item 用微分推导非对称 $A$ 下 $\nabla(\tfrac12x^TAx+b^Tx)$、Hessian 和二阶 Taylor 主项。
+  \item 用迹与微分推导 $\nabla_\beta\tfrac12\lVert X\beta-y\rVert^2$、$d(X^{-1})$ 与 $\nabla_X\log\det X$。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 复现固定二次型与复合函数的解析梯度，扫描多个差分步长并报告误差的 U 形变化。
+  \item 从临时 oracle 注入 `NaN`、错误点、错误步长、梯度长度错配、宽容差和错误发布标签，记录六类稳定诊断。
+  \item 为二维均值--方差目标实现解析梯度、中心差分和一个故意漏掉对称化的错误梯度；用非对称矩阵证明测试能区分它们。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 自动微分与手推梯度不一致。给出按优先级排序、可以复现的诊断流程。
+  \item 一个损失在训练中下降，但梯度单位比预期大 $n$ 倍。如何判断是总和/均值缩放、广播还是模型定义问题？
+  \item 样本协方差使均值--方差闭式解极端敏感。区分导数正确性、线性代数病态性和研究有效性三层问题。
 \end{enumerate}
 \endgroup

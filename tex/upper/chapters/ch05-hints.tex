@@ -1,9 +1,9 @@
 \subsection*{分级提示}
 \begingroup\small
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}偏导只看坐标方向；可微要求统一线性近似控制所有方向。
-  \item \textbf{笔试推导：}把 $dx^TAx$ 转写成 $x^TA^Tdx$ 后再收集 $dx$。
-  \item \textbf{数值编程：}差分期望来自手算，不由被测梯度生成；同时报告左右单边差商。
-  \item \textbf{研究判断：}先统一行列约定和损失缩放，再查广播、转置、不可微点与步长敏感性。
+  \item \textbf{口述概念：}偏导只看基方向；Fréchet 导数要求一个线性映射统一控制所有小扰动。梯度是标量值导数的列向量表示。Hessian 对称通常使用二阶偏导在邻域连续。
+  \item \textbf{笔试推导：}链式法则把两个余项展开并除以 $\lVert h\rVert$。二次型先把 $dx^TAx$ 改写为 $x^TA^Tdx$。矩阵变量用 $df=\operatorname{tr}((\nabla_Xf)^TdX)$ 收集 $dX$。
+  \item \textbf{数值编程：}expected 来自手算；同时画截断误差 $O(h^2)$ 与舍入误差趋势。坏 oracle 走公开 CLI。非对称矩阵能暴露错误使用 $Ax$ 的实现。
+  \item \textbf{研究判断：}先统一标量目标、形状和缩放，再最小化到闭式算例；随后查执行图和步长。病态性不会让正确导数公式变错，却会放大输入误差；经济约束缺失又是第三层问题。
 \end{enumerate}
 \endgroup

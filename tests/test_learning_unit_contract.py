@@ -1179,6 +1179,95 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_chapter_five_rejects_a_nonfinite_oracle_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-nonfinite-point.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"point": [float("nan"), -1.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite numbers\n",
+        )
+
+    def test_chapter_five_rejects_noncanonical_derivative_inputs(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-noncanonical-point.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"point": [1.0, -1.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: derivative inputs must match analytic ledger\n",
+        )
+
+    def test_chapter_five_rejects_noncanonical_difference_step(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-noncanonical-step.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"finite_difference_step": 1e-3}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: finite-difference step must equal 1e-5\n",
+        )
+
+    def test_chapter_five_rejects_mismatched_gradient_counts(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-mismatched-gradient.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"expected_chain_gradient": [4.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: derivative labels must match fixed dimensions\n",
+        )
+
+    def test_chapter_five_rejects_widened_numeric_gates(self) -> None:
+        def widen_gates(oracle: dict[str, Any]) -> None:
+            oracle["absolute_tolerance"] = 1e9
+            oracle["maximum_gradient_error"] = 1e9
+            oracle["expected_quadratic_gradient"] = [99.0, 99.0]
+
+        result = self.run_oracle_fixture(
+            "ch05-widened-gates.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            widen_gates,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: numeric tolerances must match fixed ledger\n",
+        )
+
+    def test_chapter_five_rejects_a_false_published_expected_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-false-published-expected.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"expected": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: published expected must equal -1\n",
+        )
+
     def test_accepts_chapter_five_with_derivative_cross_checks(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch05" / "oracle.json").read_text(

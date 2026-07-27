@@ -7,6 +7,8 @@
 from __future__ import annotations
 
 import json
+import math
+import sys
 from pathlib import Path
 from typing import Callable
 
@@ -27,6 +29,89 @@ def central_gradient(function: Callable[[Vector], float], point: Vector, step: f
 
 def main(oracle_path: Path = Path("evidence/ch05/oracle.json")) -> int:
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+    required_fields = {
+        "point",
+        "matrix",
+        "linear",
+        "expected_quadratic_value",
+        "expected_quadratic_gradient",
+        "expected_symmetric_hessian",
+        "expected_chain_gradient",
+        "finite_difference_step",
+        "maximum_gradient_error",
+        "expected_abs_left_slope",
+        "expected_abs_right_slope",
+        "expected",
+        "absolute_tolerance",
+    }
+    if not required_fields.issubset(oracle):
+        raise SystemExit(
+            "numeric gate failed: oracle scalars must be finite numbers"
+        )
+    if (
+        len(oracle["point"]) != 2
+        or len(oracle["matrix"]) != 2
+        or any(len(row) != 2 for row in oracle["matrix"])
+        or len(oracle["linear"]) != 2
+    ):
+        raise SystemExit("ledger gate failed: derivative inputs must be 2D")
+    if (
+        len(oracle["expected_quadratic_gradient"]) != 2
+        or len(oracle["expected_chain_gradient"]) != 2
+        or len(oracle["expected_symmetric_hessian"]) != 2
+        or any(len(row) != 2 for row in oracle["expected_symmetric_hessian"])
+    ):
+        raise SystemExit(
+            "ledger gate failed: derivative labels must match fixed dimensions"
+        )
+
+    numeric_scalars = [
+        *oracle["point"],
+        *(value for row in oracle["matrix"] for value in row),
+        *oracle["linear"],
+        oracle["expected_quadratic_value"],
+        *oracle["expected_quadratic_gradient"],
+        *(value for row in oracle["expected_symmetric_hessian"] for value in row),
+        *oracle["expected_chain_gradient"],
+        oracle["finite_difference_step"],
+        oracle["maximum_gradient_error"],
+        oracle["expected_abs_left_slope"],
+        oracle["expected_abs_right_slope"],
+        oracle["expected"],
+        oracle["absolute_tolerance"],
+    ]
+    try:
+        parsed_scalars = [float(value) for value in numeric_scalars]
+    except (TypeError, ValueError, OverflowError):
+        raise SystemExit(
+            "numeric gate failed: oracle scalars must be finite numbers"
+        ) from None
+    if not all(math.isfinite(value) for value in parsed_scalars):
+        raise SystemExit(
+            "numeric gate failed: oracle scalars must be finite numbers"
+        )
+    if (
+        oracle["point"] != [0.5, -1.0]
+        or oracle["matrix"] != [[4.0, 2.0], [0.0, 3.0]]
+        or oracle["linear"] != [-1.0, 2.0]
+    ):
+        raise SystemExit(
+            "ledger gate failed: derivative inputs must match analytic ledger"
+        )
+    if float(oracle["finite_difference_step"]) != 1e-5:
+        raise SystemExit(
+            "ledger gate failed: finite-difference step must equal 1e-5"
+        )
+    if (
+        float(oracle["absolute_tolerance"]) != 1e-12
+        or float(oracle["maximum_gradient_error"]) != 1e-9
+    ):
+        raise SystemExit(
+            "ledger gate failed: numeric tolerances must match fixed ledger"
+        )
+    if float(oracle["expected"]) != -1.0:
+        raise SystemExit("ledger gate failed: published expected must equal -1")
+
     point = [float(item) for item in oracle["point"]]
     matrix = [[float(item) for item in row] for row in oracle["matrix"]]
     linear = [float(item) for item in oracle["linear"]]
@@ -101,4 +186,7 @@ def main(oracle_path: Path = Path("evidence/ch05/oracle.json")) -> int:
     return 0
 
 
-main()
+oracle_path = Path("evidence/ch05/oracle.json")
+if Path(sys.argv[0]).stem == "ch05_matrix_calculus" and len(sys.argv) > 1:
+    oracle_path = Path(sys.argv[1])
+main(oracle_path)
