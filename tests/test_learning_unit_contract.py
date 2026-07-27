@@ -2633,10 +2633,16 @@ class LearningUnitContractTests(unittest.TestCase):
             "kalman=(0.555556,0.084615,0.152494,0.410431) "
             "spurious=(0.344011,0.000216) "
             "split_mse=(1.436939,2.226153) "
-            "rolling_phi=(0.824923,-0.215817) "
+            "segment_phi=(0.824923,-0.215817) "
+            "spread_rolling_phi=(0.299681,0.459715,0.558824) "
             "arma=(1.666667,3.333333,2.265625,0.732414) "
             "unitroot=(1.0,10.0,100.0) cointegration=(0.428571,-0.600000) "
             "garch=(0.900000,1.000000,6.578813) kalman_ll=-4.260729 "
+            "kalman_steps=nu(1.000000,-1.055556,0.165385);"
+            "S(2.250000,1.805556,1.696154);"
+            "K(0.555556,0.446154,0.410431);"
+            "ll(-1.546626,-1.522920,-1.191183) "
+            "boundary=(filter<=t,smooth<=T) "
             "smooth=(0.260771,0.128118,0.152494)\n",
         )
         self.assertEqual(result.stderr, "")
@@ -2757,10 +2763,16 @@ class LearningUnitContractTests(unittest.TestCase):
             "kalman=(0.555556,0.084615,0.152494,0.410431) "
             "spurious=(0.344011,0.000216) "
             "split_mse=(1.436939,2.226153) "
-            "rolling_phi=(0.824923,-0.215817) "
+            "segment_phi=(0.824923,-0.215817) "
+            "spread_rolling_phi=(0.299681,0.459715,0.558824) "
             "arma=(1.666667,3.333333,2.265625,0.732414) "
             "unitroot=(1.0,10.0,100.0) cointegration=(0.428571,-0.600000) "
             "garch=(0.900000,1.000000,6.578813) kalman_ll=-4.260729 "
+            "kalman_steps=nu(1.000000,-1.055556,0.165385);"
+            "S(2.250000,1.805556,1.696154);"
+            "K(0.555556,0.446154,0.410431);"
+            "ll(-1.546626,-1.522920,-1.191183) "
+            "boundary=(filter<=t,smooth<=T) "
             "smooth=(0.260771,0.128118,0.152494)\n"
             "learning-unit contract passed\n",
         )

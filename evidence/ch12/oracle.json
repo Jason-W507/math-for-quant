@@ -21,6 +21,9 @@
   "cointegration_slope": 1.5,
   "spread_ar_phi": 0.4,
   "spread_innovation_variance": 0.36,
+  "spread_seed": 20260728,
+  "spread_length": 600,
+  "rolling_window": 120,
   "expected_cointegration_spread_variance": 0.42857142857142855,
   "expected_ecm_adjustment": -0.6,
   "garch_omega": 0.1,
@@ -56,8 +59,11 @@
     "differences_r_squared": 0.00021610149139195123,
     "random_split_mse": 1.4369389798037213,
     "chronological_split_mse": 2.2261525911152855,
-    "rolling_phi_before_break": 0.8249234824584768,
-    "rolling_phi_after_break": -0.21581729058290108
+    "segment_phi_before_break": 0.8249234824584768,
+    "segment_phi_after_break": -0.21581729058290108,
+    "spread_rolling_phi_minimum": 0.2996808910657127,
+    "spread_rolling_phi_median": 0.45971547612764285,
+    "spread_rolling_phi_maximum": 0.5588238161710667
   },
   "absolute_tolerance": 1e-12,
   "simulation_tolerance": 1e-10,

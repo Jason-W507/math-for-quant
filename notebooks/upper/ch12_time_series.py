@@ -48,7 +48,8 @@ FIXED_TOLERANCES = {
 FIXED_INTEGERS = {
     "seed": 20260727, "ar1_observations": 50000, "ar1_burn_in": 1000,
     "forecast_horizon": 3, "spurious_length": 400, "break_length": 600,
-    "break_point": 360,
+    "break_point": 360, "spread_seed": 20260728, "spread_length": 600,
+    "rolling_window": 120,
 }
 FIXED_SCALARS = {
     "ar1_phi": 0.8, "innovation_variance": 1.0, "forecast_origin": 1.0,
@@ -79,14 +80,16 @@ REQUIRED_FIELDS = {
     "phi_before_break", "provenance", "published_markers", "seed",
     "simulation_tolerance", "spread_ar_phi", "spread_innovation_variance",
     "spurious_length", "spurious_level_r2_minimum", "time_series_labels",
-    "training_fraction", "unit_root_horizons",
+    "training_fraction", "unit_root_horizons", "spread_seed",
+    "spread_length", "rolling_window",
 }
 EXPECTED_FIELDS = {
     "ar1_mean", "ar1_variance", "ar1_autocorrelation", "forecast",
     "forecast_error_variance", "kalman_filtered_means", "kalman_final_gain",
     "levels_r_squared", "differences_r_squared", "random_split_mse",
-    "chronological_split_mse", "rolling_phi_before_break",
-    "rolling_phi_after_break",
+    "chronological_split_mse", "segment_phi_before_break",
+    "segment_phi_after_break", "spread_rolling_phi_minimum",
+    "spread_rolling_phi_median", "spread_rolling_phi_maximum",
 }
 
 
@@ -265,6 +268,7 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
     innovations_list: list[float] = []
     innovation_variances: list[float] = []
     gains: list[float] = []
+    likelihood_terms: list[float] = []
     kalman_log_likelihood = 0.0
     for observation in oracle["kalman_observations"]:
         predicted_variance = state_variance + process_variance
@@ -273,11 +277,12 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
             predicted_variance + measurement_variance
         )
         gain = predicted_variance / (predicted_variance + measurement_variance)
-        kalman_log_likelihood += -0.5 * (
+        likelihood_term = -0.5 * (
             math.log(2.0 * math.pi)
             + math.log(observation_innovation_variance)
             + innovation**2 / observation_innovation_variance
         )
+        kalman_log_likelihood += likelihood_term
         state_mean = state_mean + gain * innovation
         state_variance = (1.0 - gain) * predicted_variance
         filtered_means.append(state_mean)
@@ -285,6 +290,7 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
         innovations_list.append(innovation)
         innovation_variances.append(observation_innovation_variance)
         gains.append(gain)
+        likelihood_terms.append(likelihood_term)
 
     smoothed_means = [filtered_means[-1]]
     smoothed_mean = filtered_means[-1]
@@ -358,15 +364,44 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
     after_design = np.column_stack(
         (np.ones(target.size - break_point + 1), lag[break_point - 1 :])
     )
-    rolling_phi_before = float(
+    segment_phi_before = float(
         np.linalg.lstsq(
             before_design, target[: break_point - 1], rcond=None
         )[0][1]
     )
-    rolling_phi_after = float(
+    segment_phi_after = float(
         np.linalg.lstsq(
             after_design, target[break_point - 1 :], rcond=None
         )[0][1]
+    )
+
+    spread_rng = np.random.default_rng(int(oracle["spread_seed"]))
+    spread_length = int(oracle["spread_length"])
+    rolling_window = int(oracle["rolling_window"])
+    spread_innovations = spread_rng.normal(
+        scale=math.sqrt(spread_innovation_variance), size=spread_length
+    )
+    spread_path = np.zeros(spread_length)
+    for index in range(1, spread_length):
+        spread_path[index] = (
+            spread_phi * spread_path[index - 1] + spread_innovations[index]
+        )
+    spread_lag = spread_path[:-1]
+    spread_target = spread_path[1:]
+    spread_rolling_phi: list[float] = []
+    for end in range(rolling_window, spread_target.size + 1):
+        start = end - rolling_window
+        design = np.column_stack(
+            (np.ones(rolling_window), spread_lag[start:end])
+        )
+        coefficient = np.linalg.lstsq(
+            design, spread_target[start:end], rcond=None
+        )[0]
+        spread_rolling_phi.append(float(coefficient[1]))
+    spread_rolling_summary = (
+        min(spread_rolling_phi),
+        float(np.median(spread_rolling_phi)),
+        max(spread_rolling_phi),
     )
 
     expected = oracle["expected"]
@@ -405,9 +440,22 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
         abs(chronological_mse - float(expected["chronological_split_mse"]))
         <= simulation_tolerance,
         random_mse < chronological_mse,
-        abs(rolling_phi_before - float(expected["rolling_phi_before_break"]))
+        abs(segment_phi_before - float(expected["segment_phi_before_break"]))
         <= simulation_tolerance,
-        abs(rolling_phi_after - float(expected["rolling_phi_after_break"]))
+        abs(segment_phi_after - float(expected["segment_phi_after_break"]))
+        <= simulation_tolerance,
+        np.max(
+            np.abs(
+                np.asarray(spread_rolling_summary)
+                - np.asarray(
+                    [
+                        expected["spread_rolling_phi_minimum"],
+                        expected["spread_rolling_phi_median"],
+                        expected["spread_rolling_phi_maximum"],
+                    ]
+                )
+            )
+        )
         <= simulation_tolerance,
     ]
     if not all(checks):
@@ -424,7 +472,9 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
         f"{filtered_means[2]:.6f},{gains[-1]:.6f}) "
         f"spurious=({levels_r_squared:.6f},{differences_r_squared:.6f}) "
         f"split_mse=({random_mse:.6f},{chronological_mse:.6f}) "
-        f"rolling_phi=({rolling_phi_before:.6f},{rolling_phi_after:.6f}) "
+        f"segment_phi=({segment_phi_before:.6f},{segment_phi_after:.6f}) "
+        f"spread_rolling_phi=({spread_rolling_summary[0]:.6f},"
+        f"{spread_rolling_summary[1]:.6f},{spread_rolling_summary[2]:.6f}) "
         f"arma=({arma_ar_root:.6f},{arma_ma_root:.6f},"
         f"{arma_variance:.6f},{arma_lag_one_autocorrelation:.6f}) "
         f"unitroot=({unit_root_variances[0]:.1f},"
@@ -433,6 +483,12 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
         f"garch=({garch_persistence:.6f},{garch_unconditional_variance:.6f},"
         f"{garch_half_life:.6f}) "
         f"kalman_ll={kalman_log_likelihood:.6f} "
+        f"kalman_steps=nu({innovations_list[0]:.6f},{innovations_list[1]:.6f},"
+        f"{innovations_list[2]:.6f});S({innovation_variances[0]:.6f},"
+        f"{innovation_variances[1]:.6f},{innovation_variances[2]:.6f});"
+        f"K({gains[0]:.6f},{gains[1]:.6f},{gains[2]:.6f});"
+        f"ll({likelihood_terms[0]:.6f},{likelihood_terms[1]:.6f},"
+        f"{likelihood_terms[2]:.6f}) boundary=(filter<=t,smooth<=T) "
         f"smooth=({smoothed_means[0]:.6f},{smoothed_means[1]:.6f},"
         f"{smoothed_means[2]:.6f})"
     )
