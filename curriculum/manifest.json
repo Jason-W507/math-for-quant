@@ -276,8 +276,8 @@
       "published": true,
       "prerequisites": ["upper.ch08", "upper.ch09"],
       "evidence": {
-        "notation_symbols": ["(X_t)_{t\\in T}", "\\mathcal F_t", "P_{ij}", "N_t", "W_t"],
-        "glossary_terms": ["随机过程", "滤过", "Markov 性", "鞅", "Poisson 过程", "Brownian 运动", "二次变差"],
+        "notation_symbols": ["(X_t)_{t\\in T}", "\\mathcal F_t", "P_{ij}", "\\tau", "\\pi P=\\pi", "N_t", "W_t"],
+        "glossary_terms": ["随机过程", "滤过", "Markov 性", "停止时刻", "周期", "可选停止定理", "鞅", "Poisson 过程", "Brownian 运动", "反射原理", "二次变差"],
         "notation_and_assumptions": "tex/upper/chapters/ch11.tex",
         "core_derivation": "tex/upper/chapters/ch11.tex",
         "independent_oracle": {"source": "notebooks/upper/ch11_stochastic_processes.py", "oracle": "evidence/ch11/oracle.json", "command": ["{python}", "notebooks/upper/ch11_stochastic_processes.py"]},

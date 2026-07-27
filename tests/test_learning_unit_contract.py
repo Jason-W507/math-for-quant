@@ -2409,9 +2409,117 @@ class LearningUnitContractTests(unittest.TestCase):
             "stationary=(0.600000,0.400000) simulated_state1=0.397433 "
             "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
             "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
-            "nonmarkov=(0.5,1.0)\n",
+            "nonmarkov=(0.5,1.0) hitting=(0.500000,4.000000) "
+            "periodic=2 doubling_tail=(0.937500,0.996094,0.999985) "
+            "poisson_ops=(0.500000,0.250000,5.000000,1.500000,"
+            "3.500000,10.500000) reflection=0.317311 "
+            "variation=(3.191538,12.766153)\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_eleven_rejects_a_false_hitting_probability(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-hitting-probability.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update(
+                {"expected_gambler_ruin_probability": 0.4}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("hitting probability", result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_periodic_chain_period(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-period.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update({"expected_periodic_chain_period": 1}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("periodic chain", result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_doubling_tail_ledger(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-doubling-tail.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update(
+                {"expected_doubling_loss_tail": [0.8, 0.9, 0.99]}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("doubling optional-stopping", result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_poisson_thinning_rate(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-poisson-thinning.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update({"expected_thinned_rate": 2.0}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Poisson thinning", result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_reflection_probability(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-reflection.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update(
+                {"expected_reflection_hitting_probability": 0.25}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Brownian reflection-principle", result.stderr)
+
+    def test_chapter_eleven_rejects_malformed_or_widened_oracles(self) -> None:
+        cases = (
+            (
+                "ch11-missing-field.json",
+                lambda oracle: oracle.pop("transition_matrix"),
+                "missing required fields",
+            ),
+            (
+                "ch11-nonfinite.json",
+                lambda oracle: oracle.update({"poisson_rate": float("inf")}),
+                "must be finite",
+            ),
+            (
+                "ch11-fractional-integer.json",
+                lambda oracle: oracle.update({"simulation_paths": 30000.5}),
+                "must be an integer",
+            ),
+            (
+                "ch11-widened-tolerance.json",
+                lambda oracle: oracle.update({"absolute_tolerance": 0.1}),
+                "tolerances must match",
+            ),
+            (
+                "ch11-canonical-array.json",
+                lambda oracle: oracle.update(
+                    {"transition_matrix": [[0.7, 0.3], [0.3, 0.7]]}
+                ),
+                "canonical process design",
+            ),
+            (
+                "ch11-labels.json",
+                lambda oracle: oracle.update(
+                    {"process_labels": ["Markov", "Poisson"]}
+                ),
+                "process labels",
+            ),
+        )
+        for fixture, mutate, diagnostic in cases:
+            with self.subTest(fixture=fixture):
+                result = self.run_oracle_fixture(
+                    fixture,
+                    "evidence/ch11/oracle.json",
+                    "notebooks/upper/ch11_stochastic_processes.py",
+                    mutate,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
 
     def test_accepts_chapter_eleven_with_process_oracles(self) -> None:
         result = self.run_contract(
@@ -2428,7 +2536,11 @@ class LearningUnitContractTests(unittest.TestCase):
             "stationary=(0.600000,0.400000) simulated_state1=0.397433 "
             "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
             "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
-            "nonmarkov=(0.5,1.0)\n"
+            "nonmarkov=(0.5,1.0) hitting=(0.500000,4.000000) "
+            "periodic=2 doubling_tail=(0.937500,0.996094,0.999985) "
+            "poisson_ops=(0.500000,0.250000,5.000000,1.500000,"
+            "3.500000,10.500000) reflection=0.317311 "
+            "variation=(3.191538,12.766153)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

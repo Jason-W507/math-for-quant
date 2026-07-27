@@ -195,6 +195,8 @@
     {"symbol": "(X_t)_{t\\in T}", "meaning": "由索引集 T 参数化的随机过程", "domain": "family of random variables", "first_unit": "upper.ch11"},
     {"symbol": "\\mathcal F_t", "meaning": "时点 t 可用事件组成的信息 sigma 代数", "domain": "filtration component", "first_unit": "upper.ch08"},
     {"symbol": "P_{ij}", "meaning": "Markov 链从状态 i 到状态 j 的一步转移概率", "domain": "unit interval", "first_unit": "upper.ch11"},
+    {"symbol": "\\tau", "meaning": "相对于指定滤过可在当前时点判断是否已经发生的停止时刻", "domain": "nonnegative random time", "first_unit": "upper.ch11"},
+    {"symbol": "\\pi P=\\pi", "meaning": "Markov 链稳态分布满足的不变方程", "domain": "probability row vector equation", "first_unit": "upper.ch11"},
     {"symbol": "N_t", "meaning": "截至时点 t 的 Poisson 过程计数", "domain": "nonnegative integer", "first_unit": "upper.ch11"},
     {"symbol": "W_t", "meaning": "时点 t 的标准 Brownian 运动值", "domain": "real random variable", "first_unit": "upper.ch11"},
     {"symbol": "\\gamma(h)", "meaning": "平稳时间序列相隔 h 期的自协方差", "domain": "real", "first_unit": "upper.ch12"},

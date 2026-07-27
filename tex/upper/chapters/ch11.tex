@@ -2,65 +2,100 @@
 \label{ch:stochastic-processes}
 
 \begin{introduction}
-  \item 先修：第 8 章的条件期望与概率核，第 9 章的收敛和极限定理。
-  \item 学习产出：能用统一符号描述随机过程、有限维分布、路径和滤过，核对 Markov、鞅、Poisson 与 Brownian 性质，并构造条件结构反例。
-  \item 研究连接：状态建模、事件到达、随机积分、衍生品定价和高频订单流都从这些对象出发。
+  \item 先修：第 8 章的条件期望与概率核，第 9 章的收敛与极限定理。
+  \item 学习产出：从有限维分布、路径和信息集三个层次描述过程；判断 Markov 链的长期行为；在明确条件下使用鞅与可选停止；推导 Poisson 与 Brownian 基线并识别失效边界。
+  \item 研究连接：状态模型、事件到达、订单流、随机积分、衍生品定价和高频风险控制都依赖这些对象，但“像随机游走”不是模型验证。
 \end{introduction}
 
-\section{过程同时包含分布、时间和路径}
+\section{一个过程有三个不可互换的层次}
 
-随机过程 $(X_t)_{t\in T}$ 是同一概率空间上的随机变量族，$T$ 是索引集，$X_t$ 取值于状态空间 $E$。任取 $t_1<\cdots<t_k$ 得到有限维分布
+随机过程 $(X_t)_{t\in T}$ 是同一概率空间 $(\Omega,\mathcal F,\mathbb P)$ 上、取值于状态空间 $(E,\mathcal E)$ 的随机变量族。任取 $t_1<\cdots<t_k$，联合律
 \[
-  \mathcal L(X_{t_1},\ldots,X_{t_k}),
+  \mathcal L(X_{t_1},\ldots,X_{t_k})
 \]
-而固定 $\omega$ 后的 $t\mapsto X_t(\omega)$ 是样本路径。有限维分布说明任意有限时点的联合律；连续、右连续、跳跃和总变差则是路径性质，不能只凭一组边缘直方图判断。
+称为有限维分布；固定 $\omega$ 后，$t\mapsto X_t(\omega)$ 是样本路径。有限维分布族若满足相容性，Kolmogorov 扩张定理可构造过程的概率律，但它并不自动给出连续路径。两个过程可以同分布却不是同一版本；若每个固定 $t$ 都几乎处处相等，称为版本，若整条路径除零测集外处处相等，才称不可区分。连续修改、右连续和 càdlàg 都是需要另证的路径正则性。
 
-滤过 $(\mathcal F_t)_{t\ge0}$ 满足 $\mathcal F_s\subseteq\mathcal F_t$（$s\le t$），表示信息随时间增加。若 $X_t$ 对 $\mathcal F_t$ 可测，称过程适应；若决策在 $t$ 时使用 $\mathcal F_{t+1}$，数学上就是未来信息泄漏。
+滤过 $(\mathcal F_t)_{t\ge0}$ 满足 $\mathcal F_s\subseteq\mathcal F_t$（$s\le t$），表示信息增长。自然滤过是 $\sigma(X_s:s\le t)$；实际定理常再完备化并取右连续修改。$X_t$ 对 $\mathcal F_t$ 可测称为适应。交易指令若必须在 $t$ 前确定，常需要可预测性而不只是适应性。随机时刻 $\tau$ 若 $\{\tau\le t\}\in\mathcal F_t$，才是停止时刻；“全样本最优离场点”通常不是。
 
-\section{Markov 性是给定当前后遗忘过去}
+\begin{example}[信息层次]
+同一条价格序列既可被当作有限维向量做协方差估计，也可被当作路径讨论最大回撤。前者不能替代后者。若用收盘后才知道的日最高价决定盘中下单，变量虽属于终端 $\mathcal F_T$，却不属于当时的信息集。
+\end{example}
 
-离散链的 Markov 性写为
+\section{Markov 链：状态压缩与长期行为}
+
+齐次离散 Markov 链满足
 \[
-  \mathbb P(X_{n+1}=j\mid X_0=i_0,\ldots,X_n=i)
-  =\mathbb P(X_{n+1}=j\mid X_n=i)=P_{ij}.
+ \mathbb P(X_{n+1}=j\mid X_0,\ldots,X_n=i)=P_{ij},
 \]
-转移矩阵 $P=(P_{ij})$ 每行非负且和为一；$n$ 步转移由 Chapman--Kolmogorov 关系给出 $P^n$。稳态分布 $\pi$ 满足 $\pi P=\pi$，但稳态存在不自动保证从任意初值收敛，还需不可约、非周期等条件。
+转移矩阵 $P$ 每行非负且和为一，Chapman--Kolmogorov 关系给出 $P^{m+n}=P^mP^n$。Markov 性不是“相邻独立”，而是当前状态已包含预测未来所需的历史摘要。若摘要遗漏库存、剩余期限或波动状态，扩充状态往往比强行接受 Markov 假设更诚实。
 
 实验取
 \[
-  P=\begin{pmatrix}0.8&0.2\\0.3&0.7\end{pmatrix},\qquad X_0=0.
+P=\begin{pmatrix}0.8&0.2\\0.3&0.7\end{pmatrix},\qquad \mu_0=(1,0).
 \]
-$P^5$ 给出 $(0.612500,0.387500)$，稳态分布为 $(0.600000,0.400000)$；$30000$ 条长度 50 的路径在状态 1 的末期比例为 $0.397433$。
+$P^5$ 给出 $(0.612500,0.387500)$，解 $\pi P=\pi$ 与 $\pi\mathbf1=1$ 得稳态分布为 $(0.600000,0.400000)$。不可约保证状态互通；周期 $d(i)=\gcd\{n\ge1:P^n_{ii}>0\}$ 描述返回节律；有限不可约链中所有状态正常返且稳态唯一，若再非周期，才有 $\mu P^n\to\pi$。
 
-反例令 $U,V$ 为独立 Bernoulli$(1/2)$，并取 $(X_0,X_1,X_2)=(U,V,U)$。给定 $X_1$ 时 $\mathbb P(X_2=1\mid X_1)=0.5$，但再知道 $X_0=1$ 后条件概率为 $1$。相邻变量独立并不使整个过程成为 Markov 链；条件概率分别为 $0.5$ 与 $1$。
+\noindent\textbf{两个不能省略的反例。}\quad
+交替链 $P=\bigl(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr)$ 有稳态 $(1/2,1/2)$，但从状态 0 出发的分布在 $(1,0)$ 与 $(0,1)$ 间振荡，周期为 2。可约链 $P=\bigl(\begin{smallmatrix}1&0\\1/2&1/2\end{smallmatrix}\bigr)$ 有吸收类；从状态 1 最终吸收于 0 的概率为 1，期望等待时间为 2。故“算出稳态”不等于“任意初值收敛”。
 
-\section{鞅把公平性绑定到指定信息集}
-
-可积、适应过程 $(M_n)$ 若满足
+命中概率和期望命中时长来自边界值问题。公平随机游走在 $\{0,1,\ldots,N\}$ 上，从 $i$ 出发，令 $h_i=\mathbb P_i(\tau_N<\tau_0)$、$m_i=\mathbb E_i(\tau_0\wedge\tau_N)$，则
 \[
-  \mathbb E[M_{n+1}\mid\mathcal F_n]=M_n,
+h_i=\tfrac12h_{i-1}+\tfrac12h_{i+1},\quad h_0=0,h_N=1,
 \]
-就是关于 $(\mathcal F_n)$ 的鞅。对对称随机游走 $S_n=\sum_{i=1}^n\xi_i$，给定 $S_1=-1$ 或 $1$ 时，$\mathbb E[S_2\mid S_1]$ 分别为 $-1$、$1$。但 $S_n^2$ 不是鞅，因为
 \[
-  \mathbb E[S_{n+1}^2\mid\mathcal F_n]=S_n^2+1;
+m_i=1+\tfrac12m_{i-1}+\tfrac12m_{i+1},\quad m_0=m_N=0.
 \]
-$S_n^2-n$ 才是鞅。可选停止定理还需要有界停止时刻、可积性或一致可积等条件；“公平过程在任意策略下期望不变”是错误概括。
+二阶差分方程给出 $h_i=i/N$、$m_i=i(N-i)$。取 $N=4,i=2$，赌徒破产命中概率与期望时长为 $0.500000$ 与 $4.000000$。
 
-\section{Poisson 计数与 Brownian 连续噪声}
+最后，令独立 Bernoulli$(1/2)$ 变量 $U,V$ 生成 $(X_0,X_1,X_2)=(U,V,U)$。给定 $X_1$ 时与再给定 $X_0=1$ 时，$X_2=1$ 的条件概率分别为 $0.5$ 与 $1$。因此相邻独立不推出 Markov 性。
 
-强度 $\lambda$ 的 Poisson 过程 $(N_t)$ 从零开始，具有独立平稳增量，且 $N_t-N_s\sim\operatorname{Poisson}(\lambda(t-s))$。因此 $\mathbb E[N_t]=\operatorname{Var}(N_t)=\lambda t$。取 $\lambda=2,t=3$，模拟计数的均值与方差为 $5.980833$ 与 $5.988466$，对应解析值均为 $6$。
+\section{鞅：公平性依赖信息集与可积性}
 
-标准 Brownian 运动 $(W_t)$ 从零开始，路径几乎处处连续，并具有独立平稳高斯增量
+可积、适应过程 $(M_n)$ 若满足 $\mathbb E(M_{n+1}\mid\mathcal F_n)=M_n$，称为鞅；将等号改为 $\ge$ 或 $\le$ 得次鞅或上鞅。Doob 分解说明合适的次鞅可写为“鞅 + 可预测递增补偿项”。对平方可积鞅，条件二次变差（predictable quadratic variation）累积下一步条件方差；它与从已实现路径计算的二次变差不能混称。
+
+对称随机游走 $S_n=\sum_{k=1}^n\xi_k$ 满足 $\mathbb E(S_{n+1}\mid\mathcal F_n)=S_n$。又因 $\mathbb E(\xi_{n+1}\mid\mathcal F_n)=0$、$\mathbb E(\xi_{n+1}^2\mid\mathcal F_n)=1$，
 \[
-  W_t-W_s\sim\mathcal N(0,t-s),\qquad
-  \operatorname{Cov}(W_s,W_t)=\min(s,t).
+\mathbb E(S_{n+1}^2-(n+1)\mid\mathcal F_n)=S_n^2-n,
 \]
-在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。Brownian 路径连续却几乎处处不可微；沿等距分割的二次变差收敛到 $t$。在 $[0,1]$ 上用 256 段模拟，二次变差均值为 $1.000731$、方差为 $0.007781$，解析方差 $2/256$。
+故 $S_n^2-n$ 是鞅，而 $S_n^2$ 是次鞅。
 
-独立增量是关于不相交时间区间的联合断言，不是“任意由路径构造的量都独立”。例如 $W_1$ 与 $W_2-W_1$ 独立，但 $W_1^2$ 与 $W_2^2-W_1^2$ 一般不独立。
+可选停止定理不是“任何下注策略都保期望”。有界停止时刻足够；其他版本需要一致可积、受控增量或可积停止时间等条件。加倍下注在首次胜利时赚 1，但若截断于 $m$ 轮，未胜路径损失 $2^m-1$，概率 $2^{-m}$，于是
+\[
+\mathbb E W_m=(1-2^{-m})-2^{-m}(2^m-1)=0.
+\]
+虽然 $W_m\to1$ 几乎处处，尾部负损失对期望的贡献为 $1-2^{-m}\to1$，不能交换极限与期望；这正是缺少一致可积性的代价。
+
+\section{Poisson：基线、变换与聚集失效}
+
+强度 $\lambda$ 的齐次 Poisson 过程从零开始，具有独立平稳增量，且 $N_t-N_s\sim\mathrm{Poisson}(\lambda(t-s))$。因此 $\mathbb E N_t=\operatorname{Var}N_t=\lambda t$，相邻到达等待时间独立且服从 $\mathrm{Exp}(\lambda)$。取 $\lambda=2,t=3$，模拟计数的均值与方差为 $5.980833$ 与 $5.988466$，解析目标均为 6。
+
+三条变换应能直接推导：独立强度 $\lambda_1,\lambda_2$ 的过程叠加后强度相加；对每次到达以概率 $q$ 独立保留，保留与拒绝流分别是强度 $q\lambda$、$(1-q)\lambda$ 的独立 Poisson 过程；非齐次强度 $\lambda(t)$ 的累计强度为 $\Lambda(t)=\int_0^t\lambda(s)\,ds$，经时间变换可还原单位速率过程。oracle 取等待率 2、叠加率 $2+3$、基准率 5 且 $q=0.3$，以及 $\lambda(t)=2+t$、$t\le3$，得到均值/方差 $0.5,0.25$，叠加强度 5，稀疏化强度 $1.5,3.5$，累计强度 $10.5$。
+
+若订单计数方差显著大于均值、等待时间非指数、增量自相关或日内强度变化，齐次 Poisson 基线失效。非齐次 Poisson 可处理季节性，却仍不能产生自激聚集；Hawkes、Cox 或状态切换模型才是后续候选。模型升级应由残差诊断和样本外预测推动，而非因为模型名字更复杂。
+
+\section{Brownian：高斯结构、命中与粗糙路径}
+
+标准 Brownian 运动从零开始，路径几乎处处连续，且不相交区间上的增量独立并满足
+\[
+W_t-W_s\sim\mathcal N(0,t-s),\qquad \operatorname{Cov}(W_s,W_t)=\min(s,t).
+\]
+它具有缩放性 $(W_{ct})_{t\ge0}\overset d=(\sqrt c\,W_t)_{t\ge0}$，是连续时间随机游走极限（Donsker 原理）的基准，而不是对每个有限样本的精确描述。在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。
+
+反射原理给出（$a>0$）
+\[
+\mathbb P\!\left(\sup_{0\le s\le t}W_s\ge a\right)
+=2\mathbb P(W_t\ge a)=2\{1-\Phi(a/\sqrt t)\}.
+\]
+当 $a=t=1$ 时，反射原理给出命中概率 $0.317311$。这计算的是连续监控命中概率；用日收盘离散观察会漏掉区间内越界。
+
+Brownian 路径几乎处处不可微且总变差无限，但沿网格的二次变差收敛到区间长度。等距 $n$ 段上，绝对增量和的期望为 $n\mathbb E|N(0,1/n)|=\sqrt{2n/\pi}$；当 $n$ 从 16 增至 256，总变差基线从 $3.191538$ 增至 $12.766153$。相反，256 段二次变差模拟均值为 $1.000731$、方差为 $0.007781$，解析方差为 $2/256$。有限总变差过程与 Brownian 的这种差异，是 Itô 积分不能照搬普通 Riemann--Stieltjes 微积分的根源。
+
+\begin{note}
+Brownian、Poisson 与 Markov 都是条件结构，不是资产收益的事实标签。量化研究中必须写清状态、滤过、观测频率、参数稳定性、交易时钟及模型失败后的替代方案。
+\end{note}
 
 \input{tex/upper/chapters/ch11-questions}
 \input{tex/upper/chapters/ch11-hints}
 
 \noindent\textbf{本章小结与 Capstone 连接}\quad
-有限维分布与路径性质回答不同问题，滤过规定可用信息，Markov 性压缩条件历史，鞅描述条件公平，Poisson 与 Brownian 则提供跳跃和连续噪声基线。上册 Capstone 将要求每个动态结论同时声明状态、信息集、增量结构与失败边界。
+有限维分布、路径和信息集回答不同问题；Markov 链把历史压缩进状态，鞅把公平性绑定到滤过与可积性，Poisson 与 Brownian 提供跳跃和连续噪声基线。上册 Capstone 必须为每个动态结论同时声明状态、信息集、增量结构、估计方法与失败边界。

@@ -1,9 +1,27 @@
-\section{四级问题与即时练习}
+\section{笔面试与研究训练}
 \begingroup\small
+\subsection*{口述概念（3 题）}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}区分有限维分布、样本路径、滤过、适应性与 Markov 性。
-  \item \textbf{笔试推导：}验证给定两状态转移矩阵的稳态分布，并证明对称随机游走 $S_n^2-n$ 是鞅。
-  \item \textbf{数值编程：}独立核对 $P^5$、Poisson 矩、Brownian 协方差和二次变差，并为每项写出误差容差。
-  \item \textbf{研究判断：}订单到达数呈日内季节性和聚集性时，为什么不能直接宣称齐次 Poisson？应补哪些诊断？
+  \item 区分有限维分布、版本、不可区分和连续修改；为何边缘分布相同不够？
+  \item 区分适应、可预测与停止时刻，并给出一个未来函数的交易例子。
+  \item 稳态分布、极限分布、不可约、周期和正常返之间是什么关系？
+\end{enumerate}
+\subsection*{笔试推导（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=4]
+  \item 解公平随机游走在 $\{0,\ldots,N\}$ 上先到 $N$ 的概率和吸收期望时长。
+  \item 证明 $S_n^2-n$ 是鞅，并解释加倍下注为何不能用可选停止推出稳赚。
+  \item 用反射原理推导 $\mathbb P(\sup_{s\le t}W_s\ge a)$，再说明离散监控为何低估越界概率。
+\end{enumerate}
+\subsection*{数值编程（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=7]
+  \item 对两状态链核对 $P^5$ 与稳态，并构造周期链展示“有稳态但不收敛”。
+  \item 独立核对 Poisson 的等待、叠加、稀疏化和非齐次累计强度账本。
+  \item 模拟 Brownian 协方差、二次变差与绝对增量和；分别写出解析 oracle 和容差来源。
+\end{enumerate}
+\subsection*{研究判断（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=10]
+  \item 订单到达呈日内季节性和聚集性时，如何逐级检验并替换齐次 Poisson？
+  \item 某收益状态模型训练集拟合良好，却在制度切换后失效。如何判断是转移概率漂移还是状态定义不充分？
+  \item 连续 Brownian 风险模型用于离散、跳跃、含交易停牌的市场时，应报告哪些模型风险？
 \end{enumerate}
 \endgroup
