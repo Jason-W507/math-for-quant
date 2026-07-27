@@ -1,9 +1,9 @@
 \subsection*{分级提示}
 \begingroup\small
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}孤立点的穿孔邻域会使极限条件空真，但不穿孔的连续性定义仍有效。完备性针对每个 Cauchy 序列。
-  \item \textbf{笔试推导：}把 $d(x_m,x_n)$ 拆成相邻距离之和；存在极限之前不能写 $x^*$。
-  \item \textbf{数值编程：}期望值来自本章手算账本；见证点随 $n$ 改变恰好否定一致收敛量词。
-  \item \textbf{研究判断：}小步长可能来自停滞、舍入或错误尺度；检查状态空间、压缩常数和目标残差。
+  \item \textbf{口述概念：}Cauchy 只比较尾部项；完备性把内部稳定转成空间内极限。函数极限穿孔，连续性不穿孔；一致控制要求同一个阈值对全域有效。
+  \item \textbf{笔试推导：}唯一性取 $\varepsilon=d(x,y)/3$；压缩证明先把长距离拆成相邻距离的几何级数；一致极限证明插入同一个 $f_N$ 并分成三个 $\varepsilon/3$。
+  \item \textbf{数值编程：}所有 expected 先由手算账本给出；三条坏输入分别破坏压缩前提、不动点定义和解析见证定义域。固定网格的最大误差不是连续域上确界的独立 oracle。
+  \item \textbf{研究判断：}小步长可能是停滞，合法状态空间可能不闭，有限网格可能漏掉移动峰值；分别寻找残差/最优性条件、完备或闭性证据、Lipschitz 或区间界。
 \end{enumerate}
 \endgroup

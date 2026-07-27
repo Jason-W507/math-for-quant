@@ -644,6 +644,52 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_chapter_two_rejects_a_noncontractive_factor(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch02-noncontractive-factor.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            lambda oracle: oracle.update({"contraction_factor": 1.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "contraction gate failed: factor must satisfy 0 <= q < 1\n",
+        )
+
+    def test_chapter_two_rejects_a_declared_nonfixed_point(self) -> None:
+        def change_declared_point(oracle: dict[str, Any]) -> None:
+            oracle["expected_fixed_point"] = 0.2
+            oracle["expected_error"] = 0.132768
+
+        result = self.run_oracle_fixture(
+            "ch02-nonfixed-point.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            change_declared_point,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "fixed-point gate failed: declared point does not satisfy T(x)=x\n",
+        )
+
+    def test_chapter_two_rejects_a_nonpositive_witness_index(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch02-nonpositive-witness-index.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            lambda oracle: oracle.update({"witness_indices": [0, 100]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "witness gate failed: indices must be positive integers\n",
+        )
+
     def test_accepts_chapter_two_with_contraction_and_nonuniform_oracles(
         self,
     ) -> None:

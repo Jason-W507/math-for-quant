@@ -3,126 +3,375 @@
 
 \begin{introduction}
   \item 先修：第 1 章的量词、必要与充分条件、反例和独立 oracle。
-  \item 学习产出：能判断一个迭代收敛论证究竟依赖度量、Cauchy 性、完备性还是连续性。
+  \item 学习产出：能判断一个迭代收敛论证究竟依赖度量、Cauchy 性、完备性还是连续性，并区分逐点与一致控制。
   \item 研究连接：为优化器停止条件、数值不动点、估计量极限和函数逼近建立可审计边界。
 \end{introduction}
 
-Python 中“误差越来越小”常被当成收敛证据；数学上还必须回答：误差按什么距离计算，极限是否属于当前空间，结论针对每个点还是同时针对所有点，以及有限精度实验能排除哪些失败模式。本章用压缩迭代作正例，用 $f_n(x)=x^n$ 作反例。
+Python 中“误差越来越小”常被当成收敛证据；数学上还必须回答：误差按什么距离计算，极限是否属于当前空间，结论针对每个点还是同时针对所有点，以及有限精度实验能排除哪些失败模式。本章用压缩迭代作正例，用有理数空间的不完备性和 $f_n(x)=x^n$ 的非一致收敛作反例。
 
-\section{度量把“接近”变成可检验关系}
+\section{度量把“接近”变成数学对象}
 
-集合 $X$ 上的函数 $d:X\times X\to[0,\infty)$ 若满足非负与分离、对称及三角不等式，就称为度量，$(X,d)$ 称为\textbf{度量空间}：
+\begin{definition}[度量空间]
+设 $X$ 是集合。函数 $d:X\times X\to[0,\infty)$ 若对任意 $x,y,z\in X$ 满足
 \[
-d(x,y)=0\Longleftrightarrow x=y,\qquad
-d(x,y)=d(y,x),\qquad
-d(x,z)\le d(x,y)+d(y,z).
+  d(x,y)=0\Longleftrightarrow x=y,\qquad
+  d(x,y)=d(y,x),\qquad
+  d(x,z)\leq d(x,y)+d(y,z),
 \]
-同一对象换一种度量，收敛问题可能改变。有限维向量上的常用范数诱导相同的收敛序列，但停止阈值的数值含义仍不同；研究报告必须同时写出度量和阈值。
+就称为 $X$ 上的\textbf{度量（metric）}，$(X,d)$ 称为\textbf{度量空间（metric space）}。
+\end{definition}
 
-\begin{example}
-收益向量 $x,y\in\mathbb{R}^T$ 可用 $\lVert x-y\rVert_2$ 衡量整体误差，也可用 $\lVert x-y\rVert_\infty$ 控制最坏时点误差。有限维中恒有 $\lVert x-y\rVert_\infty\le\lVert x-y\rVert_2$，所以二范数不超过 $\varepsilon$ 足以保证每项误差不超过 $\varepsilon$；但“归一化 RMSE 很小”不能推出每项满足同一业务容差，因为其阈值随样本长度缩放。
+三条要求分别是分离性、对称性和三角不等式。它们不是装饰：分离性保证“零误差”意味着对象相同；三角不等式允许把长距离拆成一串可控的局部误差。
+
+以 $a\in X$ 为中心、半径 $r>0$ 的开球为
+\[
+  B_r(a)=\{x\in X:d(x,a)<r\}.
+\]
+极限和连续性的 $\varepsilon$--$\delta$ 语言，本质上是在说一个对象最终进入每个开球，或一个映射把足够小的输入球送进指定输出球。
+
+\subsection{同一数据可以有不同距离}
+
+对 $x=(x_1,\ldots,x_T)\in\mathbb R^T$，常见范数与诱导距离包括
+\[
+ \lVert x\rVert_1=\sum_{t=1}^T|x_t|,\qquad
+ \lVert x\rVert_2=\Bigl(\sum_{t=1}^Tx_t^2\Bigr)^{1/2},\qquad
+ \lVert x\rVert_\infty=\max_t|x_t|.
+\]
+对收益预测误差，$\ell_2$ 强调整体平方损失，$\ell_\infty$ 控制最坏时点，$\ell_1$ 对少数极端误差的惩罚形态又不同。停止规则“误差小于 $10^{-6}$”若不写范数、缩放和参数单位，就无法复现。
+
+有限维中有
+\[
+  \lVert x\rVert_\infty\leq\lVert x\rVert_2
+  \leq\sqrt T\,\lVert x\rVert_\infty.
+\]
+所以这三种范数定义相同的收敛序列，但相同数值阈值并不表示相同业务容差。若 $T=10^6$，二范数阈值与逐点最大误差之间可能相差 $10^3$ 的因子。
+
+\begin{example}[离散度量]
+任意集合上都可定义
+\[
+ d(x,y)=\begin{cases}0,&x=y,\\1,&x\ne y.\end{cases}
+\]
+在该度量下，序列收敛当且仅当它从某一项开始恒等于极限。对象没变，度量改变后“趋近”的含义完全不同。
 \end{example}
 
 \section{序列极限、Cauchy 性与完备性}
 
-序列 $(x_n)$ 收敛到 $x$，记作 $x_n\to x$，是指
+\begin{definition}[序列极限]
+度量空间 $(X,d)$ 中，序列 $(x_n)$ 收敛到 $x\in X$，记作 $x_n\to x$，是指
 \[
-\forall\varepsilon>0\;\exists N\;\forall n\ge N:\quad d(x_n,x)<\varepsilon.
+  \forall\varepsilon>0\ \exists N\in\mathbb N\ \forall n\geq N:
+  d(x_n,x)<\varepsilon.
 \]
-三角不等式保证极限唯一。若只比较序列内部，则得到 Cauchy 条件：
+\end{definition}
+
+量词顺序非常重要：先由对方给出任意精度 $\varepsilon$，再允许你选择 $N$；一旦选定 $N$，所有更晚的项都必须通过。只找到一条趋近极限的子序列，或只在某些 $n$ 上误差很小，都不够。
+
+\subsection{极限为什么唯一}
+
+\begin{proposition}
+度量空间中的收敛序列至多有一个极限。
+\end{proposition}
+
+\begin{proof}
+若 $x_n\to x$ 且 $x_n\to y$，假设 $x\ne y$，则 $d(x,y)>0$。取 $\varepsilon=d(x,y)/3$。当 $n$ 足够大时，
 \[
-\forall\varepsilon>0\;\exists N\;\forall m,n\ge N:\quad d(x_m,x_n)<\varepsilon.
+ d(x,x_n)<\varepsilon,\qquad d(x_n,y)<\varepsilon.
 \]
-每个收敛序列都是 Cauchy 序列；反向需要空间\textbf{完备}。完备性是空间的性质，不是“某个序列看起来稳定”的性质。
-
-\begin{example}
-有理数截断序列 $1,1.4,1.41,1.414,\ldots$ 在通常距离下是 Cauchy 序列，却不在 $\mathbb{Q}$ 中收敛，因为其唯一实数极限是 $\sqrt2\notin\mathbb{Q}$。因此 $\mathbb{Q}$ 不完备，而 $\mathbb{R}$ 完备。
-\end{example}
-
-\section{连续性连接输入极限与输出极限}
-
-对度量空间 $(X,d_X)$、$(Y,d_Y)$，设 $a$ 是 $X$ 的聚点。当 $x\to a$ 时映射 $T:X\to Y$ 的极限为 $L$，记作 $\lim_{x\to a}T(x)=L$，是指
+三角不等式给出
 \[
-\forall\varepsilon>0\;\exists\delta>0\;\forall x:\quad
-0<d_X(x,a)<\delta\Longrightarrow d_Y(T(x),L)<\varepsilon.
+ d(x,y)\leq d(x,x_n)+d(x_n,y)<2d(x,y)/3,
 \]
-条件 $0<d_X(x,a)$ 表明函数极限只看 $a$ 附近，不依赖 $T(a)$ 的取值，也不要求 $T(a)=L$。若 $a$ 是孤立点，该条件会对任意 $L$ 空真，因而不能定义唯一极限。在度量空间中，聚点处的定义等价于：每个满足 $x_n\to a$ 且 $x_n\ne a$ 的序列都有 $T(x_n)\to L$。
+矛盾。因此 $d(x,y)=0$，由分离性得到 $x=y$。
+\end{proof}
 
-映射 $T$ 在任意 $a\in X$ 连续，是指
-\[
-\forall\varepsilon>0\;\exists\delta>0:\quad
-d_X(x,a)<\delta\Longrightarrow d_Y(T(x),T(a))<\varepsilon.
-\]
-它等价于下面不排除 $x_n=a$ 的序列判据：
-\[
-x_n\to a\quad\Longrightarrow\quad T(x_n)\to T(a).
-\]
-若 $a$ 是聚点，连续性还等价于 $\lim_{x\to a}T(x)=T(a)$；若 $a$ 是孤立点，取足够小的 $\delta$ 即知任意映射都在 $a$ 连续。
-连续性允许把极限穿过映射，但不自动给出收敛速度，也不保证算法产生的序列收敛。若实现还包含排序、阈值或裁剪，边界点可能不连续，必须单独分析。
+这个证明清楚展示了度量三条公理的职责：三角不等式制造矛盾，分离性把零距离转成对象相同。
 
-\section{压缩映射为何给出可执行的收敛证明}
+\subsection{不知道极限时，先比较序列内部}
 
-设 $(X,d)$ 完备，映射 $T:X\to X$ 满足某个 $0\le q<1$ 及
+\begin{definition}[Cauchy 序列与完备性]
+序列 $(x_n)$ 称为 Cauchy 序列，若
 \[
-d(Tx,Ty)\le q\,d(x,y)\qquad(x,y\in X).
+  \forall\varepsilon>0\ \exists N\ \forall m,n\geq N:
+  d(x_m,x_n)<\varepsilon.
 \]
-从任意 $x_0$ 定义 $x_{n+1}=T(x_n)$。首先逐步使用压缩条件：
+若 $X$ 中每个 Cauchy 序列都收敛到 $X$ 中某点，则称 $(X,d)$ \textbf{完备（complete）}。
+\end{definition}
+
+每个收敛序列都是 Cauchy 序列。证明只需在三角不等式中插入极限点：
 \[
-d(x_{n+1},x_n)\le q^n d(x_1,x_0).
+ d(x_m,x_n)\leq d(x_m,x)+d(x,x_n).
+\]
+反向结论不是纯粹的序列性质，而需要空间完备。完备性回答“内部越来越稳定的序列，极限是否仍属于我们允许的状态空间”。
+
+\subsection{不完备空间的失败见证}
+
+在通常距离下，有理数空间 $\mathbb Q$ 不完备。取十进制截断序列
+\[
+  1,\ 1.4,\ 1.41,\ 1.414,\ldots
+\]
+逼近 $\sqrt2$。它在 $\mathbb R$ 中收敛，因而是 Cauchy 序列；但唯一实数极限 $\sqrt2\notin\mathbb Q$，所以它不在 $\mathbb Q$ 中收敛。
+
+这不是说算法数值不稳定，而是状态空间漏掉了极限。若优化算法被限制在一个非闭的可行集，迭代可以不断接近边界，却永远没有可行极限点。修复方式可能是取闭包、扩充空间，或证明极限实际落在原空间，不能只增加迭代次数。
+
+\begin{note}
+完备度量空间的闭子集仍完备；反过来，任意度量空间中的完备子空间必为闭集。实际建模时，“可行集闭”常是存在性证明中不能省略的条件。
+\end{note}
+
+\section{函数极限与连续性}
+
+设 $(X,d_X)$、$(Y,d_Y)$ 是度量空间，$T:X\to Y$。点 $a\in X$ 是 $X$ 的\textbf{聚点}，若每个 $B_r(a)$ 都包含一个不同于 $a$ 的 $X$ 中点。
+
+\begin{definition}[函数极限]
+当 $x\to a$ 时 $T(x)$ 的极限为 $L$，记作 $\lim_{x\to a}T(x)=L$，若
+\[
+ \forall\varepsilon>0\ \exists\delta>0\ \forall x\in X:
+ 0<d_X(x,a)<\delta\Longrightarrow d_Y(T(x),L)<\varepsilon.
+\]
+\end{definition}
+
+条件 $0<d_X(x,a)$ 表明函数极限只看 $a$ 附近，不依赖 $T(a)$ 的取值。要求 $a$ 是聚点，是为了避免定义空真：若 $a$ 是孤立点，可取一个不含其他点的小球，此时任意 $L$ 都会“通过”，极限不唯一。
+
+\begin{definition}[连续性]
+$T$ 在 $a\in X$ 连续，若
+\[
+ \forall\varepsilon>0\ \exists\delta>0\ \forall x\in X:
+ d_X(x,a)<\delta\Longrightarrow d_Y(T(x),T(a))<\varepsilon.
+\]
+\end{definition}
+
+连续性不穿孔，并把目标固定为 $T(a)$。因此任意映射都在孤立点连续：取足够小的 $\delta$，邻域内只有 $a$。当 $a$ 是聚点时，连续性等价于
+\[
+  \lim_{x\to a}T(x)=T(a).
+\]
+
+\subsection{序列判据}
+
+在度量空间中，$T$ 在 $a$ 连续，当且仅当对每个 $x_n\to a$ 都有 $T(x_n)\to T(a)$。
+
+正向证明直接把连续性给出的 $\delta$ 交给序列极限。反向可用反证法：若 $T$ 不连续，则存在 $\varepsilon_0>0$，对每个 $k$ 都能找到
+\[
+ d_X(x_k,a)<1/k,qquad d_Y(T(x_k),T(a))\geq\varepsilon_0.
+\]
+于是 $x_k\to a$，但 $T(x_k)$ 不收敛到 $T(a)$，与序列判据矛盾。
+
+序列判据把抽象的 $\varepsilon$--$\delta$ 失败转成可构造见证，之后证明随机变量变换和数值映射稳定性时非常常用。
+
+\subsection{连续不等于一致连续}
+
+$T$ 在 $E$ 上一致连续，若同一个 $\delta$ 对所有中心点都有效：
+\[
+ \forall\varepsilon>0\ \exists\delta>0\ \forall x,y\in E:
+ d_X(x,y)<\delta\Longrightarrow d_Y(T(x),T(y))<\varepsilon.
+\]
+函数 $T(x)=x^2$ 在 $\mathbb R$ 上连续，却不一致连续：取 $x_n=n$、$y_n=n+1/n$，则 $|x_n-y_n|\to0$，而
+\[
+ |x_n^2-y_n^2|=2+1/n^2\not\to0.
+\]
+在紧集上的连续函数必一致连续。研究中这意味着：局部稳定不能自动变成全参数域统一误差界；需要紧性、Lipschitz 条件或其他全局控制。
+
+\section{压缩映射：从内部稳定到唯一不动点}
+
+\begin{definition}[压缩映射]
+映射 $T:X\to X$ 是压缩映射，若存在 $0\leq q<1$，使得对所有 $x,y\in X$，
+\[
+  d(Tx,Ty)\leq q\,d(x,y).
+\]
+\end{definition}
+
+注意三个门禁：$T$ 必须把 $X$ 映回 $X$；同一个 $q$ 对所有点对有效；且必须严格小于 1。只在观测到的几步上比值小于 1，不能证明全局压缩。
+
+\begin{theorem}[Banach 不动点定理]
+设 $(X,d)$ 完备，$T:X\to X$ 是压缩映射。则 $T$ 有唯一不动点 $x^*$。从任意 $x_0\in X$ 出发定义 $x_{n+1}=T(x_n)$，都有 $x_n\to x^*$。
+\end{theorem}
+
+\begin{proof}
+逐步使用压缩条件得到
+\[
+ d(x_{n+1},x_n)\leq q^n d(x_1,x_0).
 \]
 对 $m>n$，三角不等式与几何级数给出
 \[
+\begin{aligned}
 d(x_m,x_n)
-\le\sum_{k=n}^{m-1}d(x_{k+1},x_k)
-\le\frac{q^n}{1-q}d(x_1,x_0).
+&\leq\sum_{k=n}^{m-1}d(x_{k+1},x_k)\\
+&\leq d(x_1,x_0)\sum_{k=n}^{m-1}q^k\\
+&\leq\frac{q^n}{1-q}d(x_1,x_0).
+\end{aligned}
 \]
-右侧随 $n\to\infty$ 趋于零，所以 $(x_n)$ 是 Cauchy 序列。完备性保证存在 $x^*\in X$ 使 $x_n\to x^*$；压缩条件蕴含连续性，故 $T(x^*)=x^*$。若还有另一个不动点 $y^*$，则
+右侧随 $n\to\infty$ 趋于零，所以 $(x_n)$ 是 Cauchy 序列。完备性保证存在 $x^*\in X$ 使 $x_n\to x^*$。压缩条件还给出 Lipschitz 连续性，因此
 \[
-d(x^*,y^*)=d(Tx^*,Ty^*)\le qd(x^*,y^*),
+ T(x^*)=T\bigl(\lim_nx_n\bigr)=\lim_nT(x_n)=\lim_nx_{n+1}=x^*.
 \]
-而 $q<1$ 迫使两点距离为零。由此得到存在性、唯一性和误差上界，而不只是几次迭代的截图。
+若 $y^*$ 也是不动点，则
+\[
+ d(x^*,y^*)=d(Tx^*,Ty^*)\leq qd(x^*,y^*).
+\]
+由于 $q<1$，只能有 $d(x^*,y^*)=0$，所以 $x^*=y^*$。
+\end{proof}
 
-\subsection{固定账本：仿射迭代}
+证明链不能换序：先得到 Cauchy 性，再用完备性得到空间内极限，之后才能谈 $T(x^*)$。在极限存在之前直接写“令 $x^*=\lim x_n$”会偷用要证明的结论。
 
-令 $T(x)=0.02+0.8x$、$x_0=0$。不动点由 $x^*=0.02+0.8x^*$ 手算为 $0.1$。五步迭代得到
+\subsection{两种可执行误差界}
+
+令 $m\to\infty$，上面的估计给出先验界
 \[
-x_5=0.067232,\qquad |x^*-x_5|=0.032768,
+  d(x_n,x^*)\leq\frac{q^n}{1-q}d(x_1,x_0).
 \]
-且上面的先验界恰为
+它在迭代前就能估算需要多少步。把起点改为 $x_{n-1}$，得到后验界
 \[
-\frac{0.8^5}{1-0.8}|x_1-x_0|=0.032768.
+  d(x_n,x^*)\leq\frac{q}{1-q}d(x_n,x_{n-1}).
 \]
-这组数值是 notebook 的独立 oracle；程序不得调用被测迭代函数生成 expected。
+所以“小步长”只有在已经证明压缩且知道 $q$ 时，才能转换成极限误差。若 $q$ 接近 1，步长很小仍可能对应较大的尾部误差。
+
+\section{完整算例：仿射迭代账本}
+
+令
+\[
+  T(x)=0.02+0.8x,\qquad X=\mathbb R,\qquad x_0=0.
+\]
+$\mathbb R$ 完备，而且
+\[
+ |T(x)-T(y)|=0.8|x-y|,
+\]
+所以 $q=0.8$。不动点由 $x^*=0.02+0.8x^*$ 手算为 $x^*=0.1$。
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+$n$ & $x_n$ & $|x^*-x_n|$ & $|x_n-x_{n-1}|$ \\
+\midrule
+0 & 0 & 0.1 & -- \\
+1 & 0.020000 & 0.080000 & 0.020000 \\
+2 & 0.036000 & 0.064000 & 0.016000 \\
+3 & 0.048800 & 0.051200 & 0.012800 \\
+4 & 0.059040 & 0.040960 & 0.010240 \\
+5 & 0.067232 & 0.032768 & 0.008192 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+五步后的真实误差是 $0.032768$。先验界为
+\[
+ \frac{0.8^5}{1-0.8}|x_1-x_0|
+ =\frac{0.32768}{0.2}\times0.02=0.032768.
+\]
+后验界也为
+\[
+ \frac{0.8}{1-0.8}|x_5-x_4|=4\times0.008192=0.032768.
+\]
+本例两者恰好取等，是因为仿射映射每一步都以精确比率 $0.8$ 缩小误差；一般问题中它们只是上界。
+
+\subsection{停止条件如何写成研究契约}
+
+若希望 $|x_n-x^*|\leq10^{-4}$，可在迭代前求最小 $n$ 使
+\[
+ \frac{0.8^n}{0.2}\times0.02\leq10^{-4}.
+\]
+也可在运行时要求
+\[
+ |x_n-x_{n-1}|\leq\frac{1-q}{q}\,10^{-4}.
+\]
+两种规则都必须随代码保存 $q$、度量、状态空间和容差单位。只保存“迭代 20 次”无法迁移到不同参数或不同缩放的数据。
 
 \section{函数序列：逐点收敛不等于一致收敛}
 
-对函数 $f_n:E\to\mathbb{R}$，逐点收敛允许 $N$ 依赖点 $x$；一致收敛要求同一个 $N$ 同时控制所有 $x\in E$：
+对函数 $f_n:E\to\mathbb R$，逐点收敛 $f_n\to f$ 是
 \[
-\forall\varepsilon>0\;\exists N\;\forall n\ge N\;\forall x\in E:
-|f_n(x)-f(x)|<\varepsilon.
+ \forall x\in E\ \forall\varepsilon>0\ \exists N=N(x,\varepsilon)
+ \forall n\geq N:\quad |f_n(x)-f(x)|<\varepsilon.
 \]
-在 $E=[0,1]$ 上取 $f_n(x)=x^n$。它逐点收敛到
+一致收敛则要求 $N$ 不依赖 $x$：
 \[
-f(x)=\begin{cases}0,&0\le x<1,\\1,&x=1.\end{cases}
+ \forall\varepsilon>0\ \exists N\ \forall n\geq N\ \forall x\in E:
+ |f_n(x)-f(x)|<\varepsilon.
 \]
-但不一致收敛。对每个 $n$ 选择合法见证点 $x_n=2^{-1/n}<1$，则
-\[
-|f_n(x_n)-f(x_n)|=x_n^n=\frac12.
-\]
-因此取 $\varepsilon=0.4$ 时，不存在能同时控制所有 $x$ 的 $N$。见证点依赖 $n$ 正是对一致量词的否定，不是作弊。连续函数的一致极限仍连续，而这里的极限在 1 处不连续，也给出第二条诊断。
+两者只交换了量词位置，却带来完全不同的结论。
 
-\section{独立计算与数值边界}
+\subsection{移动见证：$f_n(x)=x^n$}
 
-Notebook 复现 $x_5$、误差界，以及 $n=10,100$ 时的见证误差 $1/2$：
+在 $E=[0,1]$ 上取 $f_n(x)=x^n$。对每个固定 $x<1$，有 $x^n\to0$；在 $x=1$ 时始终为 1。因此逐点极限是
+\[
+f(x)=\begin{cases}0,&0\leq x<1,\\1,&x=1.\end{cases}
+\]
+但收敛不一致。对每个正整数 $n$ 选择
+\[
+ x_n=2^{-1/n}<1,
+\]
+则
+\[
+ |f_n(x_n)-f(x_n)|=x_n^n=\frac12.
+\]
+取 $\varepsilon=0.4$，无论给出多大的 $N$，都能选 $n\geq N$ 和相应 $x_n$ 让误差超过 $\varepsilon$。见证点依赖 $n$ 正是对一致量词的否定，不是改变题目。
+
+有限网格很容易漏掉这个失败：随着 $n$ 增大，最坏区域不断挤向 1。加密一个固定网格不能证明连续定义域上的一致界。
+
+\subsection{一致极限为什么保连续性}
+
+\begin{theorem}
+若每个 $f_n:E\to\mathbb R$ 连续，且 $f_n$ 一致收敛到 $f$，则 $f$ 连续。
+\end{theorem}
+
+\begin{proof}
+固定 $a\in E$ 与 $\varepsilon>0$。由一致收敛，选同一个 $N$ 使对所有 $x\in E$，
+\[
+ |f_N(x)-f(x)|<\varepsilon/3.
+\]
+由 $f_N$ 在 $a$ 连续，存在 $\delta>0$，当 $d(x,a)<\delta$ 时
+\[
+ |f_N(x)-f_N(a)|<\varepsilon/3.
+\]
+于是
+\[
+\begin{aligned}
+|f(x)-f(a)|
+&\leq|f(x)-f_N(x)|+|f_N(x)-f_N(a)|+|f_N(a)-f(a)|\\
+&<\varepsilon.
+\end{aligned}
+\]
+故 $f$ 在 $a$ 连续。
+\end{proof}
+
+$x^n$ 的逐点极限在 1 处不连续，而每个 $x^n$ 连续，因此也可由该定理的逆否方向立即判断：收敛不可能一致。
+
+\section{独立计算与失败门禁}
+
+本章先手算固定点、五步迭代、两种误差界与解析见证 $1/2$，再由 Jupytext 源 \path{notebooks/upper/ch02_analysis_foundations.py} 读取 oracle。公开验收命令为
 \begin{lstlisting}[language=bash]
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch02
 \end{lstlisting}
-有限网格很可能漏掉靠近 1 的最坏点；浮点输出也不能证明“对所有 $n$、所有 $x$”。代码在这里是反例见证与算术审计，不是一般证明。
+
+正常输出包含
+\begin{lstlisting}
+oracle=passed contraction_x5=0.067232 error=0.032768 \
+bound=0.032768 witness10=0.500000 witness100=0.500000
+\end{lstlisting}
+
+程序还必须拒绝三类伪证据：
+\begin{enumerate}
+  \item $q\notin[0,1)$：压缩定理前提不存在；
+  \item 声明的 $x^*$ 不满足 $T(x^*)=x^*$：不能用错误目标计算“误差”；
+  \item 见证下标不是正整数：$2^{-1/n}$ 的解析构造不在定义域。
+\end{enumerate}
+
+代码只复现固定账本，不能证明一般定理。证明负责“任意初值、任意满足条件的压缩映射”；oracle 负责“当前实现确实计算了这份已知算例”；失败门禁负责“输入仍属于定理定义域”。
+
+\section{常见错误与诊断顺序}
+
+\begin{enumerate}
+  \item \textbf{把连续小步长当收敛：}舍入、停滞或错误缩放都能产生小步长；先找与算法匹配的误差界。
+  \item \textbf{Cauchy 就宣布有极限：}必须说明空间完备，且极限属于允许的状态空间。
+  \item \textbf{在证明前先写极限点：}这会偷用存在性；先证 Cauchy，再调用完备性。
+  \item \textbf{局部收缩率代替全局 $q$：}几步样本比值小于 1 不能证明对所有点对成立。
+  \item \textbf{固定网格代替一致收敛：}最坏点可随 $n$ 移动并逃到网格之间。
+  \item \textbf{混淆连续与一致连续：}逐点选择的 $\delta$ 不能自动成为全域共享的 $\delta$。
+\end{enumerate}
+
+诊断时依次问：使用什么度量？序列是否 Cauchy？空间是否完备？映射是否保持状态空间并连续？控制是逐点还是一致？数值 oracle 是否独立？
 
 \input{tex/upper/chapters/ch02-questions}
 \input{tex/upper/chapters/ch02-hints}
 
 \section*{本章小结与 Capstone 连接}
 
-度量定义误差，Cauchy 性描述内部稳定，完备性保证极限仍在空间内，连续性允许传递极限；一致收敛则控制整族输入。上册 Capstone 将用这条链审计迭代算法的停止规则、状态空间和失败见证。
+度量定义误差，Cauchy 性描述内部稳定，完备性保证极限仍在空间内，连续性允许传递极限；压缩条件进一步给出存在、唯一和可执行误差界；一致收敛则控制整族输入。上册 Capstone 将用这条链审计迭代算法的停止规则、状态空间和移动失败见证。

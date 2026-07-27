@@ -2,18 +2,55 @@
 \label{app:ch02-solutions}
 
 \section*{口述概念}
-序列极限描述 $x_n$ 最终进入极限点的每个邻域；函数极限要求 $a$ 为聚点，并描述 $x\ne a$ 且趋近 $a$ 时 $T(x)$ 趋近 $L$。孤立点处该条件对任意 $L$ 空真，不能给出唯一极限。连续性用不穿孔邻域直接定义；在聚点处它等价于 $L=T(a)$，在孤立点处任意映射都连续。收敛序列必为 Cauchy 序列；只有空间完备时，Cauchy 序列才保证收敛到空间内一点。$\mathbb{Q}$ 中逼近 $\sqrt2$ 的有理序列说明逆命题不能无条件使用。
+\begin{enumerate}[leftmargin=*]
+  \item 序列收敛要求存在 $x\in X$，尾部全部进入 $x$ 的任意邻域；Cauchy 性只要求尾部项彼此接近，不预先知道极限；完备性是空间性质，保证每个 Cauchy 序列都在 $X$ 内收敛。若 $X$ 不完备，序列可内部稳定却逼近空间外点，如 $\mathbb Q$ 中逼近 $\sqrt2$ 的序列。
+  \item 函数极限研究 $x\ne a$ 趋近 $a$ 时的输出，因此需要 $a$ 是聚点，否则穿孔邻域可为空而使任意 $L$ 空真。连续性要求输出趋近实际值 $T(a)$，且在孤立点仍有良好定义。一致连续性比逐点连续更强：给定 $\varepsilon$ 后，同一个 $\delta$ 必须适用于全域所有点对。
+  \item 逐点收敛允许 $N$ 依赖 $x$；一致收敛要求先选一个 $N$，再同时控制所有 $x$。否定一致收敛正是“存在 $\varepsilon_0$，对任意 $N$ 都能选 $n\geq N$ 和某个 $x_n$ 失败”，所以见证点随 $n$ 移动完全符合否定量词。
+\end{enumerate}
 
 \section*{笔试推导}
-递推得 $d(x_{k+1},x_k)\le q^k d(x_1,x_0)$。对 $m>n$，
-\[
-d(x_m,x_n)\le\sum_{k=n}^{m-1}q^k d(x_1,x_0)
-\le\frac{q^n}{1-q}d(x_1,x_0).
-\]
-这先证明序列是 Cauchy；完备性只在“存在 $x^*\in X$ 使 $x_n\to x^*$”这一步进入。随后由连续性得不动点，由 $q<1$ 得唯一性。
+\begin{enumerate}[leftmargin=*]
+  \item 若 $x_n\to x$ 且 $x_n\to y$，假设 $x\ne y$ 并取 $\varepsilon=d(x,y)/3$。足够大 $n$ 满足 $d(x,x_n)<\varepsilon$、$d(x_n,y)<\varepsilon$，三角不等式给出 $d(x,y)<2d(x,y)/3$，矛盾。因此 $d(x,y)=0$；最后由分离性推出 $x=y$。
+  \item 递推得 $d(x_{k+1},x_k)\leq q^kd(x_1,x_0)$。对 $m>n$，
+  \[
+  d(x_m,x_n)\leq\sum_{k=n}^{m-1}q^kd(x_1,x_0)
+  \leq\frac{q^n}{1-q}d(x_1,x_0).
+  \]
+  这先证明 Cauchy；完备性仅在得到 $x_n\to x^*\in X$ 时进入，连续性再给 $T(x^*)=x^*$。令 $m\to\infty$ 得先验界。把起点换成 $x_{n-1}$，对尾部从 $x_n$ 求和，得到
+  \[
+    d(x_n,x^*)\leq\frac{q}{1-q}d(x_n,x_{n-1}).
+  \]
+  \item 由一致收敛选一个 $N$，使所有 $x$ 都有 $|f_N(x)-f(x)|<\varepsilon/3$；再由 $f_N$ 在 $a$ 连续控制中间项。三角不等式分解为两个一致误差和一个连续性误差，三项各小于 $\varepsilon/3$。对 $x^n$，每个 $f_n$ 连续而逐点极限在 1 处不连续，所以不可能一致收敛；也可用 $x_n=2^{-1/n}$ 得到固定误差 $1/2$。
+\end{enumerate}
 
 \section*{数值编程}
-手算迭代依次为 $0.02,0.036,0.0488,0.05904,0.067232$，所以对固定点 $0.1$ 的误差是 $0.032768$，与先验界相同。对任意正整数 $n$，$x_n=2^{-1/n}$ 位于 $[0,1)$，故极限函数在该点为零，而 $x_n^n=1/2$；数值实验只复现这份解析见证。
+本章独立标记为 $0.067232$、$0.032768$ 与 $1/2$。
+\begin{enumerate}[leftmargin=*]
+  \item 迭代依次为 $0.02,0.036,0.0488,0.05904,0.067232$。固定点是 $0.1$，所以真实误差为 $0.032768$。先验界
+  \[
+   \frac{0.8^5}{1-0.8}(0.02)=0.032768,
+  \]
+  后验界 $0.8/(1-0.8)\times(0.067232-0.05904)$ 也等于 $0.032768$。运行本章脚本后，证据行还应包含两个 \texttt{0.500000} 见证误差。
+  \item 三条完整诊断依次为：
+  \begin{lstlisting}
+contraction gate failed: factor must satisfy 0 <= q < 1
+fixed-point gate failed: declared point does not satisfy T(x)=x
+witness gate failed: indices must be positive integers
+  \end{lstlisting}
+  它们分别防止把非压缩迭代套入 Banach 定理、用错误目标点定义误差，以及在 $2^{-1/n}$ 的定义域外制造见证。
+  \item 对每个固定网格 $G$ 可计算 $\max_{x\in G}|x^n-f(x)|$，但该值只控制 $G$。解析见证 $x_n=2^{-1/n}$ 随 $n$ 接近 1，并始终给出 $1/2$。若网格不含 $x_n$，加大 $n$ 会把失败区推入最后两个网格点之间。只有解析上界、区间算术、可证明 Lipschitz 网格误差或直接求连续域上确界，才能把网格结果提升为一致误差证据。
+\end{enumerate}
 
 \section*{研究判断}
-连续小步长不是收敛证明。至少还要声明度量与参数尺度，证明或估计映射在不变集合上的压缩性质，说明状态空间完备，并检查固定点残差或目标函数误差。若映射并非压缩，应改用与算法匹配的收敛定理；有限 20 步只能作为诊断记录。
+\begin{enumerate}[leftmargin=*]
+  \item 不能。还需声明度量和变量缩放，证明迭代保持可行状态空间，说明空间完备或相关子集闭，给出与算法匹配的收敛定理，并检查固定点残差、梯度/KKT 残差或目标差。小步长也可能来自浮点停滞、过小学习率或错误参数尺度；“最优解”还需要目标与最优性证据。
+  \item 不能。若状态空间严格是 $\mathbb Q$，极限 $\sqrt2$ 永远不合法；更多迭代只会产生更长的 Cauchy 序列。模型层可把状态空间完备化为 $\mathbb R$，或改成包含目标极限的闭子集；若输出必须为有理数，则应把任务改成带明确误差容忍度的近似问题，而不是宣称在 $\mathbb Q$ 中达到极限。
+  \item 一万个点只证明有限集合上的误差。连续输入之间可能存在尖峰，且最坏位置可随模型变化。更强证据可以是：证明误差函数具有已知 Lipschitz 常数并用网格间距补偿；使用区间界或形式验证覆盖每个单元；在可解模型上用解析上确界作 oracle；再配合域外、边界和移动峰值失败测试。若只有经验网格，应把结论限定为“该验证集上通过”。
+\end{enumerate}
+
+\section*{恢复路径}
+先运行
+\begin{center}
+\texttt{uv run python tools/check\_learning\_unit.py --manifest curriculum/manifest.json --unit upper.ch02}
+\end{center}
+确认正向账本通过。随后复制 \path{evidence/ch02/oracle.json}，分别修改压缩因子、声明固定点和见证下标，把临时路径传给 \path{notebooks/upper/ch02_analysis_foundations.py}。恢复完成时应能把每条错误连接到定理的准确量词，而不只是把 JSON 改回绿色。
