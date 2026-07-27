@@ -1376,7 +1376,9 @@ class LearningUnitContractTests(unittest.TestCase):
             "execution=passed oracle=passed beta=(1.166667,0.500000) "
             "sse=0.166667 orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
-            "amplification=1000001 relative=1.000001\n",
+            "amplification=1000001 relative=1.000001 qr_error=2.220e-16 "
+            "rank1_error=0.915272 gram_ratio=1.000000 eigen=(1.0,3.0) "
+            "worst=4.000e+06\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -1394,10 +1396,65 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed beta=(1.166667,0.500000) sse=0.166667 "
             "orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
-            "amplification=1000001 relative=1.000001\n"
+            "amplification=1000001 relative=1.000001 qr_error=2.220e-16 "
+            "rank1_error=0.915272 gram_ratio=1.000000 eigen=(1.0,3.0) "
+            "worst=4.000e+06\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_six_rejects_a_nonfinite_design_entry(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-nonfinite-design.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update(
+                {"design": [[1.0, 0.0], [1.0, float("nan")], [1.0, 2.0]]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric inputs must be finite", result.stderr)
+
+    def test_chapter_six_rejects_noncanonical_linear_algebra_inputs(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-noncanonical-design.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update(
+                {"design": [[1.0, 0.0], [1.0, 1.0], [1.0, 3.0]]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle must use the fixed linear-algebra ledger", result.stderr)
+
+    def test_chapter_six_rejects_widened_numeric_gates(self) -> None:
+        def widen_gates(oracle: dict[str, Any]) -> None:
+            oracle["absolute_tolerance"] = 1.0
+            oracle["maximum_orthogonality_error"] = 1.0
+            oracle["maximum_reconstruction_error"] = 1.0
+
+        result = self.run_oracle_fixture(
+            "ch06-widened-gates.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            widen_gates,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric tolerances are fixed", result.stderr)
+
+    def test_chapter_six_rejects_a_false_condition_number_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-false-condition.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update({"expected_condition_number": 1.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("condition-number ledger mismatch", result.stderr)
 
     def test_chapter_seven_notebook_reproduces_distribution_oracles(self) -> None:
         result = subprocess.run(

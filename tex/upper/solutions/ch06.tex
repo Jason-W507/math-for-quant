@@ -2,13 +2,42 @@
 \label{app:ch06-solutions}
 
 \section*{口述概念}
-列空间包含模型能表达的响应方向，投影残差位于其正交补。秩等于非零奇异值数；最小奇异值接近零时存在几乎不可辨识方向，条件数随之变大。
+\begin{enumerate}[leftmargin=*]
+  \item $\mathcal C(X)$ 是模型能表达的响应方向，$\mathcal N(X^T)$ 是与所有解释变量正交的残差方向；$\mathcal C(X^T)$ 是可由数据识别的参数方向，$\mathcal N(X)$ 是不改变预测的参数方向。四者分属观测空间和参数空间，不能混称“特征空间”。
+  \item QR 适合一般满列秩最小二乘；Cholesky 利用对称正定结构；谱分解用于实对称矩阵的主方向、正定性和函数演算；SVD 对任意矩阵存在，揭示秩、伪逆、敏感方向和最佳低秩近似。能计算不等于假设成立，例如对非对称协方差近似直接用 \texttt{eigh} 会隐藏上游错误。
+  \item 秩亏表示存在精确零奇异值与非唯一方向；病态表示最小奇异值虽非零却很小。算法不稳定指小后向误差都做不到；前向误差衡量答案偏离，后向误差衡量要把输入改多少才能让计算答案精确成立。稳定算法仍无法消除病态问题的前向敏感性。
+\end{enumerate}
 
 \section*{笔试推导}
-$X^T(y-X\beta)=0$ 与 $\nabla L=X^T(X\beta-y)=0$ 都给出正规方程。将 $P_X=X(X^TX)^{-1}X^T$ 连乘两次，中间出现 $X^TX$ 并约去，得到 $P_X^2=P_X$；转置后仍为自身。
+\begin{enumerate}[leftmargin=*]
+  \item 投影残差满足 $X^T(y-X\hat\beta)=0$；优化路径由 $\nabla L=X^T(X\beta-y)=0$ 得到同式。满列秩时 $P=X(X^TX)^{-1}X^T$，显然 $P^T=P$，且
+  \[
+    P^2=X(X^TX)^{-1}(X^TX)(X^TX)^{-1}X^T=P.
+  \]
+  秩亏时该逆不存在，但 $XX^+$ 仍是唯一正交投影。
+  \item 若 $X=U_r\Sigma_rV_r^T$，则 $X^+=V_r\Sigma_r^{-1}U_r^T$。任意最小二乘解可写成 $X^+y+z$，$z\in\mathcal N(X)$；两项正交，故 $z=0$ 给出最小范数。又 $X^TX=V_r\Sigma_r^2V_r^T$，最大/最小非零特征值为 $\sigma_1^2,\sigma_r^2$，所以条件数平方。
+  \item 特征向量可取 $(1,-1)^T/\sqrt2$、$(1,1)^T/\sqrt2$，特征值分别为 $1,3$；后一方向方差最大。设 $L=\left(\begin{smallmatrix}a&0\\b&c\end{smallmatrix}\right)$，匹配 $LL^T=\Sigma$ 得 $a=\sqrt2$、$b=1/\sqrt2$、$c=\sqrt{3/2}$。
+\end{enumerate}
 
 \section*{数值编程}
-独立账本给出 $\hat\beta=(7/6,1/2)^T$，残差平方和为 $1/6$ 且 $X^Tr=0$。奇异值为 $2.676243$、$0.915272$，SVD 重构误差小于 $10^{-12}$。近奇异实验中，绝对分量放大倍数为 $1000001$；相对范数放大约为 $1.0000005$，两者不可与条件数混用。
+\begin{enumerate}[leftmargin=*]
+  \item 独立账本为 $\hat\beta=(7/6,1/2)^T$、$r=(-1/6,1/3,-1/6)^T$，残差平方和为 $1/6$。正规方程、QR、\texttt{lstsq} 与 $X^+y$ 应在固定容差内一致；但这不表示四种算法对病态矩阵同样可靠。测试还要求 $X^Tr$、$Q^TQ-I$、$QR-X$、$P^2-P$ 与 $P-P^T$ 足够小，且重构误差小于 $10^{-12}$。
+  \item $X=\sum_i\sigma_iu_iv_i^T$。保留第一项得到 $X_1$；Eckart--Young 给出 $\lVert X-X_1\rVert_2=\sigma_2=0.915272\ldots$。测试期望来自解析奇异值 $\sqrt{4-\sqrt{10}}$；若实现错误地保留较小奇异值，误差会变为 $\sigma_1$，因此会失败。
+  \item 对坐标扰动，绝对分量放大倍数为 $1000001$，相对范数放大约为 $1.0000005$，说明它没有对齐最坏方向。令 $b=\sigma_1u_1$、$\delta b=\eta\sigma_1u_2$，则 $x=v_1$、$\delta x=\eta(\sigma_1/\sigma_2)v_2$，相对放大正是 $\kappa_2(A)\approx4.0\times10^6$。公开 CLI 会拒绝 NaN、改变后的固定矩阵、宽容差和错误条件数标签。
+\end{enumerate}
 
 \section*{研究判断}
-先检查单位和标准化，再检查缺失值、样本窗口和重复因子；随后画特征值谱并定位对应暴露方向。比较 QR/SVD 与正规方程，报告截断或正则化如何改变估计目标，并在样本外重新验证风险解释。
+\begin{enumerate}[leftmargin=*]
+  \item 先核对对称化、单位、缺失值、样本窗口和权重；再画谱并检查小特征值对应的因子组合，判断是否重复暴露或样本不足；比较 SVD/QR/Cholesky 的残差与后向误差。轻微负值若只是舍入，应与矩阵尺度相容；若随窗口稳定出现，则是估计或模型问题。任何截断都要记录阈值与风险解释变化。
+  \item 预测稳定但参数翻倍通常意味着沿近零奇异方向重新分配系数。报告奇异值谱、系数在右奇异基下的分量、窗口扰动和预测差异；用 QR/SVD 排除算法问题。若业务需要解释单因子系数，模型当前不可辨识；若只需预测，也仍要评估样本外和约束敏感性。
+  \item 先说明 ridge 目标 $\lVert y-X\beta\rVert^2+\lambda\lVert\beta\rVert^2$ 与单位；用标准化前后、多个 $\lambda$、时间滚动和独立验证比较预测、系数、换手与风险暴露。检查惩罚是否错误作用于截距或不同单位变量。只有偏差--方差及经济目标的样本外证据改善时才接受，不能以条件数变小作为唯一理由。
+\end{enumerate}
+
+\section*{恢复路径}
+先手算固定 $3\times2$ 账本，再运行
+\begin{lstlisting}[language=bash]
+uv run python notebooks/upper/ch06_linear_algebra.py
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch06
+\end{lstlisting}
+若失败，按“形状/有限值 $\rightarrow$ 固定输入 $\rightarrow$ 解析账本 $\rightarrow$ 分解不变量 $\rightarrow$ 扰动方向”的顺序恢复。不要用当前库输出改写 expected，也不要通过放宽容差把模型问题伪装成浮点误差。

@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}解释列空间、正交投影、秩、奇异值与条件数之间的关系。
-  \item \textbf{笔试推导：}从残差正交与损失梯度两条路径推导正规方程，并证明 $P_X^2=P_X$。
-  \item \textbf{数值编程：}复现账本解、残差正交、SVD 重构和近奇异扰动放大，报告独立期望与误差。
-  \item \textbf{研究判断：}风险模型协方差矩阵出现极小特征值时，如何区分数据问题、模型冗余和数值算法问题？
+  \item 区分列空间、零空间、行空间和左零空间；它们分别对应回归中的什么问题？
+  \item QR、Cholesky、谱分解与 SVD 各要求什么假设、回答什么问题？
+  \item 区分秩亏、病态、算法不稳定、前向误差和后向误差。
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 用正交投影与损失梯度两条路径推导正规方程；证明 $P_X$ 对称、幂等。
+  \item 从 SVD 推导 $X^+$、最小范数最小二乘解，并证明 $\kappa_2(X^TX)=\kappa_2(X)^2$。
+  \item 对 $\Sigma=\left(\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right)$ 求谱分解与 Cholesky 分解，解释最大风险方向。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 复现固定最小二乘账本，分别用正规方程、QR、\texttt{lstsq} 与伪逆求解；比较残差正交和重构误差。
+  \item 用 SVD 构造最佳秩一近似，核验二范数误差等于第二奇异值；再故意打乱奇异值顺序，证明测试能失败。
+  \item 对 $A_\varepsilon$ 比较任意坐标扰动与最坏奇异方向扰动；注入非有限值、非固定矩阵和宽容差，记录稳定诊断。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 因子协方差矩阵出现极小或轻微负特征值。如何区分数据、模型与数值算法问题？
+  \item 回归系数在样本窗口轻微变化后翻倍，但预测几乎不变。如何定位并报告？
+  \item 研究员建议“统一加 ridge 就稳定了”。你需要哪些证据，才能决定接受、改造或拒绝？
 \end{enumerate}
 \endgroup
