@@ -3,7 +3,7 @@
 \begin{enumerate}[nosep,leftmargin=*]
   \item \textbf{口述概念：}偏导只看基方向；Fréchet 导数要求一个线性映射统一控制所有小扰动。梯度是标量值导数的列向量表示。Hessian 对称通常使用二阶偏导在邻域连续。
   \item \textbf{笔试推导：}链式法则把两个余项展开并除以 $\lVert h\rVert$。二次型先把 $dx^TAx$ 改写为 $x^TA^Tdx$。矩阵变量用 $df=\operatorname{tr}((\nabla_Xf)^TdX)$ 收集 $dX$。
-  \item \textbf{数值编程：}expected 来自手算；同时画截断误差 $O(h^2)$ 与舍入误差趋势。坏 oracle 走公开 CLI。非对称矩阵能暴露错误使用 $Ax$ 的实现。
+  \item \textbf{数值编程：}expected 来自手算；一般光滑函数有 $O(h^2)$ 截断项，但固定二次函数的中心差分会消去该项，因而本实验只隔离舍入误差回升。坏 oracle 走公开 CLI。非对称矩阵能暴露错误使用 $Ax$ 的实现。
   \item \textbf{研究判断：}先统一标量目标、形状和缩放，再最小化到闭式算例；随后查执行图和步长。病态性不会让正确导数公式变错，却会放大输入误差；经济约束缺失又是第三层问题。
 \end{enumerate}
 \endgroup
