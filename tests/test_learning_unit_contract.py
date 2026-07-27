@@ -31,15 +31,15 @@ class LearningUnitContractTests(unittest.TestCase):
             check=False,
         )
 
-    def run_chapter_sixteen_fixture(
+    def run_oracle_fixture(
         self,
         fixture_name: str,
+        oracle_path: str,
+        script_path: str,
         mutate: Callable[[dict[str, Any]], None],
     ) -> subprocess.CompletedProcess[str]:
         oracle = json.loads(
-            (ROOT / "evidence" / "ch16" / "oracle.json").read_text(
-                encoding="utf-8"
-            )
+            (ROOT / oracle_path).read_text(encoding="utf-8")
         )
         mutate(oracle)
         fixture = ROOT / "build" / "test-fixtures" / fixture_name
@@ -49,41 +49,7 @@ class LearningUnitContractTests(unittest.TestCase):
             return subprocess.run(
                 [
                     sys.executable,
-                    str(
-                        ROOT
-                        / "notebooks"
-                        / "upper"
-                        / "ch16_research_validity.py"
-                    ),
-                    str(fixture),
-                ],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-        finally:
-            fixture.unlink(missing_ok=True)
-
-    def run_chapter_one_fixture(
-        self,
-        fixture_name: str,
-        mutate: Callable[[dict[str, Any]], None],
-    ) -> subprocess.CompletedProcess[str]:
-        oracle = json.loads(
-            (ROOT / "evidence" / "ch01" / "oracle.json").read_text(
-                encoding="utf-8"
-            )
-        )
-        mutate(oracle)
-        fixture = ROOT / "build" / "test-fixtures" / fixture_name
-        fixture.parent.mkdir(parents=True, exist_ok=True)
-        fixture.write_text(json.dumps(oracle), encoding="utf-8")
-        try:
-            return subprocess.run(
-                [
-                    sys.executable,
-                    str(ROOT / "notebooks" / "upper" / "ch01_convex_bound.py"),
+                    str(ROOT / script_path),
                     str(fixture),
                 ],
                 cwd=ROOT,
@@ -497,8 +463,10 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
 
     def test_chapter_one_rejects_weights_that_do_not_sum_to_one(self) -> None:
-        result = self.run_chapter_one_fixture(
+        result = self.run_oracle_fixture(
             "ch01-nonnormalized-weights.json",
+            "evidence/ch01/oracle.json",
+            "notebooks/upper/ch01_convex_bound.py",
             lambda oracle: oracle.update({"weights": [0.5, 0.3, 0.3]}),
         )
 
@@ -508,6 +476,20 @@ class LearningUnitContractTests(unittest.TestCase):
             "assumption gate failed: weights must sum to one\n",
         )
 
+    def test_chapter_one_rejects_negative_normal_weights(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch01-negative-normal-weights.json",
+            "evidence/ch01/oracle.json",
+            "notebooks/upper/ch01_convex_bound.py",
+            lambda oracle: oracle.update({"weights": [1.5, 0.05, -0.55]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "assumption gate failed: weights must be nonnegative\n",
+        )
+
     def test_chapter_one_rejects_a_counterexample_that_changes_two_assumptions(
         self,
     ) -> None:
@@ -515,8 +497,10 @@ class LearningUnitContractTests(unittest.TestCase):
             oracle["counterexample_weights"] = [2.0, 0.0, 0.0]
             oracle["expected_counterexample"] = 0.04
 
-        result = self.run_chapter_one_fixture(
+        result = self.run_oracle_fixture(
             "ch01-invalid-counterexample.json",
+            "evidence/ch01/oracle.json",
+            "notebooks/upper/ch01_convex_bound.py",
             change_two_assumptions,
         )
 
@@ -533,8 +517,10 @@ class LearningUnitContractTests(unittest.TestCase):
             oracle["counterexample_weights"] = [1.0, 0.0, 0.0]
             oracle["expected_counterexample"] = 0.02
 
-        result = self.run_chapter_one_fixture(
+        result = self.run_oracle_fixture(
             "ch01-nonnegative-counterexample.json",
+            "evidence/ch01/oracle.json",
+            "notebooks/upper/ch01_convex_bound.py",
             keep_nonnegativity,
         )
 
@@ -545,8 +531,10 @@ class LearningUnitContractTests(unittest.TestCase):
         )
 
     def test_chapter_one_rejects_mismatched_vector_lengths(self) -> None:
-        result = self.run_chapter_one_fixture(
+        result = self.run_oracle_fixture(
             "ch01-mismatched-vectors.json",
+            "evidence/ch01/oracle.json",
+            "notebooks/upper/ch01_convex_bound.py",
             lambda oracle: oracle.update({"weights": [0.5, 0.5]}),
         )
 
@@ -554,6 +542,20 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(
             result.stderr,
             "assumption gate failed: returns and weights must have equal length\n",
+        )
+
+    def test_chapter_one_rejects_nonfinite_inputs(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch01-nonfinite-inputs.json",
+            "evidence/ch01/oracle.json",
+            "notebooks/upper/ch01_convex_bound.py",
+            lambda oracle: oracle.update({"weights": [0.5, 0.3, float("nan")]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "assumption gate failed: returns and weights must be finite\n",
         )
 
     def test_rejects_solution_without_published_oracle_markers(self) -> None:
@@ -1561,8 +1563,10 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(result.stderr, "")
 
     def test_chapter_sixteen_rejects_point_in_time_leakage(self) -> None:
-        result = self.run_chapter_sixteen_fixture(
+        result = self.run_oracle_fixture(
             "ch16-leakage.json",
+            "evidence/ch16/oracle.json",
+            "notebooks/upper/ch16_research_validity.py",
             lambda oracle: oracle["test_rows"][0].__setitem__(
                 "available_at", "2024-07-01T09:31:00+08:00"
             ),
@@ -1575,8 +1579,10 @@ class LearningUnitContractTests(unittest.TestCase):
         )
 
     def test_chapter_sixteen_rejects_an_uncorrected_multiple_test(self) -> None:
-        result = self.run_chapter_sixteen_fixture(
+        result = self.run_oracle_fixture(
             "ch16-multiplicity.json",
+            "evidence/ch16/oracle.json",
+            "notebooks/upper/ch16_research_validity.py",
             lambda oracle: oracle.__setitem__("selected_raw_p_value", 0.003),
         )
 
@@ -1587,8 +1593,10 @@ class LearningUnitContractTests(unittest.TestCase):
         )
 
     def test_chapter_sixteen_rejects_an_incomplete_friction_protocol(self) -> None:
-        result = self.run_chapter_sixteen_fixture(
+        result = self.run_oracle_fixture(
             "ch16-missing-friction.json",
+            "evidence/ch16/oracle.json",
+            "notebooks/upper/ch16_research_validity.py",
             lambda oracle: oracle["universal_friction_protocol"].pop(
                 "market_impact"
             ),
@@ -1601,8 +1609,10 @@ class LearningUnitContractTests(unittest.TestCase):
         )
 
     def test_chapter_sixteen_rejects_a_timestamp_with_wrong_offset(self) -> None:
-        result = self.run_chapter_sixteen_fixture(
+        result = self.run_oracle_fixture(
             "ch16-wrong-offset.json",
+            "evidence/ch16/oracle.json",
+            "notebooks/upper/ch16_research_validity.py",
             lambda oracle: oracle["test_rows"][0].__setitem__(
                 "available_at", "2024-07-01T00:00:00+00:00"
             ),
@@ -1620,8 +1630,10 @@ class LearningUnitContractTests(unittest.TestCase):
             for field in ("event_at", "available_at", "decision_at", "target_start"):
                 row[field] = row[field].replace("2024-07-01", "2024-07-06")
 
-        result = self.run_chapter_sixteen_fixture(
+        result = self.run_oracle_fixture(
             "ch16-nontrading-date.json",
+            "evidence/ch16/oracle.json",
+            "notebooks/upper/ch16_research_validity.py",
             move_first_row_to_saturday,
         )
 

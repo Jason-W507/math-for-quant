@@ -25,12 +25,18 @@ def main(oracle_path: Path = Path("evidence/ch01/oracle.json")) -> int:
         raise SystemExit(
             "assumption gate failed: returns and weights must have equal length"
         )
+    if not np.all(np.isfinite(returns)) or not np.all(np.isfinite(weights)):
+        raise SystemExit("assumption gate failed: returns and weights must be finite")
     if returns.size != counterexample_weights.size:
         raise SystemExit(
             "counterexample gate failed: returns and weights must have equal length"
         )
+    if not np.all(np.isfinite(counterexample_weights)):
+        raise SystemExit("counterexample gate failed: weights must be finite")
     if abs(float(np.sum(weights)) - 1.0) > tolerance:
         raise SystemExit("assumption gate failed: weights must sum to one")
+    if np.any(weights < 0.0):
+        raise SystemExit("assumption gate failed: weights must be nonnegative")
     if abs(float(np.sum(counterexample_weights)) - 1.0) > tolerance:
         raise SystemExit("counterexample gate failed: weights must sum to one")
     if not np.any(counterexample_weights < 0.0):
