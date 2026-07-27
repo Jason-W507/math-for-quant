@@ -2854,6 +2854,24 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(result.stdout, "")
         self.assertIn("candidate KKT certificate failed", result.stderr)
 
+    def test_chapter_thirteen_rejects_a_nonfinite_numeric_candidate(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "notebooks/upper/ch13_convex_optimization.py",
+                "--audit-candidate",
+                "nan",
+                "nan",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("candidate coordinates must be finite", result.stderr)
+
     def test_chapter_thirteen_rejects_a_false_perturbed_portfolio(self) -> None:
         result = self.run_oracle_fixture(
             "ch13-false-perturbed-portfolio.json",

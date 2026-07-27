@@ -327,8 +327,12 @@ def audit_candidate(values: list[str]) -> int:
     if len(values) != 2:
         raise SystemExit("--audit-candidate requires exactly two coordinates")
     candidate = np.asarray([float(value) for value in values], dtype=float)
+    if not np.all(np.isfinite(candidate)):
+        raise SystemExit("candidate coordinates must be finite")
     certificate = kkt_certificate(candidate, float(oracle["analytic_multiplier"]))
     tolerance = float(oracle["absolute_tolerance"])
+    if not all(math.isfinite(value) for value in certificate):
+        raise SystemExit("candidate KKT certificate must be finite")
     if any(abs(value) > tolerance for value in certificate[2:]):
         raise SystemExit("candidate KKT certificate failed")
     print("candidate KKT certificate passed")
