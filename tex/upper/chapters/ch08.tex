@@ -2,76 +2,231 @@
 \label{ch:conditioning}
 
 \begin{introduction}
-  \item 先修：第 7 章的概率空间、随机变量、联合分布与期望。
-  \item 学习产出：能把条件期望解释为信息约束下的随机变量，验证塔式性质，并用概率核区分条件独立与边缘独立。
-  \item 研究连接：因子暴露、状态切换、贝叶斯更新、缺失数据与时序预测都依赖“给定哪些信息”。
+  \item 先修：第 3 章的 Radon--Nikodym 定理、第 4 章的 $L^p$ 空间、第 7 章的联合分布与期望。
+  \item 学习产出：能从事件、分割、随机变量和子 $\sigma$ 代数四个入口定义条件化，证明塔式与投影性质，并用 Bayes 公式和概率核计算条件律。
+  \item 研究连接：因子中性化、状态切换、缺失数据、样本选择和时间序列预测都取决于“在什么信息下”陈述关系。
 \end{introduction}
 
-“给定 $Z=z$”不是把一列数据筛出来那么简单。条件化的对象可能是事件、随机变量或整套信息；零概率事件上尤其不能直接用小学分式。统一语言是子 $\sigma$ 代数与概率核。
+Python 中的 \texttt{df[df["regime"] == 1]} 只是选出一批已观测行；数学上的条件化要同时说明底层概率、可用信息和零概率集合上的版本。把“给定 $Z=z$”一律理解为筛选，会在连续变量、选择偏差与时序泄漏处失效。
 
-\section{条件期望是信息下的可测代表}
+\section{四种条件化入口：事件、分割、随机变量与信息}
 
-设 $X$ 可积，$\mathcal G\subseteq\mathcal F$。条件期望 $\mathbb{E}[X\mid\mathcal G]$ 是一个 $\mathcal G$ 可测随机变量，并满足
+若 $B\in\mathcal F$ 且 $\mathbb P(B)>0$，事件条件概率是
 \[
-  \int_G\mathbb{E}[X\mid\mathcal G]\,d\mathbb P
-  =\int_GX\,d\mathbb P,
-  \qquad G\in\mathcal G.
+  \mathbb P(A\mid B)=\frac{\mathbb P(A\cap B)}{\mathbb P(B)}.
 \]
-它只在几乎处处意义下唯一。若 $X\in L^2$，它还是 $X$ 到 $L^2(\mathcal G)$ 的正交投影：误差与每个平方可积的 $\mathcal G$ 可测变量正交。这与第 6 章最小二乘投影是同一几何结构，但目标空间从有限维列空间换成可测函数子空间。
+有限分割 $B_1,\ldots,B_m$ 把这个比值逐块应用；随机变量 $Z$ 通过原像事件生成
+$\sigma(Z)$；一般子 $\sigma$ 代数 $\mathcal G\subseteq\mathcal F$ 则直接代表一套信息。于是
+\[
+  \mathbb E[X\mid Z]
+  \quad\text{是}\quad
+  \mathbb E[X\mid\sigma(Z)]
+\]
+的简写，而不是把符号 $Z$ 当作一个数。
 
-有限账本有四个等概率状态，$Z=(0,0,1,1)$，$X=(0,2,2,4)$。由 $Z$ 生成的 $\mathcal G$ 把状态分成两组，因此
+事件比值要求正分母。连续 $Z$ 通常满足 $\mathbb P(Z=z)=0$，此时
+$\mathbb P(A\mid Z=z)$ 不能由上述分式定义；需要条件密度或正则条件分布的一个版本。零测状态上的版本可以任意改变而不影响几乎处处结论，所以模型、代码和报告都不应依赖某个未经约定的零测点值。
+
+\section{条件期望：Radon--Nikodym 导数与几乎处处唯一性}
+
+设 $X\in L^1$。条件期望 $Y=\mathbb{E}[X\mid\mathcal G]$ 满足：
+\begin{enumerate}[nosep]
+  \item $Y$ 是 $\mathcal G$ 可测的；
+  \item 对每个 $G\in\mathcal G$，
+  \[
+    \int_GY\,d\mathbb P=\int_GX\,d\mathbb P.
+  \]
+\end{enumerate}
+这两条是定义，不是计算后的附带检验。
+
+存在性来自第 3 章的 Radon--Nikodym 定理。先对非负 $X$ 定义
 \[
-  \mathbb{E}[X\mid\mathcal G]=(1,1,3,3).
+  \nu(G)=\int_GX\,d\mathbb P,\qquad G\in\mathcal G.
 \]
-条件均值分别为 $1$ 与 $3$，再按两组各 $1/2$ 加权，得到
+$\nu$ 对 $\mathbb P|_{\mathcal G}$ 绝对连续，因此存在 $\mathcal G$ 可测导数
+$d\nu/d\mathbb P$；它就是条件期望。一般可积 $X$ 用 $X^+-X^-$ 处理。若 $Y_1,Y_2$ 都满足定义，则它们在集合 $\{Y_1>Y_2\}$ 上的积分相等，由正负部论证可得 $Y_1=Y_2$ 几乎处处。这就是“一个版本”的含义。
+
+取 $X=\mathbf1_A$ 得条件概率随机变量
 \[
-  \mathbb{E}[\mathbb{E}[X\mid\mathcal G]]=2=\mathbb{E}[X].
+  \mathbb P(A\mid\mathcal G)
+  :=\mathbb E[\mathbf1_A\mid\mathcal G].
 \]
-这就是塔式性质的有限版本。一般地，若 $\mathcal H\subseteq\mathcal G$，则
+它把事件条件概率推广为信息条件概率，并自动保留 $[0,1]$ 值域。
+
+\section{有限账本与 Doob--Dynkin 表示}
+
+固定八个等概率状态，令
 \[
-  \mathbb{E}[\mathbb{E}[X\mid\mathcal G]\mid\mathcal H]
-  =\mathbb{E}[X\mid\mathcal H].
+ X=(0,2,1,5,4,6,7,9),
+ \qquad Z=(0,0,0,0,1,1,1,1).
+\]
+$\sigma(Z)$ 只区分前四与后四个状态，所以组内加权均值给出
+\[
+  \mathbb E[X\mid Z]
+  =(2,2,2,2,13/2,13/2,13/2,13/2).
+\]
+换言之，条件均值为 $2$ 与 $13/2$。在事件 $\{Z=0\}$ 上，两边积分都是
+$1$；在 $\{Z=1\}$ 上都是 $13/4$，因而定义积分恒等式成立。再加权得到
+\[
+  \mathbb E[X]=17/4
+  =\mathbb E\!\left[\mathbb E[X\mid Z]\right].
 \]
 
-\section{独立、条件独立与信息集合}
+Doob--Dynkin 引理说明，每个 $\sigma(Z)$ 可测实随机变量都可写成 $g(Z)$ 的形式。因此有限情形中的“按组填回均值”不是偶然技巧；一般的
+$\mathbb E[X\mid Z]$ 也可选成某个可测函数 $g(Z)$。但 $g$ 只在 $Z$ 的分布几乎处处意义下确定，超出支持集的外推不由条件期望定义保证。
 
-$X$ 与 $Y$ 独立，是指其生成的 $\sigma$ 代数独立；等价地，对所有可测集合 $A,B$，
+再引入更细分割
 \[
-  \mathbb P(X\in A,Y\in B)=\mathbb P(X\in A)\mathbb P(Y\in B).
+  W=(0,0,1,1,2,2,3,3).
 \]
-写作 $X\perp Y$。条件独立 $X\perp Y\mid Z$ 则要求给定 $Z$ 后的联合条件分布分解为两个条件边缘。两者没有相互推出关系，必须写出条件信息。
+则 $\sigma(Z)\subseteq\sigma(W)$，细条件均值为 $(1,3,5,8)$。把这些均值再按 $Z$ 合并，重新得到 $(2,13/2)$；这正是嵌套塔式性质的非平凡账本。
 
-反例令 $A=B=Z$，其中 $Z$ 为公平二元变量。给定 $Z$ 后，$A,B$ 都是常数，故 $A\perp B\mid Z$，条件独立误差为 $0$；但边缘上
-\[
-  \mathbb P(A=1,B=1)=\frac12,
-  \qquad \mathbb P(A=1)\mathbb P(B=1)=\frac14,
-\]
-所以 $1/2\ne1/4$。共同原因可以在分层内消除随机联系，却在混合总体中制造相关性。
+\section{六条基本性质与塔式证明}
 
-\section{条件分布与概率核}
+只要相关随机变量可积，条件期望满足：
+\begin{align*}
+ \mathbb E[aX+bY\mid\mathcal G]
+   &=a\mathbb E[X\mid\mathcal G]+b\mathbb E[Y\mid\mathcal G],\\
+ X\le Y&\Longrightarrow
+   \mathbb E[X\mid\mathcal G]\le\mathbb E[Y\mid\mathcal G],\\
+ U\ \mathcal G\text{-可测且有界}
+ &\Longrightarrow \mathbb E[UX\mid\mathcal G]
+   =U\mathbb E[X\mid\mathcal G],\\
+ \mathbb E[\mathbb E[X\mid\mathcal G]]&=\mathbb E[X],\\
+ \mathcal H\subseteq\mathcal G
+ &\Longrightarrow
+ \mathbb E[\mathbb E[X\mid\mathcal G]\mid\mathcal H]
+ =\mathbb E[X\mid\mathcal H].
+\end{align*}
+若 $X$ 与 $\mathcal G$ 独立，则 $\mathbb E[X\mid\mathcal G]=\mathbb E[X]$ 几乎处处。
 
-概率核 $K(z,B)$ 对固定 $z$ 是关于 $B$ 的概率测度，对固定 $B$ 是关于 $z$ 的可测函数。它给出条件分布的一个版本：
+塔式性质的证明只需回到定义。内层条件期望是可积的；对任意
+$H\in\mathcal H\subseteq\mathcal G$，
 \[
-  K(z,B)=\mathbb P(X\in B\mid Z=z).
+ \int_H\mathbb E[X\mid\mathcal G],d\mathbb P
+ =\int_HX,d\mathbb P.
 \]
-有限例中，令 $X$ 的支持为 $(0,2,4)$，条件核为
-\[
-  K=\begin{pmatrix}1/2&1/2&0\\0&1/2&1/2\end{pmatrix}.
-\]
-每行和为 $1$；再用 $\mathbb P(Z=0)=\mathbb P(Z=1)=1/2$ 混合，依据全概率公式恢复 $(1/4,1/2,1/4)$。条件期望也可写为
-\[
-  \mathbb{E}[X\mid Z=z]=\int x\,K(z,dx).
-\]
+因此对内层变量再条件于 $\mathcal H$，恰好满足
+$\mathbb E[X\mid\mathcal H]$ 的定义。证明没有把条件期望当作普通分式，也没有选择有限分割。
 
-密度公式 $f_{X\mid Y}(x\mid y)=f_{X,Y}(x,y)/f_Y(y)$ 只有在相应密度存在且 $f_Y(y)>0$ 时才有意义。连续模型中单点通常概率为零，但正则条件分布仍可能通过概率核定义；把分母为零的比值当作条件密度，会制造未定义结果而不是“极小概率估计”。
+\section{$L^2$ 投影、条件 Jensen 与全方差}
+
+若 $X\in L^2$，则 $Y=\mathbb E[X\mid\mathcal G]$ 是 $X$ 在闭子空间
+$L^2(\mathcal G)$ 上的正交投影。对任意 $U\in L^2(\mathcal G)$，
+\[
+  \mathbb E[(X-Y)U]=0.
+\]
+证明先对有界简单 $U$ 用定义积分恒等式，再用截断与 $L^2$ 极限推广。于是
+\[
+ \mathbb E[(X-U)^2]
+ =\mathbb E[(X-Y)^2]+\mathbb E[(Y-U)^2],
+\]
+条件期望是所有 $\mathcal G$ 可测平方损失预测器中的最优者。线性回归只在一个更小的线性函数类中投影；除非模型正确，回归拟合不等于真正的条件均值。
+
+若 $X$ 与 $\varphi(X)$ 可积且 $\varphi$ 为凸函数，条件 Jensen 不等式为
+\[
+  \varphi(\mathbb E[X\mid\mathcal G])
+  \le \mathbb E[\varphi(X)\mid\mathcal G].
+\]
+可微情形令 $m=\mathbb E[X\mid\mathcal G]$，由支撑线
+$\varphi(X)\ge\varphi(m)+\varphi'(m)(X-m)$；对 $\mathcal G$ 条件化后，最后一项的条件期望为零，便得到结论。一般凸函数可用次梯度或支撑线逼近。
+取 $\varphi(x)=x^2$，两组差分别是 $7/2$ 与 $13/4$，即组内条件方差。定义
+\[
+ \operatorname{Var}(X\mid\mathcal G)
+ =\mathbb E[X^2\mid\mathcal G]
+  -\mathbb E[X\mid\mathcal G]^2,
+\]
+再展开平方并用正交性，得到全方差公式
+\[
+ \operatorname{Var}(X)
+ =\mathbb E[\operatorname{Var}(X\mid\mathcal G)]
+ +\operatorname{Var}(\mathbb E[X\mid\mathcal G]).
+\]
+固定账本中它精确成为
+\[
+  \frac{135}{16}=\frac{54}{16}+\frac{81}{16}.
+\]
+这把总风险拆成组内噪声和信息可解释的组间变化，但不是因果分解。
+
+\section{Bayes 公式、条件密度与概率核}
+
+若互斥完备状态 $H_i$ 有先验 $\pi_i$，观察信号 $S$ 后
+\[
+ \mathbb P(H_i\mid S)
+ =\frac{\mathbb P(S\mid H_i)\pi_i}
+        {\sum_j\mathbb P(S\mid H_j)\pi_j}.
+\]
+固定先验 $(0.7,0.3)$ 与似然 $(0.1,0.8)$ 给出
+$\mathbb P(S=1)=0.31$，因此
+\[
+  \mathbb P(Z=1\mid S=1)=\frac{0.3\cdot0.8}{0.31}=\frac{24}{31}.
+\]
+后验是先验与似然共同决定的；把归一化分母漏掉或用样本内分类准确率替代似然，都不是 Bayes 更新。
+
+概率核 $K(z,B)$ 对固定 $z$ 是关于 $B$ 的概率测度，对固定 $B$ 是关于 $z$ 的可测函数。若目标空间是标准 Borel 空间，联合分布可选出正则条件分布
+\[
+  K(z,B)=\mathbb P(X\in B\mid Z=z),
+\]
+且
+\[
+ \mathbb P(X\in B,Z\in C)=\int_CK(z,B)\,\mathbb P_Z(dz).
+\]
+在任意病态可测空间中正则版本未必存在；即便存在，零 $\mathbb P_Z$ 质量的 $z$ 上也不唯一。
+
+有限核
+\[
+ K=\begin{pmatrix}1/2&1/2&0\\0&1/2&1/2\end{pmatrix}
+\]
+作用在支持 $(0,2,4)$，以 $(1/2,1/2)$ 混合后恢复
+$(1/4,1/2,1/4)$。条件均值是 $\int xK(z,dx)$。密度公式
+\[
+ f_{X\mid Z}(x\mid z)=\frac{f_{X,Z}(x,z)}{f_Z(z)}
+\]
+只在相应密度存在且 $f_Z(z)>0$ 的版本上成立；它不是概率核定义的替代品。
+
+\section{独立、条件独立与共同原因}
+
+两个 $\sigma$ 代数独立，指其任意事件交集概率分解；随机变量独立是其生成
+$\sigma$ 代数独立。一般记号写作 $X\perp Y\mid Z$；对当前变量，条件独立
+$A\perp B\mid Z$ 要求几乎每个 $z$ 上的条件联合律分解：
+\[
+ \mathbb P(A\in E,B\in F\mid Z)
+ =\mathbb P(A\in E\mid Z)\mathbb P(B\in F\mid Z).
+\]
+边缘独立与条件独立没有双向蕴含。
+
+共同原因反例令 $A=B=Z$，其中 $Z$ 公平二元。给定 $Z$ 后，$A,B$ 都是常数，因此条件独立误差为零；但边缘上
+\[
+ \mathbb P(A=1,B=1)=\frac12,
+ \qquad \mathbb P(A=1)\mathbb P(B=1)=\frac14,
+\]
+所以 $1/2\ne1/4$。分层控制共同原因可以消除混合总体中的相关性，这与 Simpson 型组成效应密切相关。
+
+\section{碰撞点与选择：条件化也会制造相关}
+
+反向错误同样危险。令 $A,B$ 为独立公平 Bernoulli，并只保留
+$C=\mathbf1_{\{A+B=1\}}=1$ 的样本。边缘上
+$\mathbb P(A=1,B=1)=1/4$，与边缘乘积相等；可在选择样本中
+\[
+ \mathbb P(A=1,B=1\mid C=1)=0,
+ \qquad
+ \mathbb P(A=1\mid C=1)\mathbb P(B=1\mid C=1)=\frac14.
+\]
+碰撞点条件独立性差为 $1/4$。对共同结果、是否入样、是否成交或“策略通过初筛”做条件化，可能在原本独立的输入之间制造关系；这不是控制变量越多越好的证据。
+
+\section{量化研究边界与可复核 oracle}
+
+在预测时点 $t$，应把可用信息写成 $\mathcal F_t$，目标写成未来变量；若特征实际在 $t+1$ 才发布，却被放进 $\mathcal F_t$，任何条件期望或 Bayes 解释都建立在泄漏信息上。行业中性化近似投影到可观测暴露，但只保证所选函数类内的残差性质；状态模型依赖核与转移机制；缺失/成交筛选则可能形成碰撞点。
 
 \begin{lstlisting}[language=bash]
+uv run python notebooks/upper/ch08_conditioning.py
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch08
 \end{lstlisting}
+独立 oracle 不抽样：它逐项验证定义积分、粗细分割塔式、正交残差、条件 Jensen、全方差、核混合、Bayes 后验、共同原因与碰撞点。固定形状、非负归一概率、固定参数、有限 expected、$10^{-10}$ 容差和发布标签共同防止同步伪造。
 
 \input{tex/upper/chapters/ch08-questions}
 \input{tex/upper/chapters/ch08-hints}
 
 \noindent\textbf{本章小结与 Capstone 连接}\quad
-条件期望由信息 $\sigma$ 代数决定，概率核承载条件分布，条件独立必须显式写出共同信息；上册 Capstone 将审计特征可用时间、条件集合与混合总体偏差。
+条件期望是信息下保持积分的可测代表，也是 $L^2$ 投影；Bayes 与概率核把条件律变成可计算对象；共同原因与碰撞点说明条件化既可消除也可制造关系。上册 Capstone 将把特征可用时间、条件集合、样本选择与分层报告列为强制审计项。

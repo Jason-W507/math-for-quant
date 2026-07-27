@@ -164,6 +164,18 @@
       "first_unit": "upper.ch08"
     },
     {
+      "symbol": "\\operatorname{Var}(X\\mid\\mathcal G)",
+      "meaning": "给定信息 sigma 代数 G 的条件方差",
+      "domain": "nonnegative G-measurable random variable",
+      "first_unit": "upper.ch08"
+    },
+    {
+      "symbol": "\\mathbb P(A\\mid\\mathcal G)",
+      "meaning": "事件 A 给定信息 sigma 代数 G 的条件概率随机变量",
+      "domain": "G-measurable unit-interval random variable",
+      "first_unit": "upper.ch08"
+    },
+    {
       "symbol": "X_n\\xrightarrow{a.s.}X",
       "meaning": "随机变量序列几乎处处收敛到 X",
       "domain": "mode of convergence",
@@ -176,7 +188,7 @@
     {"symbol": "\\operatorname{se}(\\hat\\theta)", "meaning": "估计量 hat theta 抽样标准差的估计", "domain": "nonnegative real", "first_unit": "upper.ch10"},
     {"symbol": "p_{(j)}", "meaning": "一族检验中第 j 小的排序 p 值", "domain": "unit interval", "first_unit": "upper.ch10"},
     {"symbol": "(X_t)_{t\\in T}", "meaning": "由索引集 T 参数化的随机过程", "domain": "family of random variables", "first_unit": "upper.ch11"},
-    {"symbol": "\\mathcal F_t", "meaning": "时点 t 可用事件组成的信息 sigma 代数", "domain": "filtration component", "first_unit": "upper.ch11"},
+    {"symbol": "\\mathcal F_t", "meaning": "时点 t 可用事件组成的信息 sigma 代数", "domain": "filtration component", "first_unit": "upper.ch08"},
     {"symbol": "P_{ij}", "meaning": "Markov 链从状态 i 到状态 j 的一步转移概率", "domain": "unit interval", "first_unit": "upper.ch11"},
     {"symbol": "N_t", "meaning": "截至时点 t 的 Poisson 过程计数", "domain": "nonnegative integer", "first_unit": "upper.ch11"},
     {"symbol": "W_t", "meaning": "时点 t 的标准 Brownian 运动值", "domain": "real random variable", "first_unit": "upper.ch11"},

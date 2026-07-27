@@ -215,8 +215,8 @@
       "published": true,
       "prerequisites": ["upper.ch07"],
       "evidence": {
-        "notation_symbols": ["\\mathbb{E}[X\\mid\\mathcal G]", "K(z,B)", "X\\perp Y\\mid Z"],
-        "glossary_terms": ["条件期望", "塔式性质", "独立性", "条件独立", "概率核"],
+        "notation_symbols": ["\\mathbb{E}[X\\mid\\mathcal G]", "\\operatorname{Var}(X\\mid\\mathcal G)", "\\mathbb P(A\\mid\\mathcal G)", "K(z,B)", "X\\perp Y\\mid Z", "\\mathcal F_t"],
+        "glossary_terms": ["条件期望", "塔式性质", "独立性", "条件独立", "概率核", "Doob-Dynkin 引理", "正则条件分布", "全方差公式", "Bayes 公式", "碰撞点偏差"],
         "notation_and_assumptions": "tex/upper/chapters/ch08.tex",
         "core_derivation": "tex/upper/chapters/ch08.tex",
         "independent_oracle": {

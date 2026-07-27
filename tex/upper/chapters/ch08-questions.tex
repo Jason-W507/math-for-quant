@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}解释条件期望为何是随机变量，并区分独立、条件独立与概率核。
-  \item \textbf{笔试推导：}计算四状态账本的条件期望并验证塔式性质；由核的混合恢复边缘分布。
-  \item \textbf{数值编程：}逐项核验条件均值、核行和、全概率混合，以及共同原因反例的条件与边缘分解误差。
-  \item \textbf{研究判断：}分行业回归中信号与收益近似独立，但混合后显著相关，如何区分共同暴露、选择偏差与真实预测力？
+  \item 从事件、有限分割、随机变量和子 $\sigma$ 代数四个层次解释条件化；连续点条件为何不能直接用事件比值？
+  \item 陈述条件期望的定义、几乎处处唯一性、Doob--Dynkin 表示和 $L^2$ 投影含义。
+  \item 区分边缘独立、条件独立、共同原因与碰撞点；为什么“多控制变量”不必然更接近真实关系？
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 用八状态账本计算 $\mathbb E[X\mid Z]$ 与 $\mathbb E[X\mid W]$，验证定义积分和嵌套塔式性质。
+  \item 从投影正交性推导全方差公式，并在固定账本上得到 $135/16=54/16+81/16$；同时验证条件 Jensen。
+  \item 由先验 $(0.7,0.3)$ 和似然 $(0.1,0.8)$ 推导证据概率与后验；再证明有限概率核的混合律。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 不抽样地复算粗细条件均值、定义积分、正交残差、Jensen 差和全方差三项。
+  \item 实现固定核与 Bayes 账本，验证行和、全概率混合、证据概率和后验均与独立分数结果一致。
+  \item 分别复现共同原因和碰撞点反例；注入负混合权重、伪造全方差、伪造后验和伪造条件独立差，记录稳定诊断。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 行业内信号与收益关系弱、混合后显著。如何区分真实预测力、共同暴露与 Simpson 型组成效应？
+  \item 只在“成功成交”样本中，报价激进度与市场波动呈负相关。为什么可能是选择碰撞点？如何重新设计证据？
+  \item 团队声称模型估计 $\mathbb E[R_{t+1}\mid\mathcal F_t]$，但一个特征在收盘后修订。如何定义信息集并审计是否泄漏？
 \end{enumerate}
 \endgroup

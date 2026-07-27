@@ -1,9 +1,17 @@
 \subsection*{分级提示}
 \begingroup\small
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}条件期望必须对已知信息可测，并在该信息的每个事件上保持积分。
-  \item \textbf{笔试推导：}先按 $Z$ 的分割求组内加权均值，再按组概率加权回来。
-  \item \textbf{数值编程：}不要抽样；直接检查每行概率和、混合向量与四格事件概率。
-  \item \textbf{研究判断：}同时报告组内、组间和混合结果，并核对条件变量是否在预测时真实可得。
+  \item \textbf{口述 1：}事件条件是正概率特例；$Z$ 通过 $\sigma(Z)$ 表示信息。零测点需要正则条件分布的版本。
+  \item \textbf{口述 2：}先说“可测”和“对每个信息事件保持积分”，再谈 RN 导数、$g(Z)$ 与正交投影。
+  \item \textbf{口述 3：}共同原因是对共同父节点条件化；碰撞点是对共同结果或选择事件条件化。
+  \item \textbf{推导 1：}先按 $W$ 的四个二元组求均值，再按 $Z$ 合并；用每组概率乘均值核验积分。
+  \item \textbf{推导 2：}写 $X-\mathbb E[X\mid\mathcal G]$ 与任意 $\mathcal G$ 可测量正交，再展开平方。
+  \item \textbf{推导 3：}Bayes 分母是先验加权似然；核混合是行向量左乘随机矩阵。
+  \item \textbf{编程 1：}expected 来自分数账本，不得由同一 NumPy 路径生成；最大正交误差应为零。
+  \item \textbf{编程 2：}先验证每行非负且和为一，再比较混合；后验先核验分母 $0.31$。
+  \item \textbf{编程 3：}共同原因看“条件差零、边缘差非零”；碰撞点恰好相反。坏 oracle 只能放临时 fixture。
+  \item \textbf{研究 1：}同时报告组内、组间与混合估计，并追踪行业权重和信号基准水平。
+  \item \textbf{研究 2：}把成交指示画成共同结果，比较全量报价、逆概率加权与显式成交模型。
+  \item \textbf{研究 3：}为每个字段记录 event time、knowledge time、revision time，只允许 knowledge time 不晚于决策时点。
 \end{enumerate}
 \endgroup

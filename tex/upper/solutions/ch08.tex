@@ -2,13 +2,45 @@
 \label{app:ch08-solutions}
 
 \section*{口述概念}
-$\mathbb{E}[X\mid\mathcal G]$ 是 $\mathcal G$ 可测随机变量并在每个 $G\in\mathcal G$ 上保持积分。独立是不带条件的分解，条件独立写作 $X\perp Y\mid Z$；概率核 $K(z,B)$ 给出条件分布的可测版本。
+\begin{enumerate}[leftmargin=*]
+  \item 事件条件概率只对 $\mathbb P(B)>0$ 的 $B$ 用比值；有限分割逐块应用；随机变量条件是对 $\sigma(Z)$ 条件；一般信息直接写子 $\sigma$ 代数。连续点通常是零概率事件，不能除以 $\mathbb P(Z=z)=0$，需使用条件密度或正则条件分布的版本，且零测 $z$ 上不唯一。
+  \item $Y=\mathbb E[X\mid\mathcal G]$ 必须 $\mathcal G$ 可测，并对所有 $G\in\mathcal G$ 保持 $\int_GY=\int_GX$；RN 定理给存在性，两个版本只可能在零测集不同。Doob--Dynkin 把 $\sigma(Z)$ 可测版本写成 $g(Z)$；在 $L^2$ 中，$X-Y$ 与所有 $\mathcal G$ 可测平方可积变量正交，因此 $Y$ 最小化信息约束下的平方误差。
+  \item 边缘独立不带条件，条件独立要求给定信息后的联合律分解。共同原因可以制造边缘相关，条件化共同原因可能消除它；碰撞点是共同结果或选择，条件化它反而可能在原本独立的输入间制造相关。控制不当会打开而非关闭偏差路径。
+\end{enumerate}
 
 \section*{笔试推导}
-按 $Z=0,1$ 分组，条件均值分别为 $1$ 与 $3$；两组等概率，所以 $\mathbb{E}[\mathbb{E}[X\mid\mathcal G]]=2=\mathbb{E}[X]$。核的两行均和为一，以 $(1/2,1/2)$ 混合后恢复 $(1/4,1/2,1/4)$。
+\begin{enumerate}[leftmargin=*]
+  \item $W$ 的四组分别为 $(0,2),(1,5),(4,6),(7,9)$，故细条件均值为 $(1,3,5,8)$。$Z=0$ 合并前两组得 $2$，$Z=1$ 合并后两组得 $13/2$，所以条件均值为 $2$ 与 $13/2$。在两组上的加权积分分别为 $1$ 与 $13/4$；再加总可得 $\mathbb E[X]=17/4$。把细均值按粗组再平均仍得 $(2,13/2)$，验证塔式性质。
+  \item 令 $Y=\mathbb E[X\mid\mathcal G]$、$R=X-Y$。因 $\mathbb E[RY]=0$，
+  \[
+   \operatorname{Var}(X)=\mathbb E[R^2]+\operatorname{Var}(Y)
+   =\mathbb E[\operatorname{Var}(X\mid\mathcal G)]
+    +\operatorname{Var}(Y).
+  \]
+  两组条件方差为 $7/2,13/4$，也是 $\mathbb E[X^2\mid Z]-\mathbb E[X\mid Z]^2\ge0$ 的 Jensen 差。它们等权平均为 $27/8=54/16$；条件均值围绕 $17/4$ 的偏差为 $\pm9/4$，故方差为 $81/16$，最终 $135/16=54/16+81/16$。
+  \item 证据概率为 $0.7\cdot0.1+0.3\cdot0.8=0.31$，故 $\mathbb P(Z=1\mid S=1)=24/31$。有限核每行和为一；以 $(1/2,1/2)$ 左乘
+  $K$，混合后恢复 $(1/4,1/2,1/4)$。这同时是全概率公式的矩阵形式。
+\end{enumerate}
 
 \section*{数值编程}
-程序逐项比较解析账本：条件均值 $(1,3)$、塔式均值 $2$、核行和 $(1,1)$ 与边缘混合。共同原因反例中，给定 $Z$ 的条件独立误差为 $0$，但边缘联合概率与边缘乘积满足 $1/2\ne1/4$。
+\begin{enumerate}[leftmargin=*]
+  \item 程序按固定分割求粗均值 $(2,6.5)$、细均值 $(1,3,5,8)$，比较每个粗信息事件上的加权积分。粗残差的组内加权和均为零；Jensen 差为 $(3.5,3.25)$；全方差三项为 $(8.4375,3.375,5.0625)$。这些 expected 均来自上面的分数账本。
+  \item 核行和为 $(1,1)$、混合为 $(0.25,0.5,0.25)$。Bayes 分母与后验为 $(0.31,0.774193\ldots)$，后者等于 $24/31$。先验证非负、归一、形状与固定输入，再比较解析 expected。
+  \item 共同原因账本中条件独立误差为 $0$，但边缘联合与边缘乘积满足 $1/2\ne1/4$，其差为 $1/4$。碰撞点账本中边缘差为零，选择 $A+B=1$ 后的差为 $1/4$，即碰撞点条件独立性差为 $1/4$。负混合权重、错误全方差、错误后验与错误碰撞点标签分别触发独立诊断；不得通过重写 expected 或放宽容差恢复。
+\end{enumerate}
 
 \section*{研究判断}
-先按行业分别报告联合与边缘关系，再检查行业权重和信号均值是否造成组间差异；随后使用时间可得的控制变量重做样本外检验。若结论只存在于混合总体，应将其标为共同暴露或组成效应，而不是直接解释为预测力。
+\begin{enumerate}[leftmargin=*]
+  \item 先分别估计行业内关系，再分解混合协方差中的行业权重、行业均值和组内项；对行业权重做固定或标准化重加权，并在时间外样本复验。若关系只来自行业构成变化，应报告为共同暴露/组成效应，而非信号预测力。
+  \item 成交由报价激进度和市场状态共同影响，是两者的碰撞点；只看成交样本可能制造负相关。保留所有报价与未成交状态，建立成交概率模型，检查重叠支持，并比较全样本、分层、逆概率加权和敏感性界限；若识别条件不足就明确限制。
+  \item 定义 $\mathcal F_t$ 只含决策时刻已知字段；为特征同时记录事件发生、首次可知和修订时间。收盘后修订值不能进入当日决策信息，需使用 point-in-time 快照或至少滞后一日。审计应注入时间错位负例，并把数据发布日期规则写进 Capstone 证据。
+\end{enumerate}
+
+\section*{恢复路径}
+先运行
+\begin{lstlisting}[language=bash]
+uv run python notebooks/upper/ch08_conditioning.py
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch08
+\end{lstlisting}
+若失败，按“有限值与概率归一 $\rightarrow$ 分割是否嵌套 $\rightarrow$ 定义积分与正交性 $\rightarrow$ 方差分解 $\rightarrow$ 核/Bayes $\rightarrow$ 共同原因与碰撞点”的顺序恢复。不要把 observed 写回 expected，也不要把零测点版本当作模型外推规则。

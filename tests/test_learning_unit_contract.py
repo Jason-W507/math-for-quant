@@ -1713,13 +1713,142 @@ class LearningUnitContractTests(unittest.TestCase):
             result.stdout,
             "notebook=build/notebooks/upper/ch08_conditioning.ipynb\n"
             "roundtrip=passed cells=2\n"
-            "execution=passed oracle=passed conditional=(1.000000,3.000000) "
-            "tower=2.000000 kernel_rows=(1.000000,1.000000) "
+            "execution=passed oracle=passed coarse=(2.000000,6.500000) "
+            "fine=(1.000000,3.000000,5.000000,8.000000) "
+            "tower=(2.000000,6.500000) mean=4.250000 "
+            "orthogonality=0.000e+00 jensen=(3.500000,3.250000) "
+            "variance=(8.437500,3.375000,5.062500) "
+            "kernel_rows=(1.000000,1.000000) "
             "mixture=(0.250000,0.500000,0.250000) "
-            "marginal_joint=0.500000 marginal_product=0.250000 "
-            "conditional_error=0.000e+00\n",
+            "bayes=(0.310000,0.774194) "
+            "common=(0.000e+00,0.250000) "
+            "collider=(0.000e+00,0.250000)\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_eight_rejects_a_false_total_variance_identity(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-false-total-variance.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update({"expected_total_variance": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("total-variance ledger mismatch", result.stderr)
+
+    def test_chapter_eight_rejects_a_false_collider_independence_claim(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-false-collider-independence.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update(
+                {"expected_collider_conditional_gap": 0.0}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("collider-conditioning ledger mismatch", result.stderr)
+
+    def test_chapter_eight_rejects_a_false_bayes_posterior(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-false-bayes-posterior.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update({"expected_bayes_posterior": 0.5}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Bayes ledger mismatch", result.stderr)
+
+    def test_chapter_eight_rejects_a_false_nested_conditioning_claim(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-false-nested-conditioning.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update(
+                {"expected_fine_conditional_means": [0.0, 0.0, 0.0, 0.0]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("nested-conditioning ledger mismatch", result.stderr)
+
+    def test_chapter_eight_rejects_a_nonfinite_expected_mean(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-nonfinite-expected-mean.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update({"expected_unconditional_mean": float("nan")}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric inputs must be finite", result.stderr)
+
+    def test_chapter_eight_rejects_a_missing_expected_jensen_gap(self) -> None:
+        def remove_jensen_gap(oracle: dict[str, Any]) -> None:
+            del oracle["expected_jensen_gaps"]
+
+        result = self.run_oracle_fixture(
+            "ch08-missing-jensen-gap.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            remove_jensen_gap,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "oracle missing required fields: expected_jensen_gaps", result.stderr
+        )
+
+    def test_chapter_eight_rejects_a_wrong_fine_mean_shape(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-wrong-fine-mean-shape.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update({"expected_fine_conditional_means": [1.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "oracle expected_fine_conditional_means must have shape (4,)",
+            result.stderr,
+        )
+
+    def test_chapter_eight_rejects_noncanonical_conditioning_values(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-noncanonical-values.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update(
+                {"random_variable": [0.0, 2.0, 1.0, 5.0, 4.0, 6.0, 7.0, 10.0]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle must use the fixed conditioning ledger", result.stderr)
+
+    def test_chapter_eight_rejects_a_widened_tolerance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-widened-tolerance.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update({"absolute_tolerance": 1.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric tolerance is fixed", result.stderr)
+
+    def test_chapter_eight_rejects_a_false_published_expected_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch08-false-published-expected.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            lambda oracle: oracle.update({"expected": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("published expected must equal 17/4", result.stderr)
 
     def test_chapter_eight_rejects_signed_kernel_mixing_weights(self) -> None:
         oracle = json.loads(
@@ -1762,11 +1891,16 @@ class LearningUnitContractTests(unittest.TestCase):
             result.stdout,
             "unit=upper.ch08\n"
             "evidence=7/7\n"
-            "oracle=passed conditional=(1.000000,3.000000) "
-            "tower=2.000000 kernel_rows=(1.000000,1.000000) "
+            "oracle=passed coarse=(2.000000,6.500000) "
+            "fine=(1.000000,3.000000,5.000000,8.000000) "
+            "tower=(2.000000,6.500000) mean=4.250000 "
+            "orthogonality=0.000e+00 jensen=(3.500000,3.250000) "
+            "variance=(8.437500,3.375000,5.062500) "
+            "kernel_rows=(1.000000,1.000000) "
             "mixture=(0.250000,0.500000,0.250000) "
-            "marginal_joint=0.500000 marginal_product=0.250000 "
-            "conditional_error=0.000e+00\n"
+            "bayes=(0.310000,0.774194) "
+            "common=(0.000e+00,0.250000) "
+            "collider=(0.000e+00,0.250000)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
