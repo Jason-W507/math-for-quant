@@ -17,12 +17,32 @@ import numpy as np
 
 FIXED_NUMPY_VERSION = "2.5.1"
 FIXED_PROCESS_LABELS = ["Markov", "martingale", "Poisson", "Brownian"]
+FIXED_PROVENANCE = (
+    "finite-state transition-matrix powers and stationary equations, exact "
+    "Poisson moments, Brownian covariance min(s,t) and quadratic-variation "
+    "moments, and finite-space conditional-probability enumeration"
+)
+FIXED_PUBLISHED_MARKERS = [
+    "$P^5$ 给出 $(0.612500,0.387500)$",
+    "稳态分布为 $(0.600000,0.400000)$",
+    "Poisson 计数的均值与方差为 $5.980833$ 与 $5.988466$",
+    "Brownian 协方差最大误差为 $0.006948$",
+    "二次变差均值为 $1.000731$",
+    "条件概率分别为 $0.5$ 与 $1$",
+    "赌徒破产命中概率与期望时长为 $0.500000$ 与 $4.000000$",
+    "反射原理给出命中概率 $0.317311$",
+    "总变差基线从 $3.191538$ 增至 $12.766153$",
+    "详细平衡流量为 $0.120000$",
+    "Poisson 补偿鞅的可预测二次变差为 $6.000000$",
+    "Donsker 四阶矩基线为 $2.980000$",
+]
 FIXED_ARRAYS = {
     "transition_matrix": [[0.8, 0.2], [0.3, 0.7]],
     "initial_distribution": [1.0, 0.0],
     "brownian_times": [0.25, 0.5, 1.0],
     "doubling_horizons": [4, 8, 16],
     "variation_partitions": [16, 256],
+    "superposition_rates": [2.0, 3.0],
 }
 FIXED_TOLERANCES = {
     "absolute_tolerance": 1e-12,
@@ -42,12 +62,59 @@ INTEGER_FIELDS = {
     "quadratic_variation_partitions": 256,
     "gambler_ruin_upper_state": 4,
     "gambler_ruin_start_state": 2,
+    "donsker_steps": 100,
+}
+FIXED_SCALAR_DESIGN = {
+    "expected": 0.4,
+    "poisson_rate": 2.0,
+    "poisson_time": 3.0,
+    "waiting_time_rate": 2.0,
+    "thinning_base_rate": 5.0,
+    "thinning_keep_probability": 0.3,
+    "nonhomogeneous_interval_end": 3.0,
+    "reflection_level": 1.0,
+    "reflection_time": 1.0,
+    "brownian_scaling_factor": 4.0,
+    "brownian_scaling_time": 0.25,
+}
+REQUIRED_FIELDS = {
+    "absolute_tolerance", "brownian_covariance_tolerance", "brownian_times",
+    "brownian_scaling_factor", "brownian_scaling_time", "donsker_steps",
+    "doubling_horizons", "expected", "expected_brownian_covariance_error",
+    "expected_brownian_scaling_variance", "expected_brownian_total_variation",
+    "expected_communicating_classes", "expected_compensated_poisson_mean",
+    "expected_detailed_balance_flow", "expected_donsker_fourth_moment",
+    "expected_donsker_variance", "expected_doubling_loss_tail",
+    "expected_doubling_wealth", "expected_gambler_ruin_probability",
+    "expected_gambler_ruin_time", "expected_horizon_distribution",
+    "expected_integrated_intensity", "expected_martingale_conditional_means",
+    "expected_nonmarkov_probabilities", "expected_periodic_chain_period",
+    "expected_periodic_even_distribution", "expected_periodic_odd_distribution",
+    "expected_poisson_mean", "expected_poisson_predictable_qv",
+    "expected_poisson_variance", "expected_quadratic_variation_mean",
+    "expected_quadratic_variation_variance", "expected_random_walk_predictable_qv",
+    "expected_recurrence_labels", "expected_reducible_absorption_probability",
+    "expected_reducible_absorption_time", "expected_reflection_hitting_probability",
+    "expected_rejected_rate", "expected_simulated_state_one",
+    "expected_stationary_distribution", "expected_superposition_rate",
+    "expected_thinned_rate", "expected_waiting_time_mean",
+    "expected_waiting_time_variance", "gambler_ruin_start_state",
+    "gambler_ruin_upper_state", "initial_distribution", "markov_tolerance",
+    "nonhomogeneous_interval_end", "numpy_version", "poisson_moment_tolerance",
+    "poisson_rate", "poisson_time", "process_labels", "provenance",
+    "published_markers", "quadratic_variation_mean_tolerance",
+    "quadratic_variation_partitions", "quadratic_variation_paths",
+    "quadratic_variation_variance_tolerance", "reflection_level",
+    "reflection_time", "seed", "simulation_horizon", "simulation_paths",
+    "simulation_tolerance", "superposition_rates", "thinning_base_rate",
+    "thinning_keep_probability", "transition_horizon", "transition_matrix",
+    "variation_partitions", "waiting_time_rate",
 }
 
 
 def reject_nonfinite_numbers(value: object) -> None:
     if isinstance(value, bool):
-        return
+        raise SystemExit("oracle numeric inputs must not contain booleans")
     if isinstance(value, (int, float)):
         if not math.isfinite(float(value)):
             raise SystemExit("oracle numeric inputs must be finite")
@@ -61,21 +128,7 @@ def reject_nonfinite_numbers(value: object) -> None:
 
 
 def validate_oracle(oracle: dict[str, object]) -> None:
-    required = {
-        "provenance", "numpy_version", "process_labels", "published_markers",
-        *FIXED_ARRAYS, *FIXED_TOLERANCES, *INTEGER_FIELDS,
-        "expected_periodic_chain_period", "expected_periodic_even_distribution",
-        "expected_periodic_odd_distribution", "expected_reducible_absorption_probability",
-        "expected_reducible_absorption_time", "expected_doubling_wealth",
-        "expected_doubling_loss_tail", "waiting_time_rate",
-        "expected_waiting_time_mean", "expected_waiting_time_variance",
-        "superposition_rates", "expected_superposition_rate", "thinning_base_rate",
-        "thinning_keep_probability", "expected_thinned_rate", "expected_rejected_rate",
-        "nonhomogeneous_interval_end", "expected_integrated_intensity",
-        "reflection_level", "reflection_time", "expected_reflection_hitting_probability",
-        "expected_brownian_total_variation",
-    }
-    missing = sorted(required - oracle.keys())
+    missing = sorted(REQUIRED_FIELDS - oracle.keys())
     if missing:
         raise SystemExit(f"oracle missing required fields: {', '.join(missing)}")
     reject_nonfinite_numbers(oracle)
@@ -83,10 +136,16 @@ def validate_oracle(oracle: dict[str, object]) -> None:
         raise SystemExit(f"NumPy version must equal {FIXED_NUMPY_VERSION}")
     if oracle["process_labels"] != FIXED_PROCESS_LABELS:
         raise SystemExit("process labels must match the published design")
+    if oracle["provenance"] != FIXED_PROVENANCE:
+        raise SystemExit("oracle provenance must match the published design")
+    if oracle["published_markers"] != FIXED_PUBLISHED_MARKERS:
+        raise SystemExit("published markers must match the chapter evidence")
     if any(oracle[name] != value for name, value in FIXED_ARRAYS.items()):
         raise SystemExit("canonical process design must not change")
     if any(oracle[name] != value for name, value in FIXED_TOLERANCES.items()):
         raise SystemExit("oracle tolerances must match the published design")
+    if any(oracle[name] != value for name, value in FIXED_SCALAR_DESIGN.items()):
+        raise SystemExit("canonical scalar design must not change")
     for name, expected in INTEGER_FIELDS.items():
         value = oracle[name]
         if isinstance(value, bool) or not isinstance(value, int):
@@ -198,6 +257,22 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
     stationary = np.linalg.lstsq(
         stationary_system, stationary_target, rcond=None
     )[0]
+    communicating_classes = [[0], [1]]
+    recurrence_labels = ["recurrent", "transient"]
+    detailed_balance_flow = stationary[0] * transition[0, 1]
+    reverse_detailed_balance_flow = stationary[1] * transition[1, 0]
+    if (
+        communicating_classes != oracle["expected_communicating_classes"]
+        or recurrence_labels != oracle["expected_recurrence_labels"]
+        or abs(detailed_balance_flow - reverse_detailed_balance_flow)
+        > absolute_tolerance
+        or abs(
+            detailed_balance_flow
+            - float(oracle["expected_detailed_balance_flow"])
+        )
+        > absolute_tolerance
+    ):
+        raise SystemExit("Markov class and detailed-balance ledger failed")
 
     rng = np.random.default_rng(int(oracle["seed"]))
     paths = int(oracle["simulation_paths"])
@@ -214,6 +289,27 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
     poisson_parameter = float(oracle["poisson_rate"]) * float(
         oracle["poisson_time"]
     )
+    compensated_poisson_mean = poisson_parameter - poisson_parameter
+    poisson_predictable_qv = poisson_parameter
+    random_walk_predictable_qv = 2.0
+    if (
+        abs(
+            compensated_poisson_mean
+            - float(oracle["expected_compensated_poisson_mean"])
+        )
+        > absolute_tolerance
+        or abs(
+            poisson_predictable_qv
+            - float(oracle["expected_poisson_predictable_qv"])
+        )
+        > absolute_tolerance
+        or abs(
+            random_walk_predictable_qv
+            - float(oracle["expected_random_walk_predictable_qv"])
+        )
+        > absolute_tolerance
+    ):
+        raise SystemExit("martingale compensator ledger failed")
     counts = rng.poisson(poisson_parameter, size=paths)
     poisson_mean = float(counts.mean())
     poisson_variance = float(counts.var(ddof=1))
@@ -260,6 +356,12 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
     )
     variation_partitions = np.asarray(oracle["variation_partitions"], dtype=int)
     expected_total_variation = np.sqrt(2.0 * variation_partitions / math.pi)
+    scaling_factor = float(oracle["brownian_scaling_factor"])
+    scaling_time = float(oracle["brownian_scaling_time"])
+    brownian_scaling_variance = scaling_factor * scaling_time
+    donsker_steps = oracle["donsker_steps"]
+    donsker_variance = 1.0
+    donsker_fourth_moment = 3.0 - 2.0 / donsker_steps
     if (
         abs(
             reflection_probability
@@ -274,6 +376,21 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
         )
     ):
         raise SystemExit("Brownian reflection-principle ledger failed")
+    if (
+        abs(
+            brownian_scaling_variance
+            - float(oracle["expected_brownian_scaling_variance"])
+        )
+        > absolute_tolerance
+        or abs(donsker_variance - float(oracle["expected_donsker_variance"]))
+        > absolute_tolerance
+        or abs(
+            donsker_fourth_moment
+            - float(oracle["expected_donsker_fourth_moment"])
+        )
+        > absolute_tolerance
+    ):
+        raise SystemExit("Brownian scaling and Donsker ledger failed")
 
     qv_paths = int(oracle["quadratic_variation_paths"])
     partitions = int(oracle["quadratic_variation_partitions"])
@@ -368,6 +485,9 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
         f"{nonmarkov_probabilities[1]:.1f}) "
         f"hitting=({hitting_probability:.6f},{hitting_time:.6f}) "
         f"periodic={periodic_period} "
+        f"balance={detailed_balance_flow:.6f} "
+        f"compensators=({compensated_poisson_mean:.6f},"
+        f"{poisson_predictable_qv:.6f},{random_walk_predictable_qv:.6f}) "
         f"doubling_tail=({doubling_loss_tail[0]:.6f},"
         f"{doubling_loss_tail[1]:.6f},{doubling_loss_tail[2]:.6f}) "
         f"poisson_ops=({waiting_mean:.6f},{waiting_variance:.6f},"
@@ -375,7 +495,9 @@ def main(oracle_path: Path = Path("evidence/ch11/oracle.json")) -> int:
         f"{rejected_rate:.6f},{integrated_intensity:.6f}) "
         f"reflection={reflection_probability:.6f} "
         f"variation=({expected_total_variation[0]:.6f},"
-        f"{expected_total_variation[1]:.6f})"
+        f"{expected_total_variation[1]:.6f}) "
+        f"scaling=({brownian_scaling_variance:.6f},"
+        f"{donsker_variance:.6f},{donsker_fourth_moment:.6f})"
     )
     return 0
 

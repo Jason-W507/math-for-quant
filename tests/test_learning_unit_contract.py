@@ -2410,10 +2410,13 @@ class LearningUnitContractTests(unittest.TestCase):
             "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
             "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
             "nonmarkov=(0.5,1.0) hitting=(0.500000,4.000000) "
-            "periodic=2 doubling_tail=(0.937500,0.996094,0.999985) "
+            "periodic=2 balance=0.120000 "
+            "compensators=(0.000000,6.000000,2.000000) "
+            "doubling_tail=(0.937500,0.996094,0.999985) "
             "poisson_ops=(0.500000,0.250000,5.000000,1.500000,"
             "3.500000,10.500000) reflection=0.317311 "
-            "variation=(3.191538,12.766153)\n",
+            "variation=(3.191538,12.766153) "
+            "scaling=(1.000000,1.000000,2.980000)\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -2509,6 +2512,29 @@ class LearningUnitContractTests(unittest.TestCase):
                 ),
                 "process labels",
             ),
+            (
+                "ch11-boolean-array.json",
+                lambda oracle: oracle.update(
+                    {"initial_distribution": [True, False]}
+                ),
+                "must not contain booleans",
+            ),
+            (
+                "ch11-missing-late-field.json",
+                lambda oracle: oracle.pop("expected_poisson_mean"),
+                "missing required fields",
+            ),
+            (
+                "ch11-synchronized-forgery.json",
+                lambda oracle: oracle.update(
+                    {
+                        "waiting_time_rate": 4.0,
+                        "expected_waiting_time_mean": 0.25,
+                        "expected_waiting_time_variance": 0.0625,
+                    }
+                ),
+                "canonical scalar design",
+            ),
         )
         for fixture, mutate, diagnostic in cases:
             with self.subTest(fixture=fixture):
@@ -2520,6 +2546,38 @@ class LearningUnitContractTests(unittest.TestCase):
                 )
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(diagnostic, result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_detailed_balance_flow(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-detailed-balance.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update({"expected_detailed_balance_flow": 0.1}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Markov class and detailed-balance", result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_poisson_compensator(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-poisson-compensator.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update(
+                {"expected_poisson_predictable_qv": 5.0}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("martingale compensator", result.stderr)
+
+    def test_chapter_eleven_rejects_a_false_donsker_moment(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch11-false-donsker-moment.json",
+            "evidence/ch11/oracle.json",
+            "notebooks/upper/ch11_stochastic_processes.py",
+            lambda oracle: oracle.update({"expected_donsker_fourth_moment": 3.0}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Brownian scaling and Donsker", result.stderr)
 
     def test_accepts_chapter_eleven_with_process_oracles(self) -> None:
         result = self.run_contract(
@@ -2537,10 +2595,13 @@ class LearningUnitContractTests(unittest.TestCase):
             "poisson=(5.980833,5.988466) brownian_cov_error=0.006948 "
             "qv=(1.000731,0.007781) martingale=(-1.0,1.0) "
             "nonmarkov=(0.5,1.0) hitting=(0.500000,4.000000) "
-            "periodic=2 doubling_tail=(0.937500,0.996094,0.999985) "
+            "periodic=2 balance=0.120000 "
+            "compensators=(0.000000,6.000000,2.000000) "
+            "doubling_tail=(0.937500,0.996094,0.999985) "
             "poisson_ops=(0.500000,0.250000,5.000000,1.500000,"
             "3.500000,10.500000) reflection=0.317311 "
-            "variation=(3.191538,12.766153)\n"
+            "variation=(3.191538,12.766153) "
+            "scaling=(1.000000,1.000000,2.980000)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

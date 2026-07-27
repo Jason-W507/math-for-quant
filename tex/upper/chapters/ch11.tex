@@ -33,7 +33,7 @@
 \[
 P=\begin{pmatrix}0.8&0.2\\0.3&0.7\end{pmatrix},\qquad \mu_0=(1,0).
 \]
-$P^5$ 给出 $(0.612500,0.387500)$，解 $\pi P=\pi$ 与 $\pi\mathbf1=1$ 得稳态分布为 $(0.600000,0.400000)$。不可约保证状态互通；周期 $d(i)=\gcd\{n\ge1:P^n_{ii}>0\}$ 描述返回节律；有限不可约链中所有状态正常返且稳态唯一，若再非周期，才有 $\mu P^n\to\pi$。
+$P^5$ 给出 $(0.612500,0.387500)$，解 $\pi P=\pi$ 与 $\pi\mathbf1=1$ 得稳态分布为 $(0.600000,0.400000)$。若 $i\to j$ 与 $j\to i$ 都有正概率路径，称两状态沟通；沟通关系把状态分成沟通类。状态若以概率 1 返回称常返，否则称暂留；常返状态的期望返回时间有限时称正常返。有限不可约链中所有状态正常返且稳态唯一，若再非周期，才有 $\mu P^n\to\pi$。若 $\pi_iP_{ij}=\pi_jP_{ji}$ 对所有 $i,j$ 成立，称详细平衡；它蕴含稳态但不是必要条件。本例双向流均为 $0.6\times0.2=0.4\times0.3$，详细平衡流量为 $0.120000$。
 
 \noindent\textbf{两个不能省略的反例。}\quad
 交替链 $P=\bigl(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr)$ 有稳态 $(1/2,1/2)$，但从状态 0 出发的分布在 $(1,0)$ 与 $(0,1)$ 间振荡，周期为 2。可约链 $P=\bigl(\begin{smallmatrix}1&0\\1/2&1/2\end{smallmatrix}\bigr)$ 有吸收类；从状态 1 最终吸收于 0 的概率为 1，期望等待时间为 2。故“算出稳态”不等于“任意初值收敛”。
@@ -51,13 +51,13 @@ m_i=1+\tfrac12m_{i-1}+\tfrac12m_{i+1},\quad m_0=m_N=0.
 
 \section{鞅：公平性依赖信息集与可积性}
 
-可积、适应过程 $(M_n)$ 若满足 $\mathbb E(M_{n+1}\mid\mathcal F_n)=M_n$，称为鞅；将等号改为 $\ge$ 或 $\le$ 得次鞅或上鞅。Doob 分解说明合适的次鞅可写为“鞅 + 可预测递增补偿项”。对平方可积鞅，条件二次变差（predictable quadratic variation）累积下一步条件方差；它与从已实现路径计算的二次变差不能混称。
+可积、适应过程 $(M_n)$ 若满足 $\mathbb E(M_{n+1}\mid\mathcal F_n)=M_n$，称为鞅；将等号改为 $\ge$ 或 $\le$ 得次鞅或上鞅。Doob 分解说明合适的次鞅可写为“鞅 + 可预测递增补偿项”。对平方可积鞅，$\langle M\rangle_n=\sum_{k=1}^n\mathbb E[(\Delta M_k)^2\mid\mathcal F_{k-1}]$ 累积下一步条件方差；它与从已实现路径计算的 $[M]_n=\sum(\Delta M_k)^2$ 不能混称。
 
 对称随机游走 $S_n=\sum_{k=1}^n\xi_k$ 满足 $\mathbb E(S_{n+1}\mid\mathcal F_n)=S_n$。又因 $\mathbb E(\xi_{n+1}\mid\mathcal F_n)=0$、$\mathbb E(\xi_{n+1}^2\mid\mathcal F_n)=1$，
 \[
 \mathbb E(S_{n+1}^2-(n+1)\mid\mathcal F_n)=S_n^2-n,
 \]
-故 $S_n^2-n$ 是鞅，而 $S_n^2$ 是次鞅。
+故 $S_n^2-n$ 是鞅，而 $S_n^2$ 是次鞅；两步随机游走有 $\langle S\rangle_2=2$。类似地，Poisson 过程的可预测补偿子为 $\lambda t$，所以 $M_t=N_t-\lambda t$ 是鞅，且 $\langle M\rangle_t=\lambda t$。取 $\lambda t=6$，Poisson 补偿鞅的可预测二次变差为 $6.000000$。
 
 可选停止定理不是“任何下注策略都保期望”。有界停止时刻足够；其他版本需要一致可积、受控增量或可积停止时间等条件。加倍下注在首次胜利时赚 1，但若截断于 $m$ 轮，未胜路径损失 $2^m-1$，概率 $2^{-m}$，于是
 \[
@@ -79,7 +79,7 @@ m_i=1+\tfrac12m_{i-1}+\tfrac12m_{i+1},\quad m_0=m_N=0.
 \[
 W_t-W_s\sim\mathcal N(0,t-s),\qquad \operatorname{Cov}(W_s,W_t)=\min(s,t).
 \]
-它具有缩放性 $(W_{ct})_{t\ge0}\overset d=(\sqrt c\,W_t)_{t\ge0}$，是连续时间随机游走极限（Donsker 原理）的基准，而不是对每个有限样本的精确描述。在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。
+它具有缩放性 $(W_{ct})_{t\ge0}\overset d=(\sqrt c\,W_t)_{t\ge0}$；取 $c=4,t=1/4$，两边方差都为 1。Donsker 不变性原理说，独立同分布、零均值、方差 1 的增量所构成的线性插值过程 $S_{\lfloor nt\rfloor}/\sqrt n$，在函数空间 $D[0,1]$ 的弱收敛意义下趋于 Brownian。它不是有限 $n$ 的逐路径相等，也不覆盖无限方差或强依赖增量。对 $n=100$ 的对称增量，归一化终值方差为 1，Donsker 四阶矩基线为 $2.980000$。在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。
 
 反射原理给出（$a>0$）
 \[

@@ -17,6 +17,9 @@
   "expected_periodic_odd_distribution": [0.0, 1.0],
   "expected_reducible_absorption_probability": 1.0,
   "expected_reducible_absorption_time": 2.0,
+  "expected_communicating_classes": [[0], [1]],
+  "expected_recurrence_labels": ["recurrent", "transient"],
+  "expected_detailed_balance_flow": 0.12,
   "doubling_horizons": [4, 8, 16],
   "expected_doubling_wealth": [0.0, 0.0, 0.0],
   "expected_doubling_loss_tail": [0.9375, 0.99609375, 0.9999847412109375],
@@ -36,6 +39,9 @@
   "expected_rejected_rate": 3.5,
   "nonhomogeneous_interval_end": 3.0,
   "expected_integrated_intensity": 10.5,
+  "expected_compensated_poisson_mean": 0.0,
+  "expected_poisson_predictable_qv": 6.0,
+  "expected_random_walk_predictable_qv": 2.0,
   "expected_poisson_mean": 5.980833333333333,
   "expected_poisson_variance": 5.988465587741813,
   "brownian_times": [0.25, 0.5, 1.0],
@@ -45,6 +51,12 @@
   "expected_reflection_hitting_probability": 0.31731050786291415,
   "variation_partitions": [16, 256],
   "expected_brownian_total_variation": [3.1915382432114616, 12.766152972845846],
+  "brownian_scaling_factor": 4.0,
+  "brownian_scaling_time": 0.25,
+  "expected_brownian_scaling_variance": 1.0,
+  "donsker_steps": 100,
+  "expected_donsker_variance": 1.0,
+  "expected_donsker_fourth_moment": 2.98,
   "quadratic_variation_paths": 10000,
   "quadratic_variation_partitions": 256,
   "expected_quadratic_variation_mean": 1.0007306005988938,
@@ -68,6 +80,9 @@
     "条件概率分别为 $0.5$ 与 $1$",
     "赌徒破产命中概率与期望时长为 $0.500000$ 与 $4.000000$",
     "反射原理给出命中概率 $0.317311$",
-    "总变差基线从 $3.191538$ 增至 $12.766153$"
+    "总变差基线从 $3.191538$ 增至 $12.766153$",
+    "详细平衡流量为 $0.120000$",
+    "Poisson 补偿鞅的可预测二次变差为 $6.000000$",
+    "Donsker 四阶矩基线为 $2.980000$"
   ]
 }
