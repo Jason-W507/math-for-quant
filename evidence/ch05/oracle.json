@@ -8,15 +8,24 @@
   "expected_symmetric_hessian": [[4.0, 1.0], [1.0, 3.0]],
   "expected_chain_gradient": [4.0, -6.5],
   "finite_difference_step": 0.00001,
+  "finite_difference_scan_steps": [0.01, 0.00001, 0.00000001, 0.000000000001],
+  "tiny_step_error_floor": 0.000001,
   "maximum_gradient_error": 0.000000001,
   "expected_abs_left_slope": -1.0,
   "expected_abs_right_slope": 1.0,
+  "portfolio_covariance": [[2.0, 0.5], [0.5, 1.0]],
+  "portfolio_expected_returns": [0.08, 0.04],
+  "portfolio_risk_tradeoff": 5.0,
+  "expected_portfolio_weights": [0.17142857142857143, 0.1142857142857143],
+  "expected_portfolio_objective": -0.045714285714285714,
   "published_markers": [
     "梯度为 $(0,-0.5)^T$",
     "链式梯度为 $(4,-6.5)^T$",
     "最大差异小于 $10^{-9}$",
     "左差商为 $-1$",
-    "右差商为 $1$"
+    "右差商为 $1$",
+    "最优权重为 $(0.171429,0.114286)^T$",
+    "$h=10^{-12}$ 时误差超过 $10^{-6}$"
   ],
   "expected": -1.0,
   "absolute_tolerance": 1e-12

@@ -20,14 +20,14 @@
    d(x^TAx)=dx^TAx+x^TAdx=x^T(A^T+A)dx.
   \]
   因此 $\nabla f=((A+A^T)/2)x+b$，$H_f=(A+A^T)/2$。二阶 Taylor 主项为 $\tfrac12h^TH_fh$；反对称部分在该二次型中消失。
-  \item 令 $r=X\beta-y$，则 $dr=X,d\beta$，故 $d\ell=r^TX,d\beta=[X^Tr]^Td\beta$，梯度为 $X^T(X\beta-y)$。由 $X^{-1}X=I$ 微分，$(dX^{-1})X+X^{-1}dX=0$，左右整理得 $dX^{-1}=-X^{-1}(dX)X^{-1}$。Jacobi 公式给 $d\log\det X=\operatorname{tr}(X^{-1}dX)$，与矩阵梯度定义比较得 $\nabla_X\log\det X=X^{-T}$。
+  \item 令 $r=X\beta-y$，则 $dr=X\,d\beta$，故 $d\ell=r^TX\,d\beta=[X^Tr]^Td\beta$，梯度为 $X^T(X\beta-y)$。由 $X^{-1}X=I$ 微分，$(dX^{-1})X+X^{-1}dX=0$，左右整理得 $dX^{-1}=-X^{-1}(dX)X^{-1}$。Jacobi 公式给 $d\log\det X=\operatorname{tr}(X^{-1}dX)$，与矩阵梯度定义比较得 $\nabla_X\log\det X=X^{-T}$。
 \end{enumerate}
 
 \section*{数值编程}
 \begin{enumerate}[leftmargin=*]
-  \item 手算二次型值为 $-1$，梯度为 $(0,-0.5)^T$；链式梯度为 $(4,-6.5)^T$。固定 $h=10^{-5}$ 时最大差异为 $2.62\times10^{-11}$，最大差异小于 $10^{-9}$。对 $|t|$，左差商为 $-1$、右差商为 $1$，因此零点不可微。继续扫描 $10^{-2}$ 至 $10^{-8}$：较大 $h$ 由截断误差主导，极小 $h$ 由消去误差主导；报告机器与数据类型，因为最低点并非普适常数。
+  \item 手算二次型值为 $-1$，梯度为 $(0,-0.5)^T$；链式梯度为 $(4,-6.5)^T$。固定 $h=10^{-5}$ 时最大差异为 $2.62\times10^{-11}$，最大差异小于 $10^{-9}$。对 $|t|$，左差商为 $-1$、右差商为 $1$，因此零点不可微。固定扫描中，$h=10^{-12}$ 时误差超过 $10^{-6}$，明确展示消去误差回升；最低点仍依赖机器和数据类型。
   \item `NaN` 触发稳定 numeric gate；错误点触发 analytic-ledger 诊断；错误步长触发 fixed-step 诊断；长度错配触发 fixed-dimensions；放宽容差触发 numeric-tolerances；错误发布标签触发 expected=-1。恢复时只还原临时 JSON，不得用 observed 改写 expected。
-  \item 取非对称 $A$，正确梯度为 $((A+A^T)/2)w-\lambda\mu$，错误实现为 $Aw-\lambda\mu$。在正文固定 $A$ 与 $w=(0.5,-1)^T$ 上，两者不同；中心差分匹配正确的对称化公式。若只用对称矩阵，错误实现会被测试掩盖，因此测试数据必须激活被检查的分支。
+  \item 具体组合账本中 $\det\Sigma=1.75$，$\lambda\mu=(0.4,0.2)^T$，故最优权重为 $(0.171429,0.114286)^T$，目标值为 $-0.0457142857\ldots$，且驻点梯度为零。另取非对称 $A$，正确梯度为 $((A+A^T)/2)w-\lambda\mu$，错误实现为 $Aw-\lambda\mu$；中心差分只匹配正确的对称化公式。若只用对称矩阵，错误实现会被测试掩盖。
 \end{enumerate}
 
 \section*{研究判断}

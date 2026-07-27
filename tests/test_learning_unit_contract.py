@@ -1175,7 +1175,9 @@ class LearningUnitContractTests(unittest.TestCase):
             "roundtrip=passed cells=2\n"
             "execution=passed oracle=passed value=-1.000000 "
             "gradient=(0.000000,-0.500000) chain=(4.000000,-6.500000) "
-            "max_error=2.620e-11 left=-1.0 right=1.0\n",
+            "max_error=2.620e-11 left=-1.0 right=1.0 "
+            "portfolio=(0.171429,0.114286) objective=-0.045714 "
+            "tiny_step_failure=passed\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -1268,6 +1270,50 @@ class LearningUnitContractTests(unittest.TestCase):
             "ledger gate failed: published expected must equal -1\n",
         )
 
+    def test_chapter_five_rejects_a_nonsequence_input_shape(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-null-point.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"point": None}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: derivative inputs must be 2D\n",
+        )
+
+    def test_chapter_five_rejects_a_malformed_matrix_row(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-scalar-matrix-row.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update({"matrix": [4.0, [0.0, 3.0]]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: derivative inputs must be 2D\n",
+        )
+
+    def test_chapter_five_rejects_noncanonical_step_scan(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch05-noncanonical-step-scan.json",
+            "evidence/ch05/oracle.json",
+            "notebooks/upper/ch05_matrix_calculus.py",
+            lambda oracle: oracle.update(
+                {"finite_difference_scan_steps": [1e-2, 1e-5, 1e-8]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: step scan must match fixed ledger\n",
+        )
+
     def test_accepts_chapter_five_with_derivative_cross_checks(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch05" / "oracle.json").read_text(
@@ -1282,6 +1328,8 @@ class LearningUnitContractTests(unittest.TestCase):
                 "最大差异小于 $10^{-9}$",
                 "左差商为 $-1$",
                 "右差商为 $1$",
+                "最优权重为 $(0.171429,0.114286)^T$",
+                "$h=10^{-12}$ 时误差超过 $10^{-6}$",
             ],
         )
         result = self.run_contract(
@@ -1297,7 +1345,8 @@ class LearningUnitContractTests(unittest.TestCase):
             "evidence=7/7\n"
             "oracle=passed value=-1.000000 gradient=(0.000000,-0.500000) "
             "chain=(4.000000,-6.500000) max_error=2.620e-11 "
-            "left=-1.0 right=1.0\n"
+            "left=-1.0 right=1.0 portfolio=(0.171429,0.114286) "
+            "objective=-0.045714 tiny_step_failure=passed\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
