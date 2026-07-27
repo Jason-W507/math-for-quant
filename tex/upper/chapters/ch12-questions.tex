@@ -1,9 +1,27 @@
-\section{四级问题与即时练习}
+\section{笔面试与研究训练}
 \begingroup\small
+\subsection*{口述概念（3 题）}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}区分弱平稳、白噪声、创新、随机游走与状态空间中的隐状态。
-  \item \textbf{笔试推导：}推导平稳 AR(1) 的方差、滞后协方差和 $h$ 步预测误差方差，并完成三次标量 Kalman 更新。
-  \item \textbf{数值编程：}独立复现 AR(1) 矩、Kalman 手算值、随机游走水平/差分回归和结构变化切分误差。
-  \item \textbf{研究判断：}一个随机切分表现优异的收益预测器上线后失效，应如何区分泄漏、结构变化与纯噪声？
+\item 区分严格平稳、弱平稳、遍历、白噪声、IID 与创新。
+\item 解释 ARMA 的因果性、可逆性、AR/MA 根、ACF/PACF 及其有限样本边界。
+\item 区分滤波、预测、平滑与创新似然；哪些量可用于实时交易？
+\end{enumerate}
+\subsection*{笔试推导（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=4]
+\item 推导 AR(1) 的平稳表示、Yule--Walker 协方差和 $h$ 步预测误差方差。
+\item 推导 ARMA$(1,1)$ 的方差与一阶自相关，并检查因果/可逆根。
+\item 推导 GARCH 无条件方差、协整误差修正系数和标量 Kalman 创新似然。
+\end{enumerate}
+\subsection*{数值编程（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=7]
+\item 独立复现 AR(1)/ARMA 解析矩，并用固定种子模拟只做容差交叉验证。
+\item 对随机游走、差分与协整价差报告方差增长、平稳价差和滚动稳定性。
+\item 实现滤波与 RTS 平滑，逐步打印创新、创新方差、增益、似然和信息边界。
+\end{enumerate}
+\subsection*{研究判断（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=10]
+\item 随机切分优于时间切分时，如何区分泄漏、结构变化与纯噪声？
+\item AIC 选出高阶 ARMA 且 Ljung--Box 不拒绝，为什么仍不能直接上线？
+\item 股票配对看似协整、波动又呈 GARCH 聚集时，如何设计样本外与成本审计？
 \end{enumerate}
 \endgroup

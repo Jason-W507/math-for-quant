@@ -2632,9 +2632,113 @@ class LearningUnitContractTests(unittest.TestCase):
             "forecast=(0.512000,2.049600) "
             "kalman=(0.555556,0.084615,0.152494,0.410431) "
             "spurious=(0.344011,0.000216) "
-            "split_mse=(1.436939,2.226153)\n",
+            "split_mse=(1.436939,2.226153) "
+            "arma=(1.666667,3.333333,2.265625,0.732414) "
+            "unitroot=(1.0,10.0,100.0) cointegration=(0.428571,-0.600000) "
+            "garch=(0.900000,1.000000,6.578813) kalman_ll=-4.260729 "
+            "smooth=(0.260771,0.128118,0.152494)\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_twelve_rejects_a_false_arma_variance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch12-false-arma-variance.json",
+            "evidence/ch12/oracle.json",
+            "notebooks/upper/ch12_time_series.py",
+            lambda oracle: oracle.update({"expected_arma_variance": 2.0}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("ARMA root and moment", result.stderr)
+
+    def test_chapter_twelve_rejects_a_false_ecm_adjustment(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch12-false-ecm-adjustment.json",
+            "evidence/ch12/oracle.json",
+            "notebooks/upper/ch12_time_series.py",
+            lambda oracle: oracle.update({"expected_ecm_adjustment": -0.4}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unit-root and cointegration", result.stderr)
+
+    def test_chapter_twelve_rejects_a_false_garch_variance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch12-false-garch-variance.json",
+            "evidence/ch12/oracle.json",
+            "notebooks/upper/ch12_time_series.py",
+            lambda oracle: oracle.update(
+                {"expected_garch_unconditional_variance": 2.0}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("GARCH persistence", result.stderr)
+
+    def test_chapter_twelve_rejects_a_false_kalman_likelihood(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch12-false-kalman-likelihood.json",
+            "evidence/ch12/oracle.json",
+            "notebooks/upper/ch12_time_series.py",
+            lambda oracle: oracle.update(
+                {"expected_kalman_log_likelihood": -4.0}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Kalman innovation and smoothing", result.stderr)
+
+    def test_chapter_twelve_rejects_malformed_or_widened_oracles(self) -> None:
+        cases = (
+            (
+                "ch12-missing-field.json",
+                lambda oracle: oracle.pop("expected_kalman_log_likelihood"),
+                "missing required fields",
+            ),
+            (
+                "ch12-missing-expected-field.json",
+                lambda oracle: oracle["expected"].pop("kalman_final_gain"),
+                "expected ledger missing fields",
+            ),
+            (
+                "ch12-nonfinite.json",
+                lambda oracle: oracle.update({"ar1_phi": float("nan")}),
+                "must be finite",
+            ),
+            (
+                "ch12-fractional-integer.json",
+                lambda oracle: oracle.update({"forecast_horizon": 3.5}),
+                "must be an integer",
+            ),
+            (
+                "ch12-widened-tolerance.json",
+                lambda oracle: oracle.update({"absolute_tolerance": 0.1}),
+                "tolerances must match",
+            ),
+            (
+                "ch12-synchronized-forgery.json",
+                lambda oracle: oracle.update(
+                    {
+                        "garch_omega": 0.2,
+                        "expected_garch_unconditional_variance": 2.0,
+                    }
+                ),
+                "canonical scalar design",
+            ),
+            (
+                "ch12-boolean-array.json",
+                lambda oracle: oracle.update(
+                    {"kalman_observations": [True, -0.5, 0.25]}
+                ),
+                "must not contain booleans",
+            ),
+        )
+        for fixture, mutate, diagnostic in cases:
+            with self.subTest(fixture=fixture):
+                result = self.run_oracle_fixture(
+                    fixture,
+                    "evidence/ch12/oracle.json",
+                    "notebooks/upper/ch12_time_series.py",
+                    mutate,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
 
     def test_accepts_chapter_twelve_with_time_series_oracles(self) -> None:
         result = self.run_contract(
@@ -2651,7 +2755,11 @@ class LearningUnitContractTests(unittest.TestCase):
             "forecast=(0.512000,2.049600) "
             "kalman=(0.555556,0.084615,0.152494,0.410431) "
             "spurious=(0.344011,0.000216) "
-            "split_mse=(1.436939,2.226153)\n"
+            "split_mse=(1.436939,2.226153) "
+            "arma=(1.666667,3.333333,2.265625,0.732414) "
+            "unitroot=(1.0,10.0,100.0) cointegration=(0.428571,-0.600000) "
+            "garch=(0.900000,1.000000,6.578813) kalman_ll=-4.260729 "
+            "smooth=(0.260771,0.128118,0.152494)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

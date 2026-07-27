@@ -295,8 +295,8 @@
       "published": true,
       "prerequisites": ["upper.ch10", "upper.ch11"],
       "evidence": {
-        "notation_symbols": ["\\gamma(h)", "\\varepsilon_t", "x_{t\\mid t}", "K_t"],
-        "glossary_terms": ["弱平稳", "白噪声", "创新", "状态空间模型", "Kalman 滤波", "伪回归", "结构变化"],
+        "notation_symbols": ["\\gamma(h)", "\\rho(h)", "\\varepsilon_t", "\\sigma_t^2", "x_{t\\mid t}", "K_t", "\\nu_t", "S_t"],
+        "glossary_terms": ["严格平稳", "弱平稳", "遍历性", "白噪声", "创新", "因果性", "可逆性", "单位根", "协整", "GARCH", "状态空间模型", "Kalman 滤波", "平滑", "伪回归", "结构变化"],
         "notation_and_assumptions": "tex/upper/chapters/ch12.tex",
         "core_derivation": "tex/upper/chapters/ch12.tex",
         "independent_oracle": {"source": "notebooks/upper/ch12_time_series.py", "oracle": "evidence/ch12/oracle.json", "command": ["{python}", "notebooks/upper/ch12_time_series.py"]},
