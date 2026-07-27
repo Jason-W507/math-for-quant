@@ -31,6 +31,26 @@ def column_sum(column: int) -> int:
 
 def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+    required_fields = {
+        "p_values",
+        "expected_lp_norms",
+        "midpoint_bins",
+        "expected_midpoint_integral",
+        "expected_midpoint_error",
+        "expected_midpoint_bound",
+        "section_sizes",
+        "expected_row_first",
+        "expected_column_first",
+        "expected_square_sums",
+        "expected_rectangular_sums",
+        "expected_absolute_square_sums",
+        "expected",
+        "absolute_tolerance",
+    }
+    if not required_fields.issubset(oracle):
+        raise SystemExit(
+            "numeric gate failed: oracle scalars must be finite numbers"
+        )
     if oracle["p_values"] != [1, 2, 4]:
         raise SystemExit("ledger gate failed: p values must equal [1, 2, 4]")
     if oracle["midpoint_bins"] != 64:
@@ -66,7 +86,7 @@ def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
     ]
     try:
         parsed_scalars = [float(value) for value in numeric_scalars]
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, OverflowError):
         raise SystemExit(
             "numeric gate failed: oracle scalars must be finite numbers"
         ) from None

@@ -1085,6 +1085,36 @@ class LearningUnitContractTests(unittest.TestCase):
             "numeric gate failed: oracle scalars must be finite numbers\n",
         )
 
+    def test_chapter_four_rejects_a_missing_numeric_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-missing-midpoint.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.pop("expected_midpoint_integral"),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite numbers\n",
+        )
+
+    def test_chapter_four_rejects_an_overflowing_numeric_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-overflowing-midpoint.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update(
+                {"expected_midpoint_integral": 10**400}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite numbers\n",
+        )
+
     def test_accepts_chapter_four_with_lp_and_fubini_oracles(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch04" / "oracle.json").read_text(

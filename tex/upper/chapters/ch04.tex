@@ -108,6 +108,16 @@ $p=1$ 来自逐点三角不等式，$p=\infty$ 来自 a.e. 上界。Hölder 控�
 \]
 概率空间中 $\mu(\Omega)=1$，于是高阶矩控制低阶矩。
 
+$q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e. 直接得到
+\[
+ \lVert f\rVert_p^p\leq
+ \lVert f\rVert_\infty^p\mu(\Omega),
+ \qquad
+ \lVert f\rVert_p\leq
+ \mu(\Omega)^{1/p}\lVert f\rVert_\infty.
+\]
+因此有限测度空间上对所有 $1\leq p<q\leq\infty$ 都有 $L^q\subseteq L^p$。
+
 无限测度空间不能照搬该包含关系。在 $\mathbb R$ 上，
 \[
  f(x)=x^{-3/4}\mathbf1_{[1,\infty)}(x)

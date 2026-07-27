@@ -23,11 +23,11 @@
         \lVert f+g\rVert_p^{p-1}.
   \]
   非零时约去公共因子即为 Minkowski；零范数情形直接成立。
-  \item 对 $|f|^p\cdot1$ 使用指数 $q/p$ 与 $q/(q-p)$ 的 Hölder：
+  \item 当 $q<\infty$ 时，对 $|f|^p\cdot1$ 使用指数 $q/p$ 与 $q/(q-p)$ 的 Hölder：
   \[
    \int|f|^p\leq(\int|f|^q)^{p/q}\mu(\Omega)^{1-p/q}.
   \]
-  开 $p$ 次方即得结论。在 $\mathbb R$ 上，$x^{-3/4}\mathbf1_{[1,\infty)}\in L^2\setminus L^1$；而 $x^{-1/2}\mathbf1_{(0,1)}\in L^1\setminus L^2$。因此无限总测度时两种包含都不能无条件宣称。
+  开 $p$ 次方即得结论。当 $q=\infty$ 时，由 $|f|^p\leq\lVert f\rVert_\infty^p$ a.e. 积分可得 $\lVert f\rVert_p\leq\mu(\Omega)^{1/p}\lVert f\rVert_\infty$，正是约定 $1/\infty=0$ 后的同一公式。在 $\mathbb R$ 上，$x^{-3/4}\mathbf1_{[1,\infty)}\in L^2\setminus L^1$；而 $x^{-1/2}\mathbf1_{(0,1)}\in L^1\setminus L^2$。因此无限总测度时两种包含都不能无条件宣称。
   \item 每一行只有可能在 $n=m$ 与 $n=m-1$ 非零：第 1 行和为 1，其余行为 0，所以先逐行求和得到 1。每列在 $m=n,n+1$ 上为 $1,-1$，所以先逐列求和得到 0。$N\times N$ 中有 $N$ 个正项和 $N-1$ 个负项，有符号和 1、绝对和 $2N-1$；$(N+1)\times N$ 多包含最后一个负项，有符号和 0。绝对和发散正是 Fubini 门禁失败。
 \end{enumerate}
 
