@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}解释 $\sigma$ 代数、测度、可测函数、简单函数和 Lebesgue 积分的依赖顺序。
-  \item \textbf{笔试推导：}推导 $\phi_m$ 的积分，并用单调收敛说明其极限为 $\int_0^1x\,dx$。
-  \item \textbf{数值编程：}复现 $m=2,4,8$ 的三个积分；验证尖峰在 $n=10,100$ 时积分为 1，而 $x=0.2$ 处函数值为零。
-  \item \textbf{研究判断：}研究员观察到 $f_n(x)\to f(x)$，便把极限移入期望。指出还需选择哪条定理，并列出相应假设。
+  \item 解释 $\sigma$ 代数、测度、可测函数、简单函数与 Lebesgue 积分的依赖顺序；为什么定义可测函数时使用逆像？
+  \item 区分 Borel 可测集、Lebesgue 可测集、零测集与“几乎处处”。为什么 a.e. 结论不等于样本中永不失败？
+  \item 比较 Fatou 引理、单调收敛定理和支配收敛定理的假设与结论，并解释共同支配函数为什么必须可积。
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 从可数可加性证明测度的单调性、从下连续性；再证明从上连续性并指出 $\mu(A_1)<\infty$ 不能删除。
+  \item 推导固定简单函数 $\phi_m$ 的积分公式 $1/2-2^{-(m+1)}$，并用单调收敛定理得到 $\int_0^1x\,dx=1/2$。
+  \item 用 Fatou 引理分别作用于 $g+f_n$ 与 $g-f_n$，完成支配收敛定理的积分夹逼证明。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 复现 $m=2,4,8$ 的有限和以及 $n=10,100$ 的尖峰面积、固定点值与交换差额，并逐项对照手算而非由同一循环生成 expected。
+  \item 修改临时 oracle，分别注入 `NaN`、删去一个期望值、改变简单函数层级、尖峰下标和固定点；记录五类稳定诊断并解释它们保护的证据含义。
+  \item 实现一个固定均匀网格积分器研究尖峰列；改变 $n$ 与网格规模，报告何时漏采质量，并与解析面积 $1$ 比较。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 研究员看到损失 $L_n(\omega)\to L(\omega)$ a.e.，便宣布期望收敛。列出可以补足结论的两条不同路线及各自证据。
+  \item 一组收益数据只有有限个缺失值。能否直接把缺失集合称为零测集并忽略？分别从经验数据与概率模型层评价。
+  \item 模拟程序在越来越密的网格上给出稳定积分。设计一份比“再加网格”更强的可积性与极限交换审计。
 \end{enumerate}
 \endgroup

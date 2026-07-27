@@ -2,19 +2,53 @@
 \label{app:ch03-solutions}
 
 \section*{口述概念}
-$\sigma$ 代数给出合法事件，测度在其上赋予可数可加的大小。可测函数要求阈值逆像仍是事件；简单函数由有限个可测示性函数组成。Lebesgue 积分先定义为简单函数的加权测度和，再对非负可测函数取从下逼近的上确界，最后用正负部扩展。
+
+\begin{enumerate}[leftmargin=*]
+  \item $\sigma$ 代数先指定合法事件；测度只在这些事件上赋可数可加的大小。可测函数要求目标集合的逆像仍是合法事件，因为概率和测度都定义在原空间。简单函数由有限个可测层组成，积分先定义为高度乘测度的有限和；非负 Lebesgue 积分再取所有下方简单函数积分的上确界，最后由正负部扩展到有符号函数。
+  \item Borel 集由开集生成；Lebesgue 可测集是在 Lebesgue 测度下把所有零测集子集补入后的完备结构。零测集属于给定测度空间；“性质 a.e. 成立”只说失败集测度为零。有限样本仍可能观测异常，而且数据缺失集合是否对应概率零测事件需要模型证明。
+  \item Fatou 只要求非负并给 $\int\liminf f_n\leq\liminf\int f_n$；MCT 要求非负单调递增并给积分等式；DCT 要求 a.e. 收敛以及一个对全部 $n$ 共用的 $g\in L^1$。若 $g$ 不可积，它不能给尾部质量一个有限统一上界，尖峰反例正会穿过该漏洞。
+\end{enumerate}
 
 \section*{笔试推导}
-对 $2^m$ 个等宽区间，
-\[
-\int_0^1\phi_m\,dx
-=\frac1{2^{2m}}\sum_{k=0}^{2^m-1}k
-=\frac12-\frac1{2^{m+1}}.
-\]
-故 $\phi_m\uparrow x$，由单调收敛定理可交换极限与积分，得到 $\int_0^1x\,dx=1/2$。
+
+\begin{enumerate}[leftmargin=*]
+  \item 若 $A\subseteq B$，则 $B=A\dot\cup(B\setminus A)$，故 $\mu(B)=\mu(A)+\mu(B\setminus A)\geq\mu(A)$。对 $A_n\uparrow A$，取 $B_1=A_1$、$B_n=A_n\setminus A_{n-1}$，可数可加性把 $\mu(A_N)$ 写成部分和，极限就是 $\mu(A)$。若 $A_n\downarrow A$ 且 $\mu(A_1)<\infty$，对 $A_1\setminus A_n\uparrow A_1\setminus A$ 使用上一结论并从有限的 $\mu(A_1)$ 中相减。计数测度下 $A_n=\{n,n+1,\ldots\}\downarrow\varnothing$ 而 $\mu(A_n)=\infty$，证明有限性不可删。
+  \item $2^m$ 个区间均宽 $2^{-m}$，高度为 $k2^{-m}$，所以
+  \[
+   \int_0^1\phi_m\,dx
+   =2^{-2m}\sum_{k=0}^{2^m-1}k
+   =2^{-2m}\frac{(2^m-1)2^m}{2}
+   =\frac12-\frac1{2^{m+1}}.
+  \]
+  又有 $0\leq\phi_m\uparrow x$，由 MCT 得积分上升到 $\int_0^1x\,dx=1/2$。
+  \item $|f_n|\leq g$ 且 $f_n\to f$ a.e. 推出 $g\pm f_n\geq0$、$|f|\leq g$。Fatou 给
+  \[
+   \int(g+f)\leq\liminf_n\int(g+f_n),
+  \]
+  消去有限的 $\int g$ 得 $\int f\leq\liminf_n\int f_n$。对 $g-f_n$ 同理得到 $-\int f\leq-\limsup_n\int f_n$，即 $\limsup_n\int f_n\leq\int f$。上下极限相同，故积分收敛。
+\end{enumerate}
 
 \section*{数值编程}
-手算给出 $m=2,4,8$ 时 $0.375$、$0.46875$、$0.498046875$。尖峰的解析面积始终是 $n(1/n)=1$；对 $x=0.2$，当 $n=10,100$ 时均不在 $(0,1/n]$ 内，所以点值为零。积分极限仍为 1，而极限函数的积分为 0，故极限交换差额为 1。程序只复现这些独立结果，不能用漏采尖峰的网格替代积分。
+
+\begin{enumerate}[leftmargin=*]
+  \item 手算得到 $m=2,4,8$ 时 $0.375$、$0.46875$、$0.498046875$。尖峰面积恒为 $n(1/n)=1$；$x=0.2$ 对 $n=10,100$ 都在 $(0,1/n]$ 外，点值为零，因此极限交换差额为 1。运行本章契约后，stdout 必须逐项复现这些独立常数。
+  \item `NaN` 应触发 `numeric gate failed`；期望数量错位触发 `expected counts must match input counts`；层级、尖峰下标和固定点的改写分别触发固定账本诊断。恢复时只还原临时 JSON；不能删测试、放宽 tolerance 或用被测结果重写 expected。
+  \item 设网格点为 $j/M$。若最小正网格点 $1/M>1/n$，且未特别采样零点右侧，则所有采样值都可能为零，数值面积误报为零。即使 $M\geq n$，矩形规则的端点约定也会影响结果。报告 $M,n$、采样位置与误差，并把解析面积 $1$ 作为独立 oracle。
+\end{enumerate}
 
 \section*{研究判断}
-逐点或几乎处处收敛本身不允许交换。若 $0\le f_n\uparrow f$，使用单调收敛；若存在可积 $g$ 且 $|f_n|\le g$，使用支配收敛；只有非负性而无单调或支配时，Fatou 引理通常只给不等式。还应明确测度空间、例外集合及可积性。
+
+\begin{enumerate}[leftmargin=*]
+  \item 路线一是证明 $0\leq L_n\uparrow L$ 并用 MCT；路线二是找到共同的可积 $G$，证明 $|L_n|\leq G$ 且 a.e. 收敛，再用 DCT。只有非负性时，Fatou 通常只能给单侧不等式。还要声明可测性和期望是否允许为无穷。
+  \item 在有限数据表中，几个缺失行的经验频率可能很小，却不是连续概率模型中的零测证明；它们甚至可能由系统性停牌或接口故障产生。在一个已声明的概率空间中，只有证明对应事件可测且概率为零，才能在积分等式中按 a.e. 忽略。实务上仍要报告缺失机制和处理规则。
+  \item 审计应包含：明确测度空间和可测性；证明绝对可积或给出尾部界；列出 MCT/DCT 的逐条假设；构造共同支配函数并验证其积分；保留解析或手算 oracle；使用自适应网格或区间界检查移动峰值；对截断域给出尾部误差；最后报告有限离散证据不能覆盖的一般性限制。
+\end{enumerate}
+
+\section*{恢复路径}
+
+先运行
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch03
+\end{lstlisting}
+再复制 `evidence/ch03/oracle.json` 到临时路径逐项注入坏输入。每次只改变一个门禁，记录退出码与完整 stderr，恢复后要求原始固定账本重新通过。若数值网格与解析面积冲突，先审查采样位置、区间宽度和尾部质量，不要修改独立 expected 迁就程序。

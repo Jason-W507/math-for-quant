@@ -797,6 +797,76 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_chapter_three_rejects_a_nonfinite_oracle_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch03-nonfinite-fixed-point.json",
+            "evidence/ch03/oracle.json",
+            "notebooks/upper/ch03_measure_integration.py",
+            lambda oracle: oracle.update({"fixed_point": float("nan")}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite\n",
+        )
+
+    def test_chapter_three_rejects_mismatched_oracle_counts(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch03-mismatched-simple-count.json",
+            "evidence/ch03/oracle.json",
+            "notebooks/upper/ch03_measure_integration.py",
+            lambda oracle: oracle.update({"expected_simple_integrals": [0.375]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: expected counts must match input counts\n",
+        )
+
+    def test_chapter_three_rejects_noncanonical_simple_levels(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch03-noncanonical-simple-levels.json",
+            "evidence/ch03/oracle.json",
+            "notebooks/upper/ch03_measure_integration.py",
+            lambda oracle: oracle.update({"simple_levels": [1, 2, 3]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: simple levels must equal [2, 4, 8]\n",
+        )
+
+    def test_chapter_three_rejects_noncanonical_spike_indices(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch03-noncanonical-spike-indices.json",
+            "evidence/ch03/oracle.json",
+            "notebooks/upper/ch03_measure_integration.py",
+            lambda oracle: oracle.update({"spike_indices": [20, 30]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: spike indices must equal [10, 100]\n",
+        )
+
+    def test_chapter_three_rejects_a_noncanonical_fixed_point(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch03-noncanonical-fixed-point.json",
+            "evidence/ch03/oracle.json",
+            "notebooks/upper/ch03_measure_integration.py",
+            lambda oracle: oracle.update({"fixed_point": 0.05}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: fixed point must equal 0.2\n",
+        )
+
     def test_accepts_chapter_three_with_simple_and_spike_oracles(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch03" / "oracle.json").read_text(
