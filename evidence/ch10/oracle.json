@@ -32,11 +32,18 @@
   "cluster_size": 5,
   "cluster_correlation": 0.4,
   "expected_cluster_mean_variance": 0.026,
+  "dependent_score_fixture": [1.0, 1.0, -1.0, -1.0],
+  "hac_bandwidth": 1,
+  "cluster_labels": [0, 0, 1, 1],
+  "expected_hac_standard_error": 0.5590169943749475,
+  "expected_cluster_standard_error": 0.7071067811865476,
   "ordered_p_values": [0.001, 0.009, 0.021, 0.04, 0.2],
   "expected_bonferroni_rejections": 2,
   "expected_holm_rejections": 2,
   "expected_bh_rejections": 4,
   "expected_optional_stopping_false_positive": 0.4012630607616213,
+  "selection_candidate_count": 2,
+  "expected_selected_null_effect": 0.5641895835477563,
   "delta_method_probability": 0.4,
   "delta_method_sample_size": 250,
   "expected_plugin_bias": 0.00096,
@@ -82,9 +89,11 @@
     "异方差下朴素区间覆盖率为 $0.868900$",
     "稳健区间覆盖率为 $0.938900$",
     "AR(1) 相关系数 $0.6$",
+    "HAC 与簇稳健标准误分别为 $0.559017$ 与 $0.707107$",
     "遗漏后的斜率是 $2$，偏差是 $1$",
     "Bonferroni、Holm、BH 分别拒绝 $(2,2,4)$ 项",
     "未经校正的 FWER 为 $0.639975$",
-    "Bonferroni 后为 $0.047400$"
+    "Bonferroni 后为 $0.047400$",
+    "两个独立零效应正态估计中选择较大者，其期望为 $1/\\sqrt\\pi=0.564190$"
   ]
 }

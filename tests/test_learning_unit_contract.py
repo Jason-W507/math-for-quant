@@ -2208,8 +2208,9 @@ class LearningUnitContractTests(unittest.TestCase):
             "naive_fwer=0.639975 bonferroni_fwer=0.047400 "
             "mse=(0.250000,0.200000) inconsistent_var=1.000000 "
             "plugin=(0.000960,0.000614) ovb=(2.000000,1.000000) "
-            "dependent=(0.010000,0.039250,0.026000) ordered=(2,2,4) "
-            "optional=0.401263\n",
+            "dependent=(0.010000,0.039250,0.026000) "
+            "robust_se=(0.559017,0.707107) ordered=(2,2,4) "
+            "optional=0.401263 selected=0.564190\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -2314,6 +2315,11 @@ class LearningUnitContractTests(unittest.TestCase):
                 "canonical inference design must not change",
             ),
             (
+                "ch10-altered-expected-mean.json",
+                lambda oracle: oracle.update({"expected_mean": 0.5}),
+                "canonical inference design must not change",
+            ),
+            (
                 "ch10-altered-marker.json",
                 lambda oracle: oracle["published_markers"].__setitem__(
                     0, "forged"
@@ -2331,6 +2337,26 @@ class LearningUnitContractTests(unittest.TestCase):
                 )
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(diagnostic, result.stderr)
+
+    def test_chapter_ten_rejects_a_false_dependent_standard_error(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-hac-standard-error.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update({"expected_hac_standard_error": 0.5}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("HAC standard error", result.stderr)
+
+    def test_chapter_ten_rejects_a_false_post_selection_effect(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch10-false-post-selection.json",
+            "evidence/ch10/oracle.json",
+            "notebooks/upper/ch10_statistical_inference.py",
+            lambda oracle: oracle.update({"expected_selected_null_effect": 0.0}),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("post-selection effect inflation", result.stderr)
 
     def test_accepts_chapter_ten_with_inference_oracles(self) -> None:
         result = self.run_contract(
@@ -2350,8 +2376,9 @@ class LearningUnitContractTests(unittest.TestCase):
             "naive_fwer=0.639975 bonferroni_fwer=0.047400 "
             "mse=(0.250000,0.200000) inconsistent_var=1.000000 "
             "plugin=(0.000960,0.000614) ovb=(2.000000,1.000000) "
-            "dependent=(0.010000,0.039250,0.026000) ordered=(2,2,4) "
-            "optional=0.401263\n"
+            "dependent=(0.010000,0.039250,0.026000) "
+            "robust_se=(0.559017,0.707107) ordered=(2,2,4) "
+            "optional=0.401263 selected=0.564190\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")

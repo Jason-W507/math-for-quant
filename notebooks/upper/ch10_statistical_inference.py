@@ -38,14 +38,17 @@ FIXED_PUBLISHED_MARKERS = [
     "异方差下朴素区间覆盖率为 $0.868900$",
     "稳健区间覆盖率为 $0.938900$",
     "AR(1) 相关系数 $0.6$",
+    "HAC 与簇稳健标准误分别为 $0.559017$ 与 $0.707107$",
     "遗漏后的斜率是 $2$，偏差是 $1$",
     "Bonferroni、Holm、BH 分别拒绝 $(2,2,4)$ 项",
     "未经校正的 FWER 为 $0.639975$",
     "Bonferroni 后为 $0.047400$",
+    "两个独立零效应正态估计中选择较大者，其期望为 $1/\\sqrt\\pi=0.564190$",
 ]
 FIXED_SCALAR_DESIGN = {
     "bernoulli_p": 0.4,
     "expected": 0.4,
+    "expected_mean": 0.4,
     "normal_mean_theta": 1.0,
     "unbiased_estimator_variance": 0.25,
     "shrinkage_factor": 0.8,
@@ -65,16 +68,19 @@ FIXED_SCALAR_DESIGN = {
 REQUIRED_FIELDS = {
     "absolute_tolerance", "ar1_correlation", "bernoulli_p",
     "bonferroni_two_sided_critical", "cluster_correlation", "cluster_size",
-    "coverage_tolerance", "delta_method_probability", "delta_method_sample_size",
+    "cluster_labels", "coverage_tolerance", "delta_method_probability", "delta_method_sample_size",
+    "dependent_score_fixture",
     "dependent_error_sample_size", "estimator_repetitions", "expected",
     "expected_ar1_mean_variance", "expected_bh_rejections",
     "expected_bonferroni_rejections", "expected_clt_coverage",
     "expected_cluster_mean_variance", "expected_delta_variance",
     "expected_empirical_slope_se", "expected_exact_bonferroni_fwer",
     "expected_exact_naive_fwer", "expected_holm_rejections",
+    "expected_cluster_standard_error", "expected_hac_standard_error",
     "expected_iid_mean_variance", "expected_mean", "expected_naive_coverage",
     "expected_omitted_bias", "expected_omitted_slope",
     "expected_optional_stopping_false_positive", "expected_plugin_bias",
+    "expected_selected_null_effect",
     "expected_robust_coverage", "expected_shrinkage_bias",
     "expected_shrinkage_mse", "expected_shrinkage_variance",
     "expected_simulated_bonferroni_fwer", "expected_simulated_mean",
@@ -82,11 +88,12 @@ REQUIRED_FIELDS = {
     "expected_simulated_variance", "expected_true_slope_se",
     "expected_unbiased_inconsistent_bias",
     "expected_unbiased_inconsistent_variance", "expected_variance",
-    "fwer_tolerance", "hypothesis_count", "inference_labels", "mean_tolerance",
+    "fwer_tolerance", "hac_bandwidth", "hypothesis_count", "inference_labels", "mean_tolerance",
     "multiple_testing_repetitions", "nominal_alpha", "normal_mean_theta",
     "normal_two_sided_critical", "numpy_version", "ordered_p_values",
     "ovb_beta_x", "ovb_beta_z", "ovb_cov_xz", "ovb_var_x", "provenance",
     "published_markers", "regression_repetitions", "regression_sample_size",
+    "selection_candidate_count",
     "sample_size", "seed", "shrinkage_factor", "simulation_tolerance",
     "slope_tolerance", "standard_error_tolerance", "true_intercept",
     "true_slope", "unbiased_estimator_variance", "variance_tolerance",
@@ -128,6 +135,8 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
         "ordered_p_values",
         "inference_labels",
         "published_markers",
+        "dependent_score_fixture",
+        "cluster_labels",
     }
     for name in sorted(REQUIRED_FIELDS - non_numeric_fields):
         if isinstance(oracle[name], bool) or not isinstance(
@@ -167,6 +176,10 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
         oracle["dependent_error_sample_size"], "dependent_error_sample_size", 100
     )
     require_integer(oracle["cluster_size"], "cluster_size", 5)
+    require_integer(oracle["hac_bandwidth"], "hac_bandwidth", 1)
+    require_integer(
+        oracle["selection_candidate_count"], "selection_candidate_count", 2
+    )
     require_integer(oracle["delta_method_sample_size"], "delta_method_sample_size", 250)
     require_integer(
         oracle["expected_bonferroni_rejections"],
@@ -177,6 +190,10 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
     require_integer(oracle["expected_bh_rejections"], "expected_bh_rejections", 4)
     if oracle["ordered_p_values"] != FIXED_ORDERED_P_VALUES:
         raise SystemExit("ordered p-values must match the published ledger")
+    if oracle["dependent_score_fixture"] != [1.0, 1.0, -1.0, -1.0]:
+        raise SystemExit("dependent score fixture must match the published ledger")
+    if oracle["cluster_labels"] != [0, 0, 1, 1]:
+        raise SystemExit("cluster labels must match the published ledger")
     if oracle["inference_labels"] != FIXED_INFERENCE_LABELS:
         raise SystemExit("inference labels must match the published chapter")
     if oracle["published_markers"] != FIXED_PUBLISHED_MARKERS:
@@ -275,6 +292,34 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
     ):
         raise SystemExit("dependent-error variance ledger failed")
 
+    scores = np.asarray(oracle["dependent_score_fixture"], dtype=float)
+    score_count = scores.size
+    gamma_zero = float(scores @ scores) / score_count
+    gamma_one = float(scores[1:] @ scores[:-1]) / score_count
+    bartlett_weight = 1.0 - 1.0 / (int(oracle["hac_bandwidth"]) + 1.0)
+    hac_long_run_variance = gamma_zero + 2.0 * bartlett_weight * gamma_one
+    hac_standard_error = math.sqrt(hac_long_run_variance / score_count)
+    cluster_sums = [
+        float(scores[np.asarray(oracle["cluster_labels"]) == label].sum())
+        for label in sorted(set(oracle["cluster_labels"]))
+    ]
+    cluster_standard_error = math.sqrt(
+        sum(value**2 for value in cluster_sums) / score_count**2
+    )
+    if (
+        abs(hac_standard_error - float(oracle["expected_hac_standard_error"]))
+        > absolute_tolerance
+    ):
+        raise SystemExit("HAC standard error ledger failed")
+    if (
+        abs(
+            cluster_standard_error
+            - float(oracle["expected_cluster_standard_error"])
+        )
+        > absolute_tolerance
+    ):
+        raise SystemExit("cluster standard error ledger failed")
+
     ordered_p_values = [float(value) for value in oracle["ordered_p_values"]]
     ordered_alpha = float(oracle["nominal_alpha"])
     ordered_count = len(ordered_p_values)
@@ -296,6 +341,7 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
         default=0,
     )
     optional_stopping_false_positive = 1.0 - (1.0 - ordered_alpha) ** 10
+    selected_null_effect = 1.0 / math.sqrt(math.pi)
     if (
         bonferroni_rejections
         != int(oracle["expected_bonferroni_rejections"])
@@ -308,6 +354,13 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
         > absolute_tolerance
     ):
         raise SystemExit("ordered p-value ledger failed")
+    if (
+        abs(
+            selected_null_effect - float(oracle["expected_selected_null_effect"])
+        )
+        > absolute_tolerance
+    ):
+        raise SystemExit("post-selection effect inflation ledger failed")
 
     p = float(oracle["bernoulli_p"])
     n = sample_size
@@ -440,8 +493,10 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
         f"ovb=({omitted_slope:.6f},{omitted_bias:.6f}) "
         f"dependent=({iid_mean_variance:.6f},{ar1_mean_variance:.6f},"
         f"{cluster_mean_variance:.6f}) "
+        f"robust_se=({hac_standard_error:.6f},{cluster_standard_error:.6f}) "
         f"ordered=({bonferroni_rejections},{holm_rejections},{bh_rejections}) "
-        f"optional={optional_stopping_false_positive:.6f}"
+        f"optional={optional_stopping_false_positive:.6f} "
+        f"selected={selected_null_effect:.6f}"
     )
     return 0
 
