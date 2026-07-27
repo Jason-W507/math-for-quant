@@ -25,7 +25,7 @@ FIXED_ERROR_GATE = 1e-12
 def _finite_array(value: object, name: str, shape: tuple[int, ...]) -> np.ndarray:
     try:
         array = np.asarray(value, dtype=float)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, OverflowError) as exc:
         raise SystemExit(f"oracle {name} must be a numeric array") from exc
     if array.shape != shape:
         raise SystemExit(f"oracle {name} must have shape {shape}")
@@ -37,7 +37,7 @@ def _finite_array(value: object, name: str, shape: tuple[int, ...]) -> np.ndarra
 def _finite_scalar(value: object, name: str) -> float:
     try:
         scalar = float(value)
-    except (TypeError, ValueError) as exc:
+    except (TypeError, ValueError, OverflowError) as exc:
         raise SystemExit(f"oracle {name} must be numeric") from exc
     if not math.isfinite(scalar):
         raise SystemExit("oracle numeric inputs must be finite")
@@ -56,6 +56,15 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         "maximum_reconstruction_error",
         "expected_condition_number",
         "expected_worst_direction_amplification",
+        "expected_beta",
+        "expected_residual",
+        "expected_sse",
+        "expected_singular_values",
+        "expected_base_solution",
+        "expected_perturbed_solution",
+        "expected_component_amplification",
+        "expected_relative_amplification",
+        "expected_covariance_eigenvalues",
     }
     missing = sorted(required - oracle.keys())
     if missing:
@@ -71,6 +80,40 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
     )
     reconstruction_gate = _finite_scalar(
         oracle["maximum_reconstruction_error"], "maximum_reconstruction_error"
+    )
+    expected_beta = _finite_array(oracle["expected_beta"], "expected_beta", (2,))
+    expected_residual = _finite_array(
+        oracle["expected_residual"], "expected_residual", (3,)
+    )
+    expected_sse = _finite_scalar(oracle["expected_sse"], "expected_sse")
+    expected_singular_values = _finite_array(
+        oracle["expected_singular_values"], "expected_singular_values", (2,)
+    )
+    expected_base_solution = _finite_array(
+        oracle["expected_base_solution"], "expected_base_solution", (2,)
+    )
+    expected_perturbed_solution = _finite_array(
+        oracle["expected_perturbed_solution"], "expected_perturbed_solution", (2,)
+    )
+    expected_component_amplification = _finite_scalar(
+        oracle["expected_component_amplification"],
+        "expected_component_amplification",
+    )
+    expected_relative_amplification = _finite_scalar(
+        oracle["expected_relative_amplification"],
+        "expected_relative_amplification",
+    )
+    expected_covariance_eigenvalues = _finite_array(
+        oracle["expected_covariance_eigenvalues"],
+        "expected_covariance_eigenvalues",
+        (2,),
+    )
+    expected_condition = _finite_scalar(
+        oracle["expected_condition_number"], "expected_condition_number"
+    )
+    expected_worst = _finite_scalar(
+        oracle["expected_worst_direction_amplification"],
+        "expected_worst_direction_amplification",
     )
     if (
         design.tolist() != FIXED_DESIGN
@@ -148,23 +191,23 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
     )
 
     comparisons = [
-        (beta, oracle["expected_beta"]),
-        (residual, oracle["expected_residual"]),
-        (singular_values, oracle["expected_singular_values"]),
-        (base_solution, oracle["expected_base_solution"]),
-        (perturbed_solution, oracle["expected_perturbed_solution"]),
-        (eigenvalues, oracle["expected_covariance_eigenvalues"]),
+        (beta, expected_beta),
+        (residual, expected_residual),
+        (singular_values, expected_singular_values),
+        (base_solution, expected_base_solution),
+        (perturbed_solution, expected_perturbed_solution),
+        (eigenvalues, expected_covariance_eigenvalues),
     ]
     if any(
         float(np.max(np.abs(observed - np.asarray(expected)))) > tolerance
         for observed, expected in comparisons
     ):
         raise SystemExit("oracle mismatch in decomposition or perturbation ledger")
-    if abs(sse - float(oracle["expected_sse"])) > tolerance:
+    if abs(sse - expected_sse) > tolerance:
         raise SystemExit(f"SSE mismatch: {sse}")
-    if abs(component_amplification - float(oracle["expected_component_amplification"])) > 1.0:
+    if abs(component_amplification - expected_component_amplification) > 1.0:
         raise SystemExit(f"amplification mismatch: {component_amplification}")
-    if abs(relative_amplification - float(oracle["expected_relative_amplification"])) > 1e-9:
+    if abs(relative_amplification - expected_relative_amplification) > 1e-9:
         raise SystemExit(f"relative amplification mismatch: {relative_amplification}")
     if orthogonality_error > orthogonality_gate:
         raise SystemExit(f"orthogonality mismatch: {orthogonality_error}")
@@ -180,15 +223,8 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         raise SystemExit("rank-one approximation ledger mismatch")
     if abs(gram_condition_ratio - 1.0) > tolerance:
         raise SystemExit("normal-equation condition-squaring mismatch")
-    expected_condition = _finite_scalar(
-        oracle["expected_condition_number"], "expected_condition_number"
-    )
     if abs(condition_number - expected_condition) > 0.1:
         raise SystemExit("condition-number ledger mismatch")
-    expected_worst = _finite_scalar(
-        oracle["expected_worst_direction_amplification"],
-        "expected_worst_direction_amplification",
-    )
     if abs(worst_direction_amplification - expected_worst) > 0.1:
         raise SystemExit("worst-direction amplification ledger mismatch")
 

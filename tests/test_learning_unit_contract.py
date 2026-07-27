@@ -1456,6 +1456,57 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("condition-number ledger mismatch", result.stderr)
 
+    def test_chapter_six_rejects_a_nonfinite_expected_vector(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-nonfinite-expected-beta.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update(
+                {"expected_beta": [float("nan"), float("nan")]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric inputs must be finite", result.stderr)
+
+    def test_chapter_six_rejects_a_missing_expected_scalar(self) -> None:
+        def remove_expected_sse(oracle: dict[str, Any]) -> None:
+            del oracle["expected_sse"]
+
+        result = self.run_oracle_fixture(
+            "ch06-missing-expected-sse.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            remove_expected_sse,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle missing required fields: expected_sse", result.stderr)
+
+    def test_chapter_six_rejects_a_truncated_expected_residual(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-truncated-expected-residual.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update({"expected_residual": [0.0, 0.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle expected_residual must have shape (3,)", result.stderr)
+
+    def test_chapter_six_rejects_an_overflowing_numeric_entry(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-overflowing-design.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update(
+                {"design": [[1.0, 0.0], [1.0, 10**1000], [1.0, 2.0]]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle design must be a numeric array", result.stderr)
+
     def test_chapter_seven_notebook_reproduces_distribution_oracles(self) -> None:
         result = subprocess.run(
             [
