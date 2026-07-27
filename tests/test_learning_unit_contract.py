@@ -658,6 +658,20 @@ class LearningUnitContractTests(unittest.TestCase):
             "contraction gate failed: factor must satisfy 0 <= q < 1\n",
         )
 
+    def test_chapter_two_rejects_a_nonfinite_oracle_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch02-nonfinite-initial-value.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            lambda oracle: oracle.update({"initial_value": float("nan")}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite\n",
+        )
+
     def test_chapter_two_rejects_a_declared_nonfixed_point(self) -> None:
         def change_declared_point(oracle: dict[str, Any]) -> None:
             oracle["expected_fixed_point"] = 0.2
