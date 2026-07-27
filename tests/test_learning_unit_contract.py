@@ -867,6 +867,24 @@ class LearningUnitContractTests(unittest.TestCase):
             "ledger gate failed: fixed point must equal 0.2\n",
         )
 
+    def test_chapter_three_rejects_a_false_limit_integral(self) -> None:
+        def change_limit_ledger(oracle: dict[str, Any]) -> None:
+            oracle["expected_limit_integral"] = 0.25
+            oracle["expected_interchange_gap"] = 0.75
+
+        result = self.run_oracle_fixture(
+            "ch03-false-limit-integral.json",
+            "evidence/ch03/oracle.json",
+            "notebooks/upper/ch03_measure_integration.py",
+            change_limit_ledger,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: limit integral must equal 0\n",
+        )
+
     def test_accepts_chapter_three_with_simple_and_spike_oracles(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch03" / "oracle.json").read_text(

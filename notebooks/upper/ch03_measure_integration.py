@@ -41,6 +41,8 @@ def main(oracle_path: Path = Path("evidence/ch03/oracle.json")) -> int:
     ]
     if not all(math.isfinite(item) for item in numeric_scalars):
         raise SystemExit("numeric gate failed: oracle scalars must be finite")
+    if limit_integral != 0.0:
+        raise SystemExit("ledger gate failed: limit integral must equal 0")
     if fixed_point != 0.2:
         raise SystemExit("ledger gate failed: fixed point must equal 0.2")
     simple_levels = oracle["simple_levels"]

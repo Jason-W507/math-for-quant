@@ -189,7 +189,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 
 \subsection{单调收敛定理}
 
-若 $0\leq f_n\uparrow f$ a.e.，则
+若 $f_n$ 是非负可测函数，且 $f_n\uparrow f$ 逐点成立，则 $f=\sup_nf_n$ 可测，且
 \[
  \int f_n\,d\mu\uparrow\int f\,d\mu.
 \]
@@ -211,7 +211,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 
 \subsection{支配收敛定理}
 
-若 $f_n\to f$ a.e.，且存在可积函数 $g$ 使 $|f_n|\leq g$ a.e.，则 $f$ 可积且
+若 $f_n$ 与 $f$ 是实值可测函数，$f_n\to f$ a.e.，且存在可积函数 $g$ 使 $|f_n|\leq g$ a.e.，则 $f$ 可积且
 \[
  \lim_{n\to\infty}\int f_n\,d\mu=\int f\,d\mu.
 \]
@@ -224,9 +224,9 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 \toprule
 工具 & 关键假设 & 结论\\
 \midrule
-Fatou & $f_n\geq0$ & 给 $\liminf$ 的单侧不等式\\
-MCT & $0\leq f_n\uparrow f$ & 积分单调趋于极限积分\\
-DCT & a.e. 收敛且 $|f_n|\leq g\in L^1$ & 极限与积分可交换\\
+Fatou & $f_n\geq0$ 且可测 & 给 $\liminf$ 的单侧不等式\\
+MCT & $f_n$ 非负可测且 $f_n\uparrow f$ & 积分单调趋于极限积分\\
+DCT & $f_n,f$ 可测，a.e. 收敛且有 $L^1$ 支配 & 极限与积分可交换\\
 \bottomrule
 \end{tabular}
 \caption{极限工具的门禁不能互相替代}
