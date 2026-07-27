@@ -1377,6 +1377,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "sse=0.166667 orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
             "amplification=1000001 relative=1.000001 qr_error=2.220e-16 "
+            "solve_error=8.882e-16 "
             "rank1_error=0.915272 gram_ratio=1.000000 eigen=(1.0,3.0) "
             "worst=4.000e+06\n",
         )
@@ -1397,6 +1398,7 @@ class LearningUnitContractTests(unittest.TestCase):
             "orth_error=6.661e-16 recon_error=3.331e-16 "
             "sigma=(2.676243,0.915272) condition=4.000e+06 "
             "amplification=1000001 relative=1.000001 qr_error=2.220e-16 "
+            "solve_error=8.882e-16 "
             "rank1_error=0.915272 gram_ratio=1.000000 eigen=(1.0,3.0) "
             "worst=4.000e+06\n"
             "learning-unit contract passed\n",
@@ -1506,6 +1508,17 @@ class LearningUnitContractTests(unittest.TestCase):
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("oracle design must be a numeric array", result.stderr)
+
+    def test_chapter_six_rejects_a_false_published_expected_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch06-false-published-expected.json",
+            "evidence/ch06/oracle.json",
+            "notebooks/upper/ch06_linear_algebra.py",
+            lambda oracle: oracle.update({"expected": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("published expected must equal 7/6", result.stderr)
 
     def test_chapter_seven_notebook_reproduces_distribution_oracles(self) -> None:
         result = subprocess.run(

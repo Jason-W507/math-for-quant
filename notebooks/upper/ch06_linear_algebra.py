@@ -65,6 +65,8 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         "expected_component_amplification",
         "expected_relative_amplification",
         "expected_covariance_eigenvalues",
+        "expected",
+        "maximum_solver_error",
     }
     missing = sorted(required - oracle.keys())
     if missing:
@@ -81,6 +83,7 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
     reconstruction_gate = _finite_scalar(
         oracle["maximum_reconstruction_error"], "maximum_reconstruction_error"
     )
+    solver_gate = _finite_scalar(oracle["maximum_solver_error"], "maximum_solver_error")
     expected_beta = _finite_array(oracle["expected_beta"], "expected_beta", (2,))
     expected_residual = _finite_array(
         oracle["expected_residual"], "expected_residual", (3,)
@@ -115,6 +118,7 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         oracle["expected_worst_direction_amplification"],
         "expected_worst_direction_amplification",
     )
+    published_expected = _finite_scalar(oracle["expected"], "expected")
     if (
         design.tolist() != FIXED_DESIGN
         or response.tolist() != FIXED_RESPONSE
@@ -126,8 +130,11 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         tolerance != FIXED_ABSOLUTE_TOLERANCE
         or orthogonality_gate != FIXED_ERROR_GATE
         or reconstruction_gate != FIXED_ERROR_GATE
+        or solver_gate != FIXED_ERROR_GATE
     ):
         raise SystemExit("oracle numeric tolerances are fixed")
+    if published_expected != 7.0 / 6.0:
+        raise SystemExit("published expected must equal 7/6")
 
     beta = np.linalg.solve(design.T @ design, design.T @ response)
     residual = response - design @ beta
@@ -148,8 +155,15 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         float(np.max(np.abs(q_matrix.T @ q_matrix - np.eye(2)))),
         float(np.max(np.abs(q_matrix @ r_matrix - design))),
     )
+    qr_beta = np.linalg.solve(r_matrix, q_matrix.T @ response)
+    lstsq_beta = np.linalg.lstsq(design, response, rcond=None)[0]
     pseudoinverse_beta = np.linalg.pinv(design) @ response
-    pseudoinverse_error = float(np.max(np.abs(pseudoinverse_beta - beta)))
+    solver_error = max(
+        float(np.max(np.abs(qr_beta - expected_beta))),
+        float(np.max(np.abs(lstsq_beta - expected_beta))),
+        float(np.max(np.abs(pseudoinverse_beta - expected_beta))),
+        float(np.max(np.abs(beta - expected_beta))),
+    )
     rank_one = singular_values[0] * np.outer(left[:, 0], right_transpose[0, :])
     rank_one_spectral_error = float(np.linalg.norm(design - rank_one, ord=2))
     design_condition = float(np.linalg.cond(design))
@@ -215,10 +229,11 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         reconstruction_error,
         projection_error,
         qr_error,
-        pseudoinverse_error,
         cholesky_error,
     ) > reconstruction_gate:
         raise SystemExit("decomposition reconstruction mismatch")
+    if solver_error > solver_gate:
+        raise SystemExit("least-squares solver mismatch")
     if abs(rank_one_spectral_error - singular_values[1]) > tolerance:
         raise SystemExit("rank-one approximation ledger mismatch")
     if abs(gram_condition_ratio - 1.0) > tolerance:
@@ -235,6 +250,7 @@ def main(oracle_path: Path = Path("evidence/ch06/oracle.json")) -> int:
         f"sigma=({singular_values[0]:.6f},{singular_values[1]:.6f}) "
         f"condition={condition_number:.3e} amplification={component_amplification:.0f} "
         f"relative={relative_amplification:.6f} qr_error={qr_error:.3e} "
+        f"solve_error={solver_error:.3e} "
         f"rank1_error={rank_one_spectral_error:.6f} gram_ratio={gram_condition_ratio:.6f} "
         f"eigen=({eigenvalues[0]:.1f},{eigenvalues[1]:.1f}) "
         f"worst={worst_direction_amplification:.3e}"

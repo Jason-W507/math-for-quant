@@ -17,6 +17,7 @@
   "expected_covariance_eigenvalues": [1.0, 3.0],
   "maximum_orthogonality_error": 1e-12,
   "maximum_reconstruction_error": 1e-12,
+  "maximum_solver_error": 1e-12,
   "published_markers": ["(7/6,1/2)^T", "残差平方和为 $1/6$", "重构误差小于 $10^{-12}$", "绝对分量放大倍数为 $1000001$", "相对范数放大约为 $1.0000005$"],
   "expected": 1.1666666666666667,
   "absolute_tolerance": 1e-10
