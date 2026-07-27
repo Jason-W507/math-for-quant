@@ -2144,6 +2144,17 @@ class LearningUnitContractTests(unittest.TestCase):
             result.stderr,
         )
 
+    def test_chapter_nine_rejects_a_false_published_expected_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-published-expected.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("published expected must equal 0.3", result.stderr)
+
     def test_accepts_chapter_nine_with_limit_theorem_oracles(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",

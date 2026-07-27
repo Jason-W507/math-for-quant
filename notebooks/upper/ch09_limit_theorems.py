@@ -167,6 +167,8 @@ def main(oracle_path: Path = Path("evidence/ch09/oracle.json")) -> int:
     tolerance = float(oracle["absolute_tolerance"])
     if tolerance != FIXED_TOLERANCE:
         raise SystemExit("absolute tolerance must equal 1e-10")
+    if float(oracle["expected"]) != 0.3:
+        raise SystemExit("published expected must equal 0.3")
     sample_size = require_integer(oracle["sample_size"], "sample_size", 200)
     repetitions = require_integer(oracle["repetitions"], "repetitions", 20000)
     seed = require_integer(oracle["seed"], "seed", 20260725)
