@@ -135,7 +135,21 @@ $\varphi(t)=1-\sigma^2t^2/2+o(t^2)$，于是
  =\left(1-\frac{t^2}{2n}+o(n^{-1})\right)^n
  \longrightarrow e^{-t^2/2},
 \]
-再由 Lévy 连续性定理识别标准正态极限。三角阵列或非同分布和需要 Lindeberg 等条件来排除单项支配；“每项方差有限”并不足以自动得到同一个 CLT。
+再由 Lévy 连续性定理识别标准正态极限。
+
+对每行独立、中心化的三角阵列
+$\{X_{n,k}:1\le k\le k_n\}$，令
+$s_n^2=\sum_{k=1}^{k_n}\mathbb E X_{n,k}^2$。Lindeberg 条件要求对每个 $\varepsilon>0$，
+\[
+ \frac1{s_n^2}\sum_{k=1}^{k_n}
+ \mathbb E\!\left[
+ X_{n,k}^2\mathbf1_{\{|X_{n,k}|>\varepsilon s_n\}}
+ \right]\longrightarrow0.
+\]
+在相应方差归一化下，它排除任何单项持续支配总波动，并使
+$s_n^{-1}\sum_kX_{n,k}\xrightarrow d\mathcal N(0,1)$。反例是每行只有
+$X_{n,1}$ 为对称 $\pm1$，其余项全为零：$s_n=1$，对任意
+$0<\varepsilon<1$，上式比率恒为 $1$；标准化和始终是 Rademacher 而非正态。故“每项方差有限”并不足以自动得到 CLT。
 
 若三阶绝对中心矩 $\rho_3<\infty$，Berry--Esseen 型界量化有限样本误差：
 \[

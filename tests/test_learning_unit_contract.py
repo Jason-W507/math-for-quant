@@ -1917,7 +1917,10 @@ class LearningUnitContractTests(unittest.TestCase):
             "simulated_tail=0.002850 bounds=(0.105000,0.036631,0.032829) "
             "normal=(0.034809,0.050118) rare_zero=0.904382 "
             "variances=(0.001050,0.210000) "
+            "typewriter=(0.5000,0.0625;mass=1.0) "
             "rare_spike=(0.100,0.010,0.001;l1=1.0) "
+            "l1_l2=(0.316228,0.031623;l2=1.0) distribution_gap=1.0 "
+            "lindeberg=1.0 "
             "cauchy_medians=(0.980865,1.029577)\n",
         )
         self.assertEqual(result.stderr, "")
@@ -2024,6 +2027,123 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("exact binomial tail", result.stderr)
 
+    def test_chapter_nine_rejects_a_falsified_implication_label(self) -> None:
+        def falsify_label(oracle: dict[str, Any]) -> None:
+            oracle["valid_implications"] = ["probability_implies_almost_sure"]
+
+        result = self.run_oracle_fixture(
+            "ch09-false-implication.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            falsify_label,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("convergence implication labels", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_typewriter_probability(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-typewriter.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update(
+                {"expected_typewriter_probabilities": [0.5, 0.25, 0.125, 0.0]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("typewriter counterexample", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_l1_not_l2_witness(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-l2-witness.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"expected_l1_not_l2_second_moment": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("L1-not-L2 counterexample", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_distribution_coupling_gap(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-distribution-gap.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update(
+                {"expected_distribution_not_probability_gap": 0.0}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("distribution-not-probability counterexample", result.stderr)
+
+    def test_chapter_nine_rejects_synchronized_tolerance_forgery(self) -> None:
+        def forge_mean_and_tolerance(oracle: dict[str, Any]) -> None:
+            oracle["expected_mean"] = 0.5
+            oracle["mean_tolerance"] = 1.0
+
+        result = self.run_oracle_fixture(
+            "ch09-forged-mean-tolerance.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            forge_mean_and_tolerance,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("simulation gates must match the published design", result.stderr)
+
+    def test_chapter_nine_rejects_a_widened_cauchy_band(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-wide-cauchy-band.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"cauchy_median_band": [0.0, 100.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Cauchy design must match the published experiment", result.stderr)
+
+    def test_chapter_nine_rejects_fractional_integer_fields(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-fractional-sample-size.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update({"sample_size": 200.9}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle sample_size must be an integer", result.stderr)
+
+    def test_chapter_nine_rejects_a_false_dominant_term_lindeberg_ratio(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-false-lindeberg-ratio.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update(
+                {"expected_dominant_term_lindeberg_ratio": 0.0}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("dominant-term Lindeberg counterexample", result.stderr)
+
+    def test_chapter_nine_rejects_a_malformed_counterexample_array(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch09-malformed-typewriter-array.json",
+            "evidence/ch09/oracle.json",
+            "notebooks/upper/ch09_limit_theorems.py",
+            lambda oracle: oracle.update(
+                {"expected_typewriter_probabilities": [0.5]}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "oracle expected_typewriter_probabilities must have length 4",
+            result.stderr,
+        )
+
     def test_accepts_chapter_nine_with_limit_theorem_oracles(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",
@@ -2040,7 +2160,10 @@ class LearningUnitContractTests(unittest.TestCase):
             "simulated_tail=0.002850 bounds=(0.105000,0.036631,0.032829) "
             "normal=(0.034809,0.050118) rare_zero=0.904382 "
             "variances=(0.001050,0.210000) "
+            "typewriter=(0.5000,0.0625;mass=1.0) "
             "rare_spike=(0.100,0.010,0.001;l1=1.0) "
+            "l1_l2=(0.316228,0.031623;l2=1.0) distribution_gap=1.0 "
+            "lindeberg=1.0 "
             "cauchy_medians=(0.980865,1.029577)\n"
             "learning-unit contract passed\n",
         )

@@ -284,7 +284,7 @@ requires-dist = [
     { name = "ipykernel", specifier = ">=7,<8" },
     { name = "jupytext", specifier = ">=1.16,<2" },
     { name = "nbclient", specifier = ">=0.10,<1" },
-    { name = "numpy", specifier = ">=2,<3" },
+    { name = "numpy", specifier = "==2.5.1" },
     { name = "pypdf", specifier = ">=6,<7" },
 ]
 

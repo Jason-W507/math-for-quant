@@ -26,8 +26,28 @@
   "standard_error_tolerance": 0.002,
   "coverage_tolerance": 0.015,
   "tail_probability_tolerance": 0.001,
+  "valid_implications": [
+    "almost_sure_implies_probability",
+    "lp_implies_probability",
+    "probability_implies_distribution",
+    "lq_implies_lp_on_probability_space"
+  ],
+  "counterexample_labels": [
+    "probability_not_almost_sure",
+    "probability_not_l1",
+    "l1_not_l2",
+    "distribution_not_probability"
+  ],
+  "typewriter_levels": [1, 2, 3, 4],
+  "expected_typewriter_probabilities": [0.5, 0.25, 0.125, 0.0625],
+  "expected_typewriter_layer_mass": 1.0,
   "rare_spike_indices": [10, 100, 1000],
   "expected_rare_spike_l1": 1.0,
+  "l1_not_l2_indices": [10, 100, 1000],
+  "expected_l1_not_l2_first_moments": [0.31622776601683794, 0.1, 0.03162277660168379],
+  "expected_l1_not_l2_second_moment": 1.0,
+  "expected_distribution_not_probability_gap": 1.0,
+  "expected_dominant_term_lindeberg_ratio": 1.0,
   "cauchy_repetitions": 8000,
   "cauchy_sample_sizes": [10, 1000],
   "cauchy_median_band": [0.7, 1.3],
