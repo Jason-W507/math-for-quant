@@ -314,8 +314,8 @@
       "published": true,
       "prerequisites": ["upper.ch05", "upper.ch06"],
       "evidence": {
-        "notation_symbols": ["L(x,\\lambda,\\nu)", "q(\\lambda,\\nu)"],
-        "glossary_terms": ["凸集", "凸函数", "约束资格", "KKT 条件", "Lagrange 对偶", "强对偶"],
+        "notation_symbols": ["L(x,\\lambda,\\nu)", "q(\\lambda,\\nu)", "\\partial f(x)", "\\Pi_C(z)", "p^*(b)"],
+        "glossary_terms": ["凸集", "凸函数", "强凸", "次梯度", "投影", "约束资格", "活跃集", "KKT 条件", "Lagrange 对偶", "弱对偶", "强对偶", "影子价格"],
         "notation_and_assumptions": "tex/upper/chapters/ch13.tex",
         "core_derivation": "tex/upper/chapters/ch13.tex",
         "independent_oracle": {"source": "notebooks/upper/ch13_convex_optimization.py", "oracle": "evidence/ch13/oracle.json", "command": ["{python}", "notebooks/upper/ch13_convex_optimization.py"]},

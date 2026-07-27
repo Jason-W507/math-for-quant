@@ -1,9 +1,27 @@
-\section{四级问题与即时练习}
+\section{笔面试与研究训练}
 \begingroup\small
+\subsection*{口述概念（3 题）}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}区分凸集、凸函数、约束资格、KKT 必要性、充分性与强对偶。
-  \item \textbf{笔试推导：}手算二次规划的 KKT 解、对偶函数与零对偶间隙。
-  \item \textbf{数值编程：}实现投影梯度并独立报告四类 KKT 残差与对偶间隙，而非只读优化器状态。
-  \item \textbf{研究判断：}带换手、成本与暴露约束的组合优化结果极不稳定，应先审计哪些建模与数值边界？
+\item 区分凸、严格凸、强凸、次梯度与上图；各自能保证什么？
+\item 说明 KKT 的四类条件，并区分必要性、凸充分性、LICQ 与 Slater。
+\item 解释弱对偶、强对偶、对偶间隙和影子价格；为什么乘子不是收益预测？
+\end{enumerate}
+\subsection*{笔试推导（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=4]
+\item 完整推导二维二次规划的活跃集、KKT 解、对偶函数和零间隙。
+\item 把约束改为 $x+y\ge b$，推导值函数、乘子与右端项灵敏度。
+\item 推导等式预算下的最小方差权重，并说明何时 long-only 约束会改变解。
+\end{enumerate}
+\subsection*{数值编程（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=7]
+\item 实现投影梯度，逐项打印原可行、对偶可行、驻点、互补与间隙。
+\item 用解析式和中心差分独立复现 $b=1.2$ 的值函数灵敏度。
+\item 计算两资产最小方差组合、条件数，并对协方差相关项做扰动审计。
+\end{enumerate}
+\subsection*{研究判断（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=10]
+\item 求解器报告成功但权重高度集中，应如何区分经济模型、估计误差和数值病态？
+\item 加入固定手续费、最小手数与整数持仓后，哪些凸优化结论失效？
+\item 如何为带收益、风险、换手、成本与暴露约束的组合构造上线前证据包？
 \end{enumerate}
 \endgroup

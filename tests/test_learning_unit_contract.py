@@ -2804,9 +2804,85 @@ class LearningUnitContractTests(unittest.TestCase):
             "numeric=(0.500000,0.500000) "
             "values=(0.250000,0.250000,0.000e+00) "
             "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
+            "sensitivity=(0.600000,0.360000,0.600000) "
+            "portfolio=(0.711864,0.288136,0.030203,2.308723) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n",
         )
         self.assertEqual(result.stderr, "")
+
+    def test_chapter_thirteen_rejects_a_false_sensitivity_multiplier(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch13-false-sensitivity.json",
+            "evidence/ch13/oracle.json",
+            "notebooks/upper/ch13_convex_optimization.py",
+            lambda oracle: oracle.update(
+                {"expected_sensitivity_multiplier": 0.5}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("sensitivity ledger failed", result.stderr)
+
+    def test_chapter_thirteen_rejects_a_false_portfolio_weight(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch13-false-portfolio.json",
+            "evidence/ch13/oracle.json",
+            "notebooks/upper/ch13_convex_optimization.py",
+            lambda oracle: oracle.update(
+                {"expected_minimum_variance_weights": [0.5, 0.5]}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("portfolio ledger failed", result.stderr)
+
+    def test_chapter_thirteen_rejects_malformed_or_widened_oracles(self) -> None:
+        cases = (
+            (
+                "ch13-missing-field.json",
+                lambda oracle: oracle.pop("expected_portfolio_variance"),
+                "missing required fields",
+            ),
+            (
+                "ch13-nonfinite.json",
+                lambda oracle: oracle.update({"optimizer_step": float("inf")}),
+                "must be finite",
+            ),
+            (
+                "ch13-fractional-integer.json",
+                lambda oracle: oracle.update({"optimizer_iterations": 500.5}),
+                "must be an integer",
+            ),
+            (
+                "ch13-widened-tolerance.json",
+                lambda oracle: oracle.update({"absolute_tolerance": 0.1}),
+                "tolerances must match",
+            ),
+            (
+                "ch13-boolean-array.json",
+                lambda oracle: oracle.update({"analytic_solution": [True, 0.5]}),
+                "must not contain booleans",
+            ),
+            (
+                "ch13-synchronized-forgery.json",
+                lambda oracle: oracle.update(
+                    {
+                        "sensitivity_rhs": 2.0,
+                        "expected_sensitivity_multiplier": 1.0,
+                        "expected_sensitivity_value": 1.0,
+                    }
+                ),
+                "canonical scalar design",
+            ),
+        )
+        for fixture, mutate, diagnostic in cases:
+            with self.subTest(fixture=fixture):
+                result = self.run_oracle_fixture(
+                    fixture,
+                    "evidence/ch13/oracle.json",
+                    "notebooks/upper/ch13_convex_optimization.py",
+                    mutate,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
 
     def test_accepts_chapter_thirteen_with_optimization_oracles(self) -> None:
         result = self.run_contract(
@@ -2823,6 +2899,8 @@ class LearningUnitContractTests(unittest.TestCase):
             "numeric=(0.500000,0.500000) "
             "values=(0.250000,0.250000,0.000e+00) "
             "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
+            "sensitivity=(0.600000,0.360000,0.600000) "
+            "portfolio=(0.711864,0.288136,0.030203,2.308723) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n"
             "learning-unit contract passed\n",
         )
