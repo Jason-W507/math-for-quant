@@ -1851,30 +1851,16 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertIn("published expected must equal 17/4", result.stderr)
 
     def test_chapter_eight_rejects_signed_kernel_mixing_weights(self) -> None:
-        oracle = json.loads(
-            (ROOT / "evidence" / "ch08" / "oracle.json").read_text(
-                encoding="utf-8"
-            )
+        def use_signed_weights(oracle: dict[str, Any]) -> None:
+            oracle["conditioning_probabilities"] = [-0.5, 1.5]
+            oracle["expected_mixture"] = [-0.25, 0.5, 0.75]
+
+        result = self.run_oracle_fixture(
+            "ch08-signed-weights.json",
+            "evidence/ch08/oracle.json",
+            "notebooks/upper/ch08_conditioning.py",
+            use_signed_weights,
         )
-        oracle["conditioning_probabilities"] = [-0.5, 1.5]
-        oracle["expected_mixture"] = [-0.25, 0.5, 0.75]
-        fixture = ROOT / "build" / "test-fixtures" / "ch08-signed-weights.json"
-        fixture.parent.mkdir(parents=True, exist_ok=True)
-        fixture.write_text(json.dumps(oracle), encoding="utf-8")
-        try:
-            result = subprocess.run(
-                [
-                    sys.executable,
-                    str(ROOT / "notebooks" / "upper" / "ch08_conditioning.py"),
-                    str(fixture),
-                ],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
-        finally:
-            fixture.unlink(missing_ok=True)
 
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("mixing weights", result.stderr)
