@@ -37,6 +37,7 @@ FIXED_ARRAYS = {
     "analytic_solution": [0.5, 0.5],
     "optimizer_start": [2.0, 0.0],
     "portfolio_covariance": [[0.04, 0.006], [0.006, 0.09]],
+    "portfolio_covariance_perturbed": [[0.04, 0.02], [0.02, 0.09]],
     "portfolio_budget_vector": [1.0, 1.0],
 }
 FIXED_TOLERANCES = {
@@ -61,10 +62,13 @@ REQUIRED_FIELDS = {
     "expected", "expected_cq_residual", "expected_dual_value", "expected_duality_gap",
     "expected_minimum_variance_weights", "expected_portfolio_condition_number",
     "expected_portfolio_variance", "expected_primal_value",
+    "expected_perturbed_condition_number", "expected_perturbed_variance",
+    "expected_perturbed_weights", "expected_weight_amplification",
     "expected_sensitivity_derivative", "expected_sensitivity_multiplier",
     "expected_sensitivity_value", "finite_difference_step", "numpy_version",
     "optimizer_iterations", "optimizer_start", "optimizer_step",
     "optimizer_tolerance", "portfolio_budget_vector", "portfolio_covariance",
+    "portfolio_covariance_perturbed",
     "provenance", "published_markers", "sensitivity_rhs",
     "sensitivity_tolerance", "optimization_labels",
 }
@@ -122,6 +126,40 @@ def project_feasible(point: np.ndarray) -> np.ndarray:
     return np.array([first, 1.0 - first])
 
 
+def kkt_certificate(
+    candidate: np.ndarray, multiplier: float
+) -> tuple[float, float, float, float, float, float, float]:
+    primal_value = float(0.5 * candidate @ candidate)
+    dual_value = float(multiplier - multiplier**2)
+    duality_gap = primal_value - dual_value
+    constraint = 1.0 - float(candidate.sum())
+    stationarity = float(
+        np.max(np.abs(candidate - np.array([multiplier, multiplier])))
+    )
+    primal_residual = max(0.0, constraint, -candidate[0], -candidate[1])
+    dual_residual = max(0.0, -multiplier)
+    complementarity = abs(multiplier * constraint)
+    return (
+        primal_value,
+        dual_value,
+        duality_gap,
+        stationarity,
+        primal_residual,
+        dual_residual,
+        complementarity,
+    )
+
+
+def minimum_variance_portfolio(
+    covariance: np.ndarray, budget: np.ndarray
+) -> tuple[np.ndarray, float, float]:
+    inverse_budget = np.linalg.solve(covariance, budget)
+    weights = inverse_budget / float(budget @ inverse_budget)
+    variance = float(weights @ covariance @ weights)
+    condition = float(np.linalg.cond(covariance))
+    return weights, variance, condition
+
+
 def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
     validate_oracle(oracle)
@@ -133,16 +171,15 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
     for _ in range(int(oracle["optimizer_iterations"])):
         point = project_feasible(point - step * point)
 
-    primal_value = float(0.5 * analytic @ analytic)
-    dual_value = float(multiplier - multiplier**2)
-    duality_gap = primal_value - dual_value
-    constraint = 1.0 - float(analytic.sum())
-    stationarity = float(
-        np.max(np.abs(analytic - np.array([multiplier, multiplier])))
-    )
-    primal_residual = max(0.0, constraint, -analytic[0], -analytic[1])
-    dual_residual = max(0.0, -multiplier)
-    complementarity = abs(multiplier * constraint)
+    (
+        primal_value,
+        dual_value,
+        duality_gap,
+        stationarity,
+        primal_residual,
+        dual_residual,
+        complementarity,
+    ) = kkt_certificate(point, multiplier)
 
     rhs = float(oracle["sensitivity_rhs"])
     sensitivity_solution = np.array([rhs / 2.0, rhs / 2.0])
@@ -172,11 +209,21 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
         raise SystemExit("sensitivity ledger failed")
 
     covariance = np.asarray(oracle["portfolio_covariance"], dtype=float)
+    perturbed_covariance = np.asarray(
+        oracle["portfolio_covariance_perturbed"], dtype=float
+    )
     budget = np.asarray(oracle["portfolio_budget_vector"], dtype=float)
-    inverse_budget = np.linalg.solve(covariance, budget)
-    portfolio_weights = inverse_budget / float(budget @ inverse_budget)
-    portfolio_variance = float(portfolio_weights @ covariance @ portfolio_weights)
-    portfolio_condition = float(np.linalg.cond(covariance))
+    portfolio_weights, portfolio_variance, portfolio_condition = (
+        minimum_variance_portfolio(covariance, budget)
+    )
+    perturbed_weights, perturbed_variance, perturbed_condition = (
+        minimum_variance_portfolio(perturbed_covariance, budget)
+    )
+    covariance_change = abs(perturbed_covariance[0, 1] - covariance[0, 1])
+    weight_amplification = float(
+        np.linalg.norm(perturbed_weights - portfolio_weights, ord=1)
+        / covariance_change
+    )
     tolerance = float(oracle["absolute_tolerance"])
     if (
         not np.allclose(
@@ -196,6 +243,29 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
         > tolerance
     ):
         raise SystemExit("portfolio ledger failed")
+    if (
+        not np.allclose(
+            perturbed_weights,
+            oracle["expected_perturbed_weights"],
+            atol=tolerance,
+            rtol=0.0,
+        )
+        or abs(
+            perturbed_variance - float(oracle["expected_perturbed_variance"])
+        )
+        > tolerance
+        or abs(
+            perturbed_condition
+            - float(oracle["expected_perturbed_condition_number"])
+        )
+        > tolerance
+        or abs(
+            weight_amplification
+            - float(oracle["expected_weight_amplification"])
+        )
+        > tolerance
+    ):
+        raise SystemExit("portfolio perturbation ledger failed")
 
     nonconvex_stationary_value = float((0.0**2 - 1.0) ** 2)
     nonconvex_global_value = float((1.0**2 - 1.0) ** 2)
@@ -241,6 +311,9 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
         f"{sensitivity_value:.6f},{sensitivity_derivative:.6f}) "
         f"portfolio=({portfolio_weights[0]:.6f},{portfolio_weights[1]:.6f},"
         f"{portfolio_variance:.6f},{portfolio_condition:.6f}) "
+        f"portfolio_perturbed=({perturbed_weights[0]:.6f},"
+        f"{perturbed_weights[1]:.6f},{perturbed_variance:.6f},"
+        f"{perturbed_condition:.6f},{weight_amplification:.6f}) "
         f"nonconvex=({nonconvex_stationary_value:.6f},"
         f"{nonconvex_global_value:.6f}) "
         f"cq_residual={cq_stationarity_residual:.6f}"
@@ -248,8 +321,25 @@ def main(oracle_path: Path = Path("evidence/ch13/oracle.json")) -> int:
     return 0
 
 
-main(
-    Path(sys.argv[1])
-    if len(sys.argv) > 1 and not sys.argv[1].startswith("-")
-    else Path("evidence/ch13/oracle.json")
-)
+def audit_candidate(values: list[str]) -> int:
+    oracle = json.loads(Path("evidence/ch13/oracle.json").read_text(encoding="utf-8"))
+    validate_oracle(oracle)
+    if len(values) != 2:
+        raise SystemExit("--audit-candidate requires exactly two coordinates")
+    candidate = np.asarray([float(value) for value in values], dtype=float)
+    certificate = kkt_certificate(candidate, float(oracle["analytic_multiplier"]))
+    tolerance = float(oracle["absolute_tolerance"])
+    if any(abs(value) > tolerance for value in certificate[2:]):
+        raise SystemExit("candidate KKT certificate failed")
+    print("candidate KKT certificate passed")
+    return 0
+
+
+if len(sys.argv) > 1 and sys.argv[1] == "--audit-candidate":
+    audit_candidate(sys.argv[2:])
+else:
+    main(
+        Path(sys.argv[1])
+        if len(sys.argv) > 1 and not sys.argv[1].startswith("-")
+        else Path("evidence/ch13/oracle.json")
+    )

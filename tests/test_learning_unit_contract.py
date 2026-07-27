@@ -2803,9 +2803,11 @@ class LearningUnitContractTests(unittest.TestCase):
             "analytic=(0.500000,0.500000,0.500000) "
             "numeric=(0.500000,0.500000) "
             "values=(0.250000,0.250000,0.000e+00) "
-            "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
+            "kkt=(2.220e-16,0.000e+00,0.000e+00,0.000e+00) "
             "sensitivity=(0.600000,0.360000,0.600000) "
             "portfolio=(0.711864,0.288136,0.030203,2.308723) "
+            "portfolio_perturbed=(0.777778,0.222222,0.035556,"
+            "2.941260,9.416196) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n",
         )
         self.assertEqual(result.stderr, "")
@@ -2833,6 +2835,36 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("portfolio ledger failed", result.stderr)
+
+    def test_chapter_thirteen_rejects_a_perturbed_numeric_candidate(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "notebooks/upper/ch13_convex_optimization.py",
+                "--audit-candidate",
+                "0.6",
+                "0.4",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "")
+        self.assertIn("candidate KKT certificate failed", result.stderr)
+
+    def test_chapter_thirteen_rejects_a_false_perturbed_portfolio(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch13-false-perturbed-portfolio.json",
+            "evidence/ch13/oracle.json",
+            "notebooks/upper/ch13_convex_optimization.py",
+            lambda oracle: oracle.update(
+                {"expected_perturbed_weights": [0.75, 0.25]}
+            ),
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("portfolio perturbation ledger failed", result.stderr)
 
     def test_chapter_thirteen_rejects_malformed_or_widened_oracles(self) -> None:
         cases = (
@@ -2898,9 +2930,11 @@ class LearningUnitContractTests(unittest.TestCase):
             "oracle=passed analytic=(0.500000,0.500000,0.500000) "
             "numeric=(0.500000,0.500000) "
             "values=(0.250000,0.250000,0.000e+00) "
-            "kkt=(0.000e+00,0.000e+00,0.000e+00,0.000e+00) "
+            "kkt=(2.220e-16,0.000e+00,0.000e+00,0.000e+00) "
             "sensitivity=(0.600000,0.360000,0.600000) "
             "portfolio=(0.711864,0.288136,0.030203,2.308723) "
+            "portfolio_perturbed=(0.777778,0.222222,0.035556,"
+            "2.941260,9.416196) "
             "nonconvex=(1.000000,0.000000) cq_residual=1.000000\n"
             "learning-unit contract passed\n",
         )
