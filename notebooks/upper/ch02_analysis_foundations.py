@@ -43,6 +43,8 @@ def main(oracle_path: Path = Path("evidence/ch02/oracle.json")) -> int:
     ]
     if not all(np.isfinite(item) for item in numeric_scalars):
         raise SystemExit("numeric gate failed: oracle scalars must be finite")
+    if iterations != 5:
+        raise SystemExit("ledger gate failed: iterations must equal 5")
     if not np.isfinite(factor) or not 0.0 <= factor < 1.0:
         raise SystemExit("contraction gate failed: factor must satisfy 0 <= q < 1")
     first_step = intercept + factor * value
@@ -63,6 +65,8 @@ def main(oracle_path: Path = Path("evidence/ch02/oracle.json")) -> int:
         for index in witness_indices
     ):
         raise SystemExit("witness gate failed: indices must be positive integers")
+    if witness_indices != [10, 100]:
+        raise SystemExit("ledger gate failed: witness indices must equal [10, 100]")
     if len(expected_witness_errors) != len(witness_indices):
         raise SystemExit(
             "witness gate failed: expected error count must match witness index count"

@@ -672,6 +672,20 @@ class LearningUnitContractTests(unittest.TestCase):
             "numeric gate failed: oracle scalars must be finite\n",
         )
 
+    def test_chapter_two_rejects_a_noncanonical_iteration_count(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch02-six-iterations.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            lambda oracle: oracle.update({"iterations": 6}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: iterations must equal 5\n",
+        )
+
     def test_chapter_two_rejects_a_declared_nonfixed_point(self) -> None:
         def change_declared_point(oracle: dict[str, Any]) -> None:
             oracle["expected_fixed_point"] = 0.2
@@ -702,6 +716,20 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertEqual(
             result.stderr,
             "witness gate failed: indices must be positive integers\n",
+        )
+
+    def test_chapter_two_rejects_noncanonical_witness_indices(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch02-noncanonical-witness-indices.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            lambda oracle: oracle.update({"witness_indices": [20, 30]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: witness indices must equal [10, 100]\n",
         )
 
     def test_chapter_two_rejects_a_mismatched_witness_error_count(self) -> None:
