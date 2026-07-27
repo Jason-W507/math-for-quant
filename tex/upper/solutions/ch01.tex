@@ -42,15 +42,16 @@ oracle=passed weighted_return=0.013000
 lower=-0.010000 upper=0.030000
 counterexample=0.035000
   \end{lstlisting}
-  \item 三种输入分别给出以下稳定类别：
+  \item 六种输入依次给出以下完整稳定诊断：
   \begin{lstlisting}
-assumption gate failed
-weights must be nonnegative
-deleted nonnegativity assumption is absent
-returns and weights must have equal length
-returns and weights must be finite
+assumption gate failed: weights must sum to one
+assumption gate failed: weights must be nonnegative
+counterexample gate failed: weights must sum to one
+counterexample gate failed: deleted nonnegativity assumption is absent
+assumption gate failed: returns and weights must have equal length
+assumption gate failed: returns and weights must be finite
   \end{lstlisting}
-  它们依次保护归一化与非负性前提、受控反例的删除对象、点积定义域和有限数值域。
+  它们依次保护正常案例的归一化与非负性、受控反例只删除一条假设、点积定义域和有限数值域。
   \item 可用 \texttt{Fraction} 保存整数基点收益与有理权重。对每组输入先用循环累加 $\sum_iw_ir_i$，再独立取最小值、最大值并比较。期望结果必须来自分数算术或纸面表格，而不是调用待验收的 NumPy 点积。若权重非负且和为 1，任何越界都应作为程序或输入错误报告；若主动加入负权重，则记录权重、收益与越界方向作为失败见证。
 \end{enumerate}
 
