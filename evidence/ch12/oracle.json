@@ -55,7 +55,9 @@
     "levels_r_squared": 0.3440110461849085,
     "differences_r_squared": 0.00021610149139195123,
     "random_split_mse": 1.4369389798037213,
-    "chronological_split_mse": 2.2261525911152855
+    "chronological_split_mse": 2.2261525911152855,
+    "rolling_phi_before_break": 0.8249234824584768,
+    "rolling_phi_after_break": -0.21581729058290108
   },
   "absolute_tolerance": 1e-12,
   "simulation_tolerance": 1e-10,

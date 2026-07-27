@@ -85,7 +85,8 @@ EXPECTED_FIELDS = {
     "ar1_mean", "ar1_variance", "ar1_autocorrelation", "forecast",
     "forecast_error_variance", "kalman_filtered_means", "kalman_final_gain",
     "levels_r_squared", "differences_r_squared", "random_split_mse",
-    "chronological_split_mse",
+    "chronological_split_mse", "rolling_phi_before_break",
+    "rolling_phi_after_break",
 }
 
 
@@ -351,6 +352,22 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
     chronological_mse = regression_mse(
         lag, target, indices[:cut], indices[cut:]
     )
+    before_design = np.column_stack(
+        (np.ones(break_point - 1), lag[: break_point - 1])
+    )
+    after_design = np.column_stack(
+        (np.ones(target.size - break_point + 1), lag[break_point - 1 :])
+    )
+    rolling_phi_before = float(
+        np.linalg.lstsq(
+            before_design, target[: break_point - 1], rcond=None
+        )[0][1]
+    )
+    rolling_phi_after = float(
+        np.linalg.lstsq(
+            after_design, target[break_point - 1 :], rcond=None
+        )[0][1]
+    )
 
     expected = oracle["expected"]
     simulation_tolerance = float(oracle["simulation_tolerance"])
@@ -388,6 +405,10 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
         abs(chronological_mse - float(expected["chronological_split_mse"]))
         <= simulation_tolerance,
         random_mse < chronological_mse,
+        abs(rolling_phi_before - float(expected["rolling_phi_before_break"]))
+        <= simulation_tolerance,
+        abs(rolling_phi_after - float(expected["rolling_phi_after_break"]))
+        <= simulation_tolerance,
     ]
     if not all(checks):
         failed = [str(index) for index, passed in enumerate(checks) if not passed]
@@ -403,6 +424,7 @@ def main(oracle_path: Path = Path("evidence/ch12/oracle.json")) -> int:
         f"{filtered_means[2]:.6f},{gains[-1]:.6f}) "
         f"spurious=({levels_r_squared:.6f},{differences_r_squared:.6f}) "
         f"split_mse=({random_mse:.6f},{chronological_mse:.6f}) "
+        f"rolling_phi=({rolling_phi_before:.6f},{rolling_phi_after:.6f}) "
         f"arma=({arma_ar_root:.6f},{arma_ma_root:.6f},"
         f"{arma_variance:.6f},{arma_lag_one_autocorrelation:.6f}) "
         f"unitroot=({unit_root_variances[0]:.1f},"

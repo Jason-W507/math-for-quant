@@ -10,16 +10,64 @@
 
 \section*{笔试推导}
 \begin{enumerate}[leftmargin=*,start=4]
-\item $X_t=\sum_{j\ge0}\phi^j\varepsilon_{t-j}$，故 $\gamma(0)=\sigma^2/(1-\phi^2)$、$\gamma(h)=\phi^{|h|}\gamma(0)$；本例理论方差为 $2.777778$。三步预测为 $0.512000$，预测误差方差为 $2.049600$。
-\item ARMA 系数 $\psi_0=1,\psi_j=(\phi+\theta)\phi^{j-1}$。ARMA 解析方差为 $2.265625$，$\rho(1)=0.732414$；AR/MA 根模为 $1.666667,3.333333$，均在单位圆外。
-\item GARCH 取期望得 $\mathbb E\sigma_t^2=\omega/(1-\alpha-\beta)=1$，持续性 $0.9$；GARCH 半衰期为 $6.578813$。$u_t=0.4u_{t-1}+e_t$ 给 $\Delta u_t=-0.6u_{t-1}+e_t$。创新对数似然为 $-4.260729$。
+\item 迭代 $m$ 次得 $X_t=\phi^mX_{t-m}+\sum_{j=0}^{m-1}\phi^j\varepsilon_{t-j}$。因 $|\phi|<1$ 且二阶矩有限，第一项在 $L^2$ 中消失，故得到 MA$(\infty)$ 表示。创新正交给
+\[
+\gamma(0)=\sigma^2\sum_{j\ge0}\phi^{2j}=\frac{\sigma^2}{1-\phi^2}.
+\]
+把方程乘 $X_{t-h}$ 并取期望；$h\ge1$ 时创新与过去正交，所以 $\gamma(h)=\phi\gamma(h-1)=\phi^h\gamma(0)$。再迭代未来值：
+\[
+X_{t+h}=\phi^hX_t+\sum_{j=0}^{h-1}\phi^j\varepsilon_{t+h-j}.
+\]
+第一项是条件期望，第二项由未来正交创新组成，故误差方差为 $\sigma^2\sum_{j=0}^{h-1}\phi^{2j}$。代入 $\phi=0.8,h=3,X_t=1$，本例理论方差为 $2.777778$，三步预测为 $0.512000$，预测误差方差为 $2.049600$。
+
+\item 因 $X_t=(1-\phi L)^{-1}(1+\theta L)\varepsilon_t$，有 $\psi_0=1$，且对 $j\ge1$，$\psi_j=(\phi+\theta)\phi^{j-1}$。因此
+\[
+\gamma(0)=\sigma^2\left[1+(\phi+\theta)^2\sum_{j\ge0}\phi^{2j}\right]
+=\sigma^2\frac{1+\theta^2+2\phi\theta}{1-\phi^2},
+\]
+\[
+\gamma(1)=\sigma^2\sum_{j\ge0}\psi_j\psi_{j+1}
+=\sigma^2\frac{(\phi+\theta)(1+\phi\theta)}{1-\phi^2}.
+\]
+代入 $(\phi,\theta,\sigma^2)=(0.6,0.3,1)$，ARMA 解析方差为 $2.265625$，$\rho(1)=0.732414$。方程 $1-0.6z=0$ 与 $1+0.3z=0$ 的根模为 $1.666667,3.333333$，均在单位圆外，分别通过因果与可逆检查。
+
+\item 对 GARCH，条件标准化给 $\mathbb E(r_{t-1}^2)=\mathbb E(\sigma_{t-1}^2)=v$；取期望得 $v=\omega+(\alpha+\beta)v$，所以 $v=1$、持续性为 $0.9$。GARCH 半衰期为 $6.578813$（即 $\log(0.5)/\log(0.9)$）。对 $u_t=0.4u_{t-1}+e_t$ 两边减去 $u_{t-1}$，得到 $\Delta u_t=-0.6u_{t-1}+e_t$，即误差修正系数 $-0.6$。Kalman 每步有 $\nu_t=y_t-x_{t\mid t-1}$、$S_t=P_{t\mid t-1}+R$，故
+\[
+\ell_t=-\tfrac12\{\log(2\pi)+\log S_t+\nu_t^2/S_t\}.
+\]
+三步账本为
+\[
+\begin{array}{c|ccc}
+t&1&2&3\\\hline
+\nu_t&1&-1.055556&0.165385\\
+S_t&2.25&1.805556&1.696154\\
+\ell_t&-1.546626&-1.522920&-1.191183
+\end{array}
+\]
+相加得到创新对数似然为 $-4.260729$。
 \end{enumerate}
 
 \section*{数值编程}
 \begin{enumerate}[leftmargin=*,start=7]
-\item AR(1) 模拟矩为 $(-0.013814,2.764404,0.799071)$，只交叉验证解析 $(0,2.777778,0.8)$；ARMA 解析矩不得由同一模拟反算。
-\item 随机游走时长 $1,10,100$ 的方差为 $1,10,100$；协整价差方差为 $0.428571$、调整系数 $-0.6$。水平回归 $R^2=0.344011$，差分回归 $R^2=0.000216$。
-\item 三次滤波均值依次为 $0.555556$、$0.084615$ 与 $0.152494$，平滑均值为 $(0.260771,0.128118,0.152494)$。前两项不同证明平滑使用了未来观测。
+\item 完整实现位于 \path{notebooks/upper/ch12_time_series.py}。程序先按 $\sigma^2/(1-\phi^2)$ 与系数和计算解析矩，再用 \texttt{default\_rng(20260727)} 生成独立路径；模拟矩为 $(-0.013814,2.764404,0.799071)$，只在预先冻结的容差内交叉验证解析 $(0,2.777778,0.8)$。ARMA 部分独立计算根、$\sum\psi_j^2$ 与 $\sum\psi_j\psi_{j+1}$，不得从同一模拟结果反算理论量。运行命令为 \texttt{uv run python notebooks/upper/ch12\_time\_series.py}。
+
+\item 程序直接检查随机游走时长 $1,10,100$ 的方差 $1,10,100$，并按 $0.36/(1-0.4^2)$ 与 $0.4-1$ 得到协整价差方差 $0.428571$、调整系数 $-0.6$。固定结构断点前后的滚动 AR 斜率分别为 $0.824923$ 与 $-0.215817$，而随机切分和时间切分 MSE 分别为 $1.436939$ 与 $2.226153$。水平回归 $R^2=0.344011$、差分回归 $R^2=0.000216$；这些输出共同区分单位根、均值回复与制度变化。
+
+\item 实现按“预测方差 $\rightarrow$ 创新 $\rightarrow$ 创新方差 $\rightarrow$ 增益 $\rightarrow$ 更新”循环，并保存
+\[
+\begin{array}{c|ccc}
+t&1&2&3\\\hline
+\nu_t&1&-1.055556&0.165385\\
+S_t&2.25&1.805556&1.696154\\
+K_t&0.555556&0.446154&0.410431
+\end{array}
+\]
+\par\noindent{\footnotesize 三次滤波均值依次为 $0.555556$、$0.084615$ 与 $0.152494$。}\par
+反向 RTS 循环产生平滑均值
+\[
+(0.260771,0.128118,0.152494).
+\]
+前两项不同正是未来观测进入平滑器的证据。测试 \path{test_chapter_twelve_notebook_reproduces_time_series_oracles} 逐字锁定账本与空标准错误流。
 \end{enumerate}
 
 \section*{研究判断}
