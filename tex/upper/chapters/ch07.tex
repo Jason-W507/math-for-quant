@@ -2,84 +2,156 @@
 \label{ch:probability-distributions}
 
 \begin{introduction}
-  \item 先修：第 4 章的可测函数、Lebesgue 积分与乘积测度。
-  \item 学习产出：能从概率空间构造随机变量及其分布，计算期望、边缘分布和常用变换，并识别矩不存在的重尾模型。
-  \item 研究连接：收益建模、风险度量、似然、模拟和极限定理都先要求说清“概率由谁定义、随机变量把它推到哪里”。
+  \item 先修：第 3 章的测度与积分、第 4 章的乘积测度和 $L^p$ 空间。
+  \item 学习产出：能从概率空间构造随机变量及其分布，使用 CDF、密度、推前律与生成函数计算，并识别矩或模型假设失效。
+  \item 研究连接：收益建模、风险度量、似然、模拟与极限定理都要求先说清概率由谁定义、变量把它推到哪里、哪些矩确实存在。
 \end{introduction}
 
-Python 数组只是已经观察到的数；概率模型还需要说明可能结果、可提问事件和事件权重。三元组
+Python 数组是已经观察到的数；概率模型还必须描述未观察但可能发生的状态。把样本均值、正态拟合或模拟路径直接称为“概率分布”，会混淆数据、模型与估计三层对象。
+
+\section{概率空间：事件不是任意子集}
+
+三元组
 \[
   (\Omega,\mathcal F,\mathbb P)
 \]
-称为概率空间：$\Omega$ 是样本空间，$\mathcal F$ 是事件 $\sigma$ 代数，$\mathbb P$ 是满足 $\mathbb P(\Omega)=1$ 的测度。第 3、4 章的测度工具因此不是前奏，而是概率语言的底座。
+称为概率空间：$\Omega$ 是样本空间，$\mathcal F$ 是事件 $\sigma$ 代数，$\mathbb P$ 是满足 $\mathbb P(\Omega)=1$ 的测度。可列可加性意味着两两不交的 $A_i\in\mathcal F$ 满足
+\[
+  \mathbb P\!\left(\bigcup_{i=1}^{\infty}A_i\right)
+  =\sum_{i=1}^{\infty}\mathbb P(A_i).
+\]
+由此可推出单调性、次可加性以及从下/从上的连续性。这里的“事件”必须属于 $\mathcal F$；在不可数样本空间中，并非所有子集都可测。
 
-\section{随机变量是可测映射，分布是推前测度}
+实际建模常把所有零测集的子集也加入 $\mathcal F$，得到\textbf{完备概率空间}。完备化不改变原有事件概率，却让“几乎处处相等”的随机变量拥有更自然的代表元。数据处理中的缺失、停牌和无成交不是自动的零测事件；只有模型明确赋予零概率时才能如此处理。
 
-随机变量 $X:(\Omega,\mathcal F)\to(\mathbb R,\mathcal B)$ 是可测函数。它的分布（或律）不是另一组样本，而是推前测度
+\section{随机变量、推前律与分布函数}
+
+随机变量 $X:(\Omega,\mathcal F)\to(\mathbb R,\mathcal B(\mathbb R))$ 是可测函数，即每个 Borel 集 $B$ 的原像 $X^{-1}(B)$ 都在 $\mathcal F$ 中。它的\textbf{分布（律）}是推前测度
 \[
   \mathcal L(X)=X_\#\mathbb P,
   \qquad \mathcal L(X)(B)=\mathbb P(X\in B).
 \]
-这一定义把“状态概率”转换为“数值概率”。不同的底层状态模型可以产生同一个 $\mathcal L(X)$；只研究单个 $X$ 的分布时它们不可区分，但研究联合关系时可能完全不同。
+不同底层状态模型可能产生同一个边缘律；一旦研究多个变量的共同变化，底层耦合就会重新变得重要。
 
-固定有限账本令 $X$ 取 $-1,0,2$，概率分别为 $1/4,1/2,1/4$。其推前分布仍是这三项质量，故
+分布函数
 \[
-  \mathbb{E}[X]=\int_\Omega X\,d\mathbb P
-  =\int_{\mathbb R}x\,d\mathcal L(X)(x)
-  =-\frac14+0+\frac12=\frac14.
+  F_X(x)=\mathbb P(X\le x)
 \]
-同理 $\mathbb{E}[X^2]=5/4$，所以
+单调不减、右连续，且在 $-\infty,+\infty$ 处分别趋于 $0,1$；反过来，每个满足这些性质的函数都对应某个概率分布。离散变量用概率质量函数 $p_X(x)=\mathbb P(X=x)$；若分布相对 Lebesgue 测度绝对连续，则存在密度 $f_X$ 使
 \[
-  \operatorname{Var}(X)=\mathbb{E}[X^2]-\mathbb{E}[X]^2
-  =\frac54-\frac1{16}=\frac{19}{16}.
+  F_X(x)=\int_{-\infty}^{x}f_X(u)\,du.
 \]
-期望存在要求正负部分不能同时为无穷；方差存在还要求二阶矩有限。软件返回一个有限样本均值，并不能证明总体期望存在。
+密度可以大于 $1$，而点概率在连续模型中通常为零；概率是密度在集合上的积分，不是曲线高度。
 
-\section{联合分布与边缘分布}
-
-对随机向量 $(X,Y)$，联合分布是从 $\Omega$ 推到乘积空间的测度。离散情形可写成质量表
+固定账本令 $X$ 取 $-1,0,2$，概率为 $1/4,1/2,1/4$。于是
 \[
-  p_{ij}=\mathbb P(X=x_i,Y=y_j),\qquad
-  p_X(x_i)=\sum_jp_{ij},\quad p_Y(y_j)=\sum_ip_{ij}.
+ F_X(-1)=\frac14,\quad F_X(0)=\frac34,
+ \quad F_X(1)=\frac34,\quad F_X(2)=1.
 \]
-取联合表
+跳跃大小正好等于对应点质量。
+
+\section{期望、LOTUS、矩与分位数}
+
+期望是 Lebesgue 积分：$\mathbb{E}[X]=\int_\Omega X\,d\mathbb P$。若 $X^+$ 与 $X^-$ 的期望都为无穷，则 $\infty-\infty$ 没有定义。推前测度给出“无意识统计学家法则”（LOTUS）：对可测 $g$，只要积分有定义，
 \[
-  \begin{pmatrix}3/8&1/8\\1/8&3/8\end{pmatrix}.
+  \mathbb E[g(X)]
+  =\int_\Omega g(X(\omega))\,d\mathbb P(\omega)
+  =\int_{\mathbb R}g(x)\,d\mathcal L(X)(x).
 \]
-总质量为 $1$，两个边缘都为 $(1/2,1/2)$，但联合表不等于边缘外积：边缘分布不足以确定依赖。连续情形把求和换成第 4 章乘积空间上的积分；只有在可积性假设满足时才能使用 Fubini 自由交换次序。
+不必先求 $g(X)$ 的完整分布，也能计算其期望。
 
-\section{常用分布：参数、矩与变换}
-
-设矩母函数 $M_X(t)=\mathbb{E}[e^{tX}]$，概率母函数 $G_N(z)=\mathbb{E}[z^N]$。变换若在零点邻域存在，可通过求导产生矩；“写得出形式”不等于对所有 $t$ 都有限。
-
-\begin{itemize}[nosep]
-  \item $B\sim\operatorname{Bernoulli}(p)$：$\mathbb E[B]=p$，$\operatorname{Var}(B)=p(1-p)$，$M_B(t)=1-p+pe^t$。取 $p=1/4$，得均值 $1/4$、方差 $3/16$、$M_B(\log2)=5/4$。
-  \item $N\sim\operatorname{Poisson}(\lambda)$：均值与方差均为 $\lambda$，$G_N(z)=\exp\{\lambda(z-1)\}$。取 $\lambda=2,z=1/2$，得 $G_N(1/2)=e^{-1}$。
-  \item $Z\sim\mathcal N(0,1)$：均值 $0$、方差 $1$，配方可得 $M_Z(t)=e^{t^2/2}$，故 $M_Z(1/2)=e^{1/8}$。
-\end{itemize}
-
-这些分布承担不同机制：Bernoulli 表示一次事件，Poisson 表示固定区间计数，Normal 常来自许多小扰动的加总近似。根据均值和方差相同就默认 Normal，会抹掉偏度、尾部和离散结构。
-
-\section{重尾反例：总体均值并不存在}
-
-令 $W$ 服从 $\operatorname{Pareto}(1)$，密度
+固定账本给出
 \[
-  f_W(w)=w^{-2}\mathbf 1_{[1,\infty)}(w).
+  \mathbb E[X]=\frac14,\qquad
+  \mathbb E[X^2]=\frac54,
+  \qquad \operatorname{Var}(X)=\frac{19}{16}.
 \]
-它是合法分布，因为 $\int_1^\infty w^{-2}dw=1$；但
+方差存在要求二阶矩有限。$k$ 阶原点矩为 $\mathbb E[X^k]$，绝对矩 $\mathbb E[|X|^k]$ 更适合讨论存在性。分位数采用左连续广义逆
 \[
-  \mathbb{E}[W]=\int_1^\infty w\,w^{-2}dw
-  =\int_1^\infty\frac{dw}{w}=\infty.
+  q_\alpha=F_X^{-1}(\alpha)=\inf\{x:F_X(x)\ge\alpha\}.
 \]
-把积分截断到 $M$ 只得到 $\log M$，并不趋于有限常数。截断到 $10$ 与 $1000$ 时分别为 $2.302585$、$6.907755$。因此“大样本均值看起来稳定”不是矩存在的证明；在损失、成交量和持有期数据中，必须先做尾部诊断，再选择统计量和分布族。
+离散分布的分位数不一定唯一对应概率等式；因此 VaR 的符号、损失/收益方向与分位数约定必须明确。
+
+\section{变量变换：从原像而不是直觉出发}
+
+令 $Y=g(X)$。最稳妥的起点是
+\[
+ F_Y(y)=\mathbb P(g(X)\le y).
+\]
+若 $g$ 严格单调可微，密度可写为
+\[
+ f_Y(y)=f_X(g^{-1}(y))
+ \left|\frac{d}{dy}g^{-1}(y)\right|.
+\]
+若 $g$ 非单调，必须把所有原像分支相加。向量变换 $Y=g(X)$ 在一一可微情形使用 Jacobian 行列式：$f_Y(y)=f_X(g^{-1}(y))|\det Dg^{-1}(y)|$。
+
+固定离散例取 $Y=X^2$。三个原值推到 $0,1,4$，质量分别为 $1/2,1/4,1/4$；$-1$ 与 $1$ 若同时出现，质量必须合并，不能把输出当成逐行不重复表。连续例若 $Z\sim\mathcal N(0,\sigma^2)$、$Y=e^Z$，则 $Y$ 为对数正态，正值域和右偏尾部都来自变换，不应再用对称正态误差解释。
+
+\section{联合分布、边缘、协方差与独立性}
+
+随机向量 $(X,Y)$ 的联合律是从 $\Omega$ 推到乘积空间的测度。离散情形
+\[
+ p_{ij}=\mathbb P(X=x_i,Y=y_j),\qquad
+ p_X(x_i)=\sum_jp_{ij},\quad p_Y(y_j)=\sum_ip_{ij}.
+\]
+固定表
+\[
+  \begin{pmatrix}3/8&1/8\\1/8&3/8\end{pmatrix}
+\]
+的两个边缘都是 $(1/2,1/2)$。令两坐标取值 $-1,1$，则均值为零、方差为一、协方差和相关系数均为 $1/2$。联合表与边缘外积的最大格差为 $1/8$，所以并不独立。
+
+一般地，二阶矩有限时
+\[
+ \operatorname{Cov}(X,Y)=\mathbb E[(X-\mathbb EX)(Y-\mathbb EY)],
+ \qquad \rho_{XY}=\frac{\operatorname{Cov}(X,Y)}{\sigma_X\sigma_Y}.
+\]
+独立推出协方差为零，但反向不成立。例如对称的 $X$ 令 $Y=X^2$，常有 $\operatorname{Cov}(X,Y)=\mathbb E[X^3]=0$，可 $Y$ 完全由 $X$ 决定。相关系数也无法描述尾部依赖和非线性依赖。
+
+\section{常用分布：先匹配机制，再估参数}
+
+\begin{description}[style=nextline,leftmargin=2em]
+  \item[Bernoulli / Binomial] 一次成功指标 $B\sim\mathrm{Bernoulli}(p)$ 有均值 $p$、方差 $p(1-p)$；固定次数、同成功率且独立时，成功总数才是 $\mathrm{Binomial}(n,p)$。
+  \item[Poisson / Exponential] 独立平稳增量的 Poisson 计数过程产生 $N_t\sim\mathrm{Poisson}(\lambda t)$，相邻到达时间为 $\mathrm{Exp}(\lambda)$；仅有“均值等于方差”不足以证明该机制。
+  \item[Uniform / Normal] $U(a,b)$ 表示区间内密度恒定；Normal 常作为许多小扰动之和的近似。正态假设包含对称、轻尾与所有矩存在，不能只靠直方图中央部分决定。
+  \item[Lognormal] 若 $Z\sim N(\mu,\sigma^2)$，则 $e^Z$ 为正且右偏；均值为 $e^{\mu+\sigma^2/2}$，方差为 $(e^{\sigma^2}-1)e^{2\mu+\sigma^2}$。
+  \item[Student-$t$ / Pareto] $t_\nu$ 的均值仅在 $\nu>1$ 时存在，方差仅在 $\nu>2$ 时存在；Pareto 尾指数 $\alpha$ 只保证 $p<\alpha$ 阶矩有限。尾参数决定哪些统计量有总体含义。
+\end{description}
+
+oracle 固定 $U(-1,3)$ 的均值 $1$、方差 $4/3$；$\mathrm{Exp}(2)$ 的均值 $1/2$、方差 $1/4$、生存概率 $\mathbb P(T>1)=e^{-2}$；$\mathrm{Lognormal}(0,0.5^2)$ 的均值为 $1.133148$、方差为 $0.364696$。
+
+\section{生成函数的存在域与重尾反例}
+
+矩母函数 $M_X(t)=\mathbb E[e^{tX}]$ 若在零点邻域有限，能通过求导产生矩并在该邻域唯一确定分布。概率母函数 $G_N(z)=\mathbb E[z^N]$ 用于非负整数变量。特征函数 $\varphi_X(t)=\mathbb E[e^{itX}]$ 对所有实值随机变量都存在，并唯一确定分布；但“存在特征函数”不代表矩存在。
+
+固定解析账本为
+\[
+ M_B(\log2)=\frac54,\qquad
+ G_N(1/2)=e^{-1}\quad(N\sim\mathrm{Poisson}(2)),
+ \qquad M_Z(1/2)=e^{1/8}.
+\]
+对数正态虽然所有正整数矩都有限，但 $M_X(t)$ 对任意 $t>0$ 发散；因此“所有矩存在”也不自动保证 MGF 在零点右邻域存在。
+
+更直接的反例是 $W\sim\mathrm{Pareto}(1)$，密度
+\[
+ f_W(w)=w^{-2}\mathbf1_{[1,\infty)}(w).
+\]
+它总质量为一，却有 $\mathbb E[W]=\int_1^\infty w^{-1}dw=\infty$。截断到 $M$ 得 $\log M$；截断到 $10$ 与 $1000$ 时分别为 $2.302585$、$6.907755$，不会趋于有限常数。标准 Cauchy 更微妙：对称主值为零，但正负部分期望都为无穷，所以 Lebesgue 期望\textbf{不存在}，不能写成零。
+
+\section{独立 oracle、失败注入与研究边界}
 
 \begin{lstlisting}[language=bash]
+uv run python notebooks/upper/ch07_probability_distributions.py
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch07
 \end{lstlisting}
+程序只复算手工账本：有限分布矩与 CDF、平方推前律、联合依赖/协方差、七类解析分布量和 Pareto 截断积分。它固定形状、参数与 $10^{-10}$ 容差；NaN expected、缺字段、错误边缘形状、负质量、替换后的固定值、宽容差和伪造发布标签都会失败。
+
+\begin{note}
+经验分布是样本对象，参数分布是模型族，拟合参数是估计结果。选择分布时同时报告支持集、离散/连续机制、矩存在条件、尾部诊断、参数不确定性和样本外失败；不要以“均值方差接近”替代分布检验，也不要删除极端值后再证明轻尾。
+\end{note}
 
 \input{tex/upper/chapters/ch07-questions}
 \input{tex/upper/chapters/ch07-hints}
 
 \noindent\textbf{本章小结与 Capstone 连接}\quad
-概率空间规定事件和权重，随机变量通过推前测度产生分布，联合分布保留依赖；上册 Capstone 将要求每个模拟或风险结论同时声明分布、矩存在条件与尾部限制。
+概率空间规定事件和权重，随机变量通过推前产生律，CDF/密度/变换提供计算语言，联合分布保留依赖，矩与生成函数必须先证明存在。上册 Capstone 将要求每个风险或模拟结论同时声明分布、参数化、矩条件和尾部限制。

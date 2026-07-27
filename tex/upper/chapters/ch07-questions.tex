@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}区分样本空间、事件、随机变量、分布、联合分布与边缘分布。
-  \item \textbf{笔试推导：}从有限账本推导期望与方差；再由联合质量表求两个边缘，并判断是否独立。
-  \item \textbf{数值编程：}复算三个解析变换和 Pareto 截断期望，逐项报告独立期望、观察值与误差。
-  \item \textbf{研究判断：}收益样本的均值方差拟合良好，但尾部损失远超 Normal 模型时，如何诊断并修订研究结论？
+  \item 区分样本空间、事件、随机变量、分布、CDF、PMF 和密度；为什么密度可以大于一？
+  \item 解释 LOTUS、推前测度和变量变换公式之间的关系，并说明非单调变换为何要合并原像。
+  \item 区分不相关、独立、同分布和 IID；说明每个概念需要哪些矩或联合信息。
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 由固定有限账本推导 CDF、均值、方差和 $X^2$ 的推前分布。
+  \item 从固定 $2\times2$ 联合表求边缘、协方差、相关系数和独立性差；构造零相关但不独立的例子。
+  \item 推导 Lognormal 的密度、均值和方差；证明 Pareto$(\alpha)$ 的 $p$ 阶矩当且仅当 $p<\alpha$ 时有限。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 复现固定分布账本，并让程序在不抽样的情况下核验 CDF、平方推前律和联合协方差。
+  \item 复算 Bernoulli MGF、Poisson PGF、Normal MGF/CDF、Uniform/Exponential/Lognormal 矩；逐项标注解析来源与误差门。
+  \item 从临时 oracle 注入 NaN expected、缺字段、错误形状、负质量、宽容差和伪造 expected，记录六类稳定诊断。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 两个收益模型均值和方差相同，但一个有跳跃、一个为 Normal。如何设计区分它们的证据？
+  \item 样本均值在滚动窗口中稳定，但尾指数估计暗示总体均值可能不存在。报告应如何改写？
+  \item 团队用相关矩阵管理风险，却在危机期共同下跌。如何诊断非线性与尾部依赖，而不越界到下一章的条件模型？
 \end{enumerate}
 \endgroup

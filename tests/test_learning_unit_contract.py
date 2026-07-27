@@ -1543,10 +1543,12 @@ class LearningUnitContractTests(unittest.TestCase):
             "notebook=build/notebooks/upper/ch07_probability_distributions.ipynb\n"
             "roundtrip=passed cells=2\n"
             "execution=passed oracle=passed mean=0.250000 variance=1.187500 "
-            "joint_mass=1.000000 marginals=(0.500000,0.500000) "
-            "bernoulli=(0.250000,0.187500,1.250000) "
-            "poisson_pgf=0.367879 normal_mgf=1.133148 "
-            "pareto_truncated=(2.302585,6.907755)\n",
+            "cdf=(0.25,0.75,0.75,1.00) square=(0.50,0.25,0.25) "
+            "dependence=0.125 covariance=0.500 "
+            "bernoulli=(0.250,0.1875,1.250) poisson=0.367879 "
+            "normal=(1.133148,0.841345) uniform=(1.000,1.333333) "
+            "exponential=(0.500,0.135335) lognormal=(1.133148,0.364696) "
+            "pareto=(2.302585,6.907755)\n",
         )
         self.assertEqual(result.stderr, "")
 
@@ -1580,6 +1582,77 @@ class LearningUnitContractTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("nonnegative", result.stderr)
 
+    def test_chapter_seven_rejects_a_nonfinite_expected_mean(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch07-nonfinite-expected-mean.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            lambda oracle: oracle.update({"expected_mean": float("nan")}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric inputs must be finite", result.stderr)
+
+    def test_chapter_seven_rejects_a_missing_expected_transform(self) -> None:
+        def remove_normal_mgf(oracle: dict[str, Any]) -> None:
+            del oracle["expected_normal_mgf"]
+
+        result = self.run_oracle_fixture(
+            "ch07-missing-normal-mgf.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            remove_normal_mgf,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn(
+            "oracle missing required fields: expected_normal_mgf", result.stderr
+        )
+
+    def test_chapter_seven_rejects_a_wrong_marginal_shape(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch07-wrong-marginal-shape.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            lambda oracle: oracle.update({"expected_marginals": [1.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle expected_marginals must have shape (2,)", result.stderr)
+
+    def test_chapter_seven_rejects_noncanonical_finite_values(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch07-noncanonical-values.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            lambda oracle: oracle.update({"finite_values": [-1.0, 0.0, 3.0]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle must use the fixed distribution ledger", result.stderr)
+
+    def test_chapter_seven_rejects_a_widened_tolerance(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch07-widened-tolerance.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            lambda oracle: oracle.update({"absolute_tolerance": 1.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("oracle numeric tolerance is fixed", result.stderr)
+
+    def test_chapter_seven_rejects_a_false_published_expected_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch07-false-published-expected.json",
+            "evidence/ch07/oracle.json",
+            "notebooks/upper/ch07_probability_distributions.py",
+            lambda oracle: oracle.update({"expected": 0.0}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("published expected must equal 1/4", result.stderr)
+
     def test_accepts_chapter_seven_with_distribution_oracles(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",
@@ -1593,10 +1666,12 @@ class LearningUnitContractTests(unittest.TestCase):
             "unit=upper.ch07\n"
             "evidence=7/7\n"
             "oracle=passed mean=0.250000 variance=1.187500 "
-            "joint_mass=1.000000 marginals=(0.500000,0.500000) "
-            "bernoulli=(0.250000,0.187500,1.250000) "
-            "poisson_pgf=0.367879 normal_mgf=1.133148 "
-            "pareto_truncated=(2.302585,6.907755)\n"
+            "cdf=(0.25,0.75,0.75,1.00) square=(0.50,0.25,0.25) "
+            "dependence=0.125 covariance=0.500 "
+            "bernoulli=(0.250,0.1875,1.250) poisson=0.367879 "
+            "normal=(1.133148,0.841345) uniform=(1.000,1.333333) "
+            "exponential=(0.500,0.135335) lognormal=(1.133148,0.364696) "
+            "pareto=(2.302585,6.907755)\n"
             "learning-unit contract passed\n",
         )
         self.assertEqual(result.stderr, "")
