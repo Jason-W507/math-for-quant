@@ -41,6 +41,13 @@ def main(oracle_path: Path = Path("evidence/ch02/oracle.json")) -> int:
         for index in witness_indices
     ):
         raise SystemExit("witness gate failed: indices must be positive integers")
+    expected_witness_errors = oracle["expected_witness_errors"]
+    if len(expected_witness_errors) != len(witness_indices):
+        raise SystemExit(
+            "witness gate failed: expected error count must match witness index count"
+        )
+    if len(witness_indices) < 2:
+        raise SystemExit("witness gate failed: at least two witness indices are required")
     witness_errors = []
     for index in witness_indices:
         witness = np.exp(-np.log(2.0) / int(index))
@@ -51,7 +58,7 @@ def main(oracle_path: Path = Path("evidence/ch02/oracle.json")) -> int:
         float(oracle["expected_iterate"]),
         float(oracle["expected_error"]),
         float(oracle["expected_bound"]),
-        *(float(item) for item in oracle["expected_witness_errors"]),
+        *(float(item) for item in expected_witness_errors),
     ]
     if any(abs(left - right) > tolerance for left, right in zip(observed, expected)):
         raise SystemExit(f"oracle mismatch: observed={observed} expected={expected}")

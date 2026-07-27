@@ -690,6 +690,20 @@ class LearningUnitContractTests(unittest.TestCase):
             "witness gate failed: indices must be positive integers\n",
         )
 
+    def test_chapter_two_rejects_a_mismatched_witness_error_count(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch02-mismatched-witness-count.json",
+            "evidence/ch02/oracle.json",
+            "notebooks/upper/ch02_analysis_foundations.py",
+            lambda oracle: oracle.update({"expected_witness_errors": [0.5]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "witness gate failed: expected error count must match witness index count\n",
+        )
+
     def test_accepts_chapter_two_with_contraction_and_nonuniform_oracles(
         self,
     ) -> None:
