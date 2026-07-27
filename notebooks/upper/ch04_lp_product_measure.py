@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import math
+import sys
 from pathlib import Path
 
 
@@ -30,6 +31,44 @@ def column_sum(column: int) -> int:
 
 def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
     oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+    if oracle["p_values"] != [1, 2, 4]:
+        raise SystemExit("ledger gate failed: p values must equal [1, 2, 4]")
+    if oracle["midpoint_bins"] != 64:
+        raise SystemExit("ledger gate failed: midpoint bins must equal 64")
+    if oracle["section_sizes"] != [10, 100]:
+        raise SystemExit(
+            "ledger gate failed: section sizes must equal [10, 100]"
+        )
+
+    section_count = len(oracle["section_sizes"])
+    if (
+        len(oracle["expected_lp_norms"]) != len(oracle["p_values"])
+        or len(oracle["expected_square_sums"]) != section_count
+        or len(oracle["expected_rectangular_sums"]) != section_count
+        or len(oracle["expected_absolute_square_sums"]) != section_count
+    ):
+        raise SystemExit(
+            "ledger gate failed: expected counts must match input counts"
+        )
+
+    numeric_scalars = [
+        *oracle["expected_lp_norms"],
+        oracle["expected_midpoint_integral"],
+        oracle["expected_midpoint_error"],
+        oracle["expected_midpoint_bound"],
+        oracle["expected_row_first"],
+        oracle["expected_column_first"],
+        *oracle["expected_square_sums"],
+        *oracle["expected_rectangular_sums"],
+        *oracle["expected_absolute_square_sums"],
+        oracle["expected"],
+        oracle["absolute_tolerance"],
+    ]
+    if not all(math.isfinite(float(value)) for value in numeric_scalars):
+        raise SystemExit("numeric gate failed: oracle scalars must be finite")
+    if float(oracle["absolute_tolerance"]) < 0.0:
+        raise SystemExit("numeric gate failed: tolerance must be nonnegative")
+
     lp_norms = [
         (1.0 / (int(power) + 1)) ** (1.0 / int(power))
         for power in oracle["p_values"]
@@ -107,4 +146,7 @@ def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
     return 0
 
 
-main()
+oracle_path = Path("evidence/ch04/oracle.json")
+if Path(sys.argv[0]).stem == "ch04_lp_product_measure" and len(sys.argv) > 1:
+    oracle_path = Path(sys.argv[1])
+main(oracle_path)

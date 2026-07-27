@@ -2,13 +2,61 @@
 \label{app:ch04-solutions}
 
 \section*{口述概念}
-若 $f=g$ 几乎处处，则 $\lVert f-g\rVert_p=0$，所以 $L^p$ 把它们视为同一元素。Tonelli 面向非负可测函数，允许共同值为无穷；Fubini 面向绝对可积的符号函数，给出有限且相等的迭代积分。
+
+\begin{enumerate}[leftmargin=*]
+  \item 在原函数集合中，$f$ 只在零测集上非零时仍有 $\lVert f\rVert_p=0$，所以正定性失败。把 a.e. 相等的函数视为同一元素后才得到范数空间。普通上确界会被单点尖峰改变；本质上确界寻找忽略零测集后仍成立的最小上界，因此与等价类相容。
+  \item Hölder 使用共轭指数，把乘积的 $L^1$ 范数控制在两个输入范数乘积下；Minkowski 在同一个 $L^p$ 空间中控制函数之和。若只知 $X,Y\in L^1$，$XY$ 仍可能不可积；例如在 $(0,1)$ 上取 $X=Y=x^{-1/2}$，二者可积但乘积 $x^{-1}$ 不可积。$X,Y\in L^2$ 才可由 Cauchy--Schwarz 保证乘积可积。
+  \item $L^p$ 收敛控制整体 $p$ 次误差，依测度收敛控制超过任意阈值的集合大小，a.e. 收敛控制几乎每个固定点。$L^p$ 收敛由 Markov 不等式推出依测度收敛；有限测度空间中，依测度收敛可抽出 a.e. 收敛子列。原序列不必 a.e. 收敛，a.e. 收敛也不必是 $L^p$ 收敛。
+\end{enumerate}
 
 \section*{笔试推导}
-由 $\int_0^1x^pdx=1/(p+1)$ 得 $\lVert x\rVert_p=(p+1)^{-1/p}$。双重级数的 $N\times N$ 方阵有 $N$ 个 $+1$ 和 $N-1$ 个 $-1$，所以有符号和为 1，绝对值和为 $2N-1$。
+
+\begin{enumerate}[leftmargin=*]
+  \item 对非零 $f\in L^p,g\in L^q$，令 $F=|f|/\lVert f\rVert_p$、$G=|g|/\lVert g\rVert_q$。Young 给 $FG\leq F^p/p+G^q/q$；积分后右侧为 1，乘回范数得到 Hölder。再由
+  \[
+   |f+g|^p\leq|f||f+g|^{p-1}+|g||f+g|^{p-1}
+  \]
+  和两次 Hölder 得
+  \[
+   \lVert f+g\rVert_p^p
+   \leq(\lVert f\rVert_p+\lVert g\rVert_p)
+        \lVert f+g\rVert_p^{p-1}.
+  \]
+  非零时约去公共因子即为 Minkowski；零范数情形直接成立。
+  \item 对 $|f|^p\cdot1$ 使用指数 $q/p$ 与 $q/(q-p)$ 的 Hölder：
+  \[
+   \int|f|^p\leq(\int|f|^q)^{p/q}\mu(\Omega)^{1-p/q}.
+  \]
+  开 $p$ 次方即得结论。在 $\mathbb R$ 上，$x^{-3/4}\mathbf1_{[1,\infty)}\in L^2\setminus L^1$；而 $x^{-1/2}\mathbf1_{(0,1)}\in L^1\setminus L^2$。因此无限总测度时两种包含都不能无条件宣称。
+  \item 每一行只有可能在 $n=m$ 与 $n=m-1$ 非零：第 1 行和为 1，其余行为 0，所以先逐行求和得到 1。每列在 $m=n,n+1$ 上为 $1,-1$，所以先逐列求和得到 0。$N\times N$ 中有 $N$ 个正项和 $N-1$ 个负项，有符号和 1、绝对和 $2N-1$；$(N+1)\times N$ 多包含最后一个负项，有符号和 0。绝对和发散正是 Fubini 门禁失败。
+\end{enumerate}
 
 \section*{数值编程}
-解析结果是 $0.5$、$0.577350$、$0.668740$。$N=64$ 时中点积分为 $0.333312988$，实际误差与上界均为 $0.000020345$。计数实验中，先逐行求和得到 1，先逐列求和得到 0；方阵截断为 1，$(N+1)\times N$ 截断为 0，整数 oracle 的误差为零。
+
+\begin{enumerate}[leftmargin=*]
+  \item 独立解析值为
+  \[
+   0.5,\quad 3^{-1/2}=0.577350269\ldots,\quad
+   5^{-1/4}=0.668740305\ldots.
+  \]
+  $N=64$ 时中点值为 $0.33331298828125$，解析积分为 $1/3$，差为 $2/(24\cdot64^2)=0.000020345052\ldots$，恰好达到二次函数的余项上界。程序输出必须逐项与这些手算常数比较。
+  \item `NaN` 触发 `numeric gate failed: oracle scalars must be finite`；改写 $p$ 值、网格数、截断尺寸分别触发对应的固定账本诊断；删去一个期望数组元素触发 `expected counts must match input counts`。恢复方法是还原临时 JSON，不得放宽 tolerance 或用 observed 重写 expected。
+  \item 第 $k$ 层每个示性函数支撑集长度 $2^{-k}$，所以 $L^p$ 范数为 $2^{-k/p}$。选择非二进点如 $x=1/3$，每层恰有一个区间包含它，因此逐层完整输出中总会出现一个 1；同层其余项为 0。随着 $k$ 增大范数趋零，但点值序列在 0 与 1 间反复，验证没有逐点收敛。
+\end{enumerate}
 
 \section*{研究判断}
-先确认被积对象联合可测；再估计 $\int|f|$，判断能否使用 Fubini。若只能证明非负性，则使用 Tonelli 并接受无穷结果。随后核对有限样本是否采用相同矩形截断、缺失值与权重规则，最后才比较浮点求和误差。不同次序给出不同有限极限时，不得挑选更符合叙事的一个。
+
+\begin{enumerate}[leftmargin=*]
+  \item 有限样本上的逐点下降不能证明总体风险收敛。至少要声明随机损失可测，并证明其在总体测度下 a.e. 收敛；随后寻找共同的 $L^1$ 支配函数使用 DCT，或直接证明 $\lVert L_n\rVert_1\to0$。若损失非负且单调上升可用 MCT，但“下降到零”本身不提供 MCT 路线。还要控制训练样本与总体分布的泛化差距。
+  \item 先固定同一原始数据快照、缺失值和权重规则，用整数或高精度账本复现两个聚合次序。数学层检查联合可测性、非负性和绝对可积性，并用矩形截断观察路径依赖；数据层检查资产--日期面板是否平衡、过滤是否在聚合前后不同；数值层再改变求和算法和精度。若整数账本已不同，浮点误差不是原因。
+  \item “高阶矩控制低阶矩”依赖有限总测度；无限时间轴上不能直接使用。最小修复是证明实际研究窗口的测度有限，再应用带因子 $\mu(\Omega)^{1/p-1/q}$ 的嵌入；或者引入衰减权重形成有限测度；若两者都不成立，就必须分别验证所需低阶矩，不能删除门禁。
+\end{enumerate}
+
+\section*{恢复路径}
+
+先运行
+\begin{lstlisting}[language=bash]
+uv run python tools/check_learning_unit.py \
+  --manifest curriculum/manifest.json --unit upper.ch04
+\end{lstlisting}
+再复制 `evidence/ch04/oracle.json` 到临时文件，逐项注入一个坏值并从公开 CLI 运行脚本。每次记录退出码、完整 stderr 和被保护的数学账本。若两个积分次序不同，先保留有限矩形与绝对值和证据，再判断 Tonelli 或 Fubini 哪条假设缺失；不要用更高浮点精度掩盖一个本来就不合法的换序。

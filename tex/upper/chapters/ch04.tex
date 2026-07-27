@@ -1,96 +1,257 @@
-\chapter{$L^p$ 空间、收敛定理与乘积测度}
+\chapter{$L^p$ 空间、收敛方式与乘积测度}
 \label{ch:lp-product-measure}
 
 \begin{introduction}
-  \item 先修：第 3 章的可测函数、Lebesgue 积分、几乎处处与支配收敛。
-  \item 学习产出：能选择合适的 $L^p$ 误差尺度，并在交换极限或积分次序前逐条核对假设。
-  \item 研究连接：预测误差、随机变量矩、联合分布和嵌套期望都依赖本章的共同语言。
+  \item 先修：第 3 章的可测函数、Lebesgue 积分、几乎处处与三条收敛定理。
+  \item 学习产出：能选择合适的 $L^p$ 误差尺度，证明常用范数不等式，并在交换极限或积分次序前逐条核对假设。
+  \item Python 边界：程序只复现固定的解析账本和有限截断，不能用浮点一致性替代可测性、可积性或一般定理。
+  \item 研究连接：预测误差、随机变量矩、联合分布、嵌套期望与数值积分都依赖本章的共同语言。
 \end{introduction}
 
-同一个误差函数在均值、均方和最坏情形下会得到不同判断；同一个二元函数在没有绝对可积性时，甚至会因求和或积分次序不同而得到不同答案。本章把这些现象统一到 $L^p$ 空间、收敛定理与乘积测度中。
+同一个误差函数在平均绝对误差、均方误差和最坏情形下会得到不同判断；同一个二元函数在没有绝对可积性时，甚至会因积分次序不同而得到不同答案。本章先把误差放进完备的 $L^p$ 空间，再比较三种收敛方式，最后用乘积测度说明何时可以合法换序。
 
-\section{$L^p$ 范数与几乎处处等价}
+\section{$L^p$ 的元素是等价类}
 
-在测度空间 $(\Omega,\mathcal F,\mu)$ 上，对 $1\le p<\infty$ 定义
+设 $(\Omega,\mathcal F,\mu)$ 为测度空间。对 $1\leq p<\infty$ 和实值可测函数 $f$，定义
 \[
-  \lVert f\rVert_p=\left(\int_\Omega |f|^p\,d\mu\right)^{1/p},
+ \lVert f\rVert_p=\left(\int_\Omega |f|^p\,d\mu\right)^{1/p}.
 \]
-并令 $L^p(\mu)$ 包含所有该值有限的可测函数。$L^\infty$ 使用本质上确界：忽略零测集后仍能成立的最小统一上界。
-
-严格地说，$L^p$ 的元素不是单个函数，而是“几乎处处相等”的等价类。若只在零测集上改变 $f$，所有 $L^p$ 范数不变；因此 $\lVert f\rVert_p=0$ 意味着 $f=0$ 几乎处处，而非每一点都为零。商掉这类差异后，$L^p$ 才成为真正的范数空间，并且对 $1\le p\le\infty$ 都是完备空间。
-
-\begin{note}
-在概率空间中，若 $1\le p\le q\le\infty$，则 $L^q\subseteq L^p$；在一般无限测度空间上不能照搬这个包含关系。集合总测度是不可省略的假设。
-\end{note}
-
-Hölder 不等式在 $1/p+1/p'=1$ 时给出
+所有范数有限的函数组成集合 $\mathcal L^p$。但若 $f=g$ a.e.，则 $\lVert f-g\rVert_p=0$；在原始函数集合上它只是半范数。真正的空间是商空间
 \[
-  \int |fg|\,d\mu\le \lVert f\rVert_p\lVert g\rVert_{p'},
+ L^p(\mu)=\mathcal L^p/\!\sim,
+ \qquad f\sim g\Longleftrightarrow f=g\ \text{a.e.}
 \]
-Minkowski 不等式则给出三角不等式 $\lVert f+g\rVert_p\le\lVert f\rVert_p+\lVert g\rVert_p$。前者控制乘积，后者使误差尺度成为范数。
+其元素是几乎处处等价类。实际书写仍用 $f$ 代表一个等价类，但任何依赖单点值的操作都必须先检查是否与代表元选择无关。
 
-\subsection{固定账本：$f(x)=x$ 的三个范数}
+\subsection{本质上确界与 $L^\infty$}
 
-在 $[0,1]$ 上，
+普通上确界会被一个零测异常点改变。定义
 \[
-  \lVert x\rVert_p=\left(\int_0^1x^p\,dx\right)^{1/p}
-  =(p+1)^{-1/p}.
+ \lVert f\rVert_\infty
+ =\operatorname*{ess\,sup}_{\omega\in\Omega}|f(\omega)|
+ =\inf\{M\geq0:\ |f|\leq M\ \text{a.e.}\}.
 \]
-所以 $\lVert x\rVert_1=0.5$、$\lVert x\rVert_2=0.577350\ldots$、$\lVert x\rVert_4=0.668740\ldots$。$p$ 增大时更重视峰值，但有限 $p$ 仍不是最大误差。
+例如在 $[0,1]$ 上令 $f(1/2)=10^6$，其余点 $f(x)=x$。普通上确界是 $10^6$，但 $\lVert f\rVert_\infty=1$；改变单点不改变 $L^\infty$ 元素。对所有 $1\leq p\leq\infty$，$L^p$ 都是 Banach 空间：每个 $L^p$-Cauchy 序列都在 $L^p$ 中收敛。完备性保证“不断改进的近似”不会逃出误差空间。
 
-\section{三种收敛门禁不能互换}
+\subsection{固定账本：$f(x)=x$}
 
-第 3 章的三条结果现在可用 $L^p$ 语言定位：
+在 $[0,1]$ 的 Lebesgue 测度上，
+\[
+ \lVert x\rVert_p
+ =\left(\int_0^1x^p\,dx\right)^{1/p}
+ =(p+1)^{-1/p}.
+\]
+所以 $\lVert x\rVert_1=0.5$、$\lVert x\rVert_2=0.577350\ldots$、$\lVert x\rVert_4=0.668740\ldots$，而 $\lVert x\rVert_\infty=1$。$p$ 增大时更加惩罚峰值，但有限 $p$ 仍不是最大误差。
+
+\section{Hölder：把乘积放回 $L^1$}
+
+若 $1<p<\infty$，共轭指数 $q$ 由 $1/p+1/q=1$ 定义。Young 不等式是证明的标量核心：对 $a,b\geq0$，
+\[
+ ab\leq\frac{a^p}{p}+\frac{b^q}{q}.
+\]
+它可由凸函数 $t\mapsto t^p/p$ 的切线不等式得到；等号当且仅当 $a^p=b^q$。
+
+\begin{theorem}[Hölder 不等式]
+若 $f\in L^p$、$g\in L^q$，则 $fg\in L^1$，并且
+\[
+ \int_\Omega|fg|\,d\mu\leq\lVert f\rVert_p\lVert g\rVert_q.
+\]
+\end{theorem}
+
+若任一范数为零，结论显然。否则令 $F=|f|/\lVert f\rVert_p$、$G=|g|/\lVert g\rVert_q$。逐点应用 Young 后积分：
+\[
+ \int FG\,d\mu
+ \leq\frac1p\int F^p\,d\mu+\frac1q\int G^q\,d\mu
+ =\frac1p+\frac1q=1.
+\]
+乘回两个范数即得结论。端点 $p=1,q=\infty$ 直接由 $|g|\leq\lVert g\rVert_\infty$ a.e. 得到。非零情形的等号要求 $|f|^p$ 与 $|g|^q$ a.e. 成比例；若讨论 $|\int fg|$ 的等号，还需符号或相位不发生抵消。
+
+\begin{example}[协方差存在性的最小门禁]
+若随机变量 $X,Y\in L^2$，Cauchy--Schwarz（$p=q=2$ 的 Hölder）给出
+\[
+ \mathbb E|XY|\leq(\mathbb E X^2)^{1/2}(\mathbb E Y^2)^{1/2}<\infty.
+\]
+因此 $\mathbb E[XY]$ 有限，协方差才是合法有限数。只有 $X,Y\in L^1$ 不足以保证乘积可积。
+\end{example}
+
+\section{Minkowski：范数的三角不等式}
+
+对 $1<p<\infty$，先写
+\[
+ |f+g|^p\leq |f|\,|f+g|^{p-1}+|g|\,|f+g|^{p-1}.
+\]
+对两项分别使用 Hölder。因为 $(p-1)q=p$，得到
+\[
+ \lVert f+g\rVert_p^p
+ \leq(\lVert f\rVert_p+\lVert g\rVert_p)
+       \lVert f+g\rVert_p^{p-1}.
+\]
+若右侧范数非零，约去 $p-1$ 次方便得
+\[
+ \lVert f+g\rVert_p\leq\lVert f\rVert_p+\lVert g\rVert_p.
+\]
+$p=1$ 来自逐点三角不等式，$p=\infty$ 来自 a.e. 上界。Hölder 控制乘积，Minkowski 控制误差相加；二者角色不同。
+
+\subsection{有限测度空间上的嵌入}
+
+若 $\mu(\Omega)<\infty$ 且 $1\leq p<q<\infty$，对 $|f|^p\cdot1$ 使用 Hölder，指数取 $q/p$ 与 $q/(q-p)$：
+\[
+ \int|f|^p\,d\mu
+ \leq\left(\int|f|^q\,d\mu\right)^{p/q}
+       \mu(\Omega)^{1-p/q}.
+\]
+开 $p$ 次方得
+\[
+ \lVert f\rVert_p
+ \leq\mu(\Omega)^{1/p-1/q}\lVert f\rVert_q,
+ \qquad L^q\subseteq L^p.
+\]
+概率空间中 $\mu(\Omega)=1$，于是高阶矩控制低阶矩。
+
+无限测度空间不能照搬该包含关系。在 $\mathbb R$ 上，
+\[
+ f(x)=x^{-3/4}\mathbf1_{[1,\infty)}(x)
+\]
+属于 $L^2$ 但不属于 $L^1$；而
+\[
+ g(x)=x^{-1/2}\mathbf1_{(0,1)}(x)
+\]
+属于 $L^1$ 但不属于 $L^2$。同一个无限测度空间上两个方向都失败，说明总测度有限不是装饰条件。
+
+\section{三种收敛不能互换}
+
+设 $f_n,f$ 为可测函数。称 $f_n\to f$：
 \begin{itemize}[nosep]
-  \item 若 $0\le f_n\uparrow f$，单调收敛定理给出积分收敛；
-  \item 若 $f_n\to f$ 几乎处处且 $|f_n|\le g\in L^1$，支配收敛定理给出 $L^1$ 意义下的积分交换；
-  \item 只有非负性时，Fatou 引理通常只给下半连续不等式。
+  \item 在 $L^p$ 中收敛，若 $\lVert f_n-f\rVert_p\to0$；
+  \item 依测度收敛，若对每个 $\varepsilon>0$，$\mu(|f_n-f|>\varepsilon)\to0$；
+  \item 几乎处处收敛，若除一个零测集外，$f_n(\omega)\to f(\omega)$。
 \end{itemize}
 
-几乎处处收敛、依测度收敛和 $L^p$ 收敛是不同概念。$L^p$ 收敛推出依测度收敛；在有限测度空间中，从依测度收敛的序列可抽出几乎处处收敛子列，但原序列未必几乎处处收敛。第 3 章的尖峰 $n\mathbf 1_{(0,1/n]}$ 正说明：仅有逐点收敛而没有共同可积控制，积分可以完全不收敛。
+\subsection{$L^p$ 收敛推出依测度收敛}
 
-\section{乘积测度与两种积分次序}
-
-给定两个 $\sigma$ 有限测度空间，乘积 $\sigma$ 代数由可测矩形 $A\times B$ 生成，乘积测度满足
+在事件 $A_n=\{|f_n-f|>\varepsilon\}$ 上有 $|f_n-f|^p\geq\varepsilon^p$，因此 Markov 不等式给出
 \[
-  (\mu\times\nu)(A\times B)=\mu(A)\nu(B).
+ \mu(A_n)\leq\varepsilon^{-p}\lVert f_n-f\rVert_p^p\longrightarrow0.
 \]
-Tonelli 定理处理非负可测函数：允许交换积分次序，结果也可以是 $+\infty$。Fubini 定理处理可积符号函数：若
-\[
-  \int |f|\,d(\mu\times\nu)<\infty,
-\]
-则几乎所有截面可积，两种迭代积分都存在且等于乘积空间积分。非负性与绝对可积性分别是两道不同门禁。
+这条推出不要求 $\mu(\Omega)<\infty$。反向通常不成立：尖峰可以占据越来越小的集合，却保留不消失的 $L^p$ 质量。
 
-\subsection{失败见证：条件求和不能冒充 Fubini}
+\subsection{依测度收敛只保证存在 a.e. 收敛子列}
+
+在有限测度空间中，若 $f_n\to f$ 依测度，可递归选择 $n_k$ 使
+\[
+ \mu(|f_{n_k}-f|>2^{-k})<2^{-k}.
+\]
+这些坏事件的测度和有限。由 Borel--Cantelli 的第一部分，几乎每个点只落入有限多个坏事件，故 $f_{n_k}\to f$ a.e.。结论只保证一个子列，不能把原序列擅自升级为 a.e. 收敛。
+
+\subsection{typewriter 反例同时切断两条误推}
+
+在 $[0,1)$ 上按层枚举二进区间
+\[
+ I_{k,j}=[j2^{-k},(j+1)2^{-k}),
+ \qquad j=0,\ldots,2^k-1,
+\]
+并令序列依次取 $\mathbf1_{I_{k,j}}$。随着层数 $k$ 增大，每项的 $L^p$ 范数为 $2^{-k/p}\to0$，所以序列在 $L^p$ 中、也依测度收敛到零。但每个 $x\in[0,1)$ 在每一层恰好命中一次，也在同层其余项取零，因此点值反复在 0 与 1 之间跳动，不 a.e. 收敛。$L^p$ 收敛不能保证整个序列 a.e. 收敛。
+
+反方向也失败。第 3 章的 $h_n=n\mathbf1_{(0,1/n]}$ a.e. 收敛到零，但 $\lVert h_n\rVert_1=1$；若改成 $h_n=n^{1/p}\mathbf1_{(0,1/n]}$，则 $\lVert h_n\rVert_p=1$。逐点消失不等于误差质量消失。
+
+\section{乘积空间与截面}
+
+给定 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$，乘积 $\sigma$ 代数
+\[
+ \mathcal A\otimes\mathcal B
+ =\sigma\{A\times B:A\in\mathcal A,\ B\in\mathcal B\}
+\]
+由可测矩形生成。若两空间 $\sigma$ 有限，存在唯一乘积测度 $\mu\times\nu$ 满足
+\[
+ (\mu\times\nu)(A\times B)=\mu(A)\nu(B).
+\]
+对 $E\subseteq X\times Y$，固定 $x$ 或 $y$ 得截面
+\[
+ E_x=\{y:(x,y)\in E\},\qquad E^y=\{x:(x,y)\in E\}.
+\]
+若 $E\in\mathcal A\otimes\mathcal B$，则截面可测。示性函数满足 $\mathbf1_E(x,y)=\mathbf1_{E_x}(y)=\mathbf1_{E^y}(x)$，这是从集合测度走向二重积分的桥梁。
+
+\section{Tonelli 与 Fubini 是两道不同门禁}
+
+\begin{theorem}[Tonelli]
+若 $f:X\times Y\to[0,\infty]$ 对 $\mathcal A\otimes\mathcal B$ 可测，则
+\[
+ \int f\,d(\mu\times\nu)
+ =\int_X\!\left(\int_Y f(x,y)\,d\nu(y)\right)d\mu(x)
+ =\int_Y\!\left(\int_X f(x,y)\,d\mu(x)\right)d\nu(y),
+\]
+共同值允许为 $+\infty$。
+\end{theorem}
+
+证明先对矩形示性函数成立，再线性扩展到非负简单函数，最后取简单函数单调逼近并两次使用 MCT。非负性允许全部步骤在扩展实数中进行，因此不需要预先证明积分有限。
+
+\begin{theorem}[Fubini]
+若实值 $f$ 对乘积 $\sigma$ 代数可测，且
+\[
+ \int_{X\times Y}|f|\,d(\mu\times\nu)<\infty,
+\]
+则几乎所有截面可积，两种迭代积分都存在且有限，并等于乘积空间积分。
+\end{theorem}
+
+对 $|f|\geq0$ 使用 Tonelli，得到几乎所有截面的绝对积分有限；再把 $f=f^+-f^-$，分别对非负部分使用 Tonelli并相减。Fubini 的真正门禁是绝对可积性，不是“两个有限循环都跑完了”。
+
+\begin{example}[独立时的期望乘积]
+若 $X,Y$ 独立且 $u(X),v(Y)$ 可积，并且乘积绝对可积，则联合分布是边缘分布的乘积，Fubini 给
+\[
+ \mathbb E[u(X)v(Y)]
+ =\int u(x)v(y)\,d(P_X\times P_Y)
+ =\mathbb E[u(X)]\mathbb E[v(Y)].
+\]
+独立性负责乘积测度结构，绝对可积性负责合法换序；两者不可互相替代。
+\end{example}
+
+\section{失败见证：条件求和不能冒充 Fubini}
 
 在 $\mathbb N\times\mathbb N$ 上取计数测度，并令
 \[
-  a_{mn}=\begin{cases}
-    1,&m=n,\\
-    -1,&m=n+1,\\
-    0,&\text{其他}.
-  \end{cases}
+ a_{mn}=\begin{cases}
+  1,&m=n,\\
+ -1,&m=n+1,\\
+  0,&\text{其他}.
+ \end{cases}
 \]
-固定一行求和时，第 1 行为 1，其余行中 $1$ 与 $-1$ 抵消，所以先逐行求和得到 1。固定一列求和时，每列的 $1$ 都与下一行的 $-1$ 抵消，所以先逐列求和得到 0。
-
-矛盾来自缺少绝对可积性：前 $N\times N$ 方阵的绝对值和为 $2N-1\to\infty$。方阵截断的有符号和恒为 1，而 $(N+1)\times N$ 截断恒为 0；不同扩张路径保留了不同边界项。Fubini 不适用，Tonelli 也不能用于含负项的 $a_{mn}$。
-
-\section{独立数值实验与误差界}
-
-对 $x^2$ 使用 $N=64$ 个等宽小区间的复合中点公式，程序得到积分 $0.333312988$。解析积分是 $1/3$；由于 $\max|(x^2)''|=2$，中点余项满足
+固定一行：第 1 行之和为 1，其余行中的 $-1$ 与 $1$ 抵消，所以
 \[
-  |E_N|\le\frac{2}{24N^2}=0.000020345\ldots,
+ \sum_{m=1}^{\infty}\left(\sum_{n=1}^{\infty}a_{mn}\right)=1.
 \]
-实际误差也恰为 $0.000020345\ldots$。双重级数部分只做整数计数，因此误差界为零；它不是用浮点近似制造的次序差异。
+固定一列：每列的 $1$ 与下一行的 $-1$ 抵消，所以
+\[
+ \sum_{n=1}^{\infty}\left(\sum_{m=1}^{\infty}a_{mn}\right)=0.
+\]
+缺口是绝对可积性：前 $N\times N$ 方阵有 $N$ 个 $+1$ 和 $N-1$ 个 $-1$，绝对值和为 $2N-1\to\infty$。有符号方阵和恒为 1，而 $(N+1)\times N$ 矩形和恒为 0；不同扩张路径保留不同边界项。含负项时 Tonelli 不适用，绝对和发散时 Fubini 不适用，两个有限截断都稳定也不能创造合法极限。
+
+\section{独立数值 oracle 与误差界}
+
+对 $f(x)=x^2$ 使用 $N$ 个等宽区间的复合中点公式：
+\[
+ M_N=\frac1N\sum_{k=0}^{N-1}\left(\frac{k+1/2}{N}\right)^2.
+\]
+当 $f\in C^2[0,1]$，复合中点余项满足
+\[
+ \left|\int_0^1f(x)\,dx-M_N\right|
+ \leq\frac{\max|f''|}{24N^2}.
+\]
+这里 $\max|f''|=2$。固定 $N=64$，脚本得到 $M_N=0.333312988$；解析积分为 $1/3$，实际误差与上界均为 $0.000020345\ldots$。双重级数部分只做整数计数，因此误差为零；次序差异不是浮点舍入制造的。
+
+oracle 还绑定 $p\in\{1,2,4\}$、$N=64$ 和截断尺寸 $10,100$。它拒绝非有限数、分组数量错配以及被改写的固定账本，防止 `NaN` 比较、数组截断或同步篡改 expected 把未核验结果标成成功。
 
 \begin{lstlisting}[language=bash]
 uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch04
 \end{lstlisting}
 
+\section{研究中的换序审计}
+
+在把期望、积分、极限或求和交换前，依次记录：底层测度空间是否有限或 $\sigma$ 有限；函数与截面是否可测；使用的是非负性还是绝对可积性；积分允许无穷还是必须有限；收敛是 $L^p$、依测度还是 a.e.；所引用的包含关系是否依赖有限总测度；数值截断是否沿不同区域复核；expected 是否来自独立解析账本。若两个次序给出不同值，第一反应应是定位缺失假设，而不是挑选更符合策略叙事的结果。
+
 \input{tex/upper/chapters/ch04-questions}
 \input{tex/upper/chapters/ch04-hints}
 
 \section*{本章小结与 Capstone 连接}
 
-$L^p$ 把误差尺度变成完备空间；收敛定理规定极限交换条件；Tonelli 与 Fubini 规定积分次序门禁。上册 Capstone 将要求每个期望、联合积分和数值近似同时声明空间、可积条件、独立 oracle 与误差界。
+$L^p$ 通过 a.e. 等价类把误差变成完备范数空间；Hölder 与 Minkowski 控制乘积和误差叠加；有限测度决定不同 $p$ 之间的包含关系；三种收敛只有有限的推出链；Tonelli 与 Fubini 则分别以非负性和绝对可积性守住换序边界。上册 Capstone 会要求每个联合期望、误差范数和数值近似同时声明空间、门禁、独立 oracle 与失败见证。

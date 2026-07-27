@@ -1,9 +1,30 @@
 \section{四级问题与即时练习}
 \begingroup\small
+\subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}解释 $L^p$ 元素为何是几乎处处等价类，并区分 Tonelli 与 Fubini 的适用条件。
-  \item \textbf{笔试推导：}推导 $\lVert x\rVert_p=(p+1)^{-1/p}$，再证明双重级数前 $N\times N$ 方阵的绝对值和为 $2N-1$。
-  \item \textbf{数值编程：}复现三个 $L^p$ 范数、中点积分与误差界，并核对两种有限截断分别为 1 与 0。
-  \item \textbf{研究判断：}某嵌套期望在两个积分次序下给出不同估计。列出在归咎于数值误差前必须检查的数学与数据证据。
+  \item 为什么 $L^p$ 的元素是 a.e. 等价类？普通上确界与本质上确界有什么差别？
+  \item 比较 Hölder 与 Minkowski 的输入和结论；为什么“$X,Y\in L^1$”不足以保证协方差存在？
+  \item 区分 $L^p$、依测度和 a.e. 收敛，并陈述本章可以保证的推出关系。
+\end{enumerate}
+
+\subsection*{笔试推导}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 从 Young 不等式证明 Hölder，再用 Hölder 推导 $1<p<\infty$ 时的 Minkowski。
+  \item 若 $\mu(\Omega)<\infty$ 且 $1\leq p<q$，证明 $\lVert f\rVert_p\leq\mu(\Omega)^{1/p-1/q}\lVert f\rVert_q$；给出无限测度下两个包含方向各自失败的函数。
+  \item 对双重级数 $a_{mn}$，分别计算两种迭代和、$N\times N$ 与 $(N+1)\times N$ 截断和，并证明绝对值和为 $2N-1$。
+\end{enumerate}
+
+\subsection*{数值编程}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 复现 $p=1,2,4$ 的 $\lVert x\rVert_p$、$N=64$ 的中点积分、实际误差和解析上界；expected 必须独立写出。
+  \item 复制 oracle 后分别注入 `NaN`、改变 $p$ 值、网格数、截断尺寸和期望数组长度；记录五类稳定诊断。
+  \item 编写 typewriter 序列实验：对每层输出单项 $L^p$ 范数，并跟踪一个非二进点的命中序列，验证范数趋零而点值不收敛。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 某模型报告训练损失在样本点逐点下降到零。需要补什么证据才能声称总体 $L^1$ 风险趋零？
+  \item 两段代码分别先按资产、先按日期聚合，得到不同风险值。设计一份区分数学换序失败、缺失数据规则与浮点误差的审计。
+  \item 研究员在无限时间轴上用“高阶矩控制低阶矩”删去一个风险门禁。评价该论证，并给出最小修复方案。
 \end{enumerate}
 \endgroup

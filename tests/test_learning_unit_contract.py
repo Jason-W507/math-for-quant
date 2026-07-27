@@ -951,6 +951,78 @@ class LearningUnitContractTests(unittest.TestCase):
         )
         self.assertEqual(result.stderr, "")
 
+    def test_chapter_four_rejects_a_nonfinite_oracle_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-nonfinite-midpoint.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update(
+                {"expected_midpoint_integral": float("nan")}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite\n",
+        )
+
+    def test_chapter_four_rejects_noncanonical_lp_powers(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-noncanonical-powers.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update({"p_values": [1, 3, 4]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: p values must equal [1, 2, 4]\n",
+        )
+
+    def test_chapter_four_rejects_noncanonical_midpoint_bins(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-noncanonical-bins.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update({"midpoint_bins": 32}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: midpoint bins must equal 64\n",
+        )
+
+    def test_chapter_four_rejects_noncanonical_section_sizes(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-noncanonical-sections.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update({"section_sizes": [20, 200]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: section sizes must equal [10, 100]\n",
+        )
+
+    def test_chapter_four_rejects_mismatched_oracle_counts(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-mismatched-section-count.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update({"expected_square_sums": [1]}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: expected counts must match input counts\n",
+        )
+
     def test_accepts_chapter_four_with_lp_and_fubini_oracles(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch04" / "oracle.json").read_text(
