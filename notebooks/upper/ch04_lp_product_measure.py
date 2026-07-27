@@ -64,10 +64,38 @@ def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
         oracle["expected"],
         oracle["absolute_tolerance"],
     ]
-    if not all(math.isfinite(float(value)) for value in numeric_scalars):
+    try:
+        parsed_scalars = [float(value) for value in numeric_scalars]
+    except (TypeError, ValueError):
+        raise SystemExit(
+            "numeric gate failed: oracle scalars must be finite numbers"
+        ) from None
+    if not all(math.isfinite(value) for value in parsed_scalars):
         raise SystemExit("numeric gate failed: oracle scalars must be finite")
-    if float(oracle["absolute_tolerance"]) < 0.0:
-        raise SystemExit("numeric gate failed: tolerance must be nonnegative")
+    tolerance = float(oracle["absolute_tolerance"])
+    if tolerance != 1e-12:
+        raise SystemExit(
+            "ledger gate failed: absolute tolerance must equal 1e-12"
+        )
+    if (
+        oracle["expected_row_first"] != 1
+        or oracle["expected_column_first"] != 0
+        or oracle["expected_square_sums"] != [1, 1]
+        or oracle["expected_rectangular_sums"] != [0, 0]
+        or oracle["expected_absolute_square_sums"] != [19, 199]
+    ):
+        raise SystemExit(
+            "ledger gate failed: iterated-sum labels must match analytic ledger"
+        )
+    if not math.isclose(
+        float(oracle["expected"]),
+        1.0 / math.sqrt(3.0),
+        rel_tol=0.0,
+        abs_tol=1e-15,
+    ):
+        raise SystemExit(
+            "ledger gate failed: published expected must equal analytic L2 norm"
+        )
 
     lp_norms = [
         (1.0 / (int(power) + 1)) ** (1.0 / int(power))
@@ -129,7 +157,6 @@ def main(oracle_path: Path = Path("evidence/ch04/oracle.json")) -> int:
         *(int(item) for item in oracle["expected_rectangular_sums"]),
         *(int(item) for item in oracle["expected_absolute_square_sums"]),
     ]
-    tolerance = float(oracle["absolute_tolerance"])
     if len(observed) != len(expected) or any(
         abs(left - right) > tolerance for left, right in zip(observed, expected)
     ):

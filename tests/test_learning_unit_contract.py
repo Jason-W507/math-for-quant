@@ -1023,6 +1023,68 @@ class LearningUnitContractTests(unittest.TestCase):
             "ledger gate failed: expected counts must match input counts\n",
         )
 
+    def test_chapter_four_rejects_fractional_iterated_sum_labels(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-fractional-row-first.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update({"expected_row_first": 1.5}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: iterated-sum labels must match analytic ledger\n",
+        )
+
+    def test_chapter_four_rejects_a_false_published_expected_label(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-false-published-expected.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update({"expected": 0.25}),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: published expected must equal analytic L2 norm\n",
+        )
+
+    def test_chapter_four_rejects_a_widened_tolerance_ledger(self) -> None:
+        def widen_tolerance_and_change_expected(oracle: dict[str, Any]) -> None:
+            oracle["absolute_tolerance"] = 1e9
+            oracle["expected_lp_norms"] = [99.0, 99.0, 99.0]
+
+        result = self.run_oracle_fixture(
+            "ch04-widened-tolerance.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            widen_tolerance_and_change_expected,
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "ledger gate failed: absolute tolerance must equal 1e-12\n",
+        )
+
+    def test_chapter_four_rejects_a_malformed_numeric_scalar(self) -> None:
+        result = self.run_oracle_fixture(
+            "ch04-malformed-midpoint.json",
+            "evidence/ch04/oracle.json",
+            "notebooks/upper/ch04_lp_product_measure.py",
+            lambda oracle: oracle.update(
+                {"expected_midpoint_integral": "not-a-number"}
+            ),
+        )
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(
+            result.stderr,
+            "numeric gate failed: oracle scalars must be finite numbers\n",
+        )
+
     def test_accepts_chapter_four_with_lp_and_fubini_oracles(self) -> None:
         oracle = json.loads(
             (ROOT / "evidence" / "ch04" / "oracle.json").read_text(
