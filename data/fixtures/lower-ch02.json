@@ -1,0 +1,23 @@
+{
+  "ar_values": [1.0, 0.6, 0.36, 0.216, 0.1296],
+  "misspecification_threshold": 0.2,
+  "kalman": {
+    "prior_mean": 0.0,
+    "prior_variance": 1.0,
+    "observation": 1.2,
+    "observation_variance": 0.25
+  },
+  "change_values": [0.0, 0.1, -0.1, 0.0, 3.0, 3.1, 2.9, 3.0],
+  "minimum_segment": 2,
+  "change_threshold": 2.5,
+  "cointegration_x": [100.0, 101.0, 103.0, 102.0, 104.0, 105.0],
+  "cointegration_y": [201.0, 201.0, 207.0, 203.0, 209.0, 209.0],
+  "cointegration_beta": 2.0,
+  "windows": [
+    {"name": "train", "start": "2016-01", "end": "2019-12"},
+    {"name": "validation", "start": "2020-01", "end": "2021-12"},
+    {"name": "trade", "start": "2022-01", "end": "2024-12"}
+  ],
+  "trade_returns": [0.03, 0.02],
+  "total_cost": 0.01
+}

@@ -442,6 +442,29 @@
         "solutions": "tex/lower/chapters/multifactor-solutions.tex",
         "capstone_connection": "tex/lower/chapters/multifactor.tex"
       }
+    },
+    {
+      "id": "lower.ch02",
+      "title": "时间序列与统计套利：从动态模型到滚动验证",
+      "volume": "lower",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch09", "upper.ch11", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
+      "evidence": {
+        "notation_symbols": ["\\mathcal F_t", "\\rho(h)", "R^{\\mathrm{net}}"],
+        "glossary_terms": ["协整", "状态空间模型", "Kalman 滤波", "滚动向前验证", "交易成本"],
+        "notation_and_assumptions": "tex/lower/chapters/stat-arb.tex",
+        "core_derivation": "tex/lower/chapters/stat-arb.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/ch02_stat_arb.py",
+          "oracle": "evidence/lower-ch02/oracle.json",
+          "command": ["{python}", "notebooks/lower/ch02_stat_arb.py", "evidence/lower-ch02/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/stat-arb-questions.tex",
+        "hints": "tex/lower/chapters/stat-arb-hints.tex",
+        "solutions": "tex/lower/chapters/stat-arb-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/stat-arb.tex"
+      }
     }
   ],
   "reading_routes": [
