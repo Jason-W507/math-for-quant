@@ -1,6 +1,6 @@
 {
   "provenance": "finite-state transition-matrix powers and stationary equations, exact Poisson moments, Brownian covariance min(s,t) and quadratic-variation moments, and finite-space conditional-probability enumeration",
-  "numpy_version": "2.5.1",
+  "numpy_versions": ["2.3.5", "2.5.1"],
   "process_labels": ["Markov", "martingale", "Poisson", "Brownian"],
   "seed": 20260726,
   "transition_matrix": [[0.8, 0.2], [0.3, 0.7]],

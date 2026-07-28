@@ -2,7 +2,7 @@
 \label{ch:linear-algebra}
 
 \begin{introduction}
-  \item 先修：第 1 章的命题与反例、第 5 章的梯度和矩阵微分。
+  \input{tex/generated/prerequisites/upper-ch06.tex}
   \item 学习产出：能从几何与优化两条路径推导最小二乘，按假设选择分解，并用前向/后向误差解释病态性。
   \item 研究连接：回归、因子风险模型、PCA、协方差估计、组合优化和数值稳定性都依赖本章的不变量。
 \end{introduction}
@@ -43,6 +43,8 @@
   P_X=X(X^TX)^{-1}X^T.
 \]
 $P_X$ 对称且幂等：$P_X^T=P_X$、$P_X^2=P_X$；它在列空间上是恒等映射，在正交补上为零。公式中的逆矩阵要求满列秩。秩亏时投影仍唯一，但系数未必唯一，应使用正交基或 Moore--Penrose 伪逆 $X^+$，写成 $P_X=XX^+$。
+
+\input{tex/upper/figures/projection-svd.tex}
 
 \section{最小二乘：同一结论的优化证明}
 
@@ -101,7 +103,15 @@ y=\begin{pmatrix}1\\2\\2\end{pmatrix}.
 \[
  X^+=V\Sigma^+U^T
 \]
-在所有最小二乘解中选择最小二范数解。Eckart--Young 定理说明截断到前 $k$ 项给出二范数/平方 Frobenius 范数意义下的最佳秩 $k$ 近似；误差由被丢弃奇异值决定。截断 SVD 和 ridge 都降低方差，却以偏差为代价，不是免费“修复”。
+在所有最小二乘解中选择最小二范数解。Eckart--Young--Mirsky 定理说明
+截断到前 $k$ 项的 $A_k$ 同时是谱范数与 Frobenius 范数下的最佳秩
+$k$ 近似，并且
+\[
+ \lVert A-A_k\rVert_2=\sigma_{k+1},\qquad
+ \lVert A-A_k\rVert_F=\left(\sum_{i>k}\sigma_i^2\right)^{1/2}.
+\]
+写“平方 Frobenius 范数”虽然有同一极小化解，却掩盖了标准误差公式。
+截断 SVD 和 ridge 都降低方差，却以偏差为代价，不是免费“修复”。
 
 固定设计矩阵的奇异值为 $2.676243$ 与 $0.915272$。最佳秩一近似的二范数误差正好是 $0.915272$；这同时核验了奇异值排序和低秩近似定理。
 
@@ -158,6 +168,8 @@ uv run python tools/check_learning_unit.py \
 \begin{remark}[Python 边界]
 NumPy 的 \texttt{lstsq}、\texttt{qr}、\texttt{eigh}、\texttt{svd} 和 \texttt{cond} 是计算工具，不自动验证假设。\texttt{eigh} 只用于对称/Hermitian 问题；\texttt{eig} 的一般结果不保证实数或正交；\texttt{matrix\_rank} 的结论依赖容差。把 dtype、形状、缩放、阈值和独立账本一起保存，结果才可审计。
 \end{remark}
+
+\noindent\textbf{延伸阅读。}分解、最小二乘与数值线性代数的标准来源参见\cite{golub2013matrix}。
 
 \input{tex/upper/chapters/ch06-questions}
 \input{tex/upper/chapters/ch06-hints}

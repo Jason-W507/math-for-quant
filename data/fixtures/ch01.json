@@ -1,0 +1,5 @@
+{
+  "returns": [0.02, -0.01, 0.03],
+  "weights": [0.5, 0.3, 0.2],
+  "counterexample_weights": [1.5, -0.5, 0.0]
+}

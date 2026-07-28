@@ -1,0 +1,2 @@
+"""Curriculum-level publication contracts."""
+

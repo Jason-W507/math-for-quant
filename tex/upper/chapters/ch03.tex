@@ -2,7 +2,7 @@
 \label{ch:measure-integration}
 
 \begin{introduction}
-  \item 先修：第 2 章的集合、函数、序列极限与函数列收敛。
+  \input{tex/generated/prerequisites/upper-ch03.tex}
   \item 学习产出：能从事件结构构造积分，证明常用连续性结论，并判断极限与积分交换缺少哪条假设。
   \item Python 边界：代码只复现有限账本和解析见证，不能用网格采样替代可测性、可积性或一般收敛定理。
   \item 研究连接：随机变量、期望、损失函数、似然与连续时间模型都使用同一套测度积分语言。
@@ -268,6 +268,8 @@ uv run python tools/check_learning_unit.py \
 \section{研究中的测度积分检查表}
 
 在把极限移入期望或损失前，依次记录：$(\Omega,\mathcal F,\mu)$ 是什么；变量和极限是否可测；等式是处处还是 a.e.；积分允许扩展实数还是必须有限；使用 Fatou、MCT 或 DCT 的哪组假设；支配函数为何可积；数值证据是否独立于被测离散化。少一项时，应报告缺口而不是引用定理名字。
+
+\noindent\textbf{延伸阅读。}测度、可测函数与 Lebesgue 积分的严格处理参见\cite{folland1999analysis}。
 
 \input{tex/upper/chapters/ch03-questions}
 \input{tex/upper/chapters/ch03-hints}

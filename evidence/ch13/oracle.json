@@ -1,6 +1,6 @@
 {
   "provenance": "KKT stationarity, complementary slackness, the scalar dual and right-hand-side sensitivity are solved by hand for a two-variable quadratic program; the minimum-variance portfolio follows from the equality-constrained KKT system; projected gradient is only an independent numerical cross-check",
-  "numpy_version": "2.5.1",
+  "numpy_versions": ["2.3.5", "2.5.1"],
   "optimization_labels": ["KKT", "duality", "sensitivity", "minimum variance"],
   "analytic_solution": [0.5, 0.5],
   "analytic_multiplier": 0.5,

@@ -8,8 +8,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 NOTATION_SOURCE = ROOT / "curriculum" / "notation.json"
 GLOSSARY_SOURCE = ROOT / "curriculum" / "glossary.json"
+MANIFEST_SOURCE = ROOT / "curriculum" / "manifest.json"
 NOTATION_OUTPUT = ROOT / "tex" / "common" / "notation.tex"
 GLOSSARY_OUTPUT = ROOT / "tex" / "common" / "glossary.tex"
+PREREQUISITE_OUTPUT = ROOT / "tex" / "generated" / "prerequisites"
+COURSE_MAP_OUTPUT = ROOT / "tex" / "generated" / "course-map.tex"
+CONCEPT_INDEX_OUTPUT = ROOT / "tex" / "generated" / "concept-index.tex"
 
 
 def tex_text(value: str) -> str:
@@ -81,15 +85,151 @@ def render_glossary() -> str:
     )
 
 
+def render_prerequisites(unit: dict[str, object], titles: dict[str, str]) -> str:
+    prerequisites = [str(value) for value in unit.get("prerequisites", [])]
+    if not prerequisites:
+        description = "无；只需本书前言声明的读者基础。"
+    else:
+        rendered = []
+        for identifier in prerequisites:
+            volume, chapter = identifier.split(".ch", maxsplit=1)
+            volume_name = {"upper": "上册", "lower": "下册"}[volume]
+            rendered.append(
+                f"{volume_name}第 {int(chapter)} 章《{tex_text(titles[identifier])}》"
+            )
+        description = "、".join(rendered) + "。"
+    return (
+        "% Generated from curriculum/manifest.json; do not edit by hand.\n"
+        f"\\item 直接先修：{description}\n"
+    )
+
+
+def chapter_number(unit_id: str) -> int:
+    return int(unit_id.split(".ch", maxsplit=1)[1])
+
+
+def render_course_map(manifest: dict[str, object]) -> str:
+    units = [
+        unit
+        for unit in manifest["units"]
+        if str(unit["id"]).startswith("upper.ch") and not unit.get("internal", False)
+    ]
+    titles = {str(unit["id"]): str(unit["title"]) for unit in units}
+    route_sections = []
+    for route in manifest["reading_routes"]:
+        chain = r" $\rightarrow$ ".join(
+            f"第 {chapter_number(identifier)} 章" for identifier in route["units"]
+        )
+        route_sections.append(
+            f"\\subsection*{{{tex_text(str(route['title']))}}}\n"
+            f"{tex_text(str(route['description']))}\n\n{chain}\n"
+        )
+
+    rows = []
+    for unit in units:
+        prerequisites = [str(value) for value in unit.get("prerequisites", [])]
+        prerequisite_text = "无" if not prerequisites else "、".join(
+            f"第 {chapter_number(identifier)} 章" for identifier in prerequisites
+        )
+        route_tags = [
+            str(route["title"])
+            for route in manifest["reading_routes"]
+            if unit["id"] in route["units"]
+        ]
+        rows.append(
+            f"{chapter_number(str(unit['id']))} & {tex_text(titles[str(unit['id'])])} & "
+            f"{prerequisite_text} & {tex_text('、'.join(route_tags) or '按需')} \\\\"
+        )
+
+    bridge_sections = []
+    for bridge in manifest["reader_bridges"]:
+        route_titles = [
+            str(route["title"])
+            for route in manifest["reading_routes"]
+            if route["id"] in bridge["for_routes"]
+        ]
+        review = "、".join(
+            f"第 {chapter_number(identifier)} 章" for identifier in bridge["review_units"]
+        )
+        before = chapter_number(str(bridge["before_unit"]))
+        bridge_sections.append(
+            f"\\subsection*{{{tex_text(str(bridge['title']))}}}\n"
+            f"服务路线：{tex_text('、'.join(route_titles))}；在第 {before} 章前学习。"
+            f"需要完整证明时回看{review}。\n"
+        )
+
+    return (
+        "% Generated from curriculum/manifest.json; do not edit by hand.\n"
+        "\\section{两条阅读路线}\n\n"
+        + "\n\n".join(route_sections)
+        + "\n\\begin{note}\n"
+        "应用主线不是免修证明条件。遇到概率空间、期望交换、条件化或 $L^p$ 论证时，"
+        "按下表回看第 3、4、8 章的对应定义与定理；理论增强线则完整学习这些章节。\n"
+        "\\end{note}\n\n"
+        "\\section{应用主线桥接}\n\n"
+        + "\n".join(bridge_sections)
+        + "\n"
+        "\\section{完整直接先修图}\n\n"
+        "下表把 manifest 中的每条直接先修边完整展开；传递先修可沿行递归追溯。\n\n"
+        "\\begin{longtable}{p{0.07\\textwidth}p{0.42\\textwidth}p{0.20\\textwidth}p{0.20\\textwidth}}\n"
+        "\\toprule\n章 & 学习单元 & 直接先修 & 路线 \\\\\n\\midrule\n\\endfirsthead\n"
+        "\\toprule\n章 & 学习单元 & 直接先修 & 路线 \\\\\n\\midrule\n\\endhead\n"
+        + "\n".join(rows)
+        + "\n\\bottomrule\n\\end{longtable}\n"
+    )
+
+
+def render_concept_index(manifest: dict[str, object]) -> str:
+    locations: dict[str, list[int]] = {}
+    for unit in manifest["units"]:
+        identifier = str(unit["id"])
+        if unit.get("internal", False) or not identifier.startswith("upper.ch"):
+            continue
+        number = chapter_number(identifier)
+        evidence = unit.get("evidence", {})
+        for term in evidence.get("glossary_terms", []):
+            locations.setdefault(str(term), []).append(number)
+
+    rows = []
+    for term in sorted(locations, key=lambda value: value.casefold()):
+        chapters = "、".join(f"第 {number} 章" for number in sorted(set(locations[term])))
+        rows.append(f"{tex_text(term)} & {chapters} \\\\")
+    return (
+        "% Generated from curriculum/manifest.json; do not edit by hand.\n"
+        "\\begin{longtable}{p{0.52\\textwidth}p{0.36\\textwidth}}\n"
+        "\\toprule\n主题 & 正式教学位置 \\\\\n"
+        "\\midrule\n\\endfirsthead\n"
+        "\\toprule\n主题 & 正式教学位置 \\\\\n"
+        "\\midrule\n\\endhead\n"
+        + "\n".join(rows)
+        + "\n\\bottomrule\n\\end{longtable}\n"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
 
+    manifest = json.loads(MANIFEST_SOURCE.read_text(encoding="utf-8"))
+    titles = {str(unit["id"]): str(unit["title"]) for unit in manifest["units"]}
+    upper_units = [
+        unit for unit in manifest["units"] if str(unit["id"]).startswith("upper.ch")
+    ]
     expected = {
         NOTATION_OUTPUT: render_notation(),
         GLOSSARY_OUTPUT: render_glossary(),
+        COURSE_MAP_OUTPUT: render_course_map(manifest),
+        CONCEPT_INDEX_OUTPUT: render_concept_index(manifest),
     }
+    expected.update(
+        {
+            PREREQUISITE_OUTPUT
+            / f"upper-ch{int(str(unit['id']).removeprefix('upper.ch')):02d}.tex":
+            render_prerequisites(unit, titles)
+            for unit in upper_units
+        }
+    )
     if args.check:
         stale = [
             path
@@ -102,6 +242,7 @@ def main() -> int:
             return 1
     else:
         for path, content in expected.items():
+            path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8", newline="\n")
 
     notation_count = len(json.loads(NOTATION_SOURCE.read_text(encoding="utf-8"))["symbols"])

@@ -2,7 +2,7 @@
 \label{ch:statistical-inference}
 
 \begin{introduction}
-  \item 先修：第 6 章的投影与条件数，第 9 章的概率收敛、CLT 与有效样本量。
+  \input{tex/generated/prerequisites/upper-ch10.tex}
   \item 学习产出：从抽样规则推导偏差、方差、MSE 与渐近分布；从投影推导 OLS；为异方差、序列相关和聚类选择标准误；把因子搜索登记为一个检验族。
   \item 研究连接：本章回答“估计对象是什么、误差如何量化、显著性是否可信”；它不把统计显著偷换成因果或成本后可交易性。
 \end{introduction}
@@ -65,7 +65,10 @@ $T_n\not\xrightarrow{\mathbb P}\theta$。oracle 的
 $\mathbb E(\hat p^2)-p^2=p(1-p)/n=0.000960$；Delta 近似方差为
 $4p^2p(1-p)/n=0.0006144$。这说明 plug-in 一致不等于有限样本无偏，也说明导数在边界为零时一阶 Delta 方法可能退化。
 
-主模拟中 Bernoulli$(0.4)$ 样本均值的理论方差为 $0.000960$；固定种子重复 $20000$ 次得到均值 $0.399938$、经验方差 $0.000966$，正态区间覆盖率为 $0.954700$。模拟检验实现与有限样本表现；解析矩才是独立 oracle。
+主模拟取成功概率为 $0.4$ 的 Bernoulli 样本，其样本均值理论方差为
+$0.000960$。固定种子重复 $20000$ 次，得到均值 $0.399938$、经验方差
+$0.000966$，正态区间覆盖率为 $0.954700$。模拟检验实现与有限样本表现；
+解析矩才是独立 oracle。
 
 \section{检验、区间、功效与经济效应}
 
@@ -100,8 +103,19 @@ $Q(b)=\lVert y-Xb\rVert_2^2$。求梯度得
 \]
 几何上，$X\hat\beta$ 是 $y$ 到 $\operatorname{col}(X)$ 的正交投影。满秩保证系数表示唯一；数值上仍应优先用 QR/SVD 求解，而不是显式形成逆矩阵。
 
-模型 $y=X\beta+\varepsilon$ 下，条件外生
-$\mathbb E(\varepsilon\mid X)=0$ 支持条件无偏与一致性论证；同方差且条件不相关
+模型 $y=X\beta+\varepsilon$ 下，给定满列秩设计矩阵时，条件外生
+$\mathbb E(\varepsilon\mid X)=0$ 支持有限样本条件无偏。它本身不是完整的
+一致性定理；在固定维数的一个常见渐近框架中，还需矩和依赖条件足以应用
+大数定律，并要求
+\[
+ \frac{X^TX}{n}\xrightarrow{p}Q,\qquad Q\succ0,
+ \qquad
+ \frac{X^T\varepsilon}{n}\xrightarrow{p}0.
+\]
+于是
+$\hat\beta-\beta=(X^TX/n)^{-1}(X^T\varepsilon/n)\xrightarrow{p}0$。
+时间序列、面板和高维设计各自还需要相应的依赖、聚类或维数增长条件。
+同方差且条件不相关
 $\operatorname{Var}(\varepsilon\mid X)=\sigma^2I$ 才给出经典协方差
 \[
  \operatorname{Var}(\hat\beta\mid X)=\sigma^2(X^TX)^{-1}.
@@ -178,6 +192,8 @@ uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch10
 \end{lstlisting}
 它同时核对解析账本、固定种子模拟、规范输入、版本和容差；篡改期望值与放宽门槛会以非零状态失败。
+
+\noindent\textbf{延伸阅读。}回归与渐近理论参见\cite{hayashi2000econometrics,vanderVaart1998asymptotic}；HAC、横截面回归和数据窥探分别参见\cite{newey1987hac,fama1973risk,white2000reality}。
 
 \input{tex/upper/chapters/ch10-questions}
 \input{tex/upper/chapters/ch10-hints}

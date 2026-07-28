@@ -2,7 +2,7 @@
 \label{ch:analysis-foundations}
 
 \begin{introduction}
-  \item 先修：第 1 章的量词、必要与充分条件、反例和独立 oracle。
+  \input{tex/generated/prerequisites/upper-ch02.tex}
   \item 学习产出：能判断一个迭代收敛论证究竟依赖度量、Cauchy 性、完备性还是连续性，并区分逐点与一致控制。
   \item 研究连接：为优化器停止条件、数值不动点、估计量极限和函数逼近建立可审计边界。
 \end{introduction}
@@ -368,6 +368,8 @@ bound=0.032768 witness10=0.500000 witness100=0.500000
 \end{enumerate}
 
 诊断时依次问：使用什么度量？序列是否 Cauchy？空间是否完备？映射是否保持状态空间并连续？控制是逐点还是一致？数值 oracle 是否独立？
+
+\noindent\textbf{延伸阅读。}度量、完备性与一致收敛的标准版本参见\cite{rudin1976analysis}。
 
 \input{tex/upper/chapters/ch02-questions}
 \input{tex/upper/chapters/ch02-hints}

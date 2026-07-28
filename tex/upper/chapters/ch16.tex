@@ -2,7 +2,7 @@
 \label{ch:research-validity}
 
 \begin{introduction}
-  \item 先修：第 10 章的检验与多重比较，第 12 章的时间序列切分，第 13 章的约束思想，第 15 章的模拟误差与 bootstrap。
+  \input{tex/generated/prerequisites/upper-ch16.tex}
   \item 学习产出：能把一个量化研究写成可执行审计协议，逐项证明信息在决策时已经可得、模型选择与最终评估分离、多重尝试得到校正、成本后结果可手算复核，并把市场制度差异写成按研究期核验的条件。
   \item 研究连接：上册 Capstone 和下册六条路线都复用本章门禁；任何模型只有先通过时间、选择、摩擦、数值与复现检查，才有资格讨论经济解释或样本外表现。
 \end{introduction}
@@ -79,7 +79,12 @@
   \item 在验证窗口附近留出缓冲区（embargo），防止慢变特征或执行状态跨边界；
   \item 若超参数也被选择，在外层评估、内层选择，避免同一折同时承担选择与最终评分。
 \end{itemize}
-purge 长度与 embargo 长度不是通用常数，它们应由标签跨度、特征记忆和研究机制决定。机械地套一个百分比并不能证明独立性。
+
+\input{tex/upper/figures/purge-embargo.tex}
+
+\begin{heuristic}
+purge 长度与 embargo 长度不是通用常数，它们应由标签跨度、特征记忆和研究机制决定。机械地套一个百分比并不能证明独立性；这里给出的是研究设计启发，不是保证样本独立的定理。
+\end{heuristic}
 
 \subsection{分布漂移改变结论的适用域}
 
@@ -181,6 +186,8 @@ $t_e\le t_a\le t_d<t_y$，拒绝缺少 \texttt{+08:00} 的时间，核验决策�
 \small\texttt{oracle=passed timeline=passed timezone=Asia/Shanghai calendar=2024-07-v1 ... net=0.034000}
 \end{center}
 它不从程序自身生成期望值。把第一行可得时间改到决策之后，程序必须报告 timeline gate failed；把 $p$ 值改成 $0.003$，必须报告 multiple-testing gate failed。负例证明门禁会对关键假设敏感，而不只是打印成功。
+
+\noindent\textbf{延伸阅读。}数据窥探与回测过拟合的正式处理参见\cite{white2000reality,bailey2017backtest}。
 
 \input{tex/upper/chapters/ch16-questions}
 \input{tex/upper/chapters/ch16-hints}

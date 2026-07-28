@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .schema import validate_document
+
 
 def validate_prerequisites(units: list[dict[str, object]]) -> str | None:
     identifiers = {str(unit.get("id")) for unit in units}
@@ -55,11 +57,16 @@ def load_registries(
             return f"invalid {name} registry JSON: {error.msg}", set(), set()
         if loaded[name].get("schema_version") != 1:
             return f"unsupported {name} registry schema_version", set(), set()
+        collection_name = "symbols" if name == "notation" else "terms"
+        collection = loaded[name].get(collection_name)
+        if not isinstance(collection, list) or not collection:
+            return f"{name} registry must contain {collection_name}", set(), set()
+        schema_error = validate_document(loaded[name], name)
+        if schema_error is not None:
+            return schema_error, set(), set()
 
     unit_ids = {str(unit.get("id")) for unit in units}
     symbols = loaded["notation"].get("symbols")
-    if not isinstance(symbols, list) or not symbols:
-        return "notation registry must contain symbols", set(), set()
     symbol_names: set[str] = set()
     for symbol in symbols:
         if not isinstance(symbol, dict) or any(
@@ -76,8 +83,6 @@ def load_registries(
         symbol_names.add(str(symbol["symbol"]))
 
     terms = loaded["glossary"].get("terms")
-    if not isinstance(terms, list) or not terms:
-        return "glossary registry must contain terms", set(), set()
     term_names: set[str] = set()
     for term in terms:
         if not isinstance(term, dict) or any(
@@ -102,11 +107,9 @@ def validate_shared(
     ]:
         return "question levels must be oral, derivation, computation, research"
     volumes = manifest.get("volumes")
-    if not isinstance(volumes, list) or {item.get("id") for item in volumes} != {
-        "upper",
-        "lower",
-    }:
-        return "curriculum must define upper and lower volumes"
+    if not isinstance(volumes, list) or not volumes:
+        return "curriculum must define at least one volume"
+    volume_ids = {str(item.get("id")) for item in volumes}
     for volume in volumes:
         if not (root / str(volume.get("source", ""))).is_file():
             return f"missing volume source: {volume.get('source')}"
@@ -114,13 +117,13 @@ def validate_shared(
     identifiers = [str(unit.get("id")) for unit in units]
     if len(identifiers) != len(set(identifiers)):
         return "course graph contains duplicate unit identifiers"
-    expected_upper = {f"upper.ch{number:02d}" for number in range(1, 18)}
-    if {item for item in identifiers if item.startswith("upper.ch")} != expected_upper:
-        return "curriculum must define upper.ch01 through upper.ch17"
+    for unit in units:
+        if str(unit.get("volume")) not in volume_ids:
+            return f"{unit.get('id')}: unknown volume {unit.get('volume')}"
 
     tracks = manifest.get("tracks")
-    if not isinstance(tracks, list) or len(tracks) != 6:
-        return "curriculum must define six direction tracks"
+    if not isinstance(tracks, list) or not tracks:
+        return "curriculum must define at least one direction track"
     track_ids = [str(track.get("id")) for track in tracks]
     if len(track_ids) != len(set(track_ids)):
         return "curriculum contains duplicate track identifiers"

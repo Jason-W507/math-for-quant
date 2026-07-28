@@ -2,7 +2,7 @@
 \label{ch:convex-optimization}
 
 \begin{introduction}
-  \item 先修：第 5 章的梯度与 Hessian，第 6 章的正定性与投影。
+  \input{tex/generated/prerequisites/upper-ch13.tex}
   \item 学习产出：能从几何与曲率验证凸性，说明 KKT 成立所需的约束资格，推导原始--对偶证书与影子价格，并独立审计数值解。
   \item 研究连接：组合权重、风险预算、换手成本和暴露中性首先是目标、单位与约束建模问题，不是“调用优化器”的问题。
 \end{introduction}
@@ -118,6 +118,8 @@ w^*=\frac{\Sigma^{-1}\mathbf1}{\mathbf1^T\Sigma^{-1}\mathbf1}.
 \section{研究审计协议}
 
 提交优化结果时至少记录：变量与目标单位、凸性依据、数据估计窗口、可行域和活跃约束、求解器与容差、KKT/对偶证书、输入扰动敏感度、样本外成本及失败边界。对协方差、预期收益和成本系数做小扰动，比较权重、目标和活跃集；若微小输入导致仓位翻转，应报告不确定性或加入稳健化，而不是隐藏在更多小数位后。
+
+\noindent\textbf{延伸阅读。}凸分析、对偶与 KKT 参见\cite{boyd2004convex}，数值优化实现边界参见\cite{nocedal2006numerical}。
 
 \input{tex/upper/chapters/ch13-questions}
 \input{tex/upper/chapters/ch13-hints}

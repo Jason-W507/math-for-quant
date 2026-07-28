@@ -2,7 +2,7 @@
 \label{ch:conditioning}
 
 \begin{introduction}
-  \item 先修：第 3 章的 Radon--Nikodym 定理、第 4 章的 $L^p$ 空间、第 7 章的联合分布与期望。
+  \input{tex/generated/prerequisites/upper-ch08.tex}
   \item 学习产出：能从事件、分割、随机变量和子 $\sigma$ 代数四个入口定义条件化，证明塔式与投影性质，并用 Bayes 公式和概率核计算条件律。
   \item 研究连接：因子中性化、状态切换、缺失数据、样本选择和时间序列预测都取决于“在什么信息下”陈述关系。
 \end{introduction}
@@ -163,7 +163,7 @@ $\mathbb P(S=1)=0.31$，因此
 \]
 后验是先验与似然共同决定的；把归一化分母漏掉或用样本内分类准确率替代似然，都不是 Bayes 更新。
 
-概率核 $K(z,B)$ 对固定 $z$ 是关于 $B$ 的概率测度，对固定 $B$ 是关于 $z$ 的可测函数。若目标空间是标准 Borel 空间，联合分布可选出正则条件分布
+概率核 $K(z,B)$ 对固定 $z$ 是关于 $B$ 的概率测度，对固定 $B$ 是关于 $z$ 的可测函数。若 $X$ 与 $Z$ 的状态空间均为标准 Borel 空间，则它们的联合分布存在一个关于 $Z$ 的正则条件分布版本
 \[
   K(z,B)=\mathbb P(X\in B\mid Z=z),
 \]
@@ -224,6 +224,8 @@ uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch08
 \end{lstlisting}
 独立 oracle 不抽样：它逐项验证定义积分、粗细分割塔式、正交残差、条件 Jensen、全方差、核混合、Bayes 后验、共同原因与碰撞点。固定形状、非负归一概率、固定参数、有限 expected、$10^{-10}$ 容差和发布标签共同防止同步伪造。
+
+\noindent\textbf{延伸阅读。}条件期望、概率核与正则条件分布参见\cite{kallenberg2021foundations}。
 
 \input{tex/upper/chapters/ch08-questions}
 \input{tex/upper/chapters/ch08-hints}

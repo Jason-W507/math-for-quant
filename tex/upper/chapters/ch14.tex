@@ -2,7 +2,7 @@
 \label{ch:numerical-stability}
 
 \begin{introduction}
-  \item 先修：第 6 章的特征值、奇异值、分解与最小二乘，第 13 章的残差与最优性证书。
+  \input{tex/generated/prerequisites/upper-ch14.tex}
   \item 学习产出：能把数值异常拆成表示、算法和问题条件性三层；能为求和、线性求解与最小二乘选择稳定实现，并设计可审计的误差测试。
   \item 研究连接：因子聚合、协方差求解、横截面回归和组合优化都可能在“程序成功、残差很小”时给出不可用结论。
 \end{introduction}
@@ -68,7 +68,9 @@ binary64 把有限数编码为符号、11 位指数和 52 位显式尾数；正�
 \]
 前提是 $ku<1$ 且没有异常值。成对求和把误差增长从线性层数降为对数层数；Kahan/Neumaier 用补偿项保存被舍弃的低位，但不能保证任意输入都正确舍入。
 
+\begin{implementationnote}
 并行归约改变分块与合并顺序，所以线程数、设备和调度可能改变末位。研究包应冻结归约树或声明允许的误差带，并同时保留一个高精度、小规模 oracle。若逐位可复现是协议要求，需要使用确定性归约或精确累加器，而不是把 \texttt{rtol} 调大。
+\end{implementationnote}
 
 \section{线性系统：小残差为什么仍可能错得很远}
 
@@ -119,6 +121,8 @@ $\mathrm{atol}$ 管理接近零的绝对尺度，$\mathrm{rtol}$ 管理远离零
 当协方差求逆、回归或优化结果异常时，按以下顺序审计：先冻结输入、版本、dtype 与运算顺序；再检查有限性、单位和尺度；随后报告谱、秩、条件数与残差；然后比较 LU/QR/SVD 或稳定改写；最后才考虑缩放、收缩、截断或正则化，并重新做样本外验证。若合理输入扰动导致组合权重翻转，结论应降级为“不稳定”，不能用求解器成功状态包装成经济发现。
 
 Python/NumPy 与 C++ 库都可能调用 BLAS/LAPACK，但默认 dtype、内存布局、线程归约和异常策略不同。跨语言一致性要冻结这些边界，并用解析或高精度 oracle 约束核心结论，而不是要求所有中间位逐字相同。
+
+\noindent\textbf{延伸阅读。}浮点误差、稳定性与病态问题的系统处理参见\cite{higham2002accuracy,golub2013matrix}。
 
 \input{tex/upper/chapters/ch14-questions}
 \input{tex/upper/chapters/ch14-hints}

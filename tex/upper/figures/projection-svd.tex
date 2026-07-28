@@ -1,0 +1,15 @@
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[>=stealth,scale=0.92]
+    \draw[->] (-0.4,0) -- (5.2,0) node[right] {$\mathcal C(X)$};
+    \draw[->] (0,-0.4) -- (0,3.8) node[above] {$\mathcal C(X)^\perp$};
+    \coordinate (Y) at (4.3,3.0);
+    \coordinate (S) at (4.3,0);
+    \draw[very thick,structurecolor,->] (0,0) -- (Y) node[above right] {$y$};
+    \draw[very thick,blue!65!black,->] (0,0) -- (S) node[below right] {$s=P_Xy$};
+    \draw[very thick,red!65!black,->] (S) -- (Y) node[midway,right] {$r=y-s$};
+    \draw[dashed] (Y) -- (S);
+    \draw (4.05,0) -- (4.05,0.25) -- (4.3,0.25);
+  \end{tikzpicture}
+  \caption{投影把观测分为列空间分量与正交残差；SVD 进一步揭示列空间中的尺度与近奇异方向。}
+\end{figure}

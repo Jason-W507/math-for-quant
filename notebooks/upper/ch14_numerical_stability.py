@@ -15,7 +15,7 @@ import sys
 import numpy as np
 
 
-FIXED_NUMPY_VERSION = "2.5.1"
+FIXED_NUMPY_VERSIONS = ("2.3.5", "2.5.1")
 FIXED_LABELS = [
     "IEEE 754",
     "cancellation",
@@ -93,7 +93,7 @@ EXPECTED_FIELDS = {
     "tolerance_flags",
 }
 REQUIRED_FIELDS = {
-    "numpy_version",
+    "numpy_versions",
     "numerical_labels",
     "provenance",
     "published_markers",
@@ -137,8 +137,8 @@ def validate_oracle(oracle: dict[str, object]) -> None:
             "expected ledger missing required fields: " + ", ".join(missing_expected)
         )
     reject_nonfinite(oracle)
-    if oracle["numpy_version"] != FIXED_NUMPY_VERSION or np.__version__ != FIXED_NUMPY_VERSION:
-        raise SystemExit(f"NumPy version must equal {FIXED_NUMPY_VERSION}")
+    if oracle["numpy_versions"] != list(FIXED_NUMPY_VERSIONS) or np.__version__ not in FIXED_NUMPY_VERSIONS:
+        raise SystemExit(f"NumPy version must be one of {FIXED_NUMPY_VERSIONS}")
     if oracle["numerical_labels"] != FIXED_LABELS:
         raise SystemExit("numerical labels must match the published design")
     if oracle["provenance"] != FIXED_PROVENANCE:

@@ -15,7 +15,7 @@ import sys
 import numpy as np
 
 
-FIXED_NUMPY_VERSION = "2.5.1"
+FIXED_NUMPY_VERSIONS = ("2.3.5", "2.5.1")
 FIXED_LABELS = ["KKT", "duality", "sensitivity", "minimum variance"]
 FIXED_PROVENANCE = (
     "KKT stationarity, complementary slackness, the scalar dual and right-hand-"
@@ -65,7 +65,7 @@ REQUIRED_FIELDS = {
     "expected_perturbed_condition_number", "expected_perturbed_variance",
     "expected_perturbed_weights", "expected_weight_amplification",
     "expected_sensitivity_derivative", "expected_sensitivity_multiplier",
-    "expected_sensitivity_value", "finite_difference_step", "numpy_version",
+    "expected_sensitivity_value", "finite_difference_step", "numpy_versions",
     "optimizer_iterations", "optimizer_start", "optimizer_step",
     "optimizer_tolerance", "portfolio_budget_vector", "portfolio_covariance",
     "portfolio_covariance_perturbed",
@@ -94,10 +94,10 @@ def validate_oracle(oracle: dict[str, object]) -> None:
         raise SystemExit(f"oracle missing required fields: {', '.join(missing)}")
     reject_nonfinite(oracle)
     if (
-        oracle["numpy_version"] != FIXED_NUMPY_VERSION
-        or np.__version__ != FIXED_NUMPY_VERSION
+        oracle["numpy_versions"] != list(FIXED_NUMPY_VERSIONS)
+        or np.__version__ not in FIXED_NUMPY_VERSIONS
     ):
-        raise SystemExit(f"NumPy version must equal {FIXED_NUMPY_VERSION}")
+        raise SystemExit(f"NumPy version must be one of {FIXED_NUMPY_VERSIONS}")
     if oracle["optimization_labels"] != FIXED_LABELS:
         raise SystemExit("optimization labels must match the published design")
     if oracle["provenance"] != FIXED_PROVENANCE:

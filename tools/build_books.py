@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 import os
 import re
@@ -18,7 +19,7 @@ FATAL_LOG_MARKERS = (
     "There were undefined references",
     "Missing character:",
 )
-MAX_OVERFULL_POINTS = 10.0
+MAX_OVERFULL_POINTS = 2.0
 
 
 def parse_args() -> argparse.Namespace:
@@ -27,9 +28,49 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_volumes() -> dict[str, dict[str, str]]:
-    manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
-    return {str(item["id"]): item for item in manifest["volumes"]}
+def load_manifest() -> dict[str, object]:
+    return json.loads(MANIFEST.read_text(encoding="utf-8"))
+
+
+def attached_supplements(
+    manifest: dict[str, object], selected_volume: str
+) -> list[dict[str, str]]:
+    return [
+        item
+        for item in manifest["supplements"]
+        if item["parent_volume"] == selected_volume
+    ]
+
+
+def release_date(environment: dict[str, str]) -> str:
+    declared = environment.get("MFQ_RELEASE_DATE")
+    if declared:
+        datetime.strptime(declared, "%Y-%m-%d")
+        return declared
+    epoch = environment.get("SOURCE_DATE_EPOCH")
+    if epoch:
+        return datetime.fromtimestamp(int(epoch), tz=timezone.utc).date().isoformat()
+    result = subprocess.run(
+        ["git", "show", "-s", "--format=%cs", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode == 0 and result.stdout.strip():
+        return result.stdout.strip()
+    return "2026-07-28"
+
+
+def git_source_date_epoch() -> str | None:
+    result = subprocess.run(
+        ["git", "show", "-s", "--format=%ct", "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    return result.stdout.strip() if result.returncode == 0 and result.stdout.strip() else None
 
 
 def build_volume(volume: dict[str, str]) -> Path:
@@ -42,32 +83,43 @@ def build_volume(volume: dict[str, str]) -> Path:
     published_pdf.parent.mkdir(parents=True, exist_ok=True)
 
     environment = os.environ.copy()
+    commit_epoch = git_source_date_epoch()
+    if commit_epoch is not None:
+        environment.setdefault("SOURCE_DATE_EPOCH", commit_epoch)
     vendor = str(ROOT / "vendor" / "elegantbook")
     environment["TEXINPUTS"] = vendor + os.pathsep + environment.get("TEXINPUTS", "")
 
+    wrapper = build_directory / f"{job_name}-wrapper.tex"
+    wrapper.write_text(
+        f"\\def\\MFQReleaseDate{{{release_date(environment)}}}\n"
+        f"\\input{{{(ROOT / source).as_posix()}}}\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     command = [
-        "xelatex",
-        "--disable-installer",
+        "latexmk",
+        "-xelatex",
+        "-bibtex",
+        "-xelatex=xelatex --disable-installer %O %S",
         "-interaction=nonstopmode",
         "-halt-on-error",
         "-file-line-error",
-        f"-output-directory={build_directory}",
-        f"-job-name={job_name}",
-        str(ROOT / source),
+        f"-outdir={build_directory}",
+        f"-jobname={job_name}",
+        str(wrapper),
     ]
-    for _ in range(2):
-        result = subprocess.run(
-            command,
-            cwd=ROOT,
-            env=environment,
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        if result.returncode != 0:
-            sys.stderr.write(result.stdout)
-            sys.stderr.write(result.stderr)
-            raise RuntimeError(f"{identifier} XeLaTeX build failed")
+    result = subprocess.run(
+        command,
+        cwd=ROOT,
+        env=environment,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout)
+        sys.stderr.write(result.stderr)
+        raise RuntimeError(f"{identifier} latexmk build failed")
 
     log_path = build_directory / f"{job_name}.log"
     log = log_path.read_text(encoding="utf-8", errors="replace")
@@ -100,7 +152,8 @@ def build_volume(volume: dict[str, str]) -> Path:
 
 def main() -> int:
     args = parse_args()
-    volumes = load_volumes()
+    manifest = load_manifest()
+    volumes = {str(item["id"]): item for item in manifest["volumes"]}
     if args.volume != "all" and args.volume not in volumes:
         print(f"unknown volume: {args.volume}", file=sys.stderr)
         return 1
@@ -109,6 +162,12 @@ def main() -> int:
         for identifier in selected:
             pdf = build_volume(volumes[identifier])
             print(f"volume={identifier} pdf={pdf.relative_to(ROOT).as_posix()}")
+            for supplement in attached_supplements(manifest, identifier):
+                supplement_pdf = build_volume(supplement)
+                print(
+                    f"supplement={supplement['id']} "
+                    f"pdf={supplement_pdf.relative_to(ROOT).as_posix()}"
+                )
     except (OSError, RuntimeError) as error:
         print(str(error), file=sys.stderr)
         return 1

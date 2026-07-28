@@ -13,6 +13,7 @@ from contract.evidence import (
     validate_content,
 )
 from contract.publication import validate as validate_publications
+from contract.schema import validate_document
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +38,10 @@ def main() -> int:
     args = parse_args()
     if args.unit is not None and args.volume is not None:
         return fail("choose either --unit or --volume")
-    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    try:
+        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as error:
+        return fail(f"manifest JSON is invalid: {error.msg}")
     units = manifest.get("units", [])
 
     prerequisite_error = validate_prerequisites(units)
@@ -79,6 +83,10 @@ def main() -> int:
         for relative in paths:
             if not (ROOT / relative).is_file():
                 return fail(f"{unit.get('id')}: missing artifact {relative}")
+
+    schema_error = validate_document(manifest, "manifest")
+    if schema_error is not None:
+        return fail(schema_error)
 
     registry_error, symbols, terms = load_registries(manifest, units, ROOT)
     if registry_error is not None:
@@ -123,7 +131,15 @@ def main() -> int:
         if publication_error is not None:
             return fail(publication_error)
 
-    print("curriculum=passed volumes=2 upper_chapters=17 tracks=6")
+    volumes = manifest["volumes"]
+    upper_chapters = sum(
+        unit.get("volume") == "upper" and not unit.get("internal", False)
+        for unit in units
+    )
+    print(
+        f"curriculum=passed volumes={len(volumes)} "
+        f"upper_chapters={upper_chapters} tracks={len(manifest['tracks'])}"
+    )
     print("question-levels=passed count=4")
     print("registries=passed count=2")
     print(f"course-graph=passed units={len(units)}")

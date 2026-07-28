@@ -11,19 +11,19 @@
   \item[完备性（completeness）] 空间中每个 Cauchy 序列都收敛到空间内一点的性质。
   \item[一致收敛（uniform convergence）] 同一索引阈值能同时控制定义域所有点误差的函数收敛。
   \item[压缩映射（contraction mapping）] 以严格小于 1 的统一因子缩短任意两点距离的映射。
-  \item[sigma 代数（sigma algebra）] 包含全集并对补集和可数并封闭的事件集合族。
-  \item[测度（measure）] 在 sigma 代数上取值并满足可数可加性的非负集合函数。
-  \item[可测函数（measurable function）] 目标可测集的逆像始终属于定义域 sigma 代数的函数。
+  \item[\(\sigma\)-代数（sigma algebra）] 包含全集并对补集和可数并封闭的事件集合族。
+  \item[测度（measure）] 在 \(\sigma\)-代数上取值并满足可数可加性的非负集合函数。
+  \item[可测函数（measurable function）] 目标可测集的逆像始终属于定义域 \(\sigma\)-代数的函数。
   \item[简单函数（simple function）] 只取有限多个值并可写为可测示性函数有限和的函数。
   \item[Lebesgue 积分（Lebesgue integral）] 由简单函数从下逼近构造并扩展到可积符号函数的积分。
   \item[几乎处处（almost everywhere）] 除一个零测集外性质均成立。
-  \item[Lp 空间（Lp space）] p 次绝对可积可测函数按几乎处处相等取等价类得到的完备范数空间。
+  \item[\(L^p\) 空间（\(L^p\) space）] p 次绝对可积可测函数按几乎处处相等取等价类得到的完备范数空间。
   \item[本质上确界（essential supremum）] 允许忽略零测集后函数仍满足的最小几乎处处上界。
-  \item[Hölder 不等式（Holder inequality）] 用一对共轭 Lp 范数控制函数乘积积分的不等式。
-  \item[Minkowski 不等式（Minkowski inequality）] 保证 Lp 范数满足三角不等式的积分不等式。
+  \item[Hölder 不等式（Holder inequality）] 用一对共轭 $L^p$ 范数控制函数乘积积分的不等式。
+  \item[Minkowski 不等式（Minkowski inequality）] 保证 $L^p$ 范数满足三角不等式的积分不等式。
   \item[Tonelli 定理（Tonelli theorem）] 允许非负可测函数交换乘积空间积分次序且共同值可以为无穷的定理。
   \item[Fubini 定理（Fubini theorem）] 在绝对可积条件下保证两种迭代积分与乘积空间积分相等的定理。
-  \item[乘积测度（product measure）] 在可测矩形上取两个测度乘积并扩张到乘积 sigma 代数的测度。
+  \item[乘积测度（product measure）] 在可测矩形上取两个测度乘积并扩张到乘积 \(\sigma\)-代数的测度。
   \item[多元可微（multivariable differentiability）] 函数增量可由一个统一线性映射逼近且余项相对输入增量范数消失。
   \item[梯度（gradient）] 表示标量函数一阶线性近似的偏导数组成的向量。
   \item[Jacobian] 表示向量值函数一阶线性近似并按约定排列输入输出偏导的矩阵。
@@ -34,13 +34,13 @@
   \item[谱分解（spectral decomposition）] 将实对称矩阵写成正交特征向量与实特征值的分解。
   \item[奇异值分解（singular value decomposition）] 将任意矩阵分解为左右正交方向与非负奇异值。
   \item[条件数（condition number）] 衡量问题输出对输入相对扰动最坏敏感度的数值。
-  \item[概率空间（probability space）] 由样本空间、事件 sigma 代数与总质量为一的概率测度组成的三元组。
+  \item[概率空间（probability space）] 由样本空间、事件 \(\sigma\)-代数与总质量为一的概率测度组成的三元组。
   \item[随机变量（random variable）] 从概率空间到目标可测空间的可测映射。
   \item[推前分布（pushforward distribution）] 随机变量通过逆像把底层概率测度推到目标空间得到的概率测度。
   \item[联合分布（joint distribution）] 随机向量在乘积空间上的推前概率分布。
   \item[边缘分布（marginal distribution）] 从联合分布对其余坐标积分或求和得到的单坐标分布。
   \item[重尾分布（heavy-tailed distribution）] 尾部衰减较慢并可能使某些矩不存在的分布。
-  \item[条件期望（conditional expectation）] 给定子 sigma 代数时保持其每个事件上积分的可测随机变量。
+  \item[条件期望（conditional expectation）] 给定子 \(\sigma\)-代数时保持其每个事件上积分的可测随机变量。
   \item[塔式性质（tower property）] 对嵌套信息集合依次条件化等于直接对较粗信息条件化的性质。
   \item[独立性（independence）] 相关事件的联合概率对所有可测集合均分解为边缘概率乘积。
   \item[条件独立（conditional independence）] 给定指定信息后联合条件分布分解为条件边缘分布乘积。
@@ -52,7 +52,7 @@
   \item[碰撞点偏差（collider bias）] 对两个变量共同结果或选择事件条件化而制造统计依赖的偏差。
   \item[几乎处处收敛（almost sure convergence）] 除零概率状态外逐点收敛。
   \item[依概率收敛（convergence in probability）] 偏差超过任意正阈值的概率趋于零。
-  \item[Lp 收敛（Lp convergence）] 差的 p 次绝对矩趋于零。
+  \item[\(L^p\) 收敛（\(L^p\) convergence）] 差的 $p$ 次绝对矩趋于零。
   \item[分布收敛（convergence in distribution）] 分布函数在极限分布连续点处收敛。
   \item[大数定律（law of large numbers）] 在明确矩与依赖条件下样本平均趋近总体均值的定理。
   \item[中心极限定理（central limit theorem）] 在明确正则条件下标准化和趋近正态分布的定理。
@@ -78,7 +78,7 @@
   \item[Benjamini-Hochberg 方法（Benjamini-Hochberg procedure）] 把排序 p 值与线性阶梯阈值比较以在相应依赖条件下控制 FDR 的方法。
   \item[选择偏差（selection bias）] 因样本、模型或结果的选择机制与目标量相关而导致的系统偏差。
   \item[随机过程（stochastic process）] 同一概率空间上由时间或其他索引参数化的随机变量族。
-  \item[滤过（filtration）] 随索引递增、表示可用信息增长的 sigma 代数族。
+  \item[滤过（filtration）] 随索引递增、表示可用信息增长的 \(\sigma\)-代数族。
   \item[Markov 性（Markov property）] 给定当前状态后未来条件分布不再依赖更早历史的性质。
   \item[停止时刻（stopping time）] 对每个时点都能仅凭当时信息判断是否已经发生的随机时刻。
   \item[周期（period）] Markov 状态可能返回时长集合的最大公约数；周期大于一会阻止逐步分布收敛。

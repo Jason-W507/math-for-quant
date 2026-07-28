@@ -2,7 +2,7 @@
 \label{ch:probability-distributions}
 
 \begin{introduction}
-  \item 先修：第 3 章的测度与积分、第 4 章的乘积测度和 $L^p$ 空间。
+  \input{tex/generated/prerequisites/upper-ch07.tex}
   \item 学习产出：能从概率空间构造随机变量及其分布，使用 CDF、密度、推前律与生成函数计算，并识别矩或模型假设失效。
   \item 研究连接：收益建模、风险度量、似然、模拟与极限定理都要求先说清概率由谁定义、变量把它推到哪里、哪些矩确实存在。
 \end{introduction}
@@ -80,7 +80,7 @@ $Z\sim\mathcal N(0,1)$。由对称性与有限求和，
   \qquad \operatorname{Var}(D)=\operatorname{Var}(Z)=1.
 \]
 但二者绝非同分布：离散变量在零点有原子
-$\mathbb P(D=0)=1/2$，连续 Normal 满足 $\mathbb P(Z=0)=0$；而且
+$\mathbb P(D=0)=1/2$，连续正态分布满足 $\mathbb P(Z=0)=0$；而且
 \[
   \mathbb E[D^4]
   =\frac14(\sqrt2)^4+\frac14(-\sqrt2)^4=2,
@@ -128,7 +128,7 @@ $\mathbb P(D=0)=1/2$，连续 Normal 满足 $\mathbb P(Z=0)=0$；而且
 \begin{description}[style=nextline,leftmargin=2em]
   \item[Bernoulli / Binomial] 一次成功指标 $B\sim\mathrm{Bernoulli}(p)$ 有均值 $p$、方差 $p(1-p)$；固定次数、同成功率且独立时，成功总数才是 $\mathrm{Binomial}(n,p)$。
   \item[Poisson / Exponential] 独立平稳增量的 Poisson 计数过程产生 $N_t\sim\mathrm{Poisson}(\lambda t)$，相邻到达时间为 $\mathrm{Exp}(\lambda)$；仅有“均值等于方差”不足以证明该机制。
-  \item[Uniform / Normal] $U(a,b)$ 表示区间内密度恒定；Normal 常作为许多小扰动之和的近似。正态假设包含对称、轻尾与所有矩存在，不能只靠直方图中央部分决定。
+  \item[Uniform / 正态分布] $U(a,b)$ 表示区间内密度恒定；正态分布常作为许多小扰动之和的近似。正态假设包含对称、轻尾与所有矩存在，不能只靠直方图中央部分决定。
   \item[Lognormal] 若 $Z\sim N(\mu,\sigma^2)$，则 $e^Z$ 为正且右偏；均值为 $e^{\mu+\sigma^2/2}$，方差为 $(e^{\sigma^2}-1)e^{2\mu+\sigma^2}$。
   \item[Student-$t$ / Pareto] $t_\nu$ 的均值仅在 $\nu>1$ 时存在，方差仅在 $\nu>2$ 时存在；Pareto 尾指数 $\alpha$ 只保证 $p<\alpha$ 阶矩有限。尾参数决定哪些统计量有总体含义。
 \end{description}
@@ -165,6 +165,8 @@ uv run python tools/check_learning_unit.py \
 \begin{note}
 经验分布是样本对象，参数分布是模型族，拟合参数是估计结果。选择分布时同时报告支持集、离散/连续机制、矩存在条件、尾部诊断、参数不确定性和样本外失败；不要以“均值方差接近”替代分布检验，也不要删除极端值后再证明轻尾。
 \end{note}
+
+\noindent\textbf{延伸阅读。}概率空间、分布与矩的测度论表述参见\cite{billingsley1995probability}。
 
 \input{tex/upper/chapters/ch07-questions}
 \input{tex/upper/chapters/ch07-hints}

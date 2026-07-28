@@ -1,0 +1,24 @@
+name: 数学错误
+description: 报告定义、定理、证明、条件、反例或数值结论中的错误
+title: "[数学勘误] "
+labels: ["needs-triage"]
+body:
+  - type: input
+    id: location
+    attributes:
+      label: 位置
+      description: 册、章、节、公式或源码路径
+    validations:
+      required: true
+  - type: textarea
+    id: statement
+    attributes:
+      label: 当前表述与问题
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: 建议修正、反例或出处
+    validations:
+      required: true

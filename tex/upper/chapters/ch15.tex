@@ -2,7 +2,7 @@
 \label{ch:monte-carlo}
 
 \begin{introduction}
-  \item 先修：第 9 章的大数定律与中心极限定理，第 14 章的浮点误差和容差。
+  \input{tex/generated/prerequisites/upper-ch15.tex}
   \item 学习产出：能从期望或积分推导 Monte Carlo 估计量及误差预算，使用独立 oracle 验收模拟，解释并实现控制变量，构造 bootstrap 抽样分布，并判断 IID bootstrap 何时失效。
   \item 研究连接：衍生品定价、风险度量、策略不确定性与执行仿真都需要把抽样误差、模型误差、数值误差和实现错误分开记账。
 \end{introduction}
@@ -231,6 +231,8 @@ IID bootstrap 的关键前提是观察来自共同分布的独立同分布样本
   \item 对依赖、重尾、稀有事件和选择步骤运行负例；
   \item 报告结论能证明什么、不能外推什么。
 \end{enumerate}
+
+\noindent\textbf{延伸阅读。}金融工程中的 Monte Carlo 参见\cite{glasserman2004montecarlo}，bootstrap 的标准来源参见\cite{efron1993bootstrap}。
 
 \input{tex/upper/chapters/ch15-questions}
 \input{tex/upper/chapters/ch15-hints}

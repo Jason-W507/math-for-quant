@@ -1,0 +1,101 @@
+\chapter*{应用主线桥接：概率所需最小测度论}
+\addcontentsline{toc}{chapter}{应用主线桥接：概率所需最小测度论}
+\label{bridge:minimal-measure}
+
+这份桥接服务于应用主线读者：它把第 7--9 章反复使用的测度论对象放进一条最短可操作链，但不替代第 3、4、8 章的定义、证明与反例。遇到“是否可测”“能否交换极限与期望”“条件期望相对于什么信息”等问题时，应沿每节标出的回看位置补足理论。
+
+\section*{1. 从样本空间到可提问事件}
+
+概率模型从三元组 $(\Omega,\mathcal F,\mathbb P)$ 开始。$\Omega$ 是可能结果的集合；$\mathcal F$ 是允许赋予概率的事件族；$\mathbb P$ 是满足可列可加性的测度。$\mathcal F$ 必须包含空集、对补集封闭、对可列并封闭，因此也对可列交封闭。它不是装饰：若一个集合不在 $\mathcal F$ 中，表达式 $\mathbb P(A)$ 在当前模型里就没有定义。
+
+有限或可数样本空间中常取 $\mathcal F=2^\Omega$。连续空间上通常从开集生成 Borel $\sigma$-代数 $\mathcal B(\mathbb R^d)$。这足以描述区间、阈值、连续函数原像等常见事件，却不能据此断言任意子集都可测。完备化还会加入零测集的所有子集；不同完备化约定会影响“逐点相等”与“几乎处处相等”的表述。
+
+\begin{diagnostic}
+当代码写出 \texttt{return <= threshold} 时，数学问题不是“布尔数组能否生成”，而是该阈值事件是否属于声明的信息与事件 $\sigma$-代数。若阈值使用未来修订数据，数组仍能运行，但事件不属于决策时的信息集。
+\end{diagnostic}
+
+\noindent\textbf{回看：}第 3 章的 $\sigma$-代数、生成族、测度与完备化。
+
+\section*{2. 随机变量是可测映射}
+
+随机变量 $X:(\Omega,\mathcal F)\to(E,\mathcal E)$ 的要求是：每个 $B\in\mathcal E$ 的原像 $X^{-1}(B)$ 都属于 $\mathcal F$。当 $E=\mathbb R$ 且 $\mathcal E=\mathcal B(\mathbb R)$ 时，只需能对所有阈值事件 $\{X\le x\}$ 提问。分布是推前测度
+\[
+ \mathcal L_X(B)=\mathbb P(X\in B)=\mathbb P\!\left(X^{-1}(B)\right).
+\]
+因此“随机变量的分布”只保留概率律，不保留 $X$ 与其他变量共享的样本空间或依赖结构。两个变量边缘分布相同，差值、协方差和条件关系仍可能完全不同。
+
+可测函数的复合仍可测。连续函数在 Borel 空间之间可测，所以常见代数变换通常没有障碍；但逐点极限、上确界和从数据中选择的随机索引仍要核对相应闭包条件。把 pandas 列成功转换成浮点数，只证明存储转换完成，不证明变量满足模型要求。
+
+\begin{example}
+若 $X$ 是收益、$g(x)=\mathbf1_{\{x\le-0.05\}}$，则 $g(X)$ 是亏损超过 $5\%$ 的示性变量，且 $\mathbb E[g(X)]=\mathbb P(X\le-0.05)$。这条等式把事件概率转成期望，也解释了为何经验频率可以估计该概率；它没有说明样本独立或分布稳定。
+\end{example}
+
+\noindent\textbf{回看：}第 3 章的可测函数、简单函数与推前测度；第 7 章会系统学习分布。
+
+\section*{3. 期望是积分，不只是样本平均}
+
+对非负简单函数 $s=\sum_k a_k\mathbf1_{A_k}$，积分定义为
+\[
+ \int s\,d\mathbb P=\sum_k a_k\mathbb P(A_k).
+\]
+一般非负可测函数由递增简单函数逼近；有符号变量写成 $X=X^+-X^-$。只有至少一侧积分有限时，扩展实值期望才有定义；若希望 $\mathbb E[X]$ 是有限实数，需要 $\mathbb E|X|<\infty$。所以“样本均值有一个浮点输出”不能替代可积性。
+
+对 $p>0$，$\mathbb E|X|^p<\infty$ 表示 $p$ 阶矩存在。高阶矩存在通常推出较低阶矩存在，因为概率空间总质量为一；反向不成立。重尾收益可以有有限均值却没有有限方差，此时以方差为基础的标准误与经典 CLT 不能直接使用。
+
+\begin{implementationnote}
+数值程序应分别记录：数学对象是否存在、样本估计是否有限、浮点算法是否稳定。删除或截断极端值可以让程序输出有限，却同时改变目标分布；这种变更必须作为估计对象的一部分声明。
+\end{implementationnote}
+
+\noindent\textbf{回看：}第 3 章的 Lebesgue 积分构造；第 4 章的 $L^p$ 空间与矩条件。
+
+\section*{4. 交换极限、求和与期望需要许可证}
+
+研究中最危险的跳步之一是把点态收敛直接推进积分号。三条常用许可证回答不同问题：单调收敛定理处理 $0\le X_n\uparrow X$；Fatou 引理给出非负函数的下界
+\[
+ \mathbb E[\liminf X_n]\le\liminf\mathbb E[X_n];
+\]
+支配收敛定理要求 $X_n\to X$ 几乎处处且存在可积的 $Y$ 使 $|X_n|\le Y$。仅知道每个 $X_n$ 有界，但界随 $n$ 增长，通常不够。
+
+对非负函数，Tonelli 定理允许先后积分，即使结果为无穷；对有符号函数，Fubini 定理通常要求绝对可积。有限循环在两个次序下都返回数字，不构成 Fubini 条件。时间、资产和模拟路径三重求和尤其容易隐藏条件收敛、缺失值和非确定归约顺序。
+
+\begin{example}
+令 $X_n=n\mathbf1_{\{U\le1/n\}}$。则 $X_n\to0$ 几乎处处，但 $\mathbb E X_n=1$。稀有事件的幅度抵消了概率缩小；这里不存在统一可积支配。第 9 章会把它用作“依概率收敛不推出 $L^1$ 收敛”的反例。
+\end{example}
+
+\noindent\textbf{回看：}第 3 章的单调收敛、Fatou 与支配收敛；第 4 章的 Tonelli、Fubini 与一致可积思想。
+
+\section*{5. 乘积空间区分联合律与独立性}
+
+两个随机变量的联合律是 $(X,Y)$ 在乘积空间上的推前测度。边缘律由对另一坐标积分得到。独立性是更强的分解条件：对所有可测集合 $A,B$，
+\[
+ \mathbb P(X\in A,Y\in B)=\mathbb P(X\in A)\mathbb P(Y\in B).
+\]
+零协方差只检查一个二阶矩等式，除特殊分布族外不推出独立。把收益矩阵的相关系数算成零，也不能消除非线性依赖、尾部共振或共同状态变量。
+
+重复抽样、Monte Carlo 与 bootstrap 常隐式使用乘积测度构造多个坐标副本。固定随机种子只让伪随机序列可复现，不证明这些坐标符合独立同分布假设；抽样机制仍需单独说明。
+
+\noindent\textbf{回看：}第 4 章的乘积测度；第 7 章的联合分布、协方差与依赖反例。
+
+\section*{6. 条件期望把信息集写进模型}
+
+给定子 $\sigma$-代数 $\mathcal G\subseteq\mathcal F$，条件期望 $\mathbb E[X\mid\mathcal G]$ 是 $\mathcal G$-可测随机变量，并对每个 $G\in\mathcal G$ 满足
+\[
+ \int_G \mathbb E[X\mid\mathcal G],d\mathbb P
+ =\int_G X\,d\mathbb P.
+\]
+它只在几乎处处等价意义下唯一。若 $\mathcal H\subseteq\mathcal G$，塔式性质给出
+\[
+ \mathbb E[\mathbb E[X\mid\mathcal G]\mid\mathcal H]
+ =\mathbb E[X\mid\mathcal H].
+\]
+这里的核心不是“按组求平均”这个算法，而是哪些事件属于当前信息。按未来收益分组再计算历史特征均值，会产生合法的数组和非法的研究信息集。
+
+条件概率 $\mathbb P(X\in A\mid Z=z)$ 在连续情形不能用两个点事件概率相除来定义。标准 Borel 条件下可以选取正则条件分布核；该核对 $Z$ 的边缘律几乎处处唯一，但在零概率的具体 $z$ 上版本可能不同。
+
+\noindent\textbf{回看：}第 8 章的条件期望、概率核、条件独立与碰撞点偏差。
+
+\section*{进入概率章节前的自检}
+
+开始第 7 章前，读者应能回答：事件为何必须属于 $\mathcal F$；随机变量为何是可测映射；$\mathbb E[X]$ 何时为有限实数；点态或几乎处处收敛为何不能自动交换期望；联合分布为何不等于独立；条件期望为何依赖信息 $\sigma$-代数。若其中任一项只能用 Python 操作描述，应回看所标章节，而不是继续把后续定理当作计算公式。
+
+标准参考可见 Folland 的测度积分章节、Billingsley 与 Kallenberg 的概率基础部分\cite{folland1999analysis,billingsley1995probability,kallenberg2021foundations}。

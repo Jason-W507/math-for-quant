@@ -2,7 +2,7 @@
 \label{ch:stochastic-processes}
 
 \begin{introduction}
-  \item 先修：第 8 章的条件期望与概率核，第 9 章的收敛与极限定理。
+  \input{tex/generated/prerequisites/upper-ch11.tex}
   \item 学习产出：从有限维分布、路径和信息集三个层次描述过程；判断 Markov 链的长期行为；在明确条件下使用鞅与可选停止；推导 Poisson 与 Brownian 基线并识别失效边界。
   \item 研究连接：状态模型、事件到达、订单流、随机积分、衍生品定价和高频风险控制都依赖这些对象，但“像随机游走”不是模型验证。
 \end{introduction}
@@ -17,15 +17,20 @@
 
 滤过 $(\mathcal F_t)_{t\ge0}$ 满足 $\mathcal F_s\subseteq\mathcal F_t$（$s\le t$），表示信息增长。自然滤过是 $\sigma(X_s:s\le t)$；实际定理常再完备化并取右连续修改。$X_t$ 对 $\mathcal F_t$ 可测称为适应。交易指令若必须在 $t$ 前确定，常需要可预测性而不只是适应性。随机时刻 $\tau$ 若 $\{\tau\le t\}\in\mathcal F_t$，才是停止时刻；“全样本最优离场点”通常不是。
 
+\input{tex/upper/figures/filtration-timeline.tex}
+
 \begin{example}[信息层次]
 同一条价格序列既可被当作有限维向量做协方差估计，也可被当作路径讨论最大回撤。前者不能替代后者。若用收盘后才知道的日最高价决定盘中下单，变量虽属于终端 $\mathcal F_T$，却不属于当时的信息集。
 \end{example}
 
 \section{Markov 链：状态压缩与长期行为}
 
-齐次离散 Markov 链满足
+齐次离散 Markov 链满足：对任意使条件事件概率为正的历史
+$X_0=i_0,\ldots,X_{n-1}=i_{n-1},X_n=i$，
 \[
- \mathbb P(X_{n+1}=j\mid X_0,\ldots,X_n=i)=P_{ij},
+ \mathbb P(X_{n+1}=j\mid
+ X_0=i_0,\ldots,X_{n-1}=i_{n-1},X_n=i)
+ =\mathbb P(X_{n+1}=j\mid X_n=i)=P_{ij}.
 \]
 转移矩阵 $P$ 每行非负且和为一，Chapman--Kolmogorov 关系给出 $P^{m+n}=P^mP^n$。Markov 性不是“相邻独立”，而是当前状态已包含预测未来所需的历史摘要。若摘要遗漏库存、剩余期限或波动状态，扩充状态往往比强行接受 Markov 假设更诚实。
 
@@ -79,7 +84,15 @@ m_i=1+\tfrac12m_{i-1}+\tfrac12m_{i+1},\quad m_0=m_N=0.
 \[
 W_t-W_s\sim\mathcal N(0,t-s),\qquad \operatorname{Cov}(W_s,W_t)=\min(s,t).
 \]
-它具有缩放性 $(W_{ct})_{t\ge0}\overset d=(\sqrt c\,W_t)_{t\ge0}$；取 $c=4,t=1/4$，两边方差都为 1。Donsker 不变性原理说，独立同分布、零均值、方差 1 的增量所构成的线性插值过程 $S_{\lfloor nt\rfloor}/\sqrt n$，在函数空间 $D[0,1]$ 的弱收敛意义下趋于 Brownian。它不是有限 $n$ 的逐路径相等，也不覆盖无限方差或强依赖增量。对 $n=100$ 的对称增量，归一化终值方差为 1，Donsker 四阶矩基线为 $2.980000$。在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。
+它具有缩放性 $(W_{ct})_{t\ge0}\overset d=(\sqrt c\,W_t)_{t\ge0}$；取 $c=4,t=1/4$，两边方差都为 1。Donsker 不变性原理说，若 $(\xi_k)$ 独立同分布、均值为零且方差为 1，令 $S_m=\sum_{k=1}^m\xi_k$，则折线插值
+\[
+ W_n(t)=\frac{S_{\lfloor nt\rfloor}
+ +(nt-\lfloor nt\rfloor)\xi_{\lfloor nt\rfloor+1}}{\sqrt n},
+ \qquad 0\le t\le1,
+\]
+在 $C[0,1]$ 的弱收敛意义下趋于 Brownian 运动。若改用
+$S_{\lfloor nt\rfloor}/\sqrt n$，得到的是 càdlàg 阶梯过程，应在
+$D[0,1]$ 中表述。两种版本都不是有限 $n$ 的逐路径相等，也不覆盖无限方差或强依赖增量。对 $n=100$ 的对称增量，归一化终值方差为 1，Donsker 四阶矩基线为 $2.980000$。在 $t=(0.25,0.5,1)$ 上，经验协方差与 $\min(s,t)$ 的最大差为 $0.006948$。
 
 反射原理给出（$a>0$）
 \[
@@ -93,6 +106,8 @@ Brownian 路径几乎处处不可微且总变差无限，但沿网格的二次�
 \begin{note}
 Brownian、Poisson 与 Markov 都是条件结构，不是资产收益的事实标签。量化研究中必须写清状态、滤过、观测频率、参数稳定性、交易时钟及模型失败后的替代方案。
 \end{note}
+
+\noindent\textbf{延伸阅读。}Markov 链参见\cite{norris1997markov}；函数空间弱收敛与 Donsker 定理参见\cite{billingsley1999convergence}。
 
 \input{tex/upper/chapters/ch11-questions}
 \input{tex/upper/chapters/ch11-hints}

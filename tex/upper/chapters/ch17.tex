@@ -2,7 +2,7 @@
 \label{ch:research-audit-capstone}
 
 \begin{introduction}
-  \item 先修：完成第 1--16 章，尤其是第 10 章的错误率、第 14 章的数值稳定、第 16 章的 point-in-time 与交易摩擦协议。
+  \input{tex/generated/prerequisites/upper-ch17.tex}
   \item 学习产出：能在不相信研究者口头解释的前提下，从干净目录复现一个研究包，逐项核验数据来源、数学定义、统计选择、数值实现、交易摩擦、许可与限制，并用故障注入证明审计门禁有效。
   \item 能力证据：提交可复现命令、输入校验值、独立手算、成功摘要、失败摘要、证据矩阵和限制报告；不把教学包包装成实盘、生产或未来有效性证明。
 \end{introduction}
@@ -118,7 +118,7 @@ CSV 必须恰好包含 observation id、事件时间、可得时间、决策时�
 
 最终意见不是简单的 pass/fail，而是一张“声明---证据---失败---限制”矩阵：
 \begin{center}
-\begin{tabular}{p{0.20\textwidth}p{0.29\textwidth}p{0.23\textwidth}p{0.19\textwidth}}
+\begin{tabular}{@{}p{0.18\textwidth}p{0.27\textwidth}p{0.21\textwidth}p{0.18\textwidth}@{}}
 \toprule
 声明 & 正向证据 & 故障证据 & 限制 \\
 \midrule
@@ -145,6 +145,8 @@ CSV 必须恰好包含 observation id、事件时间、可得时间、决策时�
 \small\texttt{oracle=passed audit=passed package=upper-capstone-v1 data=research\_rows.csv rows=3 ... net=0.034000 ... license=CC0-1.0 licenses=4 limitations=6}
 \end{center}
 统一 notebook 构建入口还要证明文本源与 \texttt{.ipynb} 往返语义一致。干净副本测试、泄漏测试和限制报告篡改测试分别证明依赖边界、内容门禁和报告完整性。
+
+\noindent\textbf{延伸阅读。}可复现计算研究的通用工作规范参见\cite{sandve2013reproducible}。
 
 \input{tex/upper/chapters/ch17-questions}
 \input{tex/upper/chapters/ch17-hints}

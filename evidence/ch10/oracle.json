@@ -1,6 +1,6 @@
 {
   "provenance": "analytic Bernoulli estimator moments, a fixed-design heteroskedastic linear model with known Gaussian error variances, standard-normal critical values, and exact independent-test family-wise error probabilities",
-  "numpy_version": "2.5.1",
+  "numpy_versions": ["2.3.5", "2.5.1"],
   "seed": 20260726,
   "bernoulli_p": 0.4,
   "sample_size": 250,

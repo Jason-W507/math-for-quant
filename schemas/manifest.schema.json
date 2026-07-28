@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Jason-W507/math-for-quant/schemas/manifest.schema.json",
+  "type": "object",
+  "required": ["schema_version", "prerequisite_semantics", "question_levels", "registries", "volumes", "supplements", "units", "reading_routes", "reader_bridges", "tracks"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "prerequisite_semantics": {"const": "direct"},
+    "question_levels": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "oral"}, {"const": "derivation"},
+        {"const": "computation"}, {"const": "research"}
+      ],
+      "items": false
+    },
+    "registries": {
+      "type": "object",
+      "required": ["notation", "glossary"],
+      "properties": {
+        "notation": {"type": "string", "minLength": 1},
+        "glossary": {"type": "string", "minLength": 1}
+      }
+    },
+    "volumes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "source", "pdf"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "minLength": 1},
+          "pdf": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "supplements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "parent_volume", "source", "pdf"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "parent_volume": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "minLength": 1},
+          "pdf": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "volume", "state", "published", "prerequisites", "evidence"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "volume": {"type": "string", "minLength": 1},
+          "state": {"enum": ["draft", "accepted", "deprecated"]},
+          "published": {"type": "boolean"},
+          "internal": {"type": "boolean"},
+          "prerequisites": {"type": "array", "items": {"type": "string"}},
+          "evidence": {"type": "object"}
+        }
+      }
+    },
+    "reading_routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "description", "units"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "description": {"type": "string", "minLength": 1},
+          "units": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        }
+      }
+    },
+    "reader_bridges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "source", "for_routes", "before_unit", "review_units"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "source": {"type": "string", "minLength": 1},
+          "for_routes": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "before_unit": {"type": "string", "minLength": 1},
+          "review_units": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "tracks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "bridge_prerequisites"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "title": {"type": "string", "minLength": 1},
+          "bridge_prerequisites": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

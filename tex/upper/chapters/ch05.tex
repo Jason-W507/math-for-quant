@@ -2,7 +2,7 @@
 \label{ch:matrix-calculus}
 
 \begin{introduction}
-  \item 先修：第 1 章的命题与量纲、第 2 章的极限和连续性、第 4 章的范数语言。
+  \input{tex/generated/prerequisites/upper-ch05.tex}
   \item 学习产出：能从线性近似定义推导梯度、Jacobian 与 Hessian，使用微分和迹规则计算矩阵导数，并用独立差分检查实现。
   \item Python 边界：自动微分和有限差分只能核对给定点的程序，不能决定行列约定、可微性或模型目标是否正确。
   \item 研究连接：回归、组合优化、最大似然、风险敏感度和机器学习训练都依赖一致的形状与导数契约。
@@ -250,6 +250,8 @@ uv run python tools/check_learning_unit.py \
 \section{研究中的导数审计}
 
 提交梯度前依次记录：输入、输出与每个中间量的形状；导数约定；可微性或次梯度协议；解析推导的独立来源；自动微分对应的实际程序；有限差分步长扫描；目标的单位与总和/均值缩放；病态矩阵和约束边界；至少一个故意失败见证。若只有“框架没有报错”，证据仍不完整。
+
+\noindent\textbf{延伸阅读。}矩阵微分的形状约定与统计应用参见\cite{magnus2019matrix}。
 
 \input{tex/upper/chapters/ch05-questions}
 \input{tex/upper/chapters/ch05-hints}

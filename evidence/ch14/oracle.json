@@ -1,5 +1,5 @@
 {
-  "numpy_version": "2.5.1",
+  "numpy_versions": ["2.3.5", "2.5.1"],
   "numerical_labels": ["IEEE 754", "cancellation", "summation", "linear solve", "least squares", "rank deficiency"],
   "provenance": "80-digit Decimal arithmetic supplies cancellation and summation oracles; closed-form eigenvalues supply the two-by-two condition oracle; analytic solutions and fixed singular-value identities independently constrain the least-squares, scaling and rank-deficiency experiments",
   "decimal_precision": 80,

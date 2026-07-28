@@ -1,11 +1,14 @@
 \documentclass[lang=cn,11pt,scheme=chinese]{elegantbook}
 \usepackage{longtable}
+\addbibresource{tex/common/references.bib}
+\input{tex/common/editorial-environments}
 
 \title{量化研究数学}
 \subtitle{上册：通用工具与研究证据}
 \author{Jason W.}
-\date{\today}
-\version{0.1.0}
+\providecommand{\MFQReleaseDate}{2026-07-28}
+\date{\MFQReleaseDate}
+\version{0.2.0}
 \extrainfo{定义假设，独立验证，样本外判断。}
 \cover{assets/cover.jpg}
 \setcounter{tocdepth}{2}
@@ -32,7 +35,9 @@
 
 \section{上册的学习路径}
 
-主线依次连接分析、测度与概率、统计与随机过程、优化与数值计算，最终进入研究有效性和可复现审计。课程清单记录真实先修边；目录顺序不自动等于数学依赖。
+目录按读者叙事组织；直接先修、两条阅读路线和方向桥接由课程清单统一生成。
+
+\input{tex/generated/course-map}
 
 \begin{example}
 给定 $r_1=0.01$、$r_2=-0.02$、$r_3=0.03$，先手算
@@ -42,49 +47,47 @@
 随后执行 Jupytext 文本源，只有 observed 与该独立 oracle 在声明容差内一致，实验才通过。
 \end{example}
 
+\part{数学语言与分析基础}
 \input{tex/upper/chapters/ch01}
 \input{tex/upper/chapters/ch02}
 \input{tex/upper/chapters/ch03}
 \input{tex/upper/chapters/ch04}
+\part{微分、线性代数与优化准备}
 \input{tex/upper/chapters/ch05}
 \input{tex/upper/chapters/ch06}
+\part{概率、统计与随机过程}
+\input{tex/upper/bridges/probability-minimal-measure}
 \input{tex/upper/chapters/ch07}
 \input{tex/upper/chapters/ch08}
 \input{tex/upper/chapters/ch09}
 \input{tex/upper/chapters/ch10}
 \input{tex/upper/chapters/ch11}
+\part{动态模型与计算方法}
 \input{tex/upper/chapters/ch12}
 \input{tex/upper/chapters/ch13}
 \input{tex/upper/chapters/ch14}
 \input{tex/upper/chapters/ch15}
+\part{研究有效性与审计}
 \input{tex/upper/chapters/ch16}
 \input{tex/upper/chapters/ch17}
 
 \appendix
 
-\input{tex/upper/solutions/ch01}
-\input{tex/upper/solutions/ch02}
-\input{tex/upper/solutions/ch03}
-\input{tex/upper/solutions/ch04}
-\input{tex/upper/solutions/ch05}
-\input{tex/upper/solutions/ch06}
-\input{tex/upper/solutions/ch07}
-\input{tex/upper/solutions/ch08}
-\input{tex/upper/solutions/ch09}
-\input{tex/upper/solutions/ch10}
-\input{tex/upper/solutions/ch11}
-\input{tex/upper/solutions/ch12}
-\input{tex/upper/solutions/ch13}
-\input{tex/upper/solutions/ch14}
-\input{tex/upper/solutions/ch15}
-\input{tex/upper/solutions/ch16}
-\input{tex/upper/solutions/ch17}
+\chapter{练习反馈说明}
+正文保留即时练习、章末四级题与分级提示。完整推导、计算输出、失败见证和研究判断答案单独发布为
+\path{output/pdf/math-for-quant-upper-solutions.pdf}，避免读者在阅读题目时过早看到答案。
 
 \chapter{共享符号表}
 \input{tex/common/notation}
 
 \chapter{共享术语表}
 \input{tex/common/glossary}
+
+\chapter{主题索引}
+\input{tex/generated/concept-index}
+
+\chapter{参考文献}
+\printbibliography[heading=none]
 
 \chapter{许可说明}
 原创代码采用 MIT License；原创书稿与图形采用 CC BY-NC-SA 4.0；ElegantBook 类文件沿用 LPPL；真实数据切片将在引入时分别记录来源与许可。

@@ -2,7 +2,7 @@
 \label{ch:lp-product-measure}
 
 \begin{introduction}
-  \item 先修：第 3 章的可测函数、Lebesgue 积分、几乎处处与三条收敛定理。
+  \input{tex/generated/prerequisites/upper-ch04.tex}
   \item 学习产出：能选择合适的 $L^p$ 误差尺度，证明常用范数不等式，并在交换极限或积分次序前逐条核对假设。
   \item Python 边界：程序只复现固定的解析账本和有限截断，不能用浮点一致性替代可测性、可积性或一般定理。
   \item 研究连接：预测误差、随机变量矩、联合分布、嵌套期望与数值积分都依赖本章的共同语言。
@@ -258,6 +258,8 @@ uv run python tools/check_learning_unit.py \
 \section{研究中的换序审计}
 
 在把期望、积分、极限或求和交换前，依次记录：底层测度空间是否有限或 $\sigma$ 有限；函数与截面是否可测；使用的是非负性还是绝对可积性；积分允许无穷还是必须有限；收敛是 $L^p$、依测度还是 a.e.；所引用的包含关系是否依赖有限总测度；数值截断是否沿不同区域复核；expected 是否来自独立解析账本。若两个次序给出不同值，第一反应应是定位缺失假设，而不是挑选更符合策略叙事的结果。
+
+\noindent\textbf{延伸阅读。}$L^p$ 空间、乘积测度与泛函分析背景可参见\cite{brezis2011analysis,folland1999analysis}。
 
 \input{tex/upper/chapters/ch04-questions}
 \input{tex/upper/chapters/ch04-hints}

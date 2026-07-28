@@ -19,7 +19,12 @@
 \begin{enumerate}[leftmargin=*]
   \item 测试复制 \path{data/ch17} 与 \path{evidence/ch17} 到独立 root，再显式传入 oracle 与 package root。成功输出仍为 \texttt{package=upper-capstone-v1} 和 \texttt{net=0.034000}，证明不依赖原输入目录。
   \item 把 8:00 改为 9:31 后重算 SHA-256，完整性门禁通过，时间门禁以非零状态报告第一行在决策时不可得。若不更新哈希，只能测到 checksum mismatch，不能证明泄漏检查有效。
-  \item 保持六个 bullet，只替换泛化措辞。程序应报告 \texttt{report gate failed: limitation report checksum mismatch}。恢复原字节后再运行，确认不是路径或编码问题。
+  \item 保持六个 bullet，只替换泛化措辞。程序应报告由下列两段以一个空格连接而成的稳定诊断：
+  \begin{quote}\ttfamily
+  report gate failed:\\
+  limitation report checksum mismatch
+  \end{quote}
+  恢复原字节后再运行，确认不是路径或编码问题。
 \end{enumerate}
 
 \section*{研究判断}

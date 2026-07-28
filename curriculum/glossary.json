@@ -57,19 +57,19 @@
       "definition": "以严格小于 1 的统一因子缩短任意两点距离的映射。"
     },
     {
-      "zh": "sigma 代数",
+      "zh": "\\(\\sigma\\)-代数",
       "en": "sigma algebra",
       "definition": "包含全集并对补集和可数并封闭的事件集合族。"
     },
     {
       "zh": "测度",
       "en": "measure",
-      "definition": "在 sigma 代数上取值并满足可数可加性的非负集合函数。"
+      "definition": "在 \\(\\sigma\\)-代数上取值并满足可数可加性的非负集合函数。"
     },
     {
       "zh": "可测函数",
       "en": "measurable function",
-      "definition": "目标可测集的逆像始终属于定义域 sigma 代数的函数。"
+      "definition": "目标可测集的逆像始终属于定义域 \\(\\sigma\\)-代数的函数。"
     },
     {
       "zh": "简单函数",
@@ -87,8 +87,8 @@
       "definition": "除一个零测集外性质均成立。"
     },
     {
-      "zh": "Lp 空间",
-      "en": "Lp space",
+      "zh": "\\(L^p\\) 空间",
+      "en": "\\(L^p\\) space",
       "definition": "p 次绝对可积可测函数按几乎处处相等取等价类得到的完备范数空间。"
     },
     {
@@ -99,12 +99,12 @@
     {
       "zh": "Hölder 不等式",
       "en": "Holder inequality",
-      "definition": "用一对共轭 Lp 范数控制函数乘积积分的不等式。"
+      "definition": "用一对共轭 $L^p$ 范数控制函数乘积积分的不等式。"
     },
     {
       "zh": "Minkowski 不等式",
       "en": "Minkowski inequality",
-      "definition": "保证 Lp 范数满足三角不等式的积分不等式。"
+      "definition": "保证 $L^p$ 范数满足三角不等式的积分不等式。"
     },
     {
       "zh": "Tonelli 定理",
@@ -119,7 +119,7 @@
     {
       "zh": "乘积测度",
       "en": "product measure",
-      "definition": "在可测矩形上取两个测度乘积并扩张到乘积 sigma 代数的测度。"
+      "definition": "在可测矩形上取两个测度乘积并扩张到乘积 \\(\\sigma\\)-代数的测度。"
     },
     {
       "zh": "多元可微",
@@ -151,13 +151,13 @@
     {"zh": "谱分解", "en": "spectral decomposition", "definition": "将实对称矩阵写成正交特征向量与实特征值的分解。"},
     {"zh": "奇异值分解", "en": "singular value decomposition", "definition": "将任意矩阵分解为左右正交方向与非负奇异值。"},
     {"zh": "条件数", "en": "condition number", "definition": "衡量问题输出对输入相对扰动最坏敏感度的数值。"},
-    {"zh": "概率空间", "en": "probability space", "definition": "由样本空间、事件 sigma 代数与总质量为一的概率测度组成的三元组。"},
+    {"zh": "概率空间", "en": "probability space", "definition": "由样本空间、事件 \\(\\sigma\\)-代数与总质量为一的概率测度组成的三元组。"},
     {"zh": "随机变量", "en": "random variable", "definition": "从概率空间到目标可测空间的可测映射。"},
     {"zh": "推前分布", "en": "pushforward distribution", "definition": "随机变量通过逆像把底层概率测度推到目标空间得到的概率测度。"},
     {"zh": "联合分布", "en": "joint distribution", "definition": "随机向量在乘积空间上的推前概率分布。"},
     {"zh": "边缘分布", "en": "marginal distribution", "definition": "从联合分布对其余坐标积分或求和得到的单坐标分布。"},
     {"zh": "重尾分布", "en": "heavy-tailed distribution", "definition": "尾部衰减较慢并可能使某些矩不存在的分布。"},
-    {"zh": "条件期望", "en": "conditional expectation", "definition": "给定子 sigma 代数时保持其每个事件上积分的可测随机变量。"},
+    {"zh": "条件期望", "en": "conditional expectation", "definition": "给定子 \\(\\sigma\\)-代数时保持其每个事件上积分的可测随机变量。"},
     {"zh": "塔式性质", "en": "tower property", "definition": "对嵌套信息集合依次条件化等于直接对较粗信息条件化的性质。"},
     {"zh": "独立性", "en": "independence", "definition": "相关事件的联合概率对所有可测集合均分解为边缘概率乘积。"},
     {"zh": "条件独立", "en": "conditional independence", "definition": "给定指定信息后联合条件分布分解为条件边缘分布乘积。"},
@@ -169,7 +169,7 @@
     {"zh": "碰撞点偏差", "en": "collider bias", "definition": "对两个变量共同结果或选择事件条件化而制造统计依赖的偏差。"},
     {"zh": "几乎处处收敛", "en": "almost sure convergence", "definition": "除零概率状态外逐点收敛。"},
     {"zh": "依概率收敛", "en": "convergence in probability", "definition": "偏差超过任意正阈值的概率趋于零。"},
-    {"zh": "Lp 收敛", "en": "Lp convergence", "definition": "差的 p 次绝对矩趋于零。"},
+    {"zh": "\\(L^p\\) 收敛", "en": "\\(L^p\\) convergence", "definition": "差的 $p$ 次绝对矩趋于零。"},
     {"zh": "分布收敛", "en": "convergence in distribution", "definition": "分布函数在极限分布连续点处收敛。"},
     {"zh": "大数定律", "en": "law of large numbers", "definition": "在明确矩与依赖条件下样本平均趋近总体均值的定理。"},
     {"zh": "中心极限定理", "en": "central limit theorem", "definition": "在明确正则条件下标准化和趋近正态分布的定理。"},
@@ -195,7 +195,7 @@
     {"zh": "Benjamini-Hochberg 方法", "en": "Benjamini-Hochberg procedure", "definition": "把排序 p 值与线性阶梯阈值比较以在相应依赖条件下控制 FDR 的方法。"},
     {"zh": "选择偏差", "en": "selection bias", "definition": "因样本、模型或结果的选择机制与目标量相关而导致的系统偏差。"},
     {"zh": "随机过程", "en": "stochastic process", "definition": "同一概率空间上由时间或其他索引参数化的随机变量族。"},
-    {"zh": "滤过", "en": "filtration", "definition": "随索引递增、表示可用信息增长的 sigma 代数族。"},
+    {"zh": "滤过", "en": "filtration", "definition": "随索引递增、表示可用信息增长的 \\(\\sigma\\)-代数族。"},
     {"zh": "Markov 性", "en": "Markov property", "definition": "给定当前状态后未来条件分布不再依赖更早历史的性质。"},
     {"zh": "停止时刻", "en": "stopping time", "definition": "对每个时点都能仅凭当时信息判断是否已经发生的随机时刻。"},
     {"zh": "周期", "en": "period", "definition": "Markov 状态可能返回时长集合的最大公约数；周期大于一会阻止逐步分布收敛。"},

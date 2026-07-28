@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import subprocess
 import sys
 from pathlib import Path
+
+from .schema import validate_document
 
 
 REQUIRED_EVIDENCE_FIELDS = (
@@ -96,9 +99,23 @@ def validate_content(
         )
     except (json.JSONDecodeError, KeyError, TypeError) as error:
         return f"{identifier}: invalid oracle evidence: {error}"
+    schema_error = validate_document(oracle_data, "oracle")
+    if schema_error is not None:
+        return f"{identifier}: {schema_error}"
     for field in ("expected", "absolute_tolerance", "provenance"):
         if field not in oracle_data:
             return f"{identifier}: oracle evidence missing {field}"
+    fixture_binding = oracle_data.get("fixture")
+    if fixture_binding is not None:
+        fixture_path = root / str(fixture_binding["path"])
+        if not fixture_path.is_file():
+            return f"{identifier}: oracle fixture missing {fixture_binding['path']}"
+        observed_digest = hashlib.sha256(fixture_path.read_bytes()).hexdigest()
+        if observed_digest != fixture_binding["sha256"]:
+            return (
+                f"{identifier}: oracle fixture hash mismatch "
+                f"observed={observed_digest} expected={fixture_binding['sha256']}"
+            )
     published_markers = oracle_data.get("published_markers", [])
     if not isinstance(published_markers, list) or any(
         not isinstance(marker, str) or not marker for marker in published_markers

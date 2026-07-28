@@ -2,7 +2,7 @@
 \label{ch:limit-theorems}
 
 \begin{introduction}
-  \item 先修：第 7 章的分布与矩、第 8 章的条件期望和独立性。
+  \input{tex/generated/prerequisites/upper-ch09.tex}
   \item 学习产出：能区分四种概率收敛，证明常用蕴含，识别反向箭头为何失败，并在使用 LLN、CLT 或集中界前逐项核对矩与依赖条件。
   \item 研究连接：样本均值、风险指标、回测误差与模拟精度都依赖正确的极限制度；“样本很多”本身不是正态近似或独立性的证据。
 \end{introduction}
@@ -42,6 +42,8 @@
  \qquad
  X_n\xrightarrow{L^p}X\Longrightarrow X_n\xrightarrow{\mathbb P}X.
 \]
+
+\input{tex/upper/figures/convergence-map.tex}
 
 $L^p\Rightarrow\mathbb P$ 直接来自 Markov 不等式：
 \[
@@ -117,10 +119,12 @@ $\bar X_n\xrightarrow{a.s.}\mu$；有限方差不是这一定理最弱的矩条�
 依赖数据需要另一套条件。若所有 $X_i=Y$ 且
 $Y\sim\operatorname{Bernoulli}(0.3)$，则
 $\bar X_n=Y$，方差恒为 $0.21$；iid 情形在 $n=200$ 时方差是 $0.00105$。样本量增长没有创造新信息。对平稳 AR(1) 型相关的粗略诊断常写
+\begin{diagnostic}
 \[
  n_{\mathrm{eff}}\approx n\frac{1-\rho}{1+\rho},
 \]
 但它只是特定相关结构下的近似，不替代混合条件、长程依赖或结构变化诊断。
+\end{diagnostic}
 
 \section{CLT：极限形状与有限样本误差}
 
@@ -194,6 +198,8 @@ uv run python tools/check_learning_unit.py \
 \section{量化研究中的使用边界}
 
 重叠持有期收益、滚动特征和成交簇会制造序列依赖；横截面共同暴露会制造簇相关；筛选幸存样本会改变概率律。研究报告至少应给出：信息时间与抽样单位、尾部与自相关诊断、有效样本量假设、HAC/分块方法的块长敏感性、滚动制度稳定性，以及失败时采用的稳健统计或压力界。渐近 $p$ 值小不代表成本后有效，集中界窄也不代表数据生成机制稳定。
+
+\noindent\textbf{延伸阅读。}概率收敛与渐近统计的条件和反例参见\cite{billingsley1999convergence,vanderVaart1998asymptotic}。
 
 \input{tex/upper/chapters/ch09-questions}
 \input{tex/upper/chapters/ch09-hints}

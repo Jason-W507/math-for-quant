@@ -1,5 +1,6 @@
 {
   "schema_version": 1,
+  "prerequisite_semantics": "direct",
   "question_levels": ["oral", "derivation", "computation", "research"],
   "registries": {
     "notation": "curriculum/notation.json",
@@ -19,11 +20,21 @@
       "pdf": "output/pdf/math-for-quant-lower.pdf"
     }
   ],
+  "supplements": [
+    {
+      "id": "upper-solutions",
+      "title": "上册完整答案",
+      "parent_volume": "upper",
+      "source": "tex/upper/solutions-main.tex",
+      "pdf": "output/pdf/math-for-quant-upper-solutions.pdf"
+    }
+  ],
   "units": [
     {
       "id": "foundation.oracle-smoke",
       "title": "独立 oracle 契约示例",
       "volume": "upper",
+      "internal": true,
       "state": "accepted",
       "published": false,
       "prerequisites": [],
@@ -101,7 +112,7 @@
       "prerequisites": ["upper.ch02"],
       "evidence": {
         "notation_symbols": ["\\mathcal{F}", "\\mu(A)", "\\mathbf{1}_{A}", "\\int f\\,d\\mu"],
-        "glossary_terms": ["sigma 代数", "测度", "可测函数", "简单函数", "Lebesgue 积分", "几乎处处"],
+        "glossary_terms": ["\\(\\sigma\\)-代数", "测度", "可测函数", "简单函数", "Lebesgue 积分", "几乎处处"],
         "notation_and_assumptions": "tex/upper/chapters/ch03.tex",
         "core_derivation": "tex/upper/chapters/ch03.tex",
         "independent_oracle": {
@@ -117,14 +128,14 @@
     },
     {
       "id": "upper.ch04",
-      "title": "Lp 空间、收敛定理与乘积测度",
+      "title": "$L^p$ 空间、收敛定理与乘积测度",
       "volume": "upper",
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch03"],
       "evidence": {
         "notation_symbols": ["L^p(\\mu)", "\\lVert f\\rVert_p", "\\mu\\times\\nu"],
-        "glossary_terms": ["Lp 空间", "本质上确界", "Hölder 不等式", "Minkowski 不等式", "Tonelli 定理", "Fubini 定理", "乘积测度"],
+        "glossary_terms": ["\\(L^p\\) 空间", "本质上确界", "Hölder 不等式", "Minkowski 不等式", "Tonelli 定理", "Fubini 定理", "乘积测度"],
         "notation_and_assumptions": "tex/upper/chapters/ch04.tex",
         "core_derivation": "tex/upper/chapters/ch04.tex",
         "independent_oracle": {
@@ -144,7 +155,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch01"],
+      "prerequisites": ["upper.ch04"],
       "evidence": {
         "notation_symbols": ["\\nabla f(x)", "J_g(x)", "H_f"],
         "glossary_terms": ["多元可微", "梯度", "Jacobian", "Hessian", "矩阵微分"],
@@ -239,7 +250,7 @@
       "prerequisites": ["upper.ch08"],
       "evidence": {
         "notation_symbols": ["X_n\\xrightarrow{a.s.}X", "X_n\\xrightarrow{\\mathbb P}X", "X_n\\xrightarrow{L^p}X", "X_n\\xrightarrow d X", "\\bar X_n", "\\rho_3", "n_{\\mathrm{eff}}"],
-        "glossary_terms": ["几乎处处收敛", "依概率收敛", "Lp 收敛", "分布收敛", "一致可积", "连续映射定理", "Slutsky 定理", "大数定律", "中心极限定理", "Berry-Esseen 界", "集中不等式", "有效样本量"],
+        "glossary_terms": ["几乎处处收敛", "依概率收敛", "\\(L^p\\) 收敛", "分布收敛", "一致可积", "连续映射定理", "Slutsky 定理", "大数定律", "中心极限定理", "Berry-Esseen 界", "集中不等式", "有效样本量"],
         "notation_and_assumptions": "tex/upper/chapters/ch09.tex",
         "core_derivation": "tex/upper/chapters/ch09.tex",
         "independent_oracle": {"source": "notebooks/upper/ch09_limit_theorems.py", "oracle": "evidence/ch09/oracle.json", "command": ["{python}", "notebooks/upper/ch09_limit_theorems.py"]},
@@ -331,7 +342,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch06"],
+      "prerequisites": ["upper.ch06", "upper.ch13"],
       "evidence": {
         "notation_symbols": ["\\varepsilon_{\\mathrm{mach}}", "u", "\\operatorname{ulp}(x)", "\\eta_{\\mathrm f}", "\\kappa_f(x)", "\\kappa_2(A)"],
         "glossary_terms": ["机器精度", "单位舍入误差", "末位单位", "次正规数", "前向误差", "后向误差", "算法稳定性", "病态问题", "补偿求和", "数值秩", "列主元", "稳定 log-sum-exp"],
@@ -410,12 +421,36 @@
       }
     }
   ],
+  "reading_routes": [
+    {
+      "id": "applied",
+      "title": "应用主线",
+      "description": "先建立研究语言，再进入概率统计、动态模型、优化、数值计算与研究审计；测度论概念按课程地图中的桥接清单回看。",
+      "units": ["upper.ch01", "upper.ch05", "upper.ch06", "upper.ch07", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch13", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"]
+    },
+    {
+      "id": "theory",
+      "title": "理论增强线",
+      "description": "完整学习分析、测度、条件化、概率极限与随机过程，再进入方向模型。",
+      "units": ["upper.ch01", "upper.ch02", "upper.ch03", "upper.ch04", "upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11"]
+    }
+  ],
+  "reader_bridges": [
+    {
+      "id": "probability-minimal-measure",
+      "title": "概率所需最小测度论桥接",
+      "source": "tex/upper/bridges/probability-minimal-measure.tex",
+      "for_routes": ["applied"],
+      "before_unit": "upper.ch07",
+      "review_units": ["upper.ch03", "upper.ch04", "upper.ch08"]
+    }
+  ],
   "tracks": [
-    {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch10","upper.ch13","upper.ch16"]},
-    {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch12","upper.ch16"]},
-    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch10","upper.ch12","upper.ch13","upper.ch16"]},
-    {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch11","upper.ch13","upper.ch14","upper.ch15"]},
-    {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch16"]},
-    {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch11","upper.ch12","upper.ch13","upper.ch15","upper.ch16"]}
+    {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"]},
+    {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]},
+    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]},
+    {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]},
+    {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"]},
+    {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]}
   ]
 }

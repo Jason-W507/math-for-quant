@@ -1,0 +1,14 @@
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[>=stealth]
+    \draw[->] (0,0) -- (10.2,0) node[right] {时间};
+    \foreach \x/\t in {1/0,3/1,5/2,7/3,9/4}{
+      \draw (\x,0.12) -- (\x,-0.12) node[below] {$t_\t$};
+      \node[draw,rounded corners,fill=blue!4] at (\x,0.75) {$\mathcal F_{\t}$};
+    }
+    \foreach \a/\b in {1.55/2.45,3.55/4.45,5.55/6.45,7.55/8.45}
+      \draw[->,structurecolor,thick] (\a,0.75) -- (\b,0.75);
+    \node[align=center,font=\small] at (5,-1.05) {信息只能随时间增加：$\mathcal F_{t_0}\subseteq\cdots\subseteq\mathcal F_{t_4}$；\\决策必须相对于当时可用的信息定义。};
+  \end{tikzpicture}
+  \caption{滤过把“何时知道什么”写进随机过程模型。}
+\end{figure}

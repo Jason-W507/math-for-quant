@@ -15,7 +15,7 @@ from typing import Any, Callable
 from pypdf import PdfWriter
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class LearningUnitContractTests(unittest.TestCase):
@@ -2365,8 +2365,8 @@ class LearningUnitContractTests(unittest.TestCase):
             ),
             (
                 "ch10-wrong-numpy.json",
-                lambda oracle: oracle.update({"numpy_version": "unfrozen"}),
-                "NumPy version must equal",
+                lambda oracle: oracle.update({"numpy_versions": ["unfrozen"]}),
+                "NumPy version must be one of",
             ),
             (
                 "ch10-altered-design.json",
@@ -3173,7 +3173,7 @@ class LearningUnitContractTests(unittest.TestCase):
         cases = (
             (
                 "ch14-missing-field.json",
-                lambda oracle: oracle.pop("numpy_version"),
+                lambda oracle: oracle.pop("numpy_versions"),
                 "missing required fields",
             ),
             (

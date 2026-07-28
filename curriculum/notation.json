@@ -51,7 +51,7 @@
     },
     {
       "symbol": "\\mathcal{F}",
-      "meaning": "样本空间上的事件 sigma 代数",
+      "meaning": "样本空间上的事件 \\(\\sigma\\)-代数",
       "domain": "collection of subsets",
       "first_unit": "upper.ch03"
     },
@@ -81,7 +81,7 @@
     },
     {
       "symbol": "\\lVert f\\rVert_p",
-      "meaning": "函数 f 的 Lp 范数",
+      "meaning": "函数 f 的 $L^p$ 范数",
       "domain": "nonnegative real",
       "first_unit": "upper.ch04"
     },
@@ -129,7 +129,7 @@
     },
     {
       "symbol": "(\\Omega,\\mathcal F,\\mathbb P)",
-      "meaning": "样本空间、事件 sigma 代数与概率测度组成的概率空间",
+      "meaning": "样本空间、事件 \\(\\sigma\\)-代数与概率测度组成的概率空间",
       "domain": "probability space",
       "first_unit": "upper.ch07"
     },
@@ -142,12 +142,12 @@
     {
       "symbol": "\\mathbb{E}[X]",
       "meaning": "随机变量 X 的期望",
-      "domain": "probability",
+      "domain": "real when X is integrable; extended real when defined",
       "first_unit": "upper.ch07"
     },
     {
       "symbol": "\\mathbb{E}[X\\mid\\mathcal G]",
-      "meaning": "给定信息 sigma 代数 G 的条件期望",
+      "meaning": "给定信息 \\(\\sigma\\)-代数 G 的条件期望",
       "domain": "G-measurable integrable random variable",
       "first_unit": "upper.ch08"
     },
@@ -165,13 +165,13 @@
     },
     {
       "symbol": "\\operatorname{Var}(X\\mid\\mathcal G)",
-      "meaning": "给定信息 sigma 代数 G 的条件方差",
+      "meaning": "给定信息 \\(\\sigma\\)-代数 G 的条件方差",
       "domain": "nonnegative G-measurable random variable",
       "first_unit": "upper.ch08"
     },
     {
       "symbol": "\\mathbb P(A\\mid\\mathcal G)",
-      "meaning": "事件 A 给定信息 sigma 代数 G 的条件概率随机变量",
+      "meaning": "事件 A 给定信息 \\(\\sigma\\)-代数 G 的条件概率随机变量",
       "domain": "G-measurable unit-interval random variable",
       "first_unit": "upper.ch08"
     },
@@ -193,7 +193,7 @@
     {"symbol": "p_{(j)}", "meaning": "一族检验中第 j 小的排序 p 值", "domain": "unit interval", "first_unit": "upper.ch10"},
     {"symbol": "\\operatorname{FDR}", "meaning": "错误发现比例 V/(R 或 1) 的期望", "domain": "unit interval", "first_unit": "upper.ch10"},
     {"symbol": "(X_t)_{t\\in T}", "meaning": "由索引集 T 参数化的随机过程", "domain": "family of random variables", "first_unit": "upper.ch11"},
-    {"symbol": "\\mathcal F_t", "meaning": "时点 t 可用事件组成的信息 sigma 代数", "domain": "filtration component", "first_unit": "upper.ch08"},
+    {"symbol": "\\mathcal F_t", "meaning": "时点 t 可用事件组成的信息 \\(\\sigma\\)-代数", "domain": "filtration component", "first_unit": "upper.ch08"},
     {"symbol": "P_{ij}", "meaning": "Markov 链从状态 i 到状态 j 的一步转移概率", "domain": "unit interval", "first_unit": "upper.ch11"},
     {"symbol": "\\tau", "meaning": "相对于指定滤过可在当前时点判断是否已经发生的停止时刻", "domain": "nonnegative random time", "first_unit": "upper.ch11"},
     {"symbol": "\\pi P=\\pi", "meaning": "Markov 链稳态分布满足的不变方程", "domain": "probability row vector equation", "first_unit": "upper.ch11"},

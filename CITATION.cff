@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this curriculum, please cite it as below."
+title: "量化研究数学"
+type: book
+authors:
+  - family-names: "W."
+    given-names: "Jason"
+version: 0.2.0
+date-released: 2026-07-28
+url: "https://github.com/Jason-W507/math-for-quant"
+license: CC-BY-NC-SA-4.0

@@ -15,7 +15,7 @@ import sys
 import numpy as np
 
 
-FIXED_NUMPY_VERSION = "2.5.1"
+FIXED_NUMPY_VERSIONS = ("2.3.5", "2.5.1")
 FIXED_PROCESS_LABELS = ["Markov", "martingale", "Poisson", "Brownian"]
 FIXED_PROVENANCE = (
     "finite-state transition-matrix powers and stationary equations, exact "
@@ -100,7 +100,7 @@ REQUIRED_FIELDS = {
     "expected_thinned_rate", "expected_waiting_time_mean",
     "expected_waiting_time_variance", "gambler_ruin_start_state",
     "gambler_ruin_upper_state", "initial_distribution", "markov_tolerance",
-    "nonhomogeneous_interval_end", "numpy_version", "poisson_moment_tolerance",
+    "nonhomogeneous_interval_end", "numpy_versions", "poisson_moment_tolerance",
     "poisson_rate", "poisson_time", "process_labels", "provenance",
     "published_markers", "quadratic_variation_mean_tolerance",
     "quadratic_variation_partitions", "quadratic_variation_paths",
@@ -132,8 +132,8 @@ def validate_oracle(oracle: dict[str, object]) -> None:
     if missing:
         raise SystemExit(f"oracle missing required fields: {', '.join(missing)}")
     reject_nonfinite_numbers(oracle)
-    if oracle["numpy_version"] != FIXED_NUMPY_VERSION or np.__version__ != FIXED_NUMPY_VERSION:
-        raise SystemExit(f"NumPy version must equal {FIXED_NUMPY_VERSION}")
+    if oracle["numpy_versions"] != list(FIXED_NUMPY_VERSIONS) or np.__version__ not in FIXED_NUMPY_VERSIONS:
+        raise SystemExit(f"NumPy version must be one of {FIXED_NUMPY_VERSIONS}")
     if oracle["process_labels"] != FIXED_PROCESS_LABELS:
         raise SystemExit("process labels must match the published design")
     if oracle["provenance"] != FIXED_PROVENANCE:

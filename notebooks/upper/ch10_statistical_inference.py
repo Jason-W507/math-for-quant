@@ -16,7 +16,7 @@ import numpy as np
 
 
 FIXED_ABSOLUTE_TOLERANCE = 1e-12
-FIXED_NUMPY_VERSION = "2.5.1"
+FIXED_NUMPY_VERSIONS = ("2.3.5", "2.5.1")
 FIXED_PROVENANCE = (
     "analytic Bernoulli estimator moments, a fixed-design heteroskedastic "
     "linear model with known Gaussian error variances, standard-normal "
@@ -90,7 +90,7 @@ REQUIRED_FIELDS = {
     "expected_unbiased_inconsistent_variance", "expected_variance",
     "fwer_tolerance", "hac_bandwidth", "hypothesis_count", "inference_labels", "mean_tolerance",
     "multiple_testing_repetitions", "nominal_alpha", "normal_mean_theta",
-    "normal_two_sided_critical", "numpy_version", "ordered_p_values",
+    "normal_two_sided_critical", "numpy_versions", "ordered_p_values",
     "ovb_beta_x", "ovb_beta_z", "ovb_cov_xz", "ovb_var_x", "provenance",
     "published_markers", "regression_repetitions", "regression_sample_size",
     "selection_candidate_count",
@@ -131,7 +131,7 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
     reject_nonfinite_numbers(oracle)
     non_numeric_fields = {
         "provenance",
-        "numpy_version",
+        "numpy_versions",
         "ordered_p_values",
         "inference_labels",
         "published_markers",
@@ -143,8 +143,8 @@ def main(oracle_path: Path = Path("evidence/ch10/oracle.json")) -> int:
             oracle[name], (int, float)
         ):
             raise SystemExit(f"oracle {name} must be numeric")
-    if oracle["numpy_version"] != FIXED_NUMPY_VERSION or np.__version__ != FIXED_NUMPY_VERSION:
-        raise SystemExit(f"NumPy version must equal {FIXED_NUMPY_VERSION}")
+    if oracle["numpy_versions"] != list(FIXED_NUMPY_VERSIONS) or np.__version__ not in FIXED_NUMPY_VERSIONS:
+        raise SystemExit(f"NumPy version must be one of {FIXED_NUMPY_VERSIONS}")
     if oracle["provenance"] != FIXED_PROVENANCE:
         raise SystemExit("oracle provenance must match the published design")
     if float(oracle["absolute_tolerance"]) != FIXED_ABSOLUTE_TOLERANCE:

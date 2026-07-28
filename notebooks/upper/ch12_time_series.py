@@ -15,7 +15,7 @@ import sys
 import numpy as np
 
 
-FIXED_NUMPY_VERSION = "2.5.1"
+FIXED_NUMPY_VERSIONS = ("2.3.5", "2.5.1")
 FIXED_LABELS = ["ARMA", "cointegration", "GARCH", "Kalman"]
 FIXED_PROVENANCE = (
     "AR(1) stationary moments and forecast-error variance from the geometric "
@@ -76,7 +76,7 @@ REQUIRED_FIELDS = {
     "garch_alpha", "garch_beta", "garch_omega", "innovation_variance",
     "kalman_initial_mean", "kalman_initial_variance",
     "kalman_measurement_variance", "kalman_observations",
-    "kalman_process_variance", "numpy_version", "phi_after_break",
+    "kalman_process_variance", "numpy_versions", "phi_after_break",
     "phi_before_break", "provenance", "published_markers", "seed",
     "simulation_tolerance", "spread_ar_phi", "spread_innovation_variance",
     "spurious_length", "spurious_level_r2_minimum", "time_series_labels",
@@ -121,10 +121,10 @@ def validate_oracle(oracle: dict[str, object]) -> None:
         )
     reject_nonfinite(oracle)
     if (
-        oracle["numpy_version"] != FIXED_NUMPY_VERSION
-        or np.__version__ != FIXED_NUMPY_VERSION
+        oracle["numpy_versions"] != list(FIXED_NUMPY_VERSIONS)
+        or np.__version__ not in FIXED_NUMPY_VERSIONS
     ):
-        raise SystemExit(f"NumPy version must equal {FIXED_NUMPY_VERSION}")
+        raise SystemExit(f"NumPy version must be one of {FIXED_NUMPY_VERSIONS}")
     if oracle["time_series_labels"] != FIXED_LABELS:
         raise SystemExit("time-series labels must match the published design")
     if oracle["provenance"] != FIXED_PROVENANCE:

@@ -1,6 +1,6 @@
 {
   "provenance": "AR(1) stationary moments and forecast-error variance from the geometric series; scalar Kalman updates hand-calculated as exact fractions; fixed-seed independent random walks and a declared structural break provide reproducible negative controls",
-  "numpy_version": "2.5.1",
+  "numpy_versions": ["2.3.5", "2.5.1"],
   "time_series_labels": ["ARMA", "cointegration", "GARCH", "Kalman"],
   "seed": 20260727,
   "ar1_phi": 0.8,
