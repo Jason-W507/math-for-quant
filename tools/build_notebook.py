@@ -3,8 +3,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import os
-import subprocess
+import re
 import sys
+import tempfile
 import warnings
 from pathlib import Path
 
@@ -34,20 +35,49 @@ def semantic_cells(notebook: object) -> list[tuple[str, str]]:
     ]
 
 
+BENIGN_ZMQ_SHUTDOWN = re.compile(
+    r"^Assertion failed: Connection reset by peer \[10054\] "
+    r"\(.*[\\/]signaler\.cpp:345\)\r?$"
+)
+
+
+def _read_kernel_stderr(stream: object) -> str:
+    stream.flush()
+    stream.seek(0)
+    return stream.read().decode("utf-8", errors="replace")
+
+
+def _replay_unexpected_kernel_stderr(stderr_text: str) -> None:
+    unexpected = [
+        line
+        for line in stderr_text.splitlines()
+        if line and BENIGN_ZMQ_SHUTDOWN.fullmatch(line) is None
+    ]
+    if unexpected:
+        sys.stderr.write("\n".join(unexpected) + "\n")
+
+
 def execute_with_isolated_kernel_stderr(notebook: object) -> object:
-    """Execute while keeping native kernel shutdown noise out of the CLI contract."""
-    with warnings.catch_warnings():
-        warnings.filterwarnings(
-            "ignore",
-            message="WARNING: Insecure writes have been enabled.*",
-        )
-        return NotebookClient(
-            notebook,
-            timeout=60,
-            kernel_name="python3",
-            extra_arguments=["--log-level=ERROR"],
-            resources={"metadata": {"path": str(ROOT)}},
-        ).execute(stderr=subprocess.DEVNULL)
+    """Filter one known shutdown line while preserving every real diagnostic."""
+    with tempfile.TemporaryFile(mode="w+b") as kernel_stderr:
+        try:
+            with warnings.catch_warnings():
+                warnings.filterwarnings(
+                    "ignore",
+                    message="WARNING: Insecure writes have been enabled.*",
+                )
+                executed = NotebookClient(
+                    notebook,
+                    timeout=60,
+                    kernel_name="python3",
+                    extra_arguments=["--log-level=ERROR"],
+                    resources={"metadata": {"path": str(ROOT)}},
+                ).execute(stderr=kernel_stderr)
+        except BaseException:
+            sys.stderr.write(_read_kernel_stderr(kernel_stderr))
+            raise
+        _replay_unexpected_kernel_stderr(_read_kernel_stderr(kernel_stderr))
+        return executed
 
 
 def main() -> int:

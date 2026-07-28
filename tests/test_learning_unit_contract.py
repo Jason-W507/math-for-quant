@@ -7,6 +7,8 @@ import subprocess
 import sys
 import unittest
 from unittest.mock import patch
+from contextlib import redirect_stderr
+from io import StringIO
 from pathlib import Path
 from typing import Any, Callable
 
@@ -61,29 +63,61 @@ class LearningUnitContractTests(unittest.TestCase):
         finally:
             fixture.unlink(missing_ok=True)
 
-    def test_notebook_executor_isolates_native_kernel_stderr(self) -> None:
+    def test_notebook_executor_filters_only_known_shutdown_noise(self) -> None:
         from tools import build_notebook
 
-        observed: dict[str, object] = {}
-
-        class FakeClient:
+        class FakeClientBase:
             def __init__(self, notebook: object, **kwargs: object) -> None:
-                observed["notebook"] = notebook
-                observed["client_kwargs"] = kwargs
+                self.notebook = notebook
 
+        class BenignClient(FakeClientBase):
             def execute(self, **kwargs: object) -> object:
-                observed["execute_kwargs"] = kwargs
+                stream = kwargs["stderr"]
+                stream.write(
+                    b"Assertion failed: Connection reset by peer [10054] "
+                    b"(C:\\tmp\\signaler.cpp:345)\n"
+                )
                 return "executed"
 
         notebook = object()
-        with patch.object(build_notebook, "NotebookClient", FakeClient):
-            result = build_notebook.execute_with_isolated_kernel_stderr(notebook)
+        captured = StringIO()
+        with (
+            patch.object(build_notebook, "NotebookClient", BenignClient),
+            redirect_stderr(captured),
+        ):
+            result = build_notebook.execute_with_isolated_kernel_stderr(
+                notebook
+            )
 
         self.assertEqual(result, "executed")
-        self.assertIs(observed["notebook"], notebook)
-        self.assertEqual(
-            observed["execute_kwargs"], {"stderr": subprocess.DEVNULL}
-        )
+        self.assertEqual(captured.getvalue(), "")
+
+        class DiagnosticClient(FakeClientBase):
+            def execute(self, **kwargs: object) -> object:
+                kwargs["stderr"].write(b"native-root-cause\n")
+                return "executed"
+
+        captured = StringIO()
+        with (
+            patch.object(build_notebook, "NotebookClient", DiagnosticClient),
+            redirect_stderr(captured),
+        ):
+            build_notebook.execute_with_isolated_kernel_stderr(notebook)
+        self.assertEqual(captured.getvalue(), "native-root-cause\n")
+
+        class FailingClient(FakeClientBase):
+            def execute(self, **kwargs: object) -> object:
+                kwargs["stderr"].write(b"kernel-start-failed\n")
+                raise RuntimeError("failed")
+
+        captured = StringIO()
+        with (
+            patch.object(build_notebook, "NotebookClient", FailingClient),
+            redirect_stderr(captured),
+            self.assertRaisesRegex(RuntimeError, "failed"),
+        ):
+            build_notebook.execute_with_isolated_kernel_stderr(notebook)
+        self.assertEqual(captured.getvalue(), "kernel-start-failed\n")
 
     def run_chapter_seventeen_package_fixture(
         self,
