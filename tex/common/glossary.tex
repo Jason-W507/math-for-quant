@@ -115,12 +115,18 @@
   \item[弱对偶（weak duality）] 任意对偶可行目标值不超过任意原可行目标值的关系。
   \item[强对偶（strong duality）] 原问题与对偶问题最优值相等、对偶间隙为零的性质。
   \item[影子价格（shadow price）] 最优值对约束右端项局部变化的边际敏感度，通常由最优乘子表达。
-  \item[机器精度（unit roundoff）] 浮点正常范围内正确舍入一次基本运算的标准相对误差界。
+  \item[机器精度（machine epsilon）] 使 1 加上该数后在给定浮点格式中严格大于 1 的最小正数；binary64 中为 2 的负 52 次方。
+  \item[单位舍入误差（unit roundoff）] 舍入到最近模式下，正常结果单次基本运算的标准相对误差上界；binary64 中为 2 的负 53 次方。
+  \item[末位单位（unit in the last place）] 给定浮点数所在指数尺度上相邻可表示数之间的局部间距。
+  \item[次正规数（subnormal number）] 位于零与最小正常数之间、没有隐含首位的浮点数，用逐渐下溢换取更小绝对量级。
   \item[前向误差（forward error）] 数值答案与精确答案之间经过尺度化的差异。
   \item[后向误差（backward error）] 使数值答案成为精确解所需的最小输入扰动。
   \item[算法稳定性（algorithmic stability）] 算法结果可解释为邻近输入之精确答案的性质。
   \item[病态问题（ill-conditioned problem）] 精确答案对微小输入扰动高度敏感的问题。
   \item[补偿求和（compensated summation）] 显式追踪加法舍入中丢失低位以降低累计误差的求和方法。
+  \item[数值秩（numerical rank）] 相对于声明阈值被视为显著的奇异值数量；它依赖尺度、精度和阈值，不是纯粹的精确代数属性。
+  \item[列主元（partial pivoting）] 高斯消去时在当前列选择较大绝对值元素作为主元，以控制除以极小数及误差增长。
+  \item[稳定 log-sum-exp（stable log-sum-exp）] 先减去输入最大值再计算指数和的等价改写，用于避免指数上溢或下溢。
   \item[样本外（out of sample）] 未参与模型选择、拟合或阈值确定的数据区间。
   \item[学习单元（learning unit）] 围绕一个可观察学习产出组织，并同时包含数学、计算、练习反馈与研究连接的最小自学闭环。
   \item[学习单元证据包（learning-unit evidence package）] 证明学习单元在符号与假设、推导、独立计算和题解反馈四个维度均已完成的统一验收对象。

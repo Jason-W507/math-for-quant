@@ -2980,9 +2980,14 @@ class LearningUnitContractTests(unittest.TestCase):
             "notebook=build/notebooks/upper/ch14_numerical_stability.ipynb\n"
             "roundtrip=passed cells=2\n"
             "execution=passed oracle=passed "
+            "ieee=(2.220e-16,1.110e-16,4.941e-324) "
             "cancel=(0.000e+00,5.000e-09,5.000e-09) "
             "sums=(0.0,1.0,1.0) "
             "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
+            "leastsq=(2.449e+06,6.000e+12,1.000e-04,2.221e-04) "
+            "logsumexp=(inf,1000.693147) "
+            "scaling=(1.000e+09,1.407e+01) "
+            "rank=(1,8.367e+00,7.320e-16) "
             "tolerance=(1,1,1,0)\n",
         )
         self.assertEqual(result.stderr, "")
@@ -3019,6 +3024,95 @@ class LearningUnitContractTests(unittest.TestCase):
             "invalid tolerance policy: equal relative errors disagree across scales\n",
         )
 
+    def test_chapter_fourteen_rejects_false_stability_ledgers(self) -> None:
+        cases = (
+            (
+                "ch14-false-logsumexp.json",
+                lambda oracle: oracle["expected"].update(
+                    {"stable_logsumexp": 1000.0}
+                ),
+                "log-sum-exp ledger failed",
+            ),
+            (
+                "ch14-false-least-squares.json",
+                lambda oracle: oracle["expected"].update(
+                    {"normal_equation_relative_error": 0.0}
+                ),
+                "least-squares ledger failed",
+            ),
+            (
+                "ch14-false-rank.json",
+                lambda oracle: oracle["expected"].update(
+                    {"rank_deficient_rank": 2}
+                ),
+                "rank-deficiency ledger failed",
+            ),
+        )
+        for fixture, mutate, diagnostic in cases:
+            with self.subTest(fixture=fixture):
+                result = self.run_oracle_fixture(
+                    fixture,
+                    "evidence/ch14/oracle.json",
+                    "notebooks/upper/ch14_numerical_stability.py",
+                    mutate,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
+
+    def test_chapter_fourteen_rejects_malformed_or_widened_oracles(self) -> None:
+        cases = (
+            (
+                "ch14-missing-field.json",
+                lambda oracle: oracle.pop("numpy_version"),
+                "missing required fields",
+            ),
+            (
+                "ch14-missing-expected.json",
+                lambda oracle: oracle["expected"].pop("scaled_condition"),
+                "expected ledger missing required fields",
+            ),
+            (
+                "ch14-nonfinite.json",
+                lambda oracle: oracle.update({"matrix_delta": float("inf")}),
+                "must be finite",
+            ),
+            (
+                "ch14-fractional-integer.json",
+                lambda oracle: oracle.update({"decimal_precision": 80.5}),
+                "must be an integer",
+            ),
+            (
+                "ch14-widened-tolerance.json",
+                lambda oracle: oracle.update({"linear_relative_tolerance": 0.1}),
+                "tolerances must match",
+            ),
+            (
+                "ch14-boolean-array.json",
+                lambda oracle: oracle.update({"summation_values": [True, 1, -1]}),
+                "must not contain booleans",
+            ),
+            (
+                "ch14-synchronized-forgery.json",
+                lambda oracle: (
+                    oracle.update({"least_squares_epsilon": 1e-4}),
+                    oracle["expected"].update(
+                        {"least_squares_condition": 24494.897468659303}
+                    ),
+                ),
+                "canonical scalar design",
+            ),
+        )
+        for fixture, mutate, diagnostic in cases:
+            with self.subTest(fixture=fixture):
+                result = self.run_oracle_fixture(
+                    fixture,
+                    "evidence/ch14/oracle.json",
+                    "notebooks/upper/ch14_numerical_stability.py",
+                    mutate,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn(diagnostic, result.stderr)
+
     def test_accepts_chapter_fourteen_with_numerical_oracles(self) -> None:
         result = self.run_contract(
             "curriculum/manifest.json",
@@ -3030,9 +3124,14 @@ class LearningUnitContractTests(unittest.TestCase):
             result.stdout,
             "unit=upper.ch14\n"
             "evidence=7/7\n"
-            "oracle=passed cancel=(0.000e+00,5.000e-09,5.000e-09) "
+            "oracle=passed ieee=(2.220e-16,1.110e-16,4.941e-324) "
+            "cancel=(0.000e+00,5.000e-09,5.000e-09) "
             "sums=(0.0,1.0,1.0) "
             "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
+            "leastsq=(2.449e+06,6.000e+12,1.000e-04,2.221e-04) "
+            "logsumexp=(inf,1000.693147) "
+            "scaling=(1.000e+09,1.407e+01) "
+            "rank=(1,8.367e+00,7.320e-16) "
             "tolerance=(1,1,1,0)\n"
             "learning-unit contract passed\n",
         )

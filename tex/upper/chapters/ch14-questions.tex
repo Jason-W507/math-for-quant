@@ -1,9 +1,27 @@
-\section{四级问题与即时练习}
+\section{笔面试与研究训练}
 \begingroup\small
+\subsection*{口述概念（3 题）}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item \textbf{口述概念：}区分机器精度、前向/后向误差、问题条件性、算法稳定性和残差。
-  \item \textbf{笔试推导：}有理化消去误差公式，并由二阶对称矩阵特征值推导条件数与扰动放大。
-  \item \textbf{数值编程：}用 Decimal、补偿求和和解析线性解建立 oracle；覆盖尺度变化、近奇异输入和错误容差。
-  \item \textbf{研究判断：}回归或组合优化器报告成功且残差极小，为何结果仍可能不可用？应追加哪些证据？
+\item 区分机器精度、单位舍入误差、ulp、正常数与次正规数；浮点模型何时失效？
+\item 区分前向误差、后向误差、残差、问题条件性与算法稳定性。
+\item 比较 LU（带主元）、Cholesky、QR 与 SVD 的适用前提、证据和成本。
+\end{enumerate}
+\subsection*{笔试推导（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=4]
+\item 有理化 $\sqrt{x+1}-\sqrt{x}$，解释为何两式数学等价但浮点行为不同。
+\item 由奇异值证明 $\kappa_2(X^TX)=\kappa_2(X)^2$，说明正规方程的风险。
+\item 推导线性系统输入扰动的一阶前向误差界，并解释为何小残差不推出小前向误差。
+\end{enumerate}
+\subsection*{数值编程（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=7]
+\item 实现朴素、成对与 Neumaier 求和，用 Decimal oracle 比较顺序与误差。
+\item 对固定最小二乘问题比较正规方程、QR 与 SVD，并报告系数误差、残差、秩和条件数。
+\item 实现稳定 log-sum-exp 与尺度感知比较器；覆盖上溢、近零、跨尺度和 NaN。
+\end{enumerate}
+\subsection*{研究判断（3 题）}
+\begin{enumerate}[nosep,leftmargin=*,start=10]
+\item 协方差矩阵近奇异、最小方差权重高度集中时，如何区分经济信号与数值放大？
+\item 同一因子归约在不同线程数下末位不同，何时可接受，何时必须逐位可复现？
+\item 求解器成功、残差极小但样本窗口稍变权重就翻转，应如何写研究结论与修复计划？
 \end{enumerate}
 \endgroup
