@@ -15,14 +15,14 @@
     "unstable_rejected": 1
   },
   "absolute_tolerance": 1e-12,
-  "provenance": "two hand-designed cross sections with exact linear next-period returns, an independent long-short ledger, fixed null p-values, and explicit time-alignment and condition-number failures",
+  "provenance": "two hand-designed cross sections with exact linear next-period returns, an independent long-short ledger, a seeded synthetic null search, and explicit time-alignment and condition-number failures",
   "published_markers": [
-    "Fama--MacBeth 风险价格均值为 $0.020$，时间序列标准误为 $0.002$",
+    "Fama--MacBeth 横截面预测斜率均值为 $0.020$，时间序列标准误为 $0.002$",
     "毛收益 $0.071$、基础成本后净收益 $0.067$、大容量冲击后 $0.061$",
     "20 次零信号搜索产生 2 个朴素显著项，而 BH 拒绝数为 0"
   ],
   "fixture": {
     "path": "data/fixtures/lower-ch01.json",
-    "sha256": "df2454a74945ab071a7a7a99296b958525313d838deca143ea4442313db7a5c9"
+    "sha256": "1e87620fb9329d2ece3d6a58ba13067537484347f14c76a6807d209013f3bc27"
   }
 }
