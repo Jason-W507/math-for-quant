@@ -7,7 +7,11 @@ from pathlib import Path
 
 import numpy as np
 
-from math_for_quant.lower.multifactor import null_search_p_values, ranks
+from math_for_quant.lower.multifactor import (
+    null_search_p_values,
+    protocol_metrics,
+    ranks,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -35,7 +39,9 @@ class LowerMultifactorTests(unittest.TestCase):
             "oracle=passed fm_mean=0.020000 fm_se=0.002000 "
             "ic=1.000000 rank_ic=1.000000 neutral_max=0.000000 "
             "tests=(20,2,0) returns=(0.071000,0.067000,0.061000) "
-            "windows=3 decay_lags=3 scope=global+a-share-boundary "
+            "split_ic=(0.583807,0.711369,0.726531) "
+            "decay_ic=(0.646657,0.445136,0.186461) "
+            "scope=global+a-share-boundary "
             "alignment_rejected=1 unstable_rejected=1\n",
         )
 
@@ -51,6 +57,23 @@ class LowerMultifactorTests(unittest.TestCase):
         self.assertEqual(len(p_values), 20)
         self.assertEqual(sum(value < 0.05 for value in p_values), 2)
         self.assertAlmostEqual(p_values[2], 0.0276906432, places=9)
+        self.assertAlmostEqual(sorted(p_values)[0], 0.0276906432, places=9)
+        self.assertAlmostEqual(sorted(p_values)[1], 0.0378466680, places=9)
+
+    def test_protocol_panel_computes_split_and_decay_evidence(self) -> None:
+        split_ic, decay_ic = protocol_metrics(
+            seed=41,
+            window_observations=[48, 24, 36],
+            decay_strengths=[0.5, 0.3, 0.1],
+            noise_scale=0.5,
+        )
+        self.assertEqual(len(split_ic), 3)
+        self.assertEqual(len(decay_ic), 3)
+        self.assertGreater(split_ic[0], 0.5)
+        self.assertGreater(split_ic[1], 0.5)
+        self.assertGreater(split_ic[2], 0.5)
+        self.assertGreater(decay_ic[0], decay_ic[1])
+        self.assertGreater(decay_ic[1], decay_ic[2])
 
     def test_research_report_records_splits_decay_and_market_scope(self) -> None:
         report = (ROOT / "reports/lower-ch01-summary.md").read_text(encoding="utf-8")

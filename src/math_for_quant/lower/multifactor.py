@@ -87,6 +87,30 @@ def null_search_p_values(seed: int, observations: int, attempts: int) -> list[fl
     return p_values
 
 
+def protocol_metrics(
+    seed: int,
+    window_observations: list[int],
+    decay_strengths: list[float],
+    noise_scale: float,
+) -> tuple[list[float], list[float]]:
+    """Compute frozen split ICs and horizon-decay ICs from a synthetic panel."""
+    observations = sum(window_observations)
+    generator = np.random.default_rng(seed)
+    signal = generator.standard_normal(observations)
+    horizon_returns = [
+        strength * signal + noise_scale * generator.standard_normal(observations)
+        for strength in decay_strengths
+    ]
+    split_ic: list[float] = []
+    start = 0
+    for width in window_observations:
+        end = start + width
+        split_ic.append(correlation(signal[start:end], horizon_returns[0][start:end]))
+        start = end
+    decay_ic = [correlation(signal, returns) for returns in horizon_returns]
+    return split_ic, decay_ic
+
+
 def main(oracle_path: Path = Path("evidence/lower-ch01/oracle.json")) -> int:
     oracle = load_oracle_bundle(oracle_path)
     fixture = oracle
@@ -130,6 +154,13 @@ def main(oracle_path: Path = Path("evidence/lower-ch01/oracle.json")) -> int:
     )
     naive = sum(value < float(fixture["fdr_alpha"]) for value in p_values)
     bh = bh_rejections(p_values, float(fixture["fdr_alpha"]))
+    protocol = fixture["research_protocol"]
+    split_ic, decay_ic = protocol_metrics(
+        seed=int(protocol["seed"]),
+        window_observations=[int(window["observations"]) for window in protocol["windows"]],
+        decay_strengths=[float(value) for value in protocol["decay_strengths"]],
+        noise_scale=float(protocol["noise_scale"]),
+    )
 
     alignment_rejected = 0
     try:
@@ -159,6 +190,12 @@ def main(oracle_path: Path = Path("evidence/lower-ch01/oracle.json")) -> int:
         "gross": gross,
         "net": net,
         "large_capacity_net": large_capacity_net,
+        "split_train_ic": split_ic[0],
+        "split_selection_ic": split_ic[1],
+        "split_test_ic": split_ic[2],
+        "decay_1_ic": decay_ic[0],
+        "decay_3_ic": decay_ic[1],
+        "decay_6_ic": decay_ic[2],
         "alignment_rejected": alignment_rejected,
         "unstable_rejected": unstable_rejected,
     }
@@ -177,8 +214,8 @@ def main(oracle_path: Path = Path("evidence/lower-ch01/oracle.json")) -> int:
         f"neutral_max={neutral_max:.6f} "
         f"tests=({len(p_values)},{naive},{bh}) "
         f"returns=({gross:.6f},{net:.6f},{large_capacity_net:.6f}) "
-        f"windows={len(fixture['research_protocol']['windows'])} "
-        f"decay_lags={len(fixture['research_protocol']['decay_lags_months'])} "
+        f"split_ic=({split_ic[0]:.6f},{split_ic[1]:.6f},{split_ic[2]:.6f}) "
+        f"decay_ic=({decay_ic[0]:.6f},{decay_ic[1]:.6f},{decay_ic[2]:.6f}) "
         "scope=global+a-share-boundary "
         f"alignment_rejected={alignment_rejected} unstable_rejected={unstable_rejected}"
     )

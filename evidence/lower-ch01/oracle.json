@@ -11,6 +11,12 @@
     "gross": 0.071,
     "net": 0.067,
     "large_capacity_net": 0.061,
+    "split_train_ic": 0.5838073193369774,
+    "split_selection_ic": 0.7113685766520441,
+    "split_test_ic": 0.7265309338453994,
+    "decay_1_ic": 0.6466574424830696,
+    "decay_3_ic": 0.4451357063811328,
+    "decay_6_ic": 0.18646052010830214,
     "alignment_rejected": 1,
     "unstable_rejected": 1
   },
@@ -19,10 +25,11 @@
   "published_markers": [
     "Fama--MacBeth 横截面预测斜率均值为 $0.020$，时间序列标准误为 $0.002$",
     "毛收益 $0.071$、基础成本后净收益 $0.067$、大容量冲击后 $0.061$",
-    "20 次零信号搜索产生 2 个朴素显著项，而 BH 拒绝数为 0"
+    "20 次零信号搜索产生 2 个朴素显著项，而 BH 拒绝数为 0",
+    "这些是合成协议的可复核结果，不应外推成市场规律。"
   ],
   "fixture": {
     "path": "data/fixtures/lower-ch01.json",
-    "sha256": "1e87620fb9329d2ece3d6a58ba13067537484347f14c76a6807d209013f3bc27"
+    "sha256": "a5d30af3179c76d0c1c1b78f7ec6d7dbc615049bc904749f111fb5b8bb660db2"
   }
 }
