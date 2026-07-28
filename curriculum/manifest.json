@@ -419,6 +419,29 @@
         "solutions": "tex/upper/solutions/ch17.tex",
         "capstone_connection": "tex/upper/chapters/ch17.tex"
       }
+    },
+    {
+      "id": "lower.ch01",
+      "title": "多因子与计量：从横截面信号到研究包",
+      "volume": "lower",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch06", "upper.ch10", "upper.ch13", "upper.ch14", "upper.ch16", "upper.ch17"],
+      "evidence": {
+        "notation_symbols": ["\\mathcal I_t", "R^{\\mathrm{net}}"],
+        "glossary_terms": ["时点数据", "数据泄漏", "交易成本", "容量", "可复现研究包"],
+        "notation_and_assumptions": "tex/lower/chapters/multifactor.tex",
+        "core_derivation": "tex/lower/chapters/multifactor.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/ch01_multifactor.py",
+          "oracle": "evidence/lower-ch01/oracle.json",
+          "command": ["{python}", "notebooks/lower/ch01_multifactor.py", "evidence/lower-ch01/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/multifactor-questions.tex",
+        "hints": "tex/lower/chapters/multifactor-hints.tex",
+        "solutions": "tex/lower/chapters/multifactor-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/multifactor.tex"
+      }
     }
   ],
   "reading_routes": [

@@ -231,17 +231,25 @@ class ContractTests(LearningUnitCase):
 
     def test_main_manifest_exposes_the_shared_curriculum_contract(self) -> None:
         result = self.run_contract("curriculum/manifest.json")
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        units = manifest["units"]
+        accepted = sum(unit["state"] == "accepted" for unit in units)
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(
             result.stdout,
-            "curriculum=passed volumes=2 upper_chapters=17 tracks=6\n"
-            "question-levels=passed count=4\n"
-            "registries=passed count=2\n"
-            "course-graph=passed units=18\n"
-            "accepted-units=18\n"
+            f"curriculum=passed volumes={len(manifest['volumes'])} "
+            f"upper_chapters={sum(unit['volume'] == 'upper' and not unit.get('internal', False) for unit in units)} "
+            f"tracks={len(manifest['tracks'])}\n"
+            f"question-levels=passed count={len(manifest['question_levels'])}\n"
+            f"registries=passed count={len(manifest['registries'])}\n"
+            f"course-graph=passed units={len(units)}\n"
+            f"accepted-units={accepted}\n"
             "learning-unit contract passed\n",
         )
+        self.assertIn("lower.ch01", {unit["id"] for unit in units})
         self.assertEqual(result.stderr, "")
 
     def test_reader_registries_cover_every_published_unit_term(self) -> None:
