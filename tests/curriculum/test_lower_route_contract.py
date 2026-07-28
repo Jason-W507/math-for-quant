@@ -20,13 +20,16 @@ class LowerRouteContractTests(unittest.TestCase):
         diagnostics = (ROOT / "tex" / "lower" / "chapters" / "route-diagnostics.tex")
         self.assertTrue(diagnostics.is_file())
         text = diagnostics.read_text(encoding="utf-8")
+        self.assertIn("直接进入", text)
+        self.assertIn("先完成桥接", text)
+        self.assertIn("回到上册", text)
         for track in self.manifest["tracks"]:
-            self.assertIn(f"route:{track['id']}", text)
+            label = f"route:{track['id']}"
+            self.assertIn(label, text)
             self.assertIn(track["title"], text)
-        self.assertGreaterEqual(text.count(r"\begin{enumerate}"), 6)
-        self.assertGreaterEqual(text.count("直接进入"), 6)
-        self.assertGreaterEqual(text.count("先完成桥接"), 6)
-        self.assertGreaterEqual(text.count("回到上册"), 6)
+            route = text.split(label, maxsplit=1)[1].split(r"\section", maxsplit=1)[0]
+            self.assertEqual(route.count(r"\item "), 10)
+            self.assertEqual(route.count(r"\RouteScoreInterpretation"), 1)
 
     def test_bridge_map_is_generated_from_manifest_prerequisites(self) -> None:
         bridge_map = ROOT / "tex" / "generated" / "lower-route-bridges.tex"
