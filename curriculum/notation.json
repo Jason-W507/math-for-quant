@@ -217,7 +217,7 @@
     {"symbol": "\\operatorname{ulp}(x)", "meaning": "浮点数 x 所在尺度的末位单位，即相邻可表示数的局部间距", "domain": "nonnegative real", "first_unit": "upper.ch14"},
     {"symbol": "\\eta_{\\mathrm f}", "meaning": "数值结果相对于精确结果的尺度化前向误差", "domain": "nonnegative real", "first_unit": "upper.ch14"},
     {"symbol": "\\kappa_f(x)", "meaning": "精确映射 f 在输入 x 处对相对输入扰动的局部最坏放大率", "domain": "extended nonnegative real", "first_unit": "upper.ch14"},
-    {"symbol": "\\kappa_2(A)", "meaning": "矩阵 A 在二范数下的条件数，即最大与最小非零奇异值之比", "domain": "extended real at least one", "first_unit": "upper.ch14"},
+    {"symbol": "\\kappa_2(A)", "meaning": "可逆矩阵 A 在二范数下的条件数，即最大与最小奇异值之比；奇异方阵的条件数为无穷", "domain": "extended real at least one", "first_unit": "upper.ch14"},
     {"symbol": "\\hat\\mu_N", "meaning": "N 个独立样本构成的 Monte Carlo 均值估计", "domain": "random estimator", "first_unit": "upper.ch15"},
     {"symbol": "\\hat F_n", "meaning": "n 个观察定义的经验分布", "domain": "discrete probability measure", "first_unit": "upper.ch15"},
     {"symbol": "\\mathcal I_t", "meaning": "在决策时点 t 可被研究者合法使用的信息集合", "domain": "information set", "first_unit": "upper.ch16"},

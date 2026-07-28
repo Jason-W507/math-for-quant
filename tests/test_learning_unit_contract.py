@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from typing import Any, Callable
 
@@ -59,6 +60,30 @@ class LearningUnitContractTests(unittest.TestCase):
             )
         finally:
             fixture.unlink(missing_ok=True)
+
+    def test_notebook_executor_isolates_native_kernel_stderr(self) -> None:
+        from tools import build_notebook
+
+        observed: dict[str, object] = {}
+
+        class FakeClient:
+            def __init__(self, notebook: object, **kwargs: object) -> None:
+                observed["notebook"] = notebook
+                observed["client_kwargs"] = kwargs
+
+            def execute(self, **kwargs: object) -> object:
+                observed["execute_kwargs"] = kwargs
+                return "executed"
+
+        notebook = object()
+        with patch.object(build_notebook, "NotebookClient", FakeClient):
+            result = build_notebook.execute_with_isolated_kernel_stderr(notebook)
+
+        self.assertEqual(result, "executed")
+        self.assertIs(observed["notebook"], notebook)
+        self.assertEqual(
+            observed["execute_kwargs"], {"stderr": subprocess.DEVNULL}
+        )
 
     def run_chapter_seventeen_package_fixture(
         self,
@@ -2982,9 +3007,10 @@ class LearningUnitContractTests(unittest.TestCase):
             "execution=passed oracle=passed "
             "ieee=(2.220e-16,1.110e-16,4.941e-324) "
             "cancel=(0.000e+00,5.000e-09,5.000e-09) "
-            "sums=(0.0,1.0,1.0) "
+            "sums=(0.0,8.0,10.0,10.0) "
             "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
-            "leastsq=(2.449e+06,6.000e+12,1.000e-04,2.221e-04) "
+            "leastsq=(2.449e+06,6.000e+12,2.221e-04,1.000e-04,1.000e-04,"
+            "4.984e-11,0.000e+00,2.220e-16,rank=2) "
             "logsumexp=(inf,1000.693147) "
             "scaling=(1.000e+09,1.407e+01) "
             "rank=(1,8.367e+00,7.320e-16) "
@@ -3027,6 +3053,13 @@ class LearningUnitContractTests(unittest.TestCase):
     def test_chapter_fourteen_rejects_false_stability_ledgers(self) -> None:
         cases = (
             (
+                "ch14-false-pairwise.json",
+                lambda oracle: oracle["expected"].update(
+                    {"summation_pairwise": 10.0}
+                ),
+                "summation ledger failed",
+            ),
+            (
                 "ch14-false-logsumexp.json",
                 lambda oracle: oracle["expected"].update(
                     {"stable_logsumexp": 1000.0}
@@ -3037,6 +3070,27 @@ class LearningUnitContractTests(unittest.TestCase):
                 "ch14-false-least-squares.json",
                 lambda oracle: oracle["expected"].update(
                     {"normal_equation_relative_error": 0.0}
+                ),
+                "least-squares ledger failed",
+            ),
+            (
+                "ch14-false-qr-ledger.json",
+                lambda oracle: oracle["expected"].update(
+                    {"qr_relative_error": 0.0, "qr_residual": 0.1}
+                ),
+                "least-squares ledger failed",
+            ),
+            (
+                "ch14-false-svd-ledger.json",
+                lambda oracle: oracle["expected"].update(
+                    {"svd_relative_error": 0.0, "svd_residual": 0.1}
+                ),
+                "least-squares ledger failed",
+            ),
+            (
+                "ch14-false-least-squares-rank.json",
+                lambda oracle: oracle["expected"].update(
+                    {"least_squares_rank": 1}
                 ),
                 "least-squares ledger failed",
             ),
@@ -3058,6 +3112,28 @@ class LearningUnitContractTests(unittest.TestCase):
                 )
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(diagnostic, result.stderr)
+
+    def test_chapter_fourteen_comparator_rejects_nonfinite_values(self) -> None:
+        for value in ("inf", "nan"):
+            with self.subTest(value=value):
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        "notebooks/upper/ch14_numerical_stability.py",
+                        "--compare",
+                        value,
+                        "1.0",
+                    ],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(result.stdout, "")
+                self.assertEqual(
+                    result.stderr, "comparison inputs must be finite\n"
+                )
 
     def test_chapter_fourteen_rejects_malformed_or_widened_oracles(self) -> None:
         cases = (
@@ -3126,9 +3202,10 @@ class LearningUnitContractTests(unittest.TestCase):
             "evidence=7/7\n"
             "oracle=passed ieee=(2.220e-16,1.110e-16,4.941e-324) "
             "cancel=(0.000e+00,5.000e-09,5.000e-09) "
-            "sums=(0.0,1.0,1.0) "
+            "sums=(0.0,8.0,10.0,10.0) "
             "linear=(4.000e+08,1.000e-02,2.828e+08,residual<=1e-15) "
-            "leastsq=(2.449e+06,6.000e+12,1.000e-04,2.221e-04) "
+            "leastsq=(2.449e+06,6.000e+12,2.221e-04,1.000e-04,1.000e-04,"
+            "4.984e-11,0.000e+00,2.220e-16,rank=2) "
             "logsumexp=(inf,1000.693147) "
             "scaling=(1.000e+09,1.407e+01) "
             "rank=(1,8.367e+00,7.320e-16) "

@@ -34,7 +34,7 @@ FIXED_MARKERS = [
     "机器精度为 $2.220\\times10^{-16}$，单位舍入误差为 $1.110\\times10^{-16}$",
     "直接相减得到 $0$",
     "稳定改写与高精度值均为 $5.000\\times10^{-9}$",
-    "普通求和得到 $0$，补偿求和与 Decimal 均得到 $1$",
+    "朴素、成对、补偿与 Decimal 求和分别得到 $0$、$8$、$10$、$10$",
     "条件数约为 $4.000\\times10^8$",
     "前向误差为 $1.000\\times10^{-2}$",
     "相对残差不超过 $10^{-15}$",
@@ -43,7 +43,10 @@ FIXED_MARKERS = [
     "列缩放把条件数从 $1.000\\times10^9$ 降到 $1.407\\times10^1$",
 ]
 FIXED_ARRAYS = {
-    "summation_values": ["1e16", "1", "-1e16"],
+    "summation_values": [
+        "1e16", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1",
+        "-1e16",
+    ],
     "logsumexp_values": [1000.0, 1000.0],
     "scaling_matrix": [[1e-8, 1.0], [2e-8, 3.0]],
     "rank_deficient_matrix": [[1.0, 2.0], [2.0, 4.0], [3.0, 6.0]],
@@ -70,12 +73,18 @@ EXPECTED_FIELDS = {
     "cancellation_exact",
     "cancellation_naive",
     "summation_naive",
+    "summation_pairwise",
     "summation_compensated",
     "summation_exact",
     "least_squares_condition",
     "normal_equation_condition",
     "qr_relative_error",
+    "svd_relative_error",
     "normal_equation_relative_error",
+    "normal_equation_residual",
+    "qr_residual",
+    "svd_residual",
+    "least_squares_rank",
     "stable_logsumexp",
     "unscaled_condition",
     "scaled_condition",
@@ -183,7 +192,18 @@ def neumaier_sum(values: list[float]) -> float:
     return total + correction
 
 
+def pairwise_sum(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    if len(values) == 1:
+        return values[0]
+    midpoint = len(values) // 2
+    return pairwise_sum(values[:midpoint]) + pairwise_sum(values[midpoint:])
+
+
 def scale_aware_close(a: float, b: float, atol: float, rtol: float) -> bool:
+    if not all(math.isfinite(value) for value in (a, b, atol, rtol)):
+        raise ValueError("comparison inputs must be finite")
     return abs(a - b) <= atol + rtol * max(abs(a), abs(b))
 
 
@@ -228,10 +248,12 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
     naive_sum = 0.0
     for value in values:
         naive_sum += value
+    pairwise = pairwise_sum(values)
     compensated_sum = neumaier_sum(values)
     decimal_sum = sum(Decimal(str(item)) for item in oracle["summation_values"])
     if not (
         naive_sum == float(expected["summation_naive"])
+        and pairwise == float(expected["summation_pairwise"])
         and compensated_sum == float(expected["summation_compensated"])
         and decimal_sum == Decimal(str(expected["summation_exact"]))
     ):
@@ -281,22 +303,42 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
         [0.0, float(oracle["least_squares_rhs_perturbation"]),
          -float(oracle["least_squares_rhs_perturbation"])]
     )
-    qr_solution = np.linalg.lstsq(least_matrix, least_rhs, rcond=None)[0]
     normal_solution = np.linalg.solve(
         least_matrix.T @ least_matrix, least_matrix.T @ least_rhs
     )
+    q_matrix, r_matrix = np.linalg.qr(least_matrix, mode="reduced")
+    qr_solution = np.linalg.solve(r_matrix, q_matrix.T @ least_rhs)
+    u_matrix, singular_values_ls, vt_matrix = np.linalg.svd(
+        least_matrix, full_matrices=False
+    )
+    svd_solution = vt_matrix.T @ ((u_matrix.T @ least_rhs) / singular_values_ls)
     least_condition = float(np.linalg.cond(least_matrix))
     normal_condition = float(np.linalg.cond(least_matrix.T @ least_matrix))
-    qr_error = float(np.linalg.norm(qr_solution - exact_solution) / np.linalg.norm(exact_solution))
     normal_error = float(
         np.linalg.norm(normal_solution - exact_solution) / np.linalg.norm(exact_solution)
     )
+    qr_error = float(
+        np.linalg.norm(qr_solution - exact_solution) / np.linalg.norm(exact_solution)
+    )
+    svd_error = float(
+        np.linalg.norm(svd_solution - exact_solution) / np.linalg.norm(exact_solution)
+    )
+    rhs_norm = float(np.linalg.norm(least_rhs))
+    normal_residual = float(np.linalg.norm(least_matrix @ normal_solution - least_rhs) / rhs_norm)
+    qr_residual = float(np.linalg.norm(least_matrix @ qr_solution - least_rhs) / rhs_norm)
+    svd_residual = float(np.linalg.norm(least_matrix @ svd_solution - least_rhs) / rhs_norm)
+    least_rank = int(np.linalg.matrix_rank(least_matrix))
     if not all(
         (
             close(least_condition, expected["least_squares_condition"], oracle),
             close(normal_condition, expected["normal_equation_condition"], oracle),
-            close(qr_error, expected["qr_relative_error"], oracle),
             close(normal_error, expected["normal_equation_relative_error"], oracle),
+            close(qr_error, expected["qr_relative_error"], oracle),
+            close(svd_error, expected["svd_relative_error"], oracle),
+            close(normal_residual, expected["normal_equation_residual"], oracle),
+            close(qr_residual, expected["qr_residual"], oracle),
+            close(svd_residual, expected["svd_residual"], oracle),
+            least_rank == expected["least_squares_rank"],
             normal_condition > least_condition**1.9,
             normal_error > qr_error,
         )
@@ -353,9 +395,11 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
         "oracle=passed "
         f"ieee=({machine_epsilon:.3e},{unit_roundoff:.3e},{smallest_subnormal:.3e}) "
         f"cancel=({naive_cancellation:.3e},{stable_cancellation:.3e},{float(exact_cancellation):.3e}) "
-        f"sums=({naive_sum:.1f},{compensated_sum:.1f},{float(decimal_sum):.1f}) "
+        f"sums=({naive_sum:.1f},{pairwise:.1f},{compensated_sum:.1f},{float(decimal_sum):.1f}) "
         f"linear=({condition_number:.3e},{forward_error:.3e},{amplification:.3e},residual<=1e-15) "
-        f"leastsq=({least_condition:.3e},{normal_condition:.3e},{qr_error:.3e},{normal_error:.3e}) "
+        f"leastsq=({least_condition:.3e},{normal_condition:.3e},{normal_error:.3e},"
+        f"{qr_error:.3e},{svd_error:.3e},{normal_residual:.3e},{qr_residual:.3e},"
+        f"{svd_residual:.3e},rank={least_rank}) "
         f"logsumexp=({naive_logsumexp:.0f},{stable_logsumexp:.6f}) "
         f"scaling=({unscaled_condition:.3e},{scaled_condition:.3e}) "
         f"rank=({numerical_rank},{singular_values[0]:.3e},{singular_values[1]:.3e}) "
@@ -364,7 +408,18 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
     return 0
 
 
-oracle_path = Path("evidence/ch14/oracle.json")
-if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
-    oracle_path = Path(sys.argv[1])
-main(oracle_path)
+if len(sys.argv) > 1 and sys.argv[1] == "--compare":
+    try:
+        if len(sys.argv) != 4:
+            raise ValueError("comparison requires two values")
+        result = scale_aware_close(
+            float(sys.argv[2]), float(sys.argv[3]), 0.0, 1e-6
+        )
+    except ValueError as error:
+        raise SystemExit(str(error)) from error
+    print(f"close={int(result)}")
+else:
+    oracle_path = Path("evidence/ch14/oracle.json")
+    if len(sys.argv) > 1 and sys.argv[1].endswith(".json"):
+        oracle_path = Path(sys.argv[1])
+    main(oracle_path)

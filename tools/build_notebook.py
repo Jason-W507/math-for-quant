@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import os
+import subprocess
 import sys
 import warnings
 from pathlib import Path
@@ -33,6 +34,22 @@ def semantic_cells(notebook: object) -> list[tuple[str, str]]:
     ]
 
 
+def execute_with_isolated_kernel_stderr(notebook: object) -> object:
+    """Execute while keeping native kernel shutdown noise out of the CLI contract."""
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+            "ignore",
+            message="WARNING: Insecure writes have been enabled.*",
+        )
+        return NotebookClient(
+            notebook,
+            timeout=60,
+            kernel_name="python3",
+            extra_arguments=["--log-level=ERROR"],
+            resources={"metadata": {"path": str(ROOT)}},
+        ).execute(stderr=subprocess.DEVNULL)
+
+
 def main() -> int:
     args = parse_args()
     source = ROOT / args.source
@@ -61,18 +78,7 @@ def main() -> int:
         runtime.mkdir(parents=True, exist_ok=True)
         os.environ["JUPYTER_RUNTIME_DIR"] = str(runtime)
         os.environ["IPYTHONDIR"] = str(ROOT / "build" / "ipython")
-        with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore",
-                message="WARNING: Insecure writes have been enabled.*",
-            )
-            executed = NotebookClient(
-                generated_notebook,
-                timeout=60,
-                kernel_name="python3",
-                extra_arguments=["--log-level=ERROR"],
-                resources={"metadata": {"path": str(ROOT)}},
-            ).execute()
+        executed = execute_with_isolated_kernel_stderr(generated_notebook)
         output_text = "".join(
             str(item.get("text", ""))
             for cell in executed.cells
