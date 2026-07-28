@@ -1,23 +1,38 @@
 {
   "ar_values": [1.0, 0.6, 0.36, 0.216, 0.1296],
   "misspecification_threshold": 0.2,
-  "kalman": {
-    "prior_mean": 0.0,
-    "prior_variance": 1.0,
-    "observation": 1.2,
-    "observation_variance": 0.25
+  "dynamic_models": {
+    "ma_theta": 0.4,
+    "previous_innovation": 1.0,
+    "var_matrix": [[0.5, 0.1], [0.0, 0.4]],
+    "var_state": [1.0, 2.0],
+    "garch_omega": 0.1,
+    "garch_alpha": 0.2,
+    "garch_beta": 0.7,
+    "previous_squared_innovation": 0.25,
+    "previous_variance": 0.5
   },
+  "kalman": {"prior_mean": 0.0, "prior_variance": 1.0, "observation": 1.2, "observation_variance": 0.25},
   "change_values": [0.0, 0.1, -0.1, 0.0, 3.0, 3.1, 2.9, 3.0],
+  "true_change": 4,
   "minimum_segment": 2,
   "change_threshold": 2.5,
+  "sensitivity_thresholds": [1.0, 3.5],
   "cointegration_x": [100.0, 101.0, 103.0, 102.0, 104.0, 105.0],
-  "cointegration_y": [201.0, 201.0, 207.0, 203.0, 209.0, 209.0],
+  "cointegration_y": [201.0, 201.0, 206.0, 205.0, 207.0, 210.0],
   "cointegration_beta": 2.0,
+  "pseudo_spread": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+  "spread_shift_limit": 1.0,
   "windows": [
     {"name": "train", "start": "2016-01", "end": "2019-12"},
     {"name": "validation", "start": "2020-01", "end": "2021-12"},
     {"name": "trade", "start": "2022-01", "end": "2024-12"}
   ],
-  "trade_returns": [0.03, 0.02],
-  "total_cost": 0.01
+  "rolling_windows": [
+    {"train_values": [1.0, 0.6, 0.36], "validation_value": 0.216, "trade_return": 0.03, "cost": 0.006},
+    {"train_values": [0.6, 0.36, 0.216], "validation_value": 0.1296, "trade_return": 0.02, "cost": 0.004}
+  ],
+  "bad_split": {"train": [0, 2, 4], "validation": [1, 3], "trade": [5, 6]},
+  "bad_scaler": {"fit_end": "2024-12", "train_end": "2019-12"},
+  "bad_state": {"observed_through": "2022-02-28", "decision_date": "2022-01-31"}
 }

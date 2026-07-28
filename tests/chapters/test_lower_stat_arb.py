@@ -5,6 +5,16 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
+from math_for_quant.lower.stat_arb import (
+    detect_change,
+    validate_online_state,
+    validate_scaler,
+    validate_split,
+    validate_walk_forward,
+)
+
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -28,9 +38,10 @@ class LowerStatArbTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(
             result.stdout,
-            "oracle=passed ar_phi=0.600000 misspec_acf=0.600000 "
-            "kalman=(0.800000,0.960000,0.200000) change=(4,0,0) "
-            "cointegration_spread=0.000000 walk_forward=passed "
+            "oracle=passed ar_phi=0.600000 misspec_acf=1.000000 "
+            "dynamic=(0.400000,0.700000,0.800000,0.500000) "
+            "kalman=(0.800000,0.960000,0.200000) change=(4,0,0,0) sensitivity=(2,1) "
+            "cointegration=(-0.597614,1) rolling=(2,0.000000) "
             "returns=(0.050000,0.040000) failures=(1,1,1)\n",
         )
 
@@ -55,6 +66,28 @@ class LowerStatArbTests(unittest.TestCase):
             "历史相关性不等于稳定套利关系",
         ):
             self.assertIn(marker, report)
+
+    def test_change_metrics_use_truth_and_expose_threshold_sensitivity(self) -> None:
+        values = np.asarray([0.0, 0.1, -0.1, 0.0, 3.0, 3.1, 2.9, 3.0])
+        self.assertEqual(detect_change(values, 4, 2, 2.5), (4, 0, 0, 0))
+        self.assertEqual(detect_change(values, 4, 2, 1.0), (4, 0, 2, 0))
+        self.assertEqual(detect_change(values, 4, 2, 3.5), (-1, -1, 0, 1))
+
+    def test_protocol_validators_reject_actual_contaminated_metadata(self) -> None:
+        with self.assertRaisesRegex(ValueError, "random or overlapping"):
+            validate_split([0, 2, 4], [1, 3], [5, 6])
+        with self.assertRaisesRegex(ValueError, "after the training"):
+            validate_scaler("2024-12", "2019-12")
+        with self.assertRaisesRegex(ValueError, "future observations"):
+            validate_online_state("2022-02-28", "2022-01-31")
+        with self.assertRaisesRegex(ValueError, "runs backward"):
+            validate_walk_forward(
+                [
+                    {"name": "train", "start": "2020-01", "end": "2019-12"},
+                    {"name": "validation", "start": "2021-01", "end": "2021-12"},
+                    {"name": "trade", "start": "2022-01", "end": "2021-12"},
+                ]
+            )
 
 
 if __name__ == "__main__":

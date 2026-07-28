@@ -1,14 +1,24 @@
 {
   "expected": {
     "ar_phi": 0.6,
-    "misspec_acf": 0.6,
+    "misspec_acf": 1.0,
+    "ma_forecast": 0.4,
+    "var_first": 0.7,
+    "var_second": 0.8,
+    "garch_variance": 0.5,
     "kalman_gain": 0.8,
     "kalman_mean": 0.96,
     "kalman_variance": 0.2,
     "change_index": 4,
     "detection_delay": 0,
     "false_alarms": 0,
-    "cointegration_spread": 0.0,
+    "missed": 0,
+    "low_false_alarms": 2,
+    "high_missed": 1,
+    "spread_ar": -0.5976143046671968,
+    "pseudo_rejected": 1,
+    "rolling_windows": 2,
+    "rolling_error_max": 0.0,
     "gross": 0.05,
     "net": 0.04,
     "random_split_rejected": 1,
@@ -18,12 +28,13 @@
   "absolute_tolerance": 1e-12,
   "provenance": "hand-derived AR coefficient, one-step scalar Kalman update, fixed mean-shift index, cointegrating spread, walk-forward boundaries, and two-trade cost ledger",
   "published_markers": [
-    "AR(1) 系数与错设残差的一阶系数均为 $0.6$",
+    "AR(1) 系数为 $0.6$，错设残差的一阶相关为 $1$",
+    "MA 预测为 $0.4$；VAR 两维预测为 $(0.7,0.8)$；GARCH 方差为 $0.5$",
     "Kalman 增益、后验均值和后验方差为 $0.8,0.96,0.2$",
     "毛收益为 $0.05$，成本后净收益为 $0.04$"
   ],
   "fixture": {
     "path": "data/fixtures/lower-ch02.json",
-    "sha256": "5ab8814b69b5532dd25508838aba01ba46b4bff7d6edb232de102f5d2be981e8"
+    "sha256": "75d3b55471fa1de0c00a8c81e8f685152e90bbb348bf2ebd2fd44af2327fa64e"
   }
 }
