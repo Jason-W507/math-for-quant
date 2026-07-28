@@ -14,6 +14,7 @@ GLOSSARY_OUTPUT = ROOT / "tex" / "common" / "glossary.tex"
 PREREQUISITE_OUTPUT = ROOT / "tex" / "generated" / "prerequisites"
 COURSE_MAP_OUTPUT = ROOT / "tex" / "generated" / "course-map.tex"
 CONCEPT_INDEX_OUTPUT = ROOT / "tex" / "generated" / "concept-index.tex"
+LOWER_ROUTE_BRIDGES_OUTPUT = ROOT / "tex" / "generated" / "lower-route-bridges.tex"
 
 
 def tex_text(value: str) -> str:
@@ -206,6 +207,30 @@ def render_concept_index(manifest: dict[str, object]) -> str:
     )
 
 
+def render_lower_route_bridges(manifest: dict[str, object]) -> str:
+    titles = {str(unit["id"]): str(unit["title"]) for unit in manifest["units"]}
+    rows = []
+    for track in manifest["tracks"]:
+        prerequisites = []
+        for identifier in track["bridge_prerequisites"]:
+            prerequisites.append(
+                f"\\texttt{{{tex_text(str(identifier))}}}（{tex_text(titles[str(identifier)])}）"
+            )
+        rows.append(
+            f"{tex_text(str(track['title']))} & " + r"；\newline ".join(prerequisites) + r" \\"
+        )
+    return (
+        "% Generated from curriculum/manifest.json; do not edit by hand.\n"
+        "\\begin{longtable}{p{0.22\\textwidth}p{0.68\\textwidth}}\n"
+        "\\toprule\n路线 & 需要核对的上册学习单元 \\\\\n"
+        "\\midrule\n\\endfirsthead\n"
+        "\\toprule\n路线 & 需要核对的上册学习单元 \\\\\n"
+        "\\midrule\n\\endhead\n"
+        + "\n".join(rows)
+        + "\n\\bottomrule\n\\end{longtable}\n"
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -221,6 +246,7 @@ def main() -> int:
         GLOSSARY_OUTPUT: render_glossary(),
         COURSE_MAP_OUTPUT: render_course_map(manifest),
         CONCEPT_INDEX_OUTPUT: render_concept_index(manifest),
+        LOWER_ROUTE_BRIDGES_OUTPUT: render_lower_route_bridges(manifest),
     }
     expected.update(
         {

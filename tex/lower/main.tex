@@ -1,5 +1,6 @@
 \documentclass[lang=cn,11pt,scheme=chinese]{elegantbook}
 \usepackage{longtable}
+\addbibresource{tex/common/references.bib}
 \input{tex/common/editorial-environments}
 
 \title{量化研究数学}
@@ -25,26 +26,22 @@
 \tableofcontents
 \mainmatter
 
-\chapter{六条方向路线}
+\part{路线选择与共同契约}
 
-\section{共同研究门禁}
+\chapter{下册的共同研究门禁}
 
 所有路线都必须检查时间泄漏、多重检验、样本外设计、交易成本与制度摩擦、数值稳定和可复现性。模型更复杂不能替代这些研究证据。
 
-\section{路线入口}
+\section{六条路线的共同结构}
 
-\begin{enumerate}
-  \item 多因子与计量：从横截面信号到成本和容量；
-  \item 时间序列与统计套利：从动态模型到 walk-forward 验证；
-  \item 机器学习 Alpha：从泛化到漂移与校准；
-  \item 衍生品：从鞅与 It\^o 公式到定价和对冲；
-  \item 组合与风险：从协方差到稳健优化和压力测试；
-  \item 高频与执行：从订单流到事件时间仿真和控制。
-\end{enumerate}
+每条路线都按四段推进：路线诊断、精确桥接、三个方向模块、Route Capstone。三个方向模块依次处理模型与推导，估计、校准与数值实现，以及样本外、摩擦和失败边界。这个结构避免六条路线退化为六本互不相干的模型目录。
 
 \begin{note}
 每条路线的 Capstone 是学习证据，不代表生产部署、实盘业绩或团队经验。
 \end{note}
+
+\input{tex/lower/chapters/route-diagnostics}
+\input{tex/lower/templates/capstone-evidence}
 
 \appendix
 
@@ -53,6 +50,9 @@
 
 \chapter{共享术语表}
 \input{tex/common/glossary}
+
+\chapter{参考文献}
+\printbibliography[heading=none]
 
 \chapter{许可说明}
 原创代码采用 MIT License；原创书稿与图形采用 CC BY-NC-SA 4.0；ElegantBook 类文件沿用 LPPL；真实数据切片将在引入时分别记录来源与许可。

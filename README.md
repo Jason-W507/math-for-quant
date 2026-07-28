@@ -3,13 +3,14 @@
 《量化研究数学》是一套面向具备经济学或金融学基础、已经会 Python 的读者的双册自学教程：
 
 - 上册《通用工具与研究证据》初稿已完成，包含 17 个学习单元、四级习题、可执行实验与独立 oracle；完整答案单独成册，便于先作答再核对；
-- 下册《方向模型与研究项目》将沿多因子、统计套利、机器学习、衍生品、组合风险和微观结构六条路线展开。
+- 下册《方向模型与研究项目》已完成路线诊断、上册桥接地图和统一 Capstone 契约；后续沿多因子、统计套利、机器学习、衍生品、组合风险和微观结构六条路线展开。
 
 ## 获取成品
 
 - [最新 GitHub Release](https://github.com/Jason-W507/math-for-quant/releases/latest)
 - 本地构建产物：`output/pdf/math-for-quant-upper.pdf`
 - 配套完整答案：`output/pdf/math-for-quant-upper-solutions.pdf`
+- 下册路线导论：`output/pdf/math-for-quant-lower.pdf`
 - 已确认勘误：[ERRATA.md](ERRATA.md)
 
 生成 PDF 不提交到源码历史；正式版本由 tag 构建并上传到 Release。

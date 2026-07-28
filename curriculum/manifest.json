@@ -15,7 +15,7 @@
     },
     {
       "id": "lower",
-      "title": "方向模型与实战项目",
+      "title": "方向模型与研究项目",
       "source": "tex/lower/main.tex",
       "pdf": "output/pdf/math-for-quant-lower.pdf"
     }
