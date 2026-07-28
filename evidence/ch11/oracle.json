@@ -1,68 +1,90 @@
 {
   "provenance": "finite-state transition-matrix powers and stationary equations, exact Poisson moments, Brownian covariance min(s,t) and quadratic-variation moments, and finite-space conditional-probability enumeration",
-  "numpy_versions": ["2.3.5", "2.5.1"],
-  "process_labels": ["Markov", "martingale", "Poisson", "Brownian"],
-  "seed": 20260726,
-  "transition_matrix": [[0.8, 0.2], [0.3, 0.7]],
-  "initial_distribution": [1.0, 0.0],
-  "transition_horizon": 5,
-  "expected_horizon_distribution": [0.6125, 0.3875],
-  "expected_stationary_distribution": [0.6, 0.4],
-  "gambler_ruin_upper_state": 4,
-  "gambler_ruin_start_state": 2,
+  "numpy_versions": [
+    "2.3.5",
+    "2.5.1"
+  ],
+  "process_labels": [
+    "Markov",
+    "martingale",
+    "Poisson",
+    "Brownian"
+  ],
+  "expected_horizon_distribution": [
+    0.6125,
+    0.3875
+  ],
+  "expected_stationary_distribution": [
+    0.6,
+    0.4
+  ],
   "expected_gambler_ruin_probability": 0.5,
   "expected_gambler_ruin_time": 4.0,
   "expected_periodic_chain_period": 2,
-  "expected_periodic_even_distribution": [1.0, 0.0],
-  "expected_periodic_odd_distribution": [0.0, 1.0],
+  "expected_periodic_even_distribution": [
+    1.0,
+    0.0
+  ],
+  "expected_periodic_odd_distribution": [
+    0.0,
+    1.0
+  ],
   "expected_reducible_absorption_probability": 1.0,
   "expected_reducible_absorption_time": 2.0,
-  "expected_communicating_classes": [[0], [1]],
-  "expected_recurrence_labels": ["recurrent", "transient"],
+  "expected_communicating_classes": [
+    [
+      0
+    ],
+    [
+      1
+    ]
+  ],
+  "expected_recurrence_labels": [
+    "recurrent",
+    "transient"
+  ],
   "expected_detailed_balance_flow": 0.12,
-  "doubling_horizons": [4, 8, 16],
-  "expected_doubling_wealth": [0.0, 0.0, 0.0],
-  "expected_doubling_loss_tail": [0.9375, 0.99609375, 0.9999847412109375],
-  "simulation_horizon": 50,
-  "simulation_paths": 30000,
+  "expected_doubling_wealth": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "expected_doubling_loss_tail": [
+    0.9375,
+    0.99609375,
+    0.9999847412109375
+  ],
   "expected_simulated_state_one": 0.39743333333333336,
-  "poisson_rate": 2.0,
-  "poisson_time": 3.0,
-  "waiting_time_rate": 2.0,
   "expected_waiting_time_mean": 0.5,
   "expected_waiting_time_variance": 0.25,
-  "superposition_rates": [2.0, 3.0],
   "expected_superposition_rate": 5.0,
-  "thinning_base_rate": 5.0,
-  "thinning_keep_probability": 0.3,
   "expected_thinned_rate": 1.5,
   "expected_rejected_rate": 3.5,
-  "nonhomogeneous_interval_end": 3.0,
   "expected_integrated_intensity": 10.5,
   "expected_compensated_poisson_mean": 0.0,
   "expected_poisson_predictable_qv": 6.0,
   "expected_random_walk_predictable_qv": 2.0,
   "expected_poisson_mean": 5.980833333333333,
   "expected_poisson_variance": 5.988465587741813,
-  "brownian_times": [0.25, 0.5, 1.0],
   "expected_brownian_covariance_error": 0.006947957306306263,
-  "reflection_level": 1.0,
-  "reflection_time": 1.0,
   "expected_reflection_hitting_probability": 0.31731050786291415,
-  "variation_partitions": [16, 256],
-  "expected_brownian_total_variation": [3.1915382432114616, 12.766152972845846],
-  "brownian_scaling_factor": 4.0,
-  "brownian_scaling_time": 0.25,
+  "expected_brownian_total_variation": [
+    3.1915382432114616,
+    12.766152972845846
+  ],
   "expected_brownian_scaling_variance": 1.0,
-  "donsker_steps": 100,
   "expected_donsker_variance": 1.0,
   "expected_donsker_fourth_moment": 2.98,
-  "quadratic_variation_paths": 10000,
-  "quadratic_variation_partitions": 256,
   "expected_quadratic_variation_mean": 1.0007306005988938,
   "expected_quadratic_variation_variance": 0.00778138641123891,
-  "expected_martingale_conditional_means": [-1.0, 1.0],
-  "expected_nonmarkov_probabilities": [0.5, 1.0],
+  "expected_martingale_conditional_means": [
+    -1.0,
+    1.0
+  ],
+  "expected_nonmarkov_probabilities": [
+    0.5,
+    1.0
+  ],
   "expected": 0.4,
   "absolute_tolerance": 1e-12,
   "simulation_tolerance": 1e-10,
@@ -84,5 +106,9 @@
     "详细平衡流量为 $0.120000$",
     "Poisson 补偿鞅的可预测二次变差为 $6.000000$",
     "Donsker 四阶矩基线为 $2.980000$"
-  ]
+  ],
+  "fixture": {
+    "path": "data/fixtures/ch11.json",
+    "sha256": "e34a0dfac751fcf31d9f50d174d9cf9c942ea8b55aa86928b1440e19a6be47c1"
+  }
 }

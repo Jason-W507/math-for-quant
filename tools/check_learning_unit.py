@@ -42,7 +42,12 @@ def main() -> int:
         manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
         return fail(f"manifest JSON is invalid: {error.msg}")
+    schema_error = validate_document(manifest, "manifest")
+    if not isinstance(manifest, dict):
+        return fail(schema_error or "manifest schema validation failed: root must be an object")
     units = manifest.get("units", [])
+    if not isinstance(units, list):
+        return fail(schema_error or "manifest schema validation failed: units must be an array")
 
     prerequisite_error = validate_prerequisites(units)
     if prerequisite_error is not None:
@@ -84,7 +89,6 @@ def main() -> int:
             if not (ROOT / relative).is_file():
                 return fail(f"{unit.get('id')}: missing artifact {relative}")
 
-    schema_error = validate_document(manifest, "manifest")
     if schema_error is not None:
         return fail(schema_error)
 

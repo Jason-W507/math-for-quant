@@ -1,32 +1,41 @@
 {
   "provenance": "KKT stationarity, complementary slackness, the scalar dual and right-hand-side sensitivity are solved by hand for a two-variable quadratic program; the minimum-variance portfolio follows from the equality-constrained KKT system; projected gradient is only an independent numerical cross-check",
-  "numpy_versions": ["2.3.5", "2.5.1"],
-  "optimization_labels": ["KKT", "duality", "sensitivity", "minimum variance"],
-  "analytic_solution": [0.5, 0.5],
+  "numpy_versions": [
+    "2.3.5",
+    "2.5.1"
+  ],
+  "optimization_labels": [
+    "KKT",
+    "duality",
+    "sensitivity",
+    "minimum variance"
+  ],
+  "analytic_solution": [
+    0.5,
+    0.5
+  ],
   "analytic_multiplier": 0.5,
   "expected_primal_value": 0.25,
   "expected_dual_value": 0.25,
   "expected_duality_gap": 0.0,
   "expected": 0.25,
-  "optimizer_start": [2.0, 0.0],
-  "optimizer_step": 0.2,
-  "optimizer_iterations": 500,
   "absolute_tolerance": 1e-12,
   "optimizer_tolerance": 1e-10,
-  "sensitivity_tolerance": 1e-9,
+  "sensitivity_tolerance": 1e-09,
   "expected_cq_residual": 1.0,
-  "sensitivity_rhs": 1.2,
-  "finite_difference_step": 1e-5,
   "expected_sensitivity_multiplier": 0.6,
   "expected_sensitivity_value": 0.36,
   "expected_sensitivity_derivative": 0.6,
-  "portfolio_covariance": [[0.04, 0.006], [0.006, 0.09]],
-  "portfolio_covariance_perturbed": [[0.04, 0.02], [0.02, 0.09]],
-  "portfolio_budget_vector": [1.0, 1.0],
-  "expected_minimum_variance_weights": [0.711864406779661, 0.288135593220339],
+  "expected_minimum_variance_weights": [
+    0.711864406779661,
+    0.288135593220339
+  ],
   "expected_portfolio_variance": 0.03020338983050847,
   "expected_portfolio_condition_number": 2.3087232419661703,
-  "expected_perturbed_weights": [0.7777777777777778, 0.2222222222222222],
+  "expected_perturbed_weights": [
+    0.7777777777777778,
+    0.2222222222222222
+  ],
   "expected_perturbed_variance": 0.035555555555555556,
   "expected_perturbed_condition_number": 2.9412596107285474,
   "expected_weight_amplification": 9.416195856873825,
@@ -39,5 +48,9 @@
     "最小方差权重为 $(0.711864,0.288136)$",
     "驻点 $x=0$ 的目标值为 1",
     "KKT 驻点残差恒为 1"
-  ]
+  ],
+  "fixture": {
+    "path": "data/fixtures/ch13.json",
+    "sha256": "6e7f0d10da7d64799c920a26a1a5cdade4be2bc2bd3e1a4fb8f0bdb776169d33"
+  }
 }

@@ -1,0 +1,12 @@
+{
+  "p_values": [
+    1,
+    2,
+    4
+  ],
+  "midpoint_bins": 64,
+  "section_sizes": [
+    10,
+    100
+  ]
+}

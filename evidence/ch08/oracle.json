@@ -1,36 +1,42 @@
 {
   "provenance": "eight-state exact partition ledger; nested conditional expectations; defining-event integrals; L2 orthogonality; conditional Jensen and total variance; finite probability-kernel mixture; discrete Bayes update; common-cause and collider counterexamples",
-  "probabilities": [0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.125],
-  "conditioning_state": [0, 0, 0, 0, 1, 1, 1, 1],
-  "fine_conditioning_state": [0, 0, 1, 1, 2, 2, 3, 3],
-  "random_variable": [0.0, 2.0, 1.0, 5.0, 4.0, 6.0, 7.0, 9.0],
-  "expected_conditional_means": [2.0, 6.5],
-  "expected_fine_conditional_means": [1.0, 3.0, 5.0, 8.0],
-  "expected_tower_conditional_means": [2.0, 6.5],
+  "expected_conditional_means": [
+    2.0,
+    6.5
+  ],
+  "expected_fine_conditional_means": [
+    1.0,
+    3.0,
+    5.0,
+    8.0
+  ],
+  "expected_tower_conditional_means": [
+    2.0,
+    6.5
+  ],
   "expected_unconditional_mean": 4.25,
-  "expected_conditioning_integrals": [1.0, 3.25],
+  "expected_conditioning_integrals": [
+    1.0,
+    3.25
+  ],
   "expected_orthogonality_max": 0.0,
-  "expected_jensen_gaps": [3.5, 3.25],
+  "expected_jensen_gaps": [
+    3.5,
+    3.25
+  ],
   "expected_total_variance": 8.4375,
   "expected_conditional_variance_mean": 3.375,
   "expected_variance_of_conditional_mean": 5.0625,
-  "kernel_support": [0.0, 2.0, 4.0],
-  "kernel": [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5]],
-  "conditioning_probabilities": [0.5, 0.5],
-  "expected_mixture": [0.25, 0.5, 0.25],
-  "common_cause_a": [0, 0, 0, 0, 1, 1, 1, 1],
-  "common_cause_b": [0, 0, 0, 0, 1, 1, 1, 1],
+  "expected_mixture": [
+    0.25,
+    0.5,
+    0.25
+  ],
   "expected_marginal_joint_one": 0.5,
   "expected_marginal_product_one": 0.25,
   "maximum_conditional_independence_error": 1e-12,
-  "collider_probabilities": [0.25, 0.25, 0.25, 0.25],
-  "collider_a": [0, 0, 1, 1],
-  "collider_b": [0, 1, 0, 1],
-  "collider_selected": [0, 1, 1, 0],
   "expected_collider_marginal_gap": 0.0,
   "expected_collider_conditional_gap": 0.25,
-  "bayes_prior": [0.7, 0.3],
-  "bayes_signal_likelihood": [0.1, 0.8],
   "expected_bayes_evidence": 0.31,
   "expected_bayes_posterior": 0.7741935483870968,
   "published_markers": [
@@ -43,5 +49,9 @@
     "碰撞点条件独立性差为 $1/4$"
   ],
   "expected": 4.25,
-  "absolute_tolerance": 1e-10
+  "absolute_tolerance": 1e-10,
+  "fixture": {
+    "path": "data/fixtures/ch08.json",
+    "sha256": "0bc42328c65ed60405869322eefef0888dadd188428dcccff8864095c513d87b"
+  }
 }

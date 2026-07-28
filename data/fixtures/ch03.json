@@ -1,0 +1,12 @@
+{
+  "simple_levels": [
+    2,
+    4,
+    8
+  ],
+  "spike_indices": [
+    10,
+    100
+  ],
+  "fixed_point": 0.2
+}

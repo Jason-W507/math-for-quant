@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/Jason-W507/math-for-quant/schemas/oracle.schema.json",
   "type": "object",
-  "required": ["expected", "absolute_tolerance", "provenance"],
+  "required": ["expected", "absolute_tolerance", "provenance", "fixture"],
   "properties": {
     "expected": {},
     "absolute_tolerance": {"type": "number", "minimum": 0},

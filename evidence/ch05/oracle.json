@@ -1,22 +1,31 @@
 {
   "provenance": "hand-derived differentials for a nonsymmetric quadratic form and a two-stage vector composition",
-  "point": [0.5, -1.0],
-  "matrix": [[4.0, 2.0], [0.0, 3.0]],
-  "linear": [-1.0, 2.0],
   "expected_quadratic_value": -1.0,
-  "expected_quadratic_gradient": [0.0, -0.5],
-  "expected_symmetric_hessian": [[4.0, 1.0], [1.0, 3.0]],
-  "expected_chain_gradient": [4.0, -6.5],
-  "finite_difference_step": 0.00001,
-  "finite_difference_scan_steps": [0.01, 0.00001, 0.00000001, 0.000000000001],
-  "tiny_step_error_floor": 0.000001,
-  "maximum_gradient_error": 0.000000001,
+  "expected_quadratic_gradient": [
+    0.0,
+    -0.5
+  ],
+  "expected_symmetric_hessian": [
+    [
+      4.0,
+      1.0
+    ],
+    [
+      1.0,
+      3.0
+    ]
+  ],
+  "expected_chain_gradient": [
+    4.0,
+    -6.5
+  ],
+  "maximum_gradient_error": 1e-09,
   "expected_abs_left_slope": -1.0,
   "expected_abs_right_slope": 1.0,
-  "portfolio_covariance": [[2.0, 0.5], [0.5, 1.0]],
-  "portfolio_expected_returns": [0.08, 0.04],
-  "portfolio_risk_tradeoff": 5.0,
-  "expected_portfolio_weights": [0.17142857142857143, 0.1142857142857143],
+  "expected_portfolio_weights": [
+    0.17142857142857143,
+    0.1142857142857143
+  ],
   "expected_portfolio_objective": -0.045714285714285714,
   "published_markers": [
     "梯度为 $(0,-0.5)^T$",
@@ -28,5 +37,9 @@
     "$h=10^{-12}$ 时误差超过 $10^{-6}$"
   ],
   "expected": -1.0,
-  "absolute_tolerance": 1e-12
+  "absolute_tolerance": 1e-12,
+  "fixture": {
+    "path": "data/fixtures/ch05.json",
+    "sha256": "bfddac0fd547220f436600e10fad8efdd866e48cf3b3f217b88d0f69f3c44a90"
+  }
 }

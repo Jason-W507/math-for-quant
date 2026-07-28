@@ -1,0 +1,43 @@
+{
+  "seed": 20260727,
+  "ar1_phi": 0.8,
+  "innovation_variance": 1.0,
+  "ar1_observations": 50000,
+  "ar1_burn_in": 1000,
+  "forecast_origin": 1.0,
+  "forecast_horizon": 3,
+  "arma_phi": 0.6,
+  "arma_theta": 0.3,
+  "arma_innovation_variance": 1.0,
+  "unit_root_horizons": [
+    1,
+    10,
+    100
+  ],
+  "cointegration_slope": 1.5,
+  "spread_ar_phi": 0.4,
+  "spread_innovation_variance": 0.36,
+  "spread_seed": 20260728,
+  "spread_length": 600,
+  "rolling_window": 120,
+  "garch_omega": 0.1,
+  "garch_alpha": 0.1,
+  "garch_beta": 0.8,
+  "kalman_initial_mean": 0.0,
+  "kalman_initial_variance": 1.0,
+  "kalman_process_variance": 0.25,
+  "kalman_measurement_variance": 1.0,
+  "kalman_observations": [
+    1.0,
+    -0.5,
+    0.25
+  ],
+  "spurious_length": 400,
+  "break_length": 600,
+  "break_point": 360,
+  "phi_before_break": 0.85,
+  "phi_after_break": -0.25,
+  "training_fraction": 0.6,
+  "spurious_level_r2_minimum": 0.3,
+  "difference_r2_maximum": 0.01
+}

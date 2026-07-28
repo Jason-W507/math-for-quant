@@ -1,0 +1,53 @@
+{
+  "seed": 20260726,
+  "transition_matrix": [
+    [
+      0.8,
+      0.2
+    ],
+    [
+      0.3,
+      0.7
+    ]
+  ],
+  "initial_distribution": [
+    1.0,
+    0.0
+  ],
+  "transition_horizon": 5,
+  "gambler_ruin_upper_state": 4,
+  "gambler_ruin_start_state": 2,
+  "doubling_horizons": [
+    4,
+    8,
+    16
+  ],
+  "simulation_horizon": 50,
+  "simulation_paths": 30000,
+  "poisson_rate": 2.0,
+  "poisson_time": 3.0,
+  "waiting_time_rate": 2.0,
+  "superposition_rates": [
+    2.0,
+    3.0
+  ],
+  "thinning_base_rate": 5.0,
+  "thinning_keep_probability": 0.3,
+  "nonhomogeneous_interval_end": 3.0,
+  "brownian_times": [
+    0.25,
+    0.5,
+    1.0
+  ],
+  "reflection_level": 1.0,
+  "reflection_time": 1.0,
+  "variation_partitions": [
+    16,
+    256
+  ],
+  "brownian_scaling_factor": 4.0,
+  "brownian_scaling_time": 0.25,
+  "donsker_steps": 100,
+  "quadratic_variation_paths": 10000,
+  "quadratic_variation_partitions": 256
+}

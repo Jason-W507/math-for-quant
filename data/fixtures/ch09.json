@@ -1,0 +1,30 @@
+{
+  "seed": 20260725,
+  "bernoulli_p": 0.3,
+  "sample_size": 200,
+  "repetitions": 20000,
+  "normal_coverage_threshold": 1.96,
+  "tail_deviation": 0.1,
+  "berry_esseen_constant": 0.56,
+  "rare_event_probability": 0.01,
+  "rare_event_sample_size": 10,
+  "rare_spike_indices": [
+    10,
+    100,
+    1000
+  ],
+  "l1_not_l2_indices": [
+    10,
+    100,
+    1000
+  ],
+  "cauchy_repetitions": 8000,
+  "cauchy_sample_sizes": [
+    10,
+    1000
+  ],
+  "cauchy_median_band": [
+    0.7,
+    1.3
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "seed": 20260726,
+  "bernoulli_p": 0.4,
+  "sample_size": 250,
+  "estimator_repetitions": 20000,
+  "normal_mean_theta": 1.0,
+  "unbiased_estimator_variance": 0.25,
+  "shrinkage_factor": 0.8,
+  "ovb_beta_x": 1.0,
+  "ovb_beta_z": 2.0,
+  "ovb_cov_xz": 0.5,
+  "ovb_var_x": 1.0,
+  "dependent_error_sample_size": 100,
+  "ar1_correlation": 0.6,
+  "cluster_size": 5,
+  "cluster_correlation": 0.4,
+  "dependent_score_fixture": [
+    1.0,
+    1.0,
+    -1.0,
+    -1.0
+  ],
+  "hac_bandwidth": 1,
+  "ordered_p_values": [
+    0.001,
+    0.009,
+    0.021,
+    0.04,
+    0.2
+  ],
+  "selection_candidate_count": 2,
+  "delta_method_probability": 0.4,
+  "delta_method_sample_size": 250,
+  "regression_sample_size": 80,
+  "regression_repetitions": 10000,
+  "true_intercept": 0.0,
+  "true_slope": 1.5,
+  "nominal_alpha": 0.05,
+  "hypothesis_count": 20,
+  "multiple_testing_repetitions": 40000,
+  "normal_two_sided_critical": 1.959963984540054,
+  "bonferroni_two_sided_critical": 3.023341439739154
+}

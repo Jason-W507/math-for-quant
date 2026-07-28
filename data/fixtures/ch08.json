@@ -1,0 +1,115 @@
+{
+  "probabilities": [
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125
+  ],
+  "conditioning_state": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1
+  ],
+  "fine_conditioning_state": [
+    0,
+    0,
+    1,
+    1,
+    2,
+    2,
+    3,
+    3
+  ],
+  "random_variable": [
+    0.0,
+    2.0,
+    1.0,
+    5.0,
+    4.0,
+    6.0,
+    7.0,
+    9.0
+  ],
+  "kernel_support": [
+    0.0,
+    2.0,
+    4.0
+  ],
+  "kernel": [
+    [
+      0.5,
+      0.5,
+      0.0
+    ],
+    [
+      0.0,
+      0.5,
+      0.5
+    ]
+  ],
+  "conditioning_probabilities": [
+    0.5,
+    0.5
+  ],
+  "common_cause_a": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1
+  ],
+  "common_cause_b": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1
+  ],
+  "collider_probabilities": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "collider_a": [
+    0,
+    0,
+    1,
+    1
+  ],
+  "collider_b": [
+    0,
+    1,
+    0,
+    1
+  ],
+  "collider_selected": [
+    0,
+    1,
+    1,
+    0
+  ],
+  "bayes_prior": [
+    0.7,
+    0.3
+  ],
+  "bayes_signal_likelihood": [
+    0.1,
+    0.8
+  ]
+}

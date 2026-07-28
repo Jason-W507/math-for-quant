@@ -1,11 +1,18 @@
 {
   "provenance": "hand-derived dyadic simple-function sums and analytic spike integrals",
-  "simple_levels": [2, 4, 8],
-  "expected_simple_integrals": [0.375, 0.46875, 0.498046875],
-  "spike_indices": [10, 100],
-  "fixed_point": 0.2,
-  "expected_spike_integrals": [1.0, 1.0],
-  "expected_point_values": [0.0, 0.0],
+  "expected_simple_integrals": [
+    0.375,
+    0.46875,
+    0.498046875
+  ],
+  "expected_spike_integrals": [
+    1.0,
+    1.0
+  ],
+  "expected_point_values": [
+    0.0,
+    0.0
+  ],
   "expected_limit_integral": 0.0,
   "expected_interchange_gap": 1.0,
   "published_markers": [
@@ -17,5 +24,9 @@
     "极限交换差额为 1"
   ],
   "expected": 0.5,
-  "absolute_tolerance": 1e-12
+  "absolute_tolerance": 1e-12,
+  "fixture": {
+    "path": "data/fixtures/ch03.json",
+    "sha256": "2cc67805328f3887bf759eed6d680a00f6d85aabc4238c81947d9ac38f2b078a"
+  }
 }

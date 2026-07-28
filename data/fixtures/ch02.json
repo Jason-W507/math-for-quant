@@ -1,0 +1,10 @@
+{
+  "initial_value": 0.0,
+  "intercept": 0.02,
+  "contraction_factor": 0.8,
+  "iterations": 5,
+  "witness_indices": [
+    10,
+    100
+  ]
+}

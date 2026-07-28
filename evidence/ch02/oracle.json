@@ -1,16 +1,22 @@
 {
   "provenance": "hand-derived affine-contraction ledger and analytic witness x_n=2^(-1/n)",
-  "initial_value": 0.0,
-  "intercept": 0.02,
-  "contraction_factor": 0.8,
-  "iterations": 5,
   "expected_fixed_point": 0.1,
   "expected_iterate": 0.067232,
   "expected_error": 0.032768,
   "expected_bound": 0.032768,
-  "witness_indices": [10, 100],
-  "expected_witness_errors": [0.5, 0.5],
-  "published_markers": ["0.067232", "0.032768", "1/2"],
+  "expected_witness_errors": [
+    0.5,
+    0.5
+  ],
+  "published_markers": [
+    "0.067232",
+    "0.032768",
+    "1/2"
+  ],
   "expected": 0.067232,
-  "absolute_tolerance": 1e-12
+  "absolute_tolerance": 1e-12,
+  "fixture": {
+    "path": "data/fixtures/ch02.json",
+    "sha256": "31e76a1c27486f10ce789138866d3babb8a2cf464882119ca618bd64d66077c3"
+  }
 }

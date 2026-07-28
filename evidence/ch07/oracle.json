@@ -1,48 +1,52 @@
 {
   "provenance": "finite-space fraction ledger; analytic CDF and pushforward; joint-table covariance; same-mean-and-variance discrete/Normal counterexample; Bernoulli moments and MGF; Poisson PGF; Normal MGF/CDF; Uniform, Exponential and Lognormal moments; Pareto alpha=1 truncated-mean integral",
-  "finite_values": [-1.0, 0.0, 2.0],
-  "finite_probabilities": [0.25, 0.5, 0.25],
   "expected_mean": 0.25,
   "expected_variance": 1.1875,
-  "cdf_points": [-1.0, 0.0, 1.0, 2.0],
-  "expected_cdf": [0.25, 0.75, 0.75, 1.0],
-  "expected_squared_values": [0.0, 1.0, 4.0],
-  "expected_squared_probabilities": [0.5, 0.25, 0.25],
-  "joint_distribution": [[0.375, 0.125], [0.125, 0.375]],
-  "joint_support": [-1.0, 1.0],
-  "expected_marginals": [0.5, 0.5],
+  "expected_cdf": [
+    0.25,
+    0.75,
+    0.75,
+    1.0
+  ],
+  "expected_squared_values": [
+    0.0,
+    1.0,
+    4.0
+  ],
+  "expected_squared_probabilities": [
+    0.5,
+    0.25,
+    0.25
+  ],
+  "expected_marginals": [
+    0.5,
+    0.5
+  ],
   "expected_dependence_gap": 0.125,
   "expected_covariance": 0.5,
   "expected_correlation": 0.5,
-  "moment_match_values": [-1.4142135623730951, 0.0, 1.4142135623730951],
-  "moment_match_probabilities": [0.25, 0.5, 0.25],
   "expected_moment_match_mean": 0.0,
   "expected_moment_match_variance": 1.0,
   "expected_moment_match_discrete_fourth": 2.0,
   "expected_normal_fourth": 3.0,
   "expected_moment_match_atom_at_zero": 0.5,
-  "bernoulli_p": 0.25,
   "expected_bernoulli_mean": 0.25,
   "expected_bernoulli_variance": 0.1875,
   "expected_bernoulli_mgf_log2": 1.25,
-  "poisson_lambda": 2.0,
-  "poisson_pgf_argument": 0.5,
   "expected_poisson_pgf": 0.36787944117144233,
-  "normal_mgf_argument": 0.5,
   "expected_normal_mgf": 1.1331484530668263,
   "expected_normal_cdf_at_one": 0.8413447460685429,
-  "uniform_bounds": [-1.0, 3.0],
   "expected_uniform_mean": 1.0,
   "expected_uniform_variance": 1.3333333333333333,
-  "exponential_rate": 2.0,
   "expected_exponential_mean": 0.5,
   "expected_exponential_variance": 0.25,
   "expected_exponential_survival_at_one": 0.1353352832366127,
-  "lognormal_parameters": [0.0, 0.5],
   "expected_lognormal_mean": 1.1331484530668263,
   "expected_lognormal_variance": 0.3646958540123865,
-  "pareto_cutoffs": [10.0, 1000.0],
-  "expected_pareto_truncated_means": [2.302585092994046, 6.907755278982137],
+  "expected_pareto_truncated_means": [
+    2.302585092994046,
+    6.907755278982137
+  ],
   "published_markers": [
     "期望为 $1/4$",
     "方差为 $19/16$",
@@ -56,5 +60,9 @@
     "截断到 $10$ 与 $1000$ 时分别为 $2.302585$、$6.907755$"
   ],
   "expected": 0.25,
-  "absolute_tolerance": 1e-10
+  "absolute_tolerance": 1e-10,
+  "fixture": {
+    "path": "data/fixtures/ch07.json",
+    "sha256": "fd2dee4a529c76d37850255f52029a0e52ee96e8912f86bd4cf44d9960e0733b"
+  }
 }

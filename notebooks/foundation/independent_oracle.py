@@ -4,32 +4,19 @@
 # 文本源是权威版本；`.ipynb` 是由 Jupytext 生成的出版产物。
 
 # %%
-from __future__ import annotations
-
-import json
+import runpy
 from pathlib import Path
+import sys
 
-import numpy as np
+ROOT = (
+    Path(__file__).resolve().parents[2]
+    if "__file__" in globals()
+    else Path.cwd()
+)
+sys.path.insert(0, str(ROOT / "src"))
 
 
-def main(
-    oracle_path: Path = Path("evidence/foundation/oracle.json"),
-) -> int:
-    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
-    returns = np.array([0.01, -0.02, 0.03], dtype=np.float64)
-    observed = float(np.mean(returns))
-    expected = float(oracle["expected"])
-    tolerance = float(oracle["absolute_tolerance"])
-
-    if abs(observed - expected) > tolerance:
-        raise SystemExit(
-            f"oracle mismatch: observed={observed:.12f} expected={expected:.12f}"
-        )
-
-    print(
-        f"oracle=passed observed={observed:.12f} expected={expected:.12f}"
+if __name__ == "__main__":
+    runpy.run_module(
+        "math_for_quant.foundation.independent_oracle", run_name="__main__"
     )
-    return 0
-
-
-main()

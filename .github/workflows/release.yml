@@ -19,6 +19,8 @@ jobs:
       - run: choco install miktex --no-progress -y
       - run: uv sync
       - run: uv run python -m unittest discover -s tests
+      # Tagged releases are the final two-volume publication boundary. Ordinary
+      # upper-volume CI builds only upper plus its attached supplements.
       - run: uv run python tools/build_books.py --volume all
       - uses: softprops/action-gh-release@v2
         with:

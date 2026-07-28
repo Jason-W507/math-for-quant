@@ -1,59 +1,56 @@
 {
   "provenance": "AR(1) stationary moments and forecast-error variance from the geometric series; scalar Kalman updates hand-calculated as exact fractions; fixed-seed independent random walks and a declared structural break provide reproducible negative controls",
-  "numpy_versions": ["2.3.5", "2.5.1"],
-  "time_series_labels": ["ARMA", "cointegration", "GARCH", "Kalman"],
-  "seed": 20260727,
-  "ar1_phi": 0.8,
-  "innovation_variance": 1.0,
-  "ar1_observations": 50000,
-  "ar1_burn_in": 1000,
-  "forecast_origin": 1.0,
-  "forecast_horizon": 3,
-  "arma_phi": 0.6,
-  "arma_theta": 0.3,
-  "arma_innovation_variance": 1.0,
+  "numpy_versions": [
+    "2.3.5",
+    "2.5.1"
+  ],
+  "time_series_labels": [
+    "ARMA",
+    "cointegration",
+    "GARCH",
+    "Kalman"
+  ],
   "expected_arma_ar_root_modulus": 1.6666666666666667,
   "expected_arma_ma_root_modulus": 3.3333333333333335,
   "expected_arma_variance": 2.265625,
   "expected_arma_lag_one_autocorrelation": 0.7324137931034483,
-  "unit_root_horizons": [1, 10, 100],
-  "expected_unit_root_variances": [1.0, 10.0, 100.0],
-  "cointegration_slope": 1.5,
-  "spread_ar_phi": 0.4,
-  "spread_innovation_variance": 0.36,
-  "spread_seed": 20260728,
-  "spread_length": 600,
-  "rolling_window": 120,
+  "expected_unit_root_variances": [
+    1.0,
+    10.0,
+    100.0
+  ],
   "expected_cointegration_spread_variance": 0.42857142857142855,
   "expected_ecm_adjustment": -0.6,
-  "garch_omega": 0.1,
-  "garch_alpha": 0.1,
-  "garch_beta": 0.8,
   "expected_garch_persistence": 0.9,
   "expected_garch_unconditional_variance": 1.0000000000000002,
   "expected_garch_half_life": 6.578813478960585,
-  "kalman_initial_mean": 0.0,
-  "kalman_initial_variance": 1.0,
-  "kalman_process_variance": 0.25,
-  "kalman_measurement_variance": 1.0,
-  "kalman_observations": [1.0, -0.5, 0.25],
-  "expected_kalman_innovations": [1.0, -1.0555555555555556, 0.1653846153846154],
-  "expected_kalman_innovation_variances": [2.25, 1.8055555555555556, 1.6961538461538461],
+  "expected_kalman_innovations": [
+    1.0,
+    -1.0555555555555556,
+    0.1653846153846154
+  ],
+  "expected_kalman_innovation_variances": [
+    2.25,
+    1.8055555555555556,
+    1.6961538461538461
+  ],
   "expected_kalman_log_likelihood": -4.26072869520409,
-  "expected_kalman_smoothed_means": [0.2607709750566893, 0.1281179138321995, 0.1524943310657596],
-  "spurious_length": 400,
-  "break_length": 600,
-  "break_point": 360,
-  "phi_before_break": 0.85,
-  "phi_after_break": -0.25,
-  "training_fraction": 0.6,
+  "expected_kalman_smoothed_means": [
+    0.2607709750566893,
+    0.1281179138321995,
+    0.1524943310657596
+  ],
   "expected": {
     "ar1_mean": -0.013814472583336393,
     "ar1_variance": 2.7644042626881085,
     "ar1_autocorrelation": 0.7990708197586254,
     "forecast": 0.5120000000000001,
     "forecast_error_variance": 2.0496,
-    "kalman_filtered_means": [0.5555555555555556, 0.08461538461538459, 0.1524943310657596],
+    "kalman_filtered_means": [
+      0.5555555555555556,
+      0.08461538461538459,
+      0.1524943310657596
+    ],
     "kalman_final_gain": 0.41043083900226757,
     "levels_r_squared": 0.3440110461849085,
     "differences_r_squared": 0.00021610149139195123,
@@ -68,8 +65,6 @@
   "absolute_tolerance": 1e-12,
   "simulation_tolerance": 1e-10,
   "ar1_moment_tolerance": 0.04,
-  "spurious_level_r2_minimum": 0.3,
-  "difference_r2_maximum": 0.01,
   "published_markers": [
     "理论方差为 $2.777778$",
     "三步预测为 $0.512000$，预测误差方差为 $2.049600$",
@@ -80,5 +75,9 @@
     "ARMA 解析方差为 $2.265625$",
     "GARCH 半衰期为 $6.578813$",
     "创新对数似然为 $-4.260729$"
-  ]
+  ],
+  "fixture": {
+    "path": "data/fixtures/ch12.json",
+    "sha256": "de117508781f6f28a73abbec63aeacef1b751d4caccbc26ca5d776ac134c7b0e"
+  }
 }

@@ -1,7 +1,9 @@
 {
   "provenance": "hand-derived fraction 1/150",
-  "numerator": 1,
-  "denominator": 150,
   "expected": 0.006666666666666667,
-  "absolute_tolerance": 1e-15
+  "absolute_tolerance": 1e-15,
+  "fixture": {
+    "path": "data/fixtures/foundation.json",
+    "sha256": "d87860b5f820c0a1ea48eca0d751356431bda527362fbd3c2b49a699d8d86edf"
+  }
 }

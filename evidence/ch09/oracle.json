@@ -1,25 +1,19 @@
 {
   "provenance": "analytic Bernoulli mean and variance, exact binomial tail enumeration, Hoeffding's bound, a fixed-seed independent Monte Carlo design, and standard-Cauchy stability under averaging",
-  "seed": 20260725,
-  "bernoulli_p": 0.3,
-  "sample_size": 200,
-  "repetitions": 20000,
   "expected_mean": 0.3,
   "expected_standard_error": 0.0324037034920393,
-  "normal_coverage_threshold": 1.96,
   "expected_normal_coverage": 0.95,
-  "tail_deviation": 0.1,
   "expected_exact_binomial_tail": 0.002565119882035408,
   "expected_chebyshev_bound": 0.105,
   "expected_hoeffding_bound": 0.03663127777746833,
   "expected_bernstein_bound": 0.03282903766610477,
-  "berry_esseen_constant": 0.56,
   "expected_normal_cdf_distance": 0.03480917616069279,
   "expected_berry_esseen_bound": 0.050117728067687446,
-  "rare_event_probability": 0.01,
-  "rare_event_sample_size": 10,
   "expected_rare_event_zero_probability": 0.9043820750088044,
-  "expected_naive_normal_interval": [-0.05166996027240491, 0.07166996027240491],
+  "expected_naive_normal_interval": [
+    -0.05166996027240491,
+    0.07166996027240491
+  ],
   "expected_iid_mean_variance": 0.00105,
   "expected_dependent_mean_variance": 0.21,
   "mean_tolerance": 0.002,
@@ -38,19 +32,28 @@
     "l1_not_l2",
     "distribution_not_probability"
   ],
-  "typewriter_levels": [1, 2, 3, 4],
-  "expected_typewriter_probabilities": [0.5, 0.25, 0.125, 0.0625],
+  "typewriter_levels": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "expected_typewriter_probabilities": [
+    0.5,
+    0.25,
+    0.125,
+    0.0625
+  ],
   "expected_typewriter_layer_mass": 1.0,
-  "rare_spike_indices": [10, 100, 1000],
   "expected_rare_spike_l1": 1.0,
-  "l1_not_l2_indices": [10, 100, 1000],
-  "expected_l1_not_l2_first_moments": [0.31622776601683794, 0.1, 0.03162277660168379],
+  "expected_l1_not_l2_first_moments": [
+    0.31622776601683794,
+    0.1,
+    0.03162277660168379
+  ],
   "expected_l1_not_l2_second_moment": 1.0,
   "expected_distribution_not_probability_gap": 1.0,
   "expected_dominant_term_lindeberg_ratio": 1.0,
-  "cauchy_repetitions": 8000,
-  "cauchy_sample_sizes": [10, 1000],
-  "cauchy_median_band": [0.7, 1.3],
   "published_markers": [
     "$L^1$ 距离均为 $1$",
     "sup 距离为 $0.03480918$",
@@ -59,5 +62,9 @@
     "Cauchy 的中位绝对均值为 $(0.980865,1.029577)$"
   ],
   "expected": 0.3,
-  "absolute_tolerance": 1e-10
+  "absolute_tolerance": 1e-10,
+  "fixture": {
+    "path": "data/fixtures/ch09.json",
+    "sha256": "1087e916a642ccc1cb2d80048d47c075eb80cbf2fdf3d0a4cd9aef64d49aa32f"
+  }
 }

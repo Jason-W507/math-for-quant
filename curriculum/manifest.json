@@ -155,7 +155,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch04"],
+      "prerequisites": ["upper.ch01", "upper.ch02"],
       "evidence": {
         "notation_symbols": ["\\nabla f(x)", "J_g(x)", "H_f"],
         "glossary_terms": ["多元可微", "梯度", "Jacobian", "Hessian", "矩阵微分"],
@@ -201,7 +201,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch04"],
+      "prerequisites": ["upper.ch01"],
       "evidence": {
         "notation_symbols": ["(\\Omega,\\mathcal F,\\mathbb P)", "\\mathcal L(X)", "\\mathbb{E}[X]", "M_X(t)"],
         "glossary_terms": ["概率空间", "随机变量", "推前分布", "联合分布", "边缘分布", "重尾分布"],
@@ -247,7 +247,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch08"],
+      "prerequisites": ["upper.ch07"],
       "evidence": {
         "notation_symbols": ["X_n\\xrightarrow{a.s.}X", "X_n\\xrightarrow{\\mathbb P}X", "X_n\\xrightarrow{L^p}X", "X_n\\xrightarrow d X", "\\bar X_n", "\\rho_3", "n_{\\mathrm{eff}}"],
         "glossary_terms": ["几乎处处收敛", "依概率收敛", "\\(L^p\\) 收敛", "分布收敛", "一致可积", "连续映射定理", "Slutsky 定理", "大数定律", "中心极限定理", "Berry-Esseen 界", "集中不等式", "有效样本量"],
@@ -304,7 +304,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch10", "upper.ch11"],
+      "prerequisites": ["upper.ch10"],
       "evidence": {
         "notation_symbols": ["\\gamma(h)", "\\rho(h)", "\\varepsilon_t", "\\sigma_t^2", "x_{t\\mid t}", "K_t", "\\nu_t", "S_t"],
         "glossary_terms": ["严格平稳", "弱平稳", "遍历性", "白噪声", "创新", "因果性", "可逆性", "单位根", "协整", "GARCH", "状态空间模型", "Kalman 滤波", "平滑", "伪回归", "结构变化"],
@@ -426,7 +426,7 @@
       "id": "applied",
       "title": "应用主线",
       "description": "先建立研究语言，再进入概率统计、动态模型、优化、数值计算与研究审计；测度论概念按课程地图中的桥接清单回看。",
-      "units": ["upper.ch01", "upper.ch05", "upper.ch06", "upper.ch07", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch13", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"]
+      "units": ["upper.ch01", "upper.ch02", "upper.ch05", "upper.ch06", "upper.ch07", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch13", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"]
     },
     {
       "id": "theory",

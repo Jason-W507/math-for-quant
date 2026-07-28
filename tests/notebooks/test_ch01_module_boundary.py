@@ -41,6 +41,30 @@ class ChapterOneModuleBoundaryTests(unittest.TestCase):
         result = loaded.run_contract(fixture, oracle_path)
         self.assertEqual(result.weighted_return, 0.013)
 
+    def test_all_upper_notebooks_delegate_to_importable_chapter_modules(self) -> None:
+        for notebook in sorted((ROOT / "notebooks" / "upper").glob("ch*.py")):
+            chapter, module_name = notebook.stem.split("_", maxsplit=1)
+            module = ROOT / "src" / "math_for_quant" / chapter / f"{module_name}.py"
+            with self.subTest(notebook=notebook.name):
+                self.assertTrue(module.is_file())
+                source = notebook.read_text(encoding="utf-8")
+                self.assertIn('if __name__ == "__main__":', source)
+                if chapter != "ch01":
+                    self.assertIn("runpy.run_module", source)
+                    self.assertNotIn("def main(", source)
+
+    def test_every_public_oracle_binds_a_nonoverlapping_fixture(self) -> None:
+        oracle_paths = sorted((ROOT / "evidence").glob("ch*/oracle.json"))
+        oracle_paths.append(ROOT / "evidence" / "foundation" / "oracle.json")
+        for oracle_path in oracle_paths:
+            oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+            fixture_path = ROOT / oracle["fixture"]["path"]
+            fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
+            digest = hashlib.sha256(fixture_path.read_bytes()).hexdigest()
+            with self.subTest(oracle=oracle_path.parent.name):
+                self.assertEqual(digest, oracle["fixture"]["sha256"])
+                self.assertFalse(set(fixture).intersection(oracle).difference({"fixture"}))
+
 
 def module_path() -> Path:
     return ROOT / "src" / "math_for_quant" / "ch01" / "convex_bound.py"

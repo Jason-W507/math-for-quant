@@ -46,6 +46,31 @@ class SchemaDrivenCurriculumTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("manifest schema validation failed", result.stderr)
 
+    def test_manifest_rejects_a_non_array_units_field_without_traceback(self) -> None:
+        path = self.fixture(
+            "schema-null-units.json",
+            lambda manifest: manifest.__setitem__("units", None),
+        )
+        result = self.run_contract(path)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("manifest schema validation failed", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_reading_routes_are_closed_under_direct_prerequisites(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        prerequisites = {
+            unit["id"]: set(unit.get("prerequisites", []))
+            for unit in manifest["units"]
+        }
+        for route in manifest["reading_routes"]:
+            seen: set[str] = set()
+            for unit_id in route["units"]:
+                with self.subTest(route=route["id"], unit=unit_id):
+                    self.assertLessEqual(prerequisites[unit_id], seen)
+                seen.add(unit_id)
+
     def test_curriculum_summary_uses_manifest_counts_not_constants(self) -> None:
         path = self.fixture(
             "one-track.json",

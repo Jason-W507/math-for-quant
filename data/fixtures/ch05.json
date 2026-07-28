@@ -1,0 +1,43 @@
+{
+  "point": [
+    0.5,
+    -1.0
+  ],
+  "matrix": [
+    [
+      4.0,
+      2.0
+    ],
+    [
+      0.0,
+      3.0
+    ]
+  ],
+  "linear": [
+    -1.0,
+    2.0
+  ],
+  "finite_difference_step": 1e-05,
+  "finite_difference_scan_steps": [
+    0.01,
+    1e-05,
+    1e-08,
+    1e-12
+  ],
+  "tiny_step_error_floor": 1e-06,
+  "portfolio_covariance": [
+    [
+      2.0,
+      0.5
+    ],
+    [
+      0.5,
+      1.0
+    ]
+  ],
+  "portfolio_expected_returns": [
+    0.08,
+    0.04
+  ],
+  "portfolio_risk_tradeoff": 5.0
+}
