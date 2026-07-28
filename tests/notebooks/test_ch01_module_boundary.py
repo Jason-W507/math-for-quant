@@ -19,9 +19,9 @@ class ChapterOneModuleBoundaryTests(unittest.TestCase):
         notebook = ROOT / "notebooks" / "upper" / "ch01_convex_bound.py"
         source = notebook.read_text(encoding="utf-8")
         self.assertIn('if __name__ == "__main__":', source)
-        self.assertIn("from math_for_quant.ch01.convex_bound import", source)
+        self.assertIn("runpy.run_module", source)
         namespace = runpy.run_path(str(notebook), run_name="notebook_import_test")
-        self.assertIn("main", namespace)
+        self.assertNotIn("main", namespace)
 
     def test_oracle_is_bound_to_a_separate_fixture_by_sha256(self) -> None:
         oracle_path = ROOT / "evidence" / "ch01" / "oracle.json"
@@ -49,9 +49,8 @@ class ChapterOneModuleBoundaryTests(unittest.TestCase):
                 self.assertTrue(module.is_file())
                 source = notebook.read_text(encoding="utf-8")
                 self.assertIn('if __name__ == "__main__":', source)
-                if chapter != "ch01":
-                    self.assertIn("runpy.run_module", source)
-                    self.assertNotIn("def main(", source)
+                self.assertIn("runpy.run_module", source)
+                self.assertNotIn("def main(", source)
 
     def test_every_public_oracle_binds_a_nonoverlapping_fixture(self) -> None:
         oracle_paths = sorted((ROOT / "evidence").glob("ch*/oracle.json"))

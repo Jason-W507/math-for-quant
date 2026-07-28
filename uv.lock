@@ -308,7 +308,7 @@ wheels = [
 [[package]]
 name = "math-for-quant"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "ipykernel" },
     { name = "jsonschema" },

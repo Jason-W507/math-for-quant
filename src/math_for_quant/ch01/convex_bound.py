@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
+import sys
 from typing import NamedTuple
 
 import numpy as np
@@ -78,3 +79,36 @@ def run_contract(fixture_path: Path, oracle_path: Path) -> ConvexBoundResult:
             f"observed={observed_digest} expected={expected_digest}"
         )
     return evaluate_contract(fixture, oracle)
+
+
+def main(input_path: Path | None = None) -> int:
+    oracle_path = Path("evidence/ch01/oracle.json")
+    if input_path is None:
+        result = run_contract(Path("data/fixtures/ch01.json"), oracle_path)
+    else:
+        document = json.loads(input_path.read_text(encoding="utf-8"))
+        input_fields = {"returns", "weights", "counterexample_weights"}
+        if input_fields.intersection(document):
+            fixture = json.loads(
+                Path(document["fixture"]["path"]).read_text(encoding="utf-8")
+            )
+            fixture.update(
+                {field: document[field] for field in input_fields if field in document}
+            )
+            result = evaluate_contract(fixture, document)
+        else:
+            result = run_contract(Path(document["fixture"]["path"]), input_path)
+    print(
+        "oracle=passed "
+        f"weighted_return={result.weighted_return:.6f} lower={result.lower:.6f} "
+        f"upper={result.upper:.6f} counterexample={result.counterexample:.6f}"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    input_path = Path(sys.argv[1]) if len(sys.argv) > 1 else None
+    try:
+        raise SystemExit(main(input_path))
+    except ValueError as error:
+        raise SystemExit(str(error)) from error

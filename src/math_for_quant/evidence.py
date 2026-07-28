@@ -5,15 +5,14 @@ import json
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
-
-
 def load_oracle_bundle(oracle_path: Path) -> dict[str, object]:
-    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
+    resolved_oracle = oracle_path.resolve()
+    evidence_root = resolved_oracle.parents[2]
+    oracle = json.loads(resolved_oracle.read_text(encoding="utf-8"))
     fixture_contract = oracle.get("fixture")
     if not isinstance(fixture_contract, dict):
         raise SystemExit("fixture gate failed: oracle must declare a fixture")
-    fixture_path = ROOT / str(fixture_contract.get("path", ""))
+    fixture_path = evidence_root / str(fixture_contract.get("path", ""))
     fixture_bytes = fixture_path.read_bytes()
     observed_digest = hashlib.sha256(fixture_bytes).hexdigest()
     expected_digest = str(fixture_contract.get("sha256", ""))

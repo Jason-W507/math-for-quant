@@ -6,11 +6,6 @@
 
 # %%
 import runpy
-from pathlib import Path
-import sys
-
-ROOT = (Path(__file__).resolve().parents[2] if '__file__' in globals() else Path.cwd())
-sys.path.insert(0, str(ROOT / 'src'))
 
 
 if __name__ == "__main__":
