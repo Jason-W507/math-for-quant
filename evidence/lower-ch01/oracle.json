@@ -21,6 +21,7 @@
     "unstable_rejected": 1
   },
   "absolute_tolerance": 1e-12,
+  "protocol_panel_sha256": "2e54185ee940888b9864d5728f41d5d7c2b35ea5961804ddb66dc3c14020d2ce",
   "provenance": "two hand-designed cross sections with exact linear next-period returns, an independent long-short ledger, a seeded synthetic null search, and explicit time-alignment and condition-number failures",
   "published_markers": [
     "Fama--MacBeth 横截面预测斜率均值为 $0.020$，时间序列标准误为 $0.002$",
