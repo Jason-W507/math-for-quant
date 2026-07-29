@@ -11,6 +11,7 @@ from math_for_quant.lower.stat_arb import (
     detect_alarms,
     evaluate_alarms,
     validate_online_state,
+    rolling_ledger,
     validate_scaler,
     validate_split,
     validate_walk_forward,
@@ -94,6 +95,32 @@ class LowerStatArbTests(unittest.TestCase):
                     {"name": "trade", "start": "2022-01", "end": "2021-12"},
                 ]
             )
+
+    def test_forecast_drives_position_and_realized_return(self) -> None:
+        windows = [
+            {
+                "train_values": [1.0, 0.5, 0.25],
+                "validation_value": 0.125,
+                "realized_return": 0.02,
+                "signal_threshold": 0.0,
+                "position_limit": 1.0,
+                "cost_per_unit_turnover": 0.003,
+            },
+            {
+                "train_values": [-1.0, -0.5, -0.25],
+                "validation_value": -0.125,
+                "realized_return": -0.01,
+                "signal_threshold": 0.0,
+                "position_limit": 1.0,
+                "cost_per_unit_turnover": 0.003,
+            },
+        ]
+        ledger = rolling_ledger(windows)
+        self.assertEqual(ledger.positions, [1.0, -1.0])
+        self.assertAlmostEqual(ledger.gross_return, 0.03)
+        self.assertAlmostEqual(ledger.turnover, 3.0)
+        self.assertAlmostEqual(ledger.cost, 0.009)
+        self.assertAlmostEqual(ledger.net_return, 0.021)
 
 
 if __name__ == "__main__":

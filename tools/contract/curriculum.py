@@ -129,6 +129,9 @@ def validate_shared(
         return "curriculum contains duplicate track identifiers"
     unit_ids = set(identifiers)
     for track in tracks:
+        planned_units = track.get("planned_units", [])
+        if len(planned_units) != 3 or len(set(planned_units)) != 3:
+            return f"{track.get('id')}: route plan must declare three unique learning units"
         for prerequisite in track.get("bridge_prerequisites", []):
             if prerequisite not in unit_ids:
                 return f"{track.get('id')}: unknown bridge prerequisite {prerequisite}"

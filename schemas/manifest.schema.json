@@ -40,11 +40,11 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "title", "parent_volume", "source", "pdf"],
+        "required": ["id", "title", "parent_volumes", "source", "pdf"],
         "properties": {
           "id": {"type": "string", "minLength": 1},
           "title": {"type": "string", "minLength": 1},
-          "parent_volume": {"type": "string", "minLength": 1},
+          "parent_volumes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
           "source": {"type": "string", "minLength": 1},
           "pdf": {"type": "string", "minLength": 1}
         }
@@ -63,6 +63,9 @@
           "state": {"enum": ["draft", "accepted", "deprecated"]},
           "published": {"type": "boolean"},
           "internal": {"type": "boolean"},
+          "capstone": {"type": "boolean"},
+          "track": {"type": "string", "minLength": 1},
+          "track_stage": {"enum": ["model-math", "estimation-numerics", "oos-frictions-capstone"]},
           "prerequisites": {"type": "array", "items": {"type": "string"}},
           "evidence": {"type": "object"}
         }
@@ -102,11 +105,18 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "title", "bridge_prerequisites"],
+        "required": ["id", "title", "bridge_prerequisites", "planned_units"],
         "properties": {
           "id": {"type": "string", "minLength": 1},
           "title": {"type": "string", "minLength": 1},
-          "bridge_prerequisites": {"type": "array", "items": {"type": "string"}}
+          "bridge_prerequisites": {"type": "array", "items": {"type": "string"}},
+          "planned_units": {
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          }
         }
       }
     }

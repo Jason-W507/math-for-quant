@@ -9,7 +9,7 @@
 
 - [最新 GitHub Release](https://github.com/Jason-W507/math-for-quant/releases/latest)
 - 本地构建产物：`output/pdf/math-for-quant-upper.pdf`
-- 配套完整答案：`output/pdf/math-for-quant-upper-solutions.pdf`
+- 上下册共享答案：`output/pdf/math-for-quant-solutions.pdf`
 - 下册路线导论：`output/pdf/math-for-quant-lower.pdf`
 - 已确认勘误：[ERRATA.md](ERRATA.md)
 

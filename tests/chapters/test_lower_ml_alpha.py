@@ -7,7 +7,12 @@ from pathlib import Path
 
 import numpy as np
 
-from math_for_quant.lower.ml_alpha import build_sequence_task, validate_model_report
+from math_for_quant.lower.ml_alpha import (
+    build_sequence_task,
+    fit_stump,
+    prediction_to_return_ledger,
+    validate_model_report,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -70,6 +75,28 @@ class LowerMlAlphaTests(unittest.TestCase):
             "成本后收益：0.024",
         ):
             self.assertIn(marker, report)
+
+    def test_stump_candidates_do_not_depend_on_input_order(self) -> None:
+        features = np.array([2.0, -1.0, 1.0, 0.0])
+        target = np.array([2.0, -1.0, 1.0, 0.0])
+        unsorted = fit_stump(features, target)
+        order = np.argsort(features)
+        sorted_result = fit_stump(features[order], target[order])
+        np.testing.assert_allclose(unsorted, sorted_result, atol=1e-12)
+
+    def test_predictions_drive_positions_costs_and_net_returns(self) -> None:
+        ledger = prediction_to_return_ledger(
+            scores=np.array([0.8, 0.1]),
+            realized_returns=np.array([0.02, -0.01]),
+            threshold=0.5,
+            position_limit=1.0,
+            cost_per_unit_turnover=0.003,
+        )
+        np.testing.assert_allclose(ledger.positions, np.array([1.0, -1.0]))
+        self.assertAlmostEqual(ledger.gross_return, 0.03)
+        self.assertAlmostEqual(ledger.turnover, 2.0)
+        self.assertAlmostEqual(ledger.cost, 0.006)
+        self.assertAlmostEqual(ledger.net_return, 0.024)
 
 
 if __name__ == "__main__":

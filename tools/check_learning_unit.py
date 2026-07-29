@@ -25,6 +25,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--unit")
+    parser.add_argument("--track")
     parser.add_argument("--volume", choices=("upper", "lower", "all"))
     return parser.parse_args()
 
@@ -36,8 +37,9 @@ def fail(message: str) -> int:
 
 def main() -> int:
     args = parse_args()
-    if args.unit is not None and args.volume is not None:
-        return fail("choose either --unit or --volume")
+    selections = sum(value is not None for value in (args.unit, args.track, args.volume))
+    if selections > 1:
+        return fail("choose exactly one of --unit, --track, or --volume")
     try:
         manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
@@ -117,6 +119,41 @@ def main() -> int:
         )
         print(result.stdout, end="")
         print("learning-unit contract passed")
+        return 0
+
+    if args.track is not None:
+        track = next(
+            (item for item in manifest.get("tracks", []) if item.get("id") == args.track),
+            None,
+        )
+        if track is None:
+            return fail(f"unknown track: {args.track}")
+        track_units = [
+            unit
+            for unit in accepted
+            if unit.get("track") == args.track and unit.get("published")
+        ]
+        required_stages = {
+            "model-math",
+            "estimation-numerics",
+            "oos-frictions-capstone",
+        }
+        observed_stages = {str(unit.get("track_stage")) for unit in track_units}
+        if len(track_units) != 3 or observed_stages != required_stages:
+            return fail(
+                f"{args.track}: route requires exactly three accepted learning units "
+                "covering model-math, estimation-numerics, and oos-frictions-capstone"
+            )
+        planned = set(track.get("planned_units", []))
+        observed = {str(unit.get("id")) for unit in track_units}
+        if observed != planned:
+            return fail(f"{args.track}: accepted learning units differ from the route plan")
+        for unit in track_units:
+            result = run_oracle(unit["evidence"], ROOT)
+            if result.returncode != 0:
+                return fail(f"{unit.get('id')}: oracle failed: {result.stderr.strip()}")
+        print(f"track={args.track} learning-units=3")
+        print("track contract passed")
         return 0
 
     shared_error = validate_shared(manifest, units, ROOT)

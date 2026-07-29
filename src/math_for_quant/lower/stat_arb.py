@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from dataclasses import dataclass
 from pathlib import Path
 import sys
 
@@ -88,17 +89,58 @@ def validate_online_state(observed_through: str, decision_date: str) -> None:
         raise ValueError("state estimate uses future observations")
 
 
-def rolling_ledger(windows: list[dict[str, object]]) -> tuple[list[float], list[float], float, float]:
-    coefficients, errors, gross, cost = [], [], 0.0, 0.0
+@dataclass(frozen=True)
+class RollingLedger:
+    coefficients: list[float]
+    errors: list[float]
+    positions: list[float]
+    gross_return: float
+    turnover: float
+    cost: float
+    net_return: float
+
+    def __iter__(self):
+        yield self.coefficients
+        yield self.errors
+        yield self.gross_return
+        yield self.net_return
+
+
+def rolling_ledger(windows: list[dict[str, object]]) -> RollingLedger:
+    coefficients, errors, positions = [], [], []
+    gross, cost, previous_position = 0.0, 0.0, 0.0
     for window in windows:
         train = np.asarray(window["train_values"], dtype=float)
         coefficient = ar1_coefficient(train)
         forecast = coefficient * float(train[-1])
         coefficients.append(coefficient)
         errors.append(float(window["validation_value"]) - forecast)
-        gross += float(window["trade_return"])
-        cost += float(window["cost"])
-    return coefficients, errors, gross, gross - cost
+        if "realized_return" in window:
+            threshold = float(window.get("signal_threshold", 0.0))
+            limit = float(window.get("position_limit", 1.0))
+            if limit <= 0.0:
+                raise ValueError("position limit must be positive")
+            position = limit if forecast >= threshold else -limit
+            turnover = abs(position - previous_position)
+            unit_cost = float(window.get("cost_per_unit_turnover", 0.0))
+            if unit_cost < 0.0:
+                raise ValueError("turnover cost must be nonnegative")
+            gross += position * float(window["realized_return"])
+            cost += turnover * unit_cost
+            previous_position = position
+            positions.append(position)
+        else:
+            positions.append(0.0)
+            gross += float(window["trade_return"])
+            cost += float(window["cost"])
+    total_turnover = 0.0
+    previous = 0.0
+    for position in positions:
+        total_turnover += abs(position - previous)
+        previous = position
+    return RollingLedger(
+        coefficients, errors, positions, gross, total_turnover, cost, gross - cost
+    )
 
 
 def main(oracle_path: Path = Path("evidence/lower-ch02/oracle.json")) -> int:

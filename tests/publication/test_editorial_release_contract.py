@@ -65,7 +65,7 @@ class EditorialReleaseContractTests(unittest.TestCase):
             "tools/build_release.py --vendored-template-only", release_workflow
         )
         self.assertIn("MFQ_RELEASE_TAG: ${{ github.ref_name }}", release_workflow)
-        self.assertIn("math-for-quant-upper-solutions.pdf", release_workflow)
+        self.assertIn("math-for-quant-solutions.pdf", release_workflow)
 
         release_driver = (ROOT / "tools" / "build_release.py").read_text(
             encoding="utf-8"
@@ -75,35 +75,53 @@ class EditorialReleaseContractTests(unittest.TestCase):
             release_driver,
         )
 
-    def test_complete_solutions_are_published_as_an_upper_supplement(self) -> None:
+    def test_complete_solutions_are_published_as_one_shared_supplement(self) -> None:
         upper_main = (ROOT / "tex" / "upper" / "main.tex").read_text(
             encoding="utf-8"
         )
         for number in range(1, 18):
             self.assertNotIn(rf"\input{{tex/upper/solutions/ch{number:02d}}}", upper_main)
 
-        solutions_main = ROOT / "tex" / "upper" / "solutions-main.tex"
+        solutions_main = ROOT / "tex" / "solutions-main.tex"
         self.assertTrue(solutions_main.is_file())
         solutions = solutions_main.read_text(encoding="utf-8")
         for number in range(1, 18):
             self.assertIn(rf"\input{{tex/upper/solutions/ch{number:02d}}}", solutions)
+        for route in (
+            "multifactor",
+            "stat-arb",
+            "ml-alpha",
+            "derivatives",
+            "portfolio-risk",
+            "microstructure",
+        ):
+            self.assertIn(rf"\input{{tex/lower/chapters/{route}-solutions}}", solutions)
 
         manifest = __import__("json").loads(
             (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
         )
         supplement = next(
-            item for item in manifest["supplements"] if item["id"] == "upper-solutions"
+            item for item in manifest["supplements"] if item["id"] == "solutions"
         )
-        self.assertEqual(supplement["parent_volume"], "upper")
-        self.assertEqual(supplement["source"], "tex/upper/solutions-main.tex")
+        self.assertEqual(supplement["parent_volumes"], ["upper", "lower"])
+        self.assertEqual(supplement["source"], "tex/solutions-main.tex")
         self.assertEqual(
-            supplement["pdf"], "output/pdf/math-for-quant-upper-solutions.pdf"
+            supplement["pdf"], "output/pdf/math-for-quant-solutions.pdf"
         )
 
         build_driver = (ROOT / "tools" / "build_books.py").read_text(
             encoding="utf-8"
         )
-        self.assertIn('item["parent_volume"] == selected_volume', build_driver)
+        self.assertIn('selected_volume in item["parent_volumes"]', build_driver)
+
+    def test_version_and_ci_are_shared_across_all_publications(self) -> None:
+        for relative in ("tex/upper/main.tex", "tex/lower/main.tex", "tex/solutions-main.tex"):
+            source = (ROOT / relative).read_text(encoding="utf-8")
+            self.assertIn(r"\version{\MFQVersion}", source)
+        build_driver = (ROOT / "tools" / "build_books.py").read_text(encoding="utf-8")
+        self.assertIn("MFQVersion", build_driver)
+        ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+        self.assertIn("tools/build_books.py --volume all", ci)
 
 
 if __name__ == "__main__":

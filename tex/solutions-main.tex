@@ -3,11 +3,12 @@
 \input{tex/common/editorial-environments}
 
 \title{量化研究数学}
-\subtitle{上册完整答案}
+\subtitle{上下册共享答案}
 \author{Jason W.}
 \providecommand{\MFQReleaseDate}{2026-07-28}
+\providecommand{\MFQVersion}{0.2.0}
 \date{\MFQReleaseDate}
-\version{0.2.0}
+\version{\MFQVersion}
 \extrainfo{先独立作答，再核对推导、实现与研究边界。}
 \cover{assets/cover.jpg}
 \setcounter{tocdepth}{1}
@@ -17,11 +18,12 @@
 \frontmatter
 
 \chapter*{使用说明}
-本册与上册正文配套。每章按口述概念、笔试推导、计算实现和研究判断提供反馈；建议先记录自己的答案与失败原因，再查阅对应章节。
+本册统一收录上册与下册全部学习单元的完整答案、数值反馈与常见错误。正文只保留问题和分级提示；建议先记录自己的答案与失败原因，再查阅本册。
 
 \tableofcontents
 \mainmatter
 
+\part{上册答案}
 \input{tex/upper/solutions/ch01}
 \input{tex/upper/solutions/ch02}
 \input{tex/upper/solutions/ch03}
@@ -39,5 +41,13 @@
 \input{tex/upper/solutions/ch15}
 \input{tex/upper/solutions/ch16}
 \input{tex/upper/solutions/ch17}
+
+\part{下册答案}
+\input{tex/lower/chapters/multifactor-solutions}
+\input{tex/lower/chapters/stat-arb-solutions}
+\input{tex/lower/chapters/ml-alpha-solutions}
+\input{tex/lower/chapters/derivatives-solutions}
+\input{tex/lower/chapters/portfolio-risk-solutions}
+\input{tex/lower/chapters/microstructure-solutions}
 
 \end{document}

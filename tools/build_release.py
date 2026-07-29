@@ -32,7 +32,14 @@ class ReleaseAsset:
 
 
 def canonical_notebooks(root: Path = ROOT) -> list[tuple[Path, Path]]:
-    sources = sorted((root / "notebooks").rglob("*.py"))
+    manifest = json.loads((root / "curriculum" / "manifest.json").read_text(encoding="utf-8"))
+    sources = sorted(
+        {
+            root / unit["evidence"]["independent_oracle"]["source"]
+            for unit in manifest["units"]
+            if unit.get("state") == "accepted"
+        }
+    )
     return [
         (source, root / "output" / "notebooks" / source.relative_to(root / "notebooks").with_suffix(".ipynb"))
         for source in sources
@@ -41,9 +48,7 @@ def canonical_notebooks(root: Path = ROOT) -> list[tuple[Path, Path]]:
 
 def capstone_units(manifest: dict[str, object]) -> list[str]:
     units = list(manifest["units"])
-    upper_capstone = [unit["id"] for unit in units if unit["id"] == "upper.ch17"]
-    lower_capstones = [unit["id"] for unit in units if unit.get("volume") == "lower" and unit.get("published")]
-    return upper_capstone + lower_capstones
+    return [unit["id"] for unit in units if unit.get("capstone")]
 
 
 def curriculum_counts(manifest: dict[str, object]) -> dict[str, int]:
@@ -174,7 +179,7 @@ def clean_generated_outputs(manifest: dict[str, object]) -> None:
         ROOT / "output" / "notebooks",
         ROOT / "output" / "release",
         ROOT / "build" / "latex" / "upper",
-        ROOT / "build" / "latex" / "upper-solutions",
+        ROOT / "build" / "latex" / "solutions",
         ROOT / "build" / "latex" / "lower",
     ):
         if path.exists():
@@ -182,6 +187,11 @@ def clean_generated_outputs(manifest: dict[str, object]) -> None:
     archive = ROOT / "output" / "math-for-quant-notebooks.zip"
     if archive.exists():
         archive.unlink()
+    legacy_upper_solutions = (
+        ROOT / "output" / "pdf" / "math-for-quant-upper-solutions.pdf"
+    )
+    if legacy_upper_solutions.exists():
+        legacy_upper_solutions.unlink()
     publications = list(manifest["volumes"]) + list(manifest["supplements"])
     for publication in publications:
         pdf = ROOT / publication["pdf"]
@@ -377,10 +387,6 @@ def main() -> int:
     manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
     notebooks = canonical_notebooks(ROOT)
     capstones = capstone_units(manifest)
-    if len(notebooks) != 24:
-        raise SystemExit(f"release requires 24 canonical notebooks, observed {len(notebooks)}")
-    if len(capstones) != 7:
-        raise SystemExit(f"release requires seven Capstones, observed {len(capstones)}")
     try:
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
         tag_error = release_tag_error(os.environ.get("MFQ_RELEASE_TAG"), version)
@@ -393,6 +399,7 @@ def main() -> int:
         run([sys.executable, "tools/render_shared_registries.py", "--check"])
         build_notebooks(notebooks)
         run([sys.executable, "tools/build_books.py", "--volume", "all"])
+        run([sys.executable, "tools/check_pdf_visual_regression.py"])
         run([sys.executable, "tools/check_learning_unit.py", "--manifest", "curriculum/manifest.json", "--volume", "all"])
         if args.vendored_template_only:
             run([sys.executable, "tools/check_template_provenance.py", "--vendored-only"])

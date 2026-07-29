@@ -6,12 +6,15 @@ import sys
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
+import tools.build_release as build_release
 from tools.build_release import (
     ReleaseAsset,
     build_notebook_archive,
     canonical_notebooks,
     capstone_units,
+    clean_generated_outputs,
     curriculum_counts,
     registered_data_assets,
     release_asset_records,
@@ -24,10 +27,28 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class FullReleaseContractTests(unittest.TestCase):
+    def test_release_cleanup_removes_the_legacy_upper_only_solutions_pdf(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum/manifest.json").read_text(encoding="utf-8")
+        )
+        test_root = ROOT / "build" / "test-release" / "cleanup-root"
+        legacy = test_root / "output" / "pdf" / "math-for-quant-upper-solutions.pdf"
+
+        with (
+            mock.patch.object(build_release, "ROOT", test_root),
+            mock.patch.object(
+                Path, "exists", autospec=True, side_effect=lambda path: path == legacy
+            ),
+            mock.patch.object(Path, "unlink", autospec=True) as unlink,
+        ):
+            clean_generated_outputs(manifest)
+
+        unlink.assert_called_once_with(legacy)
+
     def test_all_canonical_notebooks_have_unique_release_paths(self) -> None:
         pairs = canonical_notebooks(ROOT)
-        self.assertEqual(len(pairs), 24)
-        self.assertEqual(len({output for _, output in pairs}), 24)
+        self.assertGreater(len(pairs), 0)
+        self.assertEqual(len({output for _, output in pairs}), len(pairs))
         self.assertTrue(all(source.suffix == ".py" for source, _ in pairs))
         self.assertTrue(all(output.suffix == ".ipynb" for _, output in pairs))
 
@@ -60,6 +81,11 @@ class FullReleaseContractTests(unittest.TestCase):
     def test_seven_capstones_are_derived_from_the_curriculum(self) -> None:
         manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(capstone_units(manifest), ["upper.ch17", "lower.ch01", "lower.ch02", "lower.ch03", "lower.ch04", "lower.ch05", "lower.ch06"])
+
+    def test_release_driver_does_not_hardcode_asset_counts(self) -> None:
+        source = (ROOT / "tools" / "build_release.py").read_text(encoding="utf-8")
+        self.assertNotIn("len(notebooks) != 24", source)
+        self.assertNotIn("len(capstones) != 7", source)
 
     def test_release_assets_have_checksum_version_and_license(self) -> None:
         fixture = ROOT / "build" / "test-release" / "artifact.txt"

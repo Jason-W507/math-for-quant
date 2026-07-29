@@ -45,10 +45,14 @@ class LowerPortfolioRiskTests(unittest.TestCase):
         np.testing.assert_allclose(weights, np.array([8.0 / 11.0, 3.0 / 11.0]), atol=1e-12)
 
     def test_var_and_es_use_loss_tail_not_return_tail(self) -> None:
-        var, es = empirical_var_es(np.array([-1.0, 0.0, 2.0, 4.0]), 0.75)
+        var, es = empirical_var_es(
+            np.array([-1.0, 0.0, 2.0, 4.0]), 0.75, minimum_tail_observations=1
+        )
         self.assertEqual(var, 2.0)
         self.assertEqual(es, 4.0)
-        repeated_var, repeated_es = empirical_var_es(np.array([0.0, 2.0, 2.0, 4.0]), 0.5)
+        repeated_var, repeated_es = empirical_var_es(
+            np.array([0.0, 2.0, 2.0, 4.0]), 0.5, minimum_tail_observations=1
+        )
         self.assertEqual(repeated_var, 2.0)
         self.assertEqual(repeated_es, 3.0)
 
@@ -76,8 +80,38 @@ class LowerPortfolioRiskTests(unittest.TestCase):
                 np.array([0.7, 0.3]), risk_aversion=1.0, cost_rate=0.001,
                 capital=100000.0, maximum_weight=0.6, tradable=np.array([0, 1]),
             )
-        with self.assertRaisesRegex(ValueError, "at least four"):
+        with self.assertRaisesRegex(ValueError, "effective tail observations"):
             empirical_var_es(np.array([1.0, 2.0, 3.0]), 0.95)
+
+    def test_tail_gate_uses_confidence_and_effective_tail_count(self) -> None:
+        with self.assertRaisesRegex(ValueError, "effective tail observations"):
+            empirical_var_es(np.arange(100.0), 0.95)
+        var, es = empirical_var_es(
+            np.arange(100.0), 0.95, minimum_tail_observations=5
+        )
+        self.assertEqual(var, 94.0)
+        self.assertAlmostEqual(es, 97.0)
+
+    def test_rebalance_rejects_invalid_research_contract(self) -> None:
+        covariance = np.array([[0.04, 0.01], [0.01, 0.09]])
+        common = dict(
+            expected_returns=np.array([0.08, 0.04]),
+            covariance=covariance,
+            current_weights=np.array([0.4, 0.6]),
+            risk_aversion=1.0,
+            cost_rate=0.001,
+            capital=100000.0,
+            maximum_weight=0.6,
+            tradable=np.array([1, 1]),
+        )
+        for update, diagnostic in (
+            ({"risk_aversion": 0.0}, "risk aversion"),
+            ({"capital": 0.0}, "capital"),
+            ({"cost_rate": -0.1}, "cost rate"),
+            ({"grid_step": 0.3}, "divide one"),
+        ):
+            with self.subTest(diagnostic=diagnostic), self.assertRaisesRegex(ValueError, diagnostic):
+                cost_aware_rebalance(**(common | update))
 
     def test_factor_model_rejects_illegal_variance_components(self) -> None:
         with self.assertRaisesRegex(ValueError, "positive semidefinite"):

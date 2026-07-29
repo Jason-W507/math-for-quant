@@ -57,6 +57,16 @@ def cost_aware_rebalance(
     grid_step: float = 0.1,
 ) -> tuple[np.ndarray, float, float]:
     validate_covariance(covariance)
+    if risk_aversion <= 0.0:
+        raise ValueError("risk aversion must be positive")
+    if capital <= 0.0:
+        raise ValueError("capital must be positive")
+    if cost_rate < 0.0:
+        raise ValueError("cost rate must be nonnegative")
+    if grid_step <= 0.0 or not np.isclose(round(1.0 / grid_step) * grid_step, 1.0):
+        raise ValueError("grid step must divide one exactly")
+    if not np.isclose(current_weights.sum(), 1.0, atol=1e-12):
+        raise ValueError("current weights must sum to one")
     if any(array.shape != (2,) for array in (expected_returns, current_weights, tradable)):
         raise ValueError("rebalance oracle requires two assets")
     if np.any((tradable == 0) & (np.abs(current_weights - np.round(current_weights / grid_step) * grid_step) > 1e-12)):
@@ -80,11 +90,24 @@ def cost_aware_rebalance(
     return best, turnover, capital * cost_rate * turnover
 
 
-def empirical_var_es(losses: np.ndarray, confidence: float) -> tuple[float, float]:
-    if losses.ndim != 1 or losses.size < 4:
-        raise ValueError("tail sample requires at least four losses")
+def empirical_var_es(
+    losses: np.ndarray,
+    confidence: float,
+    *,
+    minimum_tail_observations: int = 20,
+) -> tuple[float, float]:
+    if losses.ndim != 1 or losses.size == 0:
+        raise ValueError("tail sample requires a nonempty one-dimensional loss array")
     if not 0.0 < confidence < 1.0:
         raise ValueError("confidence must lie in (0, 1)")
+    if minimum_tail_observations <= 0:
+        raise ValueError("minimum effective tail observations must be positive")
+    effective_tail = losses.size * (1.0 - confidence)
+    if effective_tail + 1e-12 < minimum_tail_observations:
+        raise ValueError(
+            "insufficient effective tail observations: "
+            f"observed={effective_tail:.6g}, required={minimum_tail_observations}"
+        )
     ordered = np.sort(losses)
     index = int(np.ceil(confidence * ordered.size)) - 1
     value_at_risk = float(ordered[index])
@@ -160,7 +183,11 @@ def main(oracle_path: Path = Path("evidence/lower-ch05/oracle.json")) -> int:
         tradable=np.asarray(oracle["tradable"], dtype=int),
         grid_step=float(oracle["grid_step"]),
     )
-    var, es = empirical_var_es(np.asarray(oracle["losses"], dtype=float), float(oracle["confidence"]))
+    var, es = empirical_var_es(
+        np.asarray(oracle["losses"], dtype=float),
+        float(oracle["confidence"]),
+        minimum_tail_observations=1,
+    )
     stress_loss = float(np.asarray(oracle["stress_shocks"], dtype=float) @ weights * -1.0)
     failures = (
         expect_rejection(lambda: validate_covariance(np.array([[1.0, 2.0], [2.0, 1.0]])), "positive semidefinite"),
@@ -172,7 +199,10 @@ def main(oracle_path: Path = Path("evidence/lower-ch05/oracle.json")) -> int:
             ),
             "no feasible portfolio",
         ),
-        expect_rejection(lambda: empirical_var_es(np.array([1.0, 2.0, 3.0]), 0.95), "at least four"),
+        expect_rejection(
+            lambda: empirical_var_es(np.array([1.0, 2.0, 3.0]), 0.95),
+            "effective tail observations",
+        ),
     )
     observed: dict[str, float | int] = {
         "variance_1": direct[0, 0], "covariance_12": direct[0, 1], "variance_2": direct[1, 1],

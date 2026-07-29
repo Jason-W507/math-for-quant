@@ -14,7 +14,10 @@ from math_for_quant.lower.derivatives import (
     delta_hedge,
     implied_volatility,
     render_experiment_budget,
+    validate_market_price_risk_energy,
+    validate_novikov_exponential_moment,
     validate_risk_neutral_drift,
+    validate_surface_constraints,
 )
 
 
@@ -117,6 +120,25 @@ class LowerDerivativesTests(unittest.TestCase):
         self.assertAlmostEqual(raw_cost, initial_cost, places=12)
         self.assertAlmostEqual(drag, initial_cost * np.exp(0.02), places=12)
         self.assertAlmostEqual(no_cost - after_cost, drag, places=12)
+
+    def test_nonuniform_strike_convexity_compares_neighboring_slopes(self) -> None:
+        valid = [
+            {"maturity": 1.0, "strike": 90.0, "price": 15.0},
+            {"maturity": 1.0, "strike": 100.0, "price": 9.0},
+            {"maturity": 1.0, "strike": 130.0, "price": 3.0},
+        ]
+        validate_surface_constraints(valid, rate=0.02, dividend_yield=0.0)
+        invalid = [dict(node) for node in valid]
+        invalid[1]["price"] = 13.0
+        with self.assertRaisesRegex(ValueError, "butterfly convexity"):
+            validate_surface_constraints(invalid, rate=0.02, dividend_yield=0.0)
+
+    def test_novikov_condition_is_not_an_arbitrary_energy_threshold(self) -> None:
+        self.assertTrue(validate_novikov_exponential_moment([100.0], [1.0]) > 0.0)
+        with self.assertRaisesRegex(ValueError, "Novikov condition"):
+            validate_novikov_exponential_moment([float("inf")], [1.0])
+        with self.assertRaisesRegex(ValueError, "risk energy budget"):
+            validate_market_price_risk_energy(2.0, 1.0)
 
 
 if __name__ == "__main__":

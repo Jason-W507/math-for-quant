@@ -19,7 +19,7 @@ jobs:
       - run: uv run python tools/render_shared_registries.py --check
       - run: uv run python -m unittest discover -s tests
 
-  upper-publication:
+  publication:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,10 +28,12 @@ jobs:
           python-version: "3.13"
       - run: choco install miktex --no-progress -y
       - run: uv sync
-      - run: uv run python tools/build_books.py --volume upper
+      - run: uv run python tools/build_books.py --volume all
+      - run: uv run python tools/check_pdf_visual_regression.py
       - uses: actions/upload-artifact@v4
         with:
-          name: math-for-quant-upper
+          name: math-for-quant-publications
           path: |
             output/pdf/math-for-quant-upper.pdf
-            output/pdf/math-for-quant-upper-solutions.pdf
+            output/pdf/math-for-quant-lower.pdf
+            output/pdf/math-for-quant-solutions.pdf

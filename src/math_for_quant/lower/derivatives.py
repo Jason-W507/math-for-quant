@@ -103,11 +103,17 @@ def calibrate_surface(
     for node, sigma in zip(nodes, implied):
         fitted = black_scholes_call(spot, node["strike"], rate, sigma, node["maturity"])
         weighted_squared_error += node["weight"] * (fitted - node["price"]) ** 2
-    validate_surface_constraints(nodes)
+    validate_surface_constraints(nodes, rate=rate, dividend_yield=0.0)
     return implied, weighted_squared_error
 
 
-def validate_surface_constraints(nodes: list[dict[str, float]]) -> None:
+def validate_surface_constraints(
+    nodes: list[dict[str, float]],
+    *,
+    rate: float = 0.0,
+    dividend_yield: float = 0.0,
+    calendar_mode: str = "nonnegative-rate-no-dividend",
+) -> None:
     maturities = sorted({node["maturity"] for node in nodes})
     strikes = sorted({node["strike"] for node in nodes})
     lookup = {(node["maturity"], node["strike"]): node["price"] for node in nodes}
@@ -115,8 +121,24 @@ def validate_surface_constraints(nodes: list[dict[str, float]]) -> None:
         prices = [lookup[(maturity, strike)] for strike in strikes]
         if any(left < right for left, right in zip(prices, prices[1:])):
             raise ValueError("surface violates strike monotonicity")
-        if len(strikes) >= 3 and any(prices[i - 1] - 2.0 * prices[i] + prices[i + 1] < -1e-12 for i in range(1, len(prices) - 1)):
-            raise ValueError("surface violates butterfly convexity")
+        if len(strikes) >= 3:
+            slopes = [
+                (right_price - left_price) / (right_strike - left_strike)
+                for left_strike, right_strike, left_price, right_price in zip(
+                    strikes, strikes[1:], prices, prices[1:]
+                )
+            ]
+            if any(right < left - 1e-12 for left, right in zip(slopes, slopes[1:])):
+                raise ValueError("surface violates butterfly convexity")
+    if calendar_mode == "skip":
+        return
+    if calendar_mode != "nonnegative-rate-no-dividend":
+        raise ValueError("unknown calendar monotonicity mode")
+    if rate < 0.0 or abs(dividend_yield) > 1e-15:
+        raise ValueError(
+            "calendar monotonicity requires nonnegative rates and no dividends; "
+            "use forward-normalized quotes or skip this gate"
+        )
     for strike in strikes:
         prices = [lookup[(maturity, strike)] for maturity in maturities]
         if any(later < earlier for earlier, later in zip(prices, prices[1:])):
@@ -143,9 +165,39 @@ def gbm_terminals(spot: float, drift: float, sigma: float, maturity: float, norm
     return exact, euler
 
 
-def validate_measure_change(theta_energy: float, maximum_energy: float) -> None:
+def validate_market_price_risk_energy(theta_energy: float, maximum_energy: float) -> None:
     if not math.isfinite(theta_energy) or theta_energy > maximum_energy:
-        raise ValueError("Novikov-style integrability budget rejected")
+        raise ValueError("market-price-of-risk energy budget rejected")
+
+
+def validate_novikov_exponential_moment(
+    theta_energies: list[float], probabilities: list[float]
+) -> float:
+    if len(theta_energies) != len(probabilities) or not theta_energies:
+        raise ValueError("Novikov condition requires matched nonempty scenarios")
+    if any(probability < 0.0 for probability in probabilities) or not math.isclose(
+        sum(probabilities), 1.0, abs_tol=1e-12
+    ):
+        raise ValueError("Novikov condition requires probabilities summing to one")
+    if any(not math.isfinite(energy) for energy in theta_energies):
+        raise ValueError("Novikov condition failed: exponential moment is not finite")
+    try:
+        moment = sum(
+            probability * math.exp(energy)
+            for energy, probability in zip(theta_energies, probabilities)
+        )
+    except OverflowError as error:
+        raise ValueError(
+            "Novikov condition failed: exponential moment is not finite"
+        ) from error
+    if not math.isfinite(moment):
+        raise ValueError("Novikov condition failed: exponential moment is not finite")
+    return moment
+
+
+def validate_measure_change(theta_energy: float, maximum_energy: float) -> None:
+    """Backward-compatible name for the explicit research energy budget."""
+    validate_market_price_risk_energy(theta_energy, maximum_energy)
 
 
 def validate_risk_neutral_drift(physical_drift: float, rate: float, sigma: float, theta: float) -> None:
@@ -258,14 +310,19 @@ def main(oracle_path: Path = Path("evidence/lower-ch04/oracle.json")) -> int:
         spot, strike, rate, sigma, maturity, normals, float(oracle["cost_rate"])
     )
     theta = (float(parameters["physical_drift"]) - rate) / sigma
-    validate_measure_change(0.5 * theta * theta * maturity, float(oracle["maximum_theta_energy"]))
+    theta_energy = 0.5 * theta * theta * maturity
+    validate_market_price_risk_energy(theta_energy, float(oracle["maximum_theta_energy"]))
+    validate_novikov_exponential_moment([theta_energy], [1.0])
     validate_risk_neutral_drift(float(parameters["physical_drift"]), rate, sigma, theta)
     tree_agrees = int(abs(tree - closed) <= float(oracle["tree_error_budget"]))
     mc_agrees = int(abs(mc_price - closed) <= mc_half_width)
     bad_surface = [dict(node) for node in surface_nodes]
     bad_surface[1]["price"] += 5.0
     failures = (
-        expect_rejection(lambda: validate_measure_change(float("inf"), 1.0), "integrability"),
+        expect_rejection(
+            lambda: validate_novikov_exponential_moment([float("inf")], [1.0]),
+            "Novikov condition",
+        ),
         expect_rejection(lambda: validate_risk_neutral_drift(float(parameters["physical_drift"]), rate, sigma, -theta), "wrong risk-neutral drift"),
         expect_rejection(lambda: implied_volatility(spot, spot, strike, rate, maturity), "not bracketed"),
         expect_rejection(lambda: validate_surface_constraints(bad_surface), "butterfly convexity"),

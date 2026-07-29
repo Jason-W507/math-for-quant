@@ -22,11 +22,11 @@
   ],
   "supplements": [
     {
-      "id": "upper-solutions",
-      "title": "上册完整答案",
-      "parent_volume": "upper",
-      "source": "tex/upper/solutions-main.tex",
-      "pdf": "output/pdf/math-for-quant-upper-solutions.pdf"
+      "id": "solutions",
+      "title": "上下册共享答案",
+      "parent_volumes": ["upper", "lower"],
+      "source": "tex/solutions-main.tex",
+      "pdf": "output/pdf/math-for-quant-solutions.pdf"
     }
   ],
   "units": [
@@ -401,6 +401,7 @@
       "id": "upper.ch17",
       "title": "可复现研究审计",
       "volume": "upper",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch16"],
@@ -424,6 +425,7 @@
       "id": "lower.ch01",
       "title": "多因子与计量：从横截面信号到研究包",
       "volume": "lower",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch06", "upper.ch10", "upper.ch13", "upper.ch14", "upper.ch16", "upper.ch17"],
@@ -447,6 +449,7 @@
       "id": "lower.ch02",
       "title": "时间序列与统计套利：从动态模型到滚动验证",
       "volume": "lower",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch09", "upper.ch11", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
@@ -470,6 +473,7 @@
       "id": "lower.ch03",
       "title": "机器学习与 AI Alpha：从泛化到防泄漏 Pipeline",
       "volume": "lower",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch05", "upper.ch06", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
@@ -493,6 +497,7 @@
       "id": "lower.ch04",
       "title": "衍生品定价与对冲：从 Itô 到校准与对冲",
       "volume": "lower",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11", "upper.ch13", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
@@ -516,6 +521,7 @@
       "id": "lower.ch05",
       "title": "组合与风险：从协方差到成本感知组合",
       "volume": "lower",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch06", "upper.ch10", "upper.ch13", "upper.ch14", "upper.ch16", "upper.ch17"],
@@ -539,6 +545,7 @@
       "id": "lower.ch06",
       "title": "高频、微观结构与执行：从订单流到事件时间研究",
       "volume": "lower",
+      "capstone": true,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
@@ -584,11 +591,11 @@
     }
   ],
   "tracks": [
-    {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"]},
-    {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]},
-    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]},
-    {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]},
-    {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"]},
-    {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"]}
+    {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.multifactor.model","lower.multifactor.estimation","lower.multifactor.research"]},
+    {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.stat-arb.model","lower.stat-arb.estimation","lower.stat-arb.research"]},
+    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.ml-alpha.model","lower.ml-alpha.estimation","lower.ml-alpha.research"]},
+    {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.derivatives.model","lower.derivatives.estimation","lower.derivatives.research"]},
+    {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.portfolio-risk.model","lower.portfolio-risk.estimation","lower.portfolio-risk.research"]},
+    {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.microstructure.model","lower.microstructure.estimation","lower.microstructure.research"]}
   ]
 }

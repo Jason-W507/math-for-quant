@@ -38,7 +38,7 @@ def attached_supplements(
     return [
         item
         for item in manifest["supplements"]
-        if item["parent_volume"] == selected_volume
+        if selected_volume in item["parent_volumes"]
     ]
 
 
@@ -90,8 +90,10 @@ def build_volume(volume: dict[str, str]) -> Path:
     environment["TEXINPUTS"] = vendor + os.pathsep + environment.get("TEXINPUTS", "")
 
     wrapper = build_directory / f"{job_name}-wrapper.tex"
+    version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     wrapper.write_text(
         f"\\def\\MFQReleaseDate{{{release_date(environment)}}}\n"
+        f"\\def\\MFQVersion{{{version}}}\n"
         f"\\input{{{(ROOT / source).as_posix()}}}\n",
         encoding="utf-8",
         newline="\n",
@@ -158,12 +160,16 @@ def main() -> int:
         print(f"unknown volume: {args.volume}", file=sys.stderr)
         return 1
     selected = list(volumes) if args.volume == "all" else [args.volume]
+    built_supplements: set[str] = set()
     try:
         for identifier in selected:
             pdf = build_volume(volumes[identifier])
             print(f"volume={identifier} pdf={pdf.relative_to(ROOT).as_posix()}")
             for supplement in attached_supplements(manifest, identifier):
+                if supplement["id"] in built_supplements:
+                    continue
                 supplement_pdf = build_volume(supplement)
+                built_supplements.add(supplement["id"])
                 print(
                     f"supplement={supplement['id']} "
                     f"pdf={supplement_pdf.relative_to(ROOT).as_posix()}"

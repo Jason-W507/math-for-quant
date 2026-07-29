@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "hashes": {
+    "upper:cover": "fffffffffffffffffffffffffffffffffffffffff800fc007000600007e00000",
+    "upper:course-map": "000007e07c007ffe7ff878007ffe7ffe7ff07ffe78007ffc7ff07ffe1e1c0000",
+    "upper:concept-index": "000003c03ffc3ffc3c6030603860306030603060306038603060306030400000",
+    "lower:cover": "fffffffffffffffffffffffffffffffffffffffff800fc007000600007e00000",
+    "lower:route-contract": "000007e07ffe7c007ffe7ff00000000000000000000000000000000000000000",
+    "lower:references": "000003c07ffe7ffe7ffc00000000000000000000000000000000000000000000",
+    "solutions:cover": "fffffffffffffffffffffffffffffffffffffffff800f0007000600007e00000",
+    "solutions:upper-solutions": "0000000000000000000001c003c003c000000000000000000000000000000000",
+    "solutions:lower-solutions": "0000000000000000000001c003c001c000000000000000000000000000000000"
+  }
+}

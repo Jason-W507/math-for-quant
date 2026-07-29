@@ -100,6 +100,35 @@ class SchemaDrivenCurriculumTests(unittest.TestCase):
         )
         self.assertIsNone(validate_document(licenses, "licenses"))
 
+    def test_track_seam_rejects_a_route_before_three_units_are_accepted(self) -> None:
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "check_learning_unit.py"),
+                "--manifest",
+                str(ROOT / "curriculum" / "manifest.json"),
+                "--track",
+                "multifactor",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("three accepted learning units", result.stderr)
+
+    def test_track_plan_requires_three_declared_units(self) -> None:
+        path = self.fixture(
+            "track-with-two-units.json",
+            lambda manifest: manifest["tracks"][0].__setitem__(
+                "planned_units", manifest["tracks"][0]["planned_units"][:2]
+            ),
+        )
+        result = self.run_contract(path)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("manifest schema validation failed", result.stderr)
+
 
 if __name__ == "__main__":
     unittest.main()

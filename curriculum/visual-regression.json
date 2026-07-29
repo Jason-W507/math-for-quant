@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "hash_size": 16,
+  "maximum_hamming_distance": 8,
+  "publications": [
+    {
+      "id": "upper",
+      "pdf": "output/pdf/math-for-quant-upper.pdf",
+      "pages": [
+        {"id": "cover", "page": 1},
+        {"id": "course-map", "bookmark": "课程地图与最小证据实验"},
+        {"id": "concept-index", "bookmark": "D 主题索引"}
+      ]
+    },
+    {
+      "id": "lower",
+      "pdf": "output/pdf/math-for-quant-lower.pdf",
+      "pages": [
+        {"id": "cover", "page": 1},
+        {"id": "route-contract", "bookmark": "1.1 六条路线的共同结构"},
+        {"id": "references", "bookmark": "I 参考文献"}
+      ]
+    },
+    {
+      "id": "solutions",
+      "pdf": "output/pdf/math-for-quant-solutions.pdf",
+      "pages": [
+        {"id": "cover", "page": 1},
+        {"id": "upper-solutions", "bookmark": "第一部分 上册答案"},
+        {"id": "lower-solutions", "bookmark": "第二部分 下册答案"}
+      ]
+    }
+  ]
+}
