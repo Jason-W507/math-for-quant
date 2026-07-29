@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import subprocess
+import shutil
 import sys
 import unittest
 from pathlib import Path
 
-from math_for_quant.lower.derivatives import implied_volatility, validate_risk_neutral_drift
+import numpy as np
+
+from math_for_quant.lower.derivatives import call_delta, delta_hedge, implied_volatility, validate_risk_neutral_drift
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -28,7 +31,8 @@ class LowerDerivativesTests(unittest.TestCase):
             result.stdout,
             "oracle=passed ito=(0.860000,0.020000,0.020000) gbm=(109.229859,109.512790) "
             "prices=(8.916037,8.911086,8.909574,0.085601) calibration=(0.200000) "
-            "greeks=(0.579260,0.579260,39.104269) hedge=(1.417254,0.059026) failures=(1,1,1,1,1)\n",
+            "greeks=(0.579260,0.579260,39.104269) surface=(0.000000000000,0.000000000000) "
+            "hedge=(1.476783,1.391342,0.085442,0.084354) failures=(1,1,1,1,1,1)\n",
         )
 
     def test_measure_change_and_quote_failures_have_distinct_diagnostics(self) -> None:
@@ -36,6 +40,8 @@ class LowerDerivativesTests(unittest.TestCase):
             validate_risk_neutral_drift(0.08, 0.02, 0.2, -0.3)
         with self.assertRaisesRegex(ValueError, "arbitrage bounds"):
             implied_volatility(101.0, 100.0, 100.0, 0.02, 1.0)
+        with self.assertRaisesRegex(ValueError, "not bracketed"):
+            implied_volatility(100.0, 100.0, 100.0, 0.02, 1.0)
 
     def test_capstone_report_is_bound_to_the_pipeline(self) -> None:
         report = ROOT / "reports/lower-ch04-summary.md"
@@ -43,6 +49,35 @@ class LowerDerivativesTests(unittest.TestCase):
         text = report.read_text(encoding="utf-8")
         for marker in ("二次变差", "Black--Scholes", "二叉树", "Monte Carlo", "隐含波动率", "离散对冲", "不可声称"):
             self.assertIn(marker, text)
+
+    def test_clean_copy_reproduces_the_research_package(self) -> None:
+        clean = ROOT / "build" / "test-packages" / "lower-ch04-clean"
+        if clean.exists():
+            shutil.rmtree(clean)
+        try:
+            for relative in ("data/fixtures/lower-ch04.json", "evidence/lower-ch04/oracle.json", "reports/lower-ch04-summary.md"):
+                destination = clean / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(ROOT / relative, destination)
+            result = subprocess.run(
+                [sys.executable, "-m", "math_for_quant.lower.derivatives", "evidence/lower-ch04/oracle.json"],
+                cwd=clean,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue(result.stdout.startswith("oracle=passed "))
+        finally:
+            if clean.exists():
+                shutil.rmtree(clean)
+
+    def test_one_step_hedge_cost_has_an_independent_hand_ledger(self) -> None:
+        no_cost, after_cost, drag, raw_cost = delta_hedge(100.0, 100.0, 0.02, 0.2, 1.0, np.array([0.0]), 0.0005)
+        initial_cost = 0.0005 * call_delta(100.0, 100.0, 0.02, 0.2, 1.0) * 100.0
+        self.assertAlmostEqual(raw_cost, initial_cost, places=12)
+        self.assertAlmostEqual(drag, initial_cost * np.exp(0.02), places=12)
+        self.assertAlmostEqual(no_cost - after_cost, drag, places=12)
 
 
 if __name__ == "__main__":

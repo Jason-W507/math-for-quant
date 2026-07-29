@@ -57,20 +57,28 @@ def binomial_call(spot: float, strike: float, rate: float, sigma: float, maturit
 
 def monte_carlo_call(
     spot: float, strike: float, rate: float, sigma: float, maturity: float, samples: int, seed: int
-) -> tuple[float, float]:
+) -> tuple[float, float, float]:
     if samples < 2:
         raise ValueError("Monte Carlo confidence interval requires at least two paths")
     normals = np.random.default_rng(seed).standard_normal(samples)
     terminal = spot * np.exp((rate - 0.5 * sigma * sigma) * maturity + sigma * math.sqrt(maturity) * normals)
     discounted = math.exp(-rate * maturity) * np.maximum(terminal - strike, 0.0)
-    return float(discounted.mean()), float(1.96 * discounted.std(ddof=1) / math.sqrt(samples))
+    variance = float(discounted.var(ddof=1))
+    standard_error = math.sqrt(variance / samples)
+    return float(discounted.mean()), standard_error, variance
 
 
 def implied_volatility(price: float, spot: float, strike: float, rate: float, maturity: float) -> float:
     lower_bound = max(spot - strike * math.exp(-rate * maturity), 0.0)
     if not lower_bound <= price <= spot:
         raise ValueError("call quote violates static arbitrage bounds")
-    lower, upper = 1e-6, 3.0
+    lower, upper = 1e-6, 0.5
+    while black_scholes_call(spot, strike, rate, upper, maturity) < price and upper < 8.0:
+        upper *= 2.0
+    lower_price = black_scholes_call(spot, strike, rate, lower, maturity)
+    upper_price = black_scholes_call(spot, strike, rate, upper, maturity)
+    if not lower_price <= price <= upper_price:
+        raise ValueError("implied-volatility calibration root is not bracketed")
     for _ in range(100):
         middle = 0.5 * (lower + upper)
         if black_scholes_call(spot, strike, rate, middle, maturity) < price:
@@ -78,9 +86,41 @@ def implied_volatility(price: float, spot: float, strike: float, rate: float, ma
         else:
             upper = middle
     result = 0.5 * (lower + upper)
+    if abs(black_scholes_call(spot, strike, rate, result, maturity) - price) > 1e-10:
+        raise ValueError("implied-volatility calibration residual is too large")
     if call_vega(spot, strike, rate, result, maturity) < 1e-6:
         raise ValueError("implied-volatility calibration is ill-conditioned")
     return result
+
+
+def calibrate_surface(
+    spot: float,
+    rate: float,
+    nodes: list[dict[str, float]],
+) -> tuple[list[float], float]:
+    implied = [implied_volatility(node["price"], spot, node["strike"], rate, node["maturity"]) for node in nodes]
+    weighted_squared_error = 0.0
+    for node, sigma in zip(nodes, implied):
+        fitted = black_scholes_call(spot, node["strike"], rate, sigma, node["maturity"])
+        weighted_squared_error += node["weight"] * (fitted - node["price"]) ** 2
+    validate_surface_constraints(nodes)
+    return implied, weighted_squared_error
+
+
+def validate_surface_constraints(nodes: list[dict[str, float]]) -> None:
+    maturities = sorted({node["maturity"] for node in nodes})
+    strikes = sorted({node["strike"] for node in nodes})
+    lookup = {(node["maturity"], node["strike"]): node["price"] for node in nodes}
+    for maturity in maturities:
+        prices = [lookup[(maturity, strike)] for strike in strikes]
+        if any(left < right for left, right in zip(prices, prices[1:])):
+            raise ValueError("surface violates strike monotonicity")
+        if len(strikes) >= 3 and any(prices[i - 1] - 2.0 * prices[i] + prices[i + 1] < -1e-12 for i in range(1, len(prices) - 1)):
+            raise ValueError("surface violates butterfly convexity")
+    for strike in strikes:
+        prices = [lookup[(maturity, strike)] for maturity in maturities]
+        if any(later < earlier for earlier, later in zip(prices, prices[1:])):
+            raise ValueError("surface violates calendar monotonicity")
 
 
 def quadratic_variation_and_ito(normals: np.ndarray, maturity: float) -> tuple[float, float, float]:
@@ -128,26 +168,34 @@ def delta_hedge(
     maturity: float,
     normals: np.ndarray,
     cost_rate: float,
-) -> tuple[float, float]:
+) -> tuple[float, float, float, float]:
     steps = normals.size
     dt = maturity / steps
     option = black_scholes_call(spot, strike, rate, sigma, maturity)
     delta = call_delta(spot, strike, rate, sigma, maturity)
-    cash = option - delta * spot
-    total_cost = 0.0
+    cash_without_cost = option - delta * spot
+    initial_cost = cost_rate * abs(delta) * spot
+    cash_with_cost = cash_without_cost - initial_cost
+    raw_cost = initial_cost
     current = spot
     for index, normal in enumerate(normals, start=1):
-        cash *= math.exp(rate * dt)
+        cash_without_cost *= math.exp(rate * dt)
+        cash_with_cost *= math.exp(rate * dt)
         current *= math.exp((rate - 0.5 * sigma * sigma) * dt + sigma * math.sqrt(dt) * float(normal))
-        remaining = maturity - index * dt
-        next_delta = call_delta(current, strike, rate, sigma, remaining)
-        trade = next_delta - delta
-        cost = cost_rate * abs(trade) * current
-        cash -= trade * current + cost
-        total_cost += cost
-        delta = next_delta
-    error = delta * current + cash - max(current - strike, 0.0)
-    return float(error), float(total_cost)
+        if index < steps:
+            remaining = maturity - index * dt
+            next_delta = call_delta(current, strike, rate, sigma, remaining)
+            trade = next_delta - delta
+            cost = cost_rate * abs(trade) * current
+            cash_without_cost -= trade * current
+            cash_with_cost -= trade * current + cost
+            raw_cost += cost
+            delta = next_delta
+    payoff = max(current - strike, 0.0)
+    no_cost_error = delta * current + cash_without_cost - payoff
+    cost_after_error = delta * current + cash_with_cost - payoff
+    financed_cost_drag = no_cost_error - cost_after_error
+    return float(no_cost_error), float(cost_after_error), float(financed_cost_drag), float(raw_cost)
 
 
 def expect_rejection(action: Callable[[], object], diagnostic: str) -> int:
@@ -165,10 +213,11 @@ def render_report(observed: dict[str, float | int]) -> str:
 
 - 二次变差：离散值 {observed['quadratic_variation']:.6f}；Itô 离散恒等式两侧为 {observed['ito_left']:.6f} 与 {observed['ito_right']:.6f}。
 - SDE：GBM 解析终值 {observed['gbm_exact']:.6f}，Euler 终值 {observed['gbm_euler']:.6f}；差异属于离散化误差。
-- Black--Scholes 闭式价格 {observed['closed_price']:.6f}；二叉树 {observed['tree_price']:.6f}；Monte Carlo {observed['mc_price']:.6f}，95% 半宽 {observed['mc_half_width']:.6f}。
+- Black--Scholes 闭式价格 {observed['closed_price']:.6f}；二叉树 {observed['tree_price']:.6f}（400 步，$\\Delta t=0.0025$）；Monte Carlo {observed['mc_price']:.6f}（100000 路径，seed=20260722），样本方差 {observed['mc_variance']:.6f}，标准误 {observed['mc_standard_error']:.6f}，95% 半宽 {observed['mc_half_width']:.6f}。
+- 波动率曲面：6 个执行价/期限节点的加权价格平方误差 {observed['surface_objective']:.12f}，最大隐波恢复误差 {observed['surface_max_sigma_error']:.12f}；执行价单调、蝶式凸性与日历单调约束均通过。
 - 隐含波动率：由合成报价反解为 {observed['implied_volatility']:.6f}；套利不一致报价与病态校准必须拒绝。
 - Greeks：解析 Delta {observed['analytic_delta']:.6f}，差分 Delta {observed['fd_delta']:.6f}；解析 Vega {observed['analytic_vega']:.6f}。
-- 离散对冲：误差 {observed['hedge_error']:.6f}，交易成本 {observed['hedge_cost']:.6f}。
+- 离散对冲：无成本复制误差 {observed['hedge_no_cost_error']:.6f}，成本后误差 {observed['hedge_after_cost_error']:.6f}，融资后成本拖累 {observed['hedge_cost_drag']:.6f}，名义成本现金流 {observed['hedge_raw_cost']:.6f}。
 - 模型风险：GBM、常波动率、连续交易和无冲击均是限制；本实验不可声称实盘盈利、可部署性或覆盖跳跃与波动率曲面风险。
 - 复现命令：`uv run python notebooks/lower/ch04_derivatives.py evidence/lower-ch04/oracle.json`。
 """
@@ -183,33 +232,49 @@ def main(oracle_path: Path = Path("evidence/lower-ch04/oracle.json")) -> int:
     gbm_exact, gbm_euler = gbm_terminals(spot, float(parameters["physical_drift"]), sigma, maturity, normals)
     closed = black_scholes_call(spot, strike, rate, sigma, maturity)
     tree = binomial_call(spot, strike, rate, sigma, maturity, int(oracle["tree_steps"]))
-    mc_price, mc_half_width = monte_carlo_call(spot, strike, rate, sigma, maturity, int(oracle["mc_samples"]), int(oracle["seed"]))
+    mc_price, mc_standard_error, mc_variance = monte_carlo_call(spot, strike, rate, sigma, maturity, int(oracle["mc_samples"]), int(oracle["seed"]))
+    mc_half_width = 1.96 * mc_standard_error
     implied = implied_volatility(closed, spot, strike, rate, maturity)
     analytic_delta = call_delta(spot, strike, rate, sigma, maturity)
     fd_delta = finite_difference(lambda value: black_scholes_call(value, strike, rate, sigma, maturity), spot, float(oracle["fd_step"]))
     analytic_vega = call_vega(spot, strike, rate, sigma, maturity)
-    hedge_error, hedge_cost = delta_hedge(spot, strike, rate, sigma, maturity, normals, float(oracle["cost_rate"]))
+    surface_nodes = [
+        {"strike": float(strike_node), "maturity": float(maturity_node), "weight": 1.0,
+         "price": black_scholes_call(spot, float(strike_node), rate, float(oracle["surface_sigma"]), float(maturity_node))}
+        for maturity_node in oracle["surface_maturities"] for strike_node in oracle["surface_strikes"]
+    ]
+    surface_sigmas, surface_objective = calibrate_surface(spot, rate, surface_nodes)
+    surface_max_sigma_error = max(abs(value - float(oracle["surface_sigma"])) for value in surface_sigmas)
+    hedge_no_cost_error, hedge_after_cost_error, hedge_cost_drag, hedge_raw_cost = delta_hedge(
+        spot, strike, rate, sigma, maturity, normals, float(oracle["cost_rate"])
+    )
     theta = (float(parameters["physical_drift"]) - rate) / sigma
     validate_measure_change(0.5 * theta * theta * maturity, float(oracle["maximum_theta_energy"]))
     validate_risk_neutral_drift(float(parameters["physical_drift"]), rate, sigma, theta)
     tree_agrees = int(abs(tree - closed) <= float(oracle["tree_error_budget"]))
     mc_agrees = int(abs(mc_price - closed) <= mc_half_width)
+    bad_surface = [dict(node) for node in surface_nodes]
+    bad_surface[1]["price"] += 5.0
     failures = (
         expect_rejection(lambda: validate_measure_change(float("inf"), 1.0), "integrability"),
         expect_rejection(lambda: validate_risk_neutral_drift(float(parameters["physical_drift"]), rate, sigma, -theta), "wrong risk-neutral drift"),
-        expect_rejection(lambda: implied_volatility(spot + 1.0, spot, strike, rate, maturity), "arbitrage bounds"),
+        expect_rejection(lambda: implied_volatility(spot, spot, strike, rate, maturity), "not bracketed"),
+        expect_rejection(lambda: validate_surface_constraints(bad_surface), "butterfly convexity"),
         expect_rejection(lambda: finite_difference(lambda x: x * x, 1.0, 0.0), "step must be positive"),
         expect_rejection(lambda: monte_carlo_call(spot, strike, rate, sigma, maturity, 1, 1), "at least two paths"),
     )
     observed: dict[str, float | int] = {
         "quadratic_variation": qv, "ito_left": ito_left, "ito_right": ito_right,
         "gbm_exact": gbm_exact, "gbm_euler": gbm_euler,
-        "closed_price": closed, "tree_price": tree, "mc_price": mc_price, "mc_half_width": mc_half_width,
+        "closed_price": closed, "tree_price": tree, "mc_price": mc_price, "mc_standard_error": mc_standard_error,
+        "mc_variance": mc_variance, "mc_half_width": mc_half_width,
         "tree_agrees": tree_agrees, "mc_agrees": mc_agrees,
+        "surface_objective": surface_objective, "surface_max_sigma_error": surface_max_sigma_error,
         "implied_volatility": implied, "analytic_delta": analytic_delta, "fd_delta": fd_delta, "analytic_vega": analytic_vega,
-        "hedge_error": hedge_error, "hedge_cost": hedge_cost,
-        "integrability_rejected": failures[0], "wrong_drift_rejected": failures[1], "arbitrage_rejected": failures[2],
-        "grid_rejected": failures[3], "mc_budget_rejected": failures[4],
+        "hedge_no_cost_error": hedge_no_cost_error, "hedge_after_cost_error": hedge_after_cost_error,
+        "hedge_cost_drag": hedge_cost_drag, "hedge_raw_cost": hedge_raw_cost,
+        "integrability_rejected": failures[0], "wrong_drift_rejected": failures[1], "calibration_bracket_rejected": failures[2],
+        "surface_arbitrage_rejected": failures[3], "grid_rejected": failures[4], "mc_budget_rejected": failures[5],
     }
     tolerance = float(oracle["absolute_tolerance"])
     for name, expected in oracle["expected"].items():
@@ -228,7 +293,9 @@ def main(oracle_path: Path = Path("evidence/lower-ch04/oracle.json")) -> int:
         f"gbm=({gbm_exact:.6f},{gbm_euler:.6f}) "
         f"prices=({closed:.6f},{tree:.6f},{mc_price:.6f},{mc_half_width:.6f}) "
         f"calibration=({implied:.6f}) greeks=({analytic_delta:.6f},{fd_delta:.6f},{analytic_vega:.6f}) "
-        f"hedge=({hedge_error:.6f},{hedge_cost:.6f}) failures=({','.join(str(value) for value in failures)})"
+        f"surface=({surface_objective:.12f},{surface_max_sigma_error:.12f}) "
+        f"hedge=({hedge_no_cost_error:.6f},{hedge_after_cost_error:.6f},{hedge_cost_drag:.6f},{hedge_raw_cost:.6f}) "
+        f"failures=({','.join(str(value) for value in failures)})"
     )
     return 0
 

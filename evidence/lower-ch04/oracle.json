@@ -8,31 +8,38 @@
     "closed_price": 8.916037278572539,
     "tree_price": 8.91108562366484,
     "mc_price": 8.909574206694002,
+    "mc_standard_error": 0.04367398672788623,
+    "mc_variance": 190.74171167075824,
     "mc_half_width": 0.08560101398665701,
     "tree_agrees": 1,
     "mc_agrees": 1,
+    "surface_objective": 3.534096855390133e-28,
+    "surface_max_sigma_error": 3.3306690738754696e-16,
     "implied_volatility": 0.19999999999999984,
     "analytic_delta": 0.579259709439103,
     "fd_delta": 0.5792597029209645,
     "analytic_vega": 39.104269397545586,
-    "hedge_error": 1.4172541563985277,
-    "hedge_cost": 0.05902620016871654,
+    "hedge_no_cost_error": 1.476783323856111,
+    "hedge_after_cost_error": 1.3913417046010608,
+    "hedge_cost_drag": 0.08544161925505023,
+    "hedge_raw_cost": 0.08435356084845824,
     "integrability_rejected": 1,
     "wrong_drift_rejected": 1,
-    "arbitrage_rejected": 1,
+    "calibration_bracket_rejected": 1,
+    "surface_arbitrage_rejected": 1,
     "grid_rejected": 1,
     "mc_budget_rejected": 1
   },
   "absolute_tolerance": 1e-11,
   "report": "reports/lower-ch04-summary.md",
-  "provenance": "Black--Scholes and Greeks are analytic; the CRR tree and seeded risk-neutral Monte Carlo are independent pricing methods; implied volatility is recovered by bisection; the discrete Ito identity is algebraic on the frozen increments; the hedge ledger is self-financing before stated transaction costs.",
+  "provenance": "Black--Scholes and Greeks are analytic; the CRR tree and seeded risk-neutral Monte Carlo are independent pricing methods; a six-node synthetic surface has explicit weighted price loss and no-static-arbitrage constraints; implied volatility is recovered by bracketed bisection; the discrete Ito identity is algebraic on the frozen increments; a one-step hand ledger independently checks the hedging cost protocol.",
   "published_markers": [
     "闭式、二叉树与 Monte Carlo 价格分别为 $8.916037$、$8.911086$ 与 $8.909574$",
     "解析 Delta 与差分 Delta 分别为 $0.579260$ 与 $0.579260$",
-    "离散对冲误差为 $1.417254$，交易成本为 $0.059026$"
+    "无成本复制误差为 $1.476783$，成本后误差为 $1.391342$"
   ],
   "fixture": {
     "path": "data/fixtures/lower-ch04.json",
-    "sha256": "2e86a4210b2d107867af758178043d9e6058a71b8991059a3bf256c502983a2c"
+    "sha256": "e2eb8ec5361c3d2c82928214beb9a67dfe0c3e93037fc42f2696d0bcea7ae6bd"
   }
 }
