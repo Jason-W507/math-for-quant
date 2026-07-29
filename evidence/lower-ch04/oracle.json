@@ -1,0 +1,38 @@
+{
+  "expected": {
+    "quadratic_variation": 0.8600000000000002,
+    "ito_left": 0.02000000000000003,
+    "ito_right": 0.020000000000000018,
+    "gbm_exact": 109.2298586979899,
+    "gbm_euler": 109.51278986917647,
+    "closed_price": 8.916037278572539,
+    "tree_price": 8.91108562366484,
+    "mc_price": 8.909574206694002,
+    "mc_half_width": 0.08560101398665701,
+    "tree_agrees": 1,
+    "mc_agrees": 1,
+    "implied_volatility": 0.19999999999999984,
+    "analytic_delta": 0.579259709439103,
+    "fd_delta": 0.5792597029209645,
+    "analytic_vega": 39.104269397545586,
+    "hedge_error": 1.4172541563985277,
+    "hedge_cost": 0.05902620016871654,
+    "integrability_rejected": 1,
+    "wrong_drift_rejected": 1,
+    "arbitrage_rejected": 1,
+    "grid_rejected": 1,
+    "mc_budget_rejected": 1
+  },
+  "absolute_tolerance": 1e-11,
+  "report": "reports/lower-ch04-summary.md",
+  "provenance": "Black--Scholes and Greeks are analytic; the CRR tree and seeded risk-neutral Monte Carlo are independent pricing methods; implied volatility is recovered by bisection; the discrete Ito identity is algebraic on the frozen increments; the hedge ledger is self-financing before stated transaction costs.",
+  "published_markers": [
+    "闭式、二叉树与 Monte Carlo 价格分别为 $8.916037$、$8.911086$ 与 $8.909574$",
+    "解析 Delta 与差分 Delta 分别为 $0.579260$ 与 $0.579260$",
+    "离散对冲误差为 $1.417254$，交易成本为 $0.059026$"
+  ],
+  "fixture": {
+    "path": "data/fixtures/lower-ch04.json",
+    "sha256": "2e86a4210b2d107867af758178043d9e6058a71b8991059a3bf256c502983a2c"
+  }
+}

@@ -1,0 +1,14 @@
+\chapter{衍生品定价与对冲分层答案}
+\begin{enumerate}[leftmargin=*]
+  \item Brownian 增量量级为 $\sqrt{\mathrm dt}$，平方后为 $\mathrm dt$，所以二阶项累积为有限量。
+  \item $\mathbb P$ 描述真实发生频率；在满足等价测度条件时，$\mathbb Q$ 使贴现可交易资产成为鞅，用于无套利定价。
+  \item $\mathrm d\log S_t=(\mu-\sigma^2/2)\mathrm dt+\sigma\mathrm dW_t$，积分并指数化即得解析解。
+  \item Itô 展开 $V$，持有 $V_S$ 股标的消去 $\mathrm dW$ 项，再由无套利令剩余组合按 $r$ 增长，得到 PDE。
+  \item 记录步数、价格和相对闭式误差；不能只报告“更接近”。
+  \item 路径扩大四倍时，若方差稳定，置信区间半宽约减半；应以实际样本标准差核对。
+  \item 越界报价没有无套利隐波；Vega 接近零时，小报价误差会变成大波动率误差。
+  \item 建立无成本基线，再加入相同路径上的成本；另用错误波动率重复，对三类误差分别归因。
+\end{enumerate}
+
+\section*{独立 oracle 核对表}
+离散二次变差为 $0.86$，Itô 离散恒等式两侧为 $0.02$。闭式、二叉树与 Monte Carlo 价格分别为 $8.916037$、$8.911086$ 与 $8.909574$，Monte Carlo 95\% 半宽为 $0.085601$。解析 Delta 与差分 Delta 分别为 $0.579260$ 与 $0.579260$。离散对冲误差为 $1.417254$，交易成本为 $0.059026$。

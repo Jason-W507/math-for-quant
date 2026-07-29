@@ -1,0 +1,119 @@
+\chapter{衍生品定价与对冲：从 Itô 到校准与对冲}
+
+\begin{itemize}
+  \item \textbf{直接先修：}上册第 7、8、9、11、13、14、15、16、17 章；路线诊断见第 2.5 节。
+  \item \textbf{学习产出：}从随机过程假设推导定价方程，用三种独立方法核价，反解隐含波动率，并交付离散对冲误差台账。
+  \item \textbf{研究边界：}只研究欧式看涨期权的合成实验；常波动率、连续路径、无冲击与完全流动性都不是实盘事实。
+\end{itemize}
+
+\section{桥接：二次变差为何改变微积分}
+
+设 $W_t$ 是标准 Brownian 运动。普通光滑路径的平方增量和会趋于零，但 Brownian 路径沿分割 $\pi$ 的二次变差满足
+\[
+  \sum_{[t_i,t_{i+1}]\in\pi}(W_{t_{i+1}}-W_{t_i})^2
+  \xrightarrow{|\pi|\to0}T.
+\]
+因此 Taylor 展开中的二阶项不能丢掉。对 $f(t,x)\in C^{1,2}$，Itô 公式为
+\[
+ \mathrm df(t,X_t)=
+ \left(f_t+\mu f_x+\frac12\sigma^2f_{xx}\right)\mathrm dt
+ +\sigma f_x\,\mathrm dW_t,
+\]
+其中 $\mathrm dX_t=\mu\,\mathrm dt+\sigma\,\mathrm dW_t$。额外的 $\tfrac12\sigma^2f_{xx}$ 正来自 $(\mathrm dW_t)^2=\mathrm dt$ 的二次变差规则。
+
+冻结的八步增量给出离散二次变差 $0.86$，而目标区间长度为 1。有限网格不应被说成已经“证明”极限；它只展示网格误差。本章还核对离散恒等式
+\[
+ W_T^2=2\sum_i W_{t_i}\Delta W_i+\sum_i(\Delta W_i)^2,
+\]
+两侧都为 $0.02$。它是每条离散路径上的代数恒等式，可作为实现 oracle。
+
+\begin{diagnostic}
+若程序只比较 $\sum(\Delta W)^2$ 与 $T$，一次恰好接近 1 不能验证收敛。应改变网格、重复模拟，并分别报告离散偏差与 Monte Carlo 波动。
+\end{diagnostic}
+
+\section{GBM、解析解与测度变换}
+
+几何 Brownian 运动满足
+\[
+ \frac{\mathrm dS_t}{S_t}=\mu\,\mathrm dt+\sigma\,\mathrm dW_t.
+\]
+对 $\log S_t$ 使用 Itô 公式得到
+\[
+ \mathrm d\log S_t=\left(\mu-\frac12\sigma^2\right)\mathrm dt+\sigma\,\mathrm dW_t,
+\qquad
+ S_T=S_0\exp\!\left[\left(\mu-\frac12\sigma^2\right)T+\sigma W_T\right].
+\]
+同一组增量下，解析终值为 $109.229859$，Euler 终值为 $109.512790$。二者差值属于时间离散误差；精确解与 Euler 不能共享同一个“期望答案”后再声称相互独立。
+
+定价不把真实漂移 $\mu$ 直接换成 $r$ 就结束。令市场价格风险 $\theta=(\mu-r)/\sigma$，密度过程需要是一个真鞅；常见充分条件是 Novikov 条件
+\[
+ \mathbb E\exp\!\left(\frac12\int_0^T\theta_t^2\,\mathrm dt\right)<\infty.
+\]
+在相应等价鞅测度 $\mathbb Q$ 下，$\mathrm dS_t/S_t=r\,\mathrm dt+\sigma\,\mathrm dW_t^{\mathbb Q}$，贴现资产才是鞅。不可积的密度或错误符号会破坏测度变换；代码用能量预算显式拒绝该负例。
+
+\section{PDE、Feynman--Kac 与独立定价}
+
+令 $V(t,S)$ 为期权价值。对 $V$ 使用 Itô 公式，并用持有 $\Delta=V_S$ 股标的的组合消去 Brownian 项，得到无套利 PDE
+\[
+ V_t+\frac12\sigma^2S^2V_{SS}+rSV_S-rV=0,
+ \qquad V(T,S)=(S-K)^+.
+\]
+Feynman--Kac 把它连接到风险中性期望
+\[
+ V(0,S_0)=e^{-rT}\mathbb E^{\mathbb Q}(S_T-K)^+.
+\]
+对欧式看涨期权，闭式解为
+\[
+ C=S_0\Phi(d_1)-Ke^{-rT}\Phi(d_2),\quad
+ d_{1,2}=\frac{\log(S_0/K)+(r\pm\tfrac12\sigma^2)T}{\sigma\sqrt T}.
+\]
+
+本章不让三种方法共享预填价格。闭式、400 步 CRR 二叉树与十万条固定种子 Monte Carlo 价格分别为 $8.916037$、$8.911086$ 与 $8.909574$。Monte Carlo 的 95\% 半宽为 $0.085601$，故闭式价格落在其置信区间内；二叉树误差另由时间网格控制。
+
+误差报告至少包含：树的步数、Monte Carlo 路径数与种子、样本标准误、置信区间、浮点精度和计算时间。增加路径只减小抽样误差，不会修复错误漂移、错误 payoff 或模型错设。
+
+\section{隐含波动率、校准与 Greeks}
+
+隐含波动率 $\sigma_{\mathrm{imp}}$ 由
+\[
+ C_{\mathrm{BS}}(S_0,K,r,T,\sigma_{\mathrm{imp}})=C_{\mathrm{mkt}}
+\]
+反解。本章先用 $\sigma=0.2$ 生成合成报价，再以二分法恢复 $0.2$。这是 round-trip 校准测试，不等于真实曲面校准。真实报价还需要统一远期、贴现、日历、行权价坐标与买卖价差，并施加蝶式和日历套利约束。
+
+看涨期权解析 Greeks 为
+\[
+ \Delta=\Phi(d_1),\qquad
+ \mathcal V=S_0\phi(d_1)\sqrt T.
+\]
+解析 Delta 与中心差分 Delta 分别为 $0.579260$ 与 $0.579260$，解析 Vega 为 $39.104269$。差分步长过大产生截断误差，过小放大舍入误差；Vega 接近零时，隐波反解对报价噪声病态。
+
+看涨价格必须满足静态套利界
+\[
+ \max(S_0-Ke^{-rT},0)\le C\le S_0.
+\]
+超出该区间的报价不能交给求根器“硬算”一个波动率。本章将其作为稳定的失败类别拒绝；生产校准还应报告残差、约束活跃集和参数敏感度。
+
+\section{离散 Delta 对冲与模型风险}
+
+连续时间复制要求连续调仓且无成本。离散实现从期权费中买入 $\Delta_0$ 股、其余进入现金账户；每一步先让现金按无风险利率增长，再按新 Delta 调仓并扣除成交成本。冻结路径的终端对冲误差为 $1.417254$，交易成本为 $0.059026$。
+
+误差不应全部归因于“模型不好”。应分开记录时间离散、路径实现、波动率错设、跳跃、买卖价差、冲击、融资和取整。提高调仓频率通常降低离散误差，却可能增加成本；最优频率是研究问题，不是连续极限的直接结论。
+
+\begin{note}[研究解释]
+风险中性定价回答复制成本，不预测标的真实收益。物理测度用于风险与预测，风险中性测度用于无套利定价；两者参数估计、检验目标和失败边界不同。
+\end{note}
+
+\section{Route Capstone：定价、校准与对冲研究包}
+
+Capstone 从干净环境运行同一参数集，依次核对二次变差、GBM 解析路径、三种定价、隐波 round-trip、Greeks 和对冲台账。四类负例分别拒绝不可积测度变换、套利不一致报价、非法差分步长和不足以形成置信区间的 Monte Carlo 样本。
+
+冻结摘要见 \path{reports/lower-ch04-summary.md}。最终报告必须同时列出解析假设、网格与路径预算、置信区间、校准约束、交易成本和不可声称的实盘结论。
+
+\begin{implementationnote}
+\begin{lstlisting}[language=bash]
+uv run python notebooks/lower/ch04_derivatives.py \
+  evidence/lower-ch04/oracle.json
+\end{lstlisting}
+\end{implementationnote}
+
+\input{tex/lower/chapters/derivatives-questions}

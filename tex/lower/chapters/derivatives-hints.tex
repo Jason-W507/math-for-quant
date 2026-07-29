@@ -1,0 +1,11 @@
+\chapter{衍生品定价与对冲提示}
+\begin{enumerate}[leftmargin=*]
+  \item 保留 Taylor 展开的二阶项，并使用 $(\mathrm dW)^2=\mathrm dt$。
+  \item 一个用于真实概率与风险，另一个用于贴现价格鞅和无套利定价。
+  \item 对 $\log S$ 使用 Itô 公式。
+  \item 令组合持有 $V_S$ 股标的，再令无风险组合收益率等于 $r$。
+  \item 固定其他参数，只改变时间网格。
+  \item 标准误按 $N^{-1/2}$ 缩放。
+  \item 先检查静态套利界，再看 Vega 所决定的条件数。
+  \item 使用同一路径，分别开关成本、调仓频率和波动率错设。
+\end{enumerate}
