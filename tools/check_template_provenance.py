@@ -15,7 +15,12 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Verify the external ElegantBook baseline was not modified."
     )
-    parser.add_argument("--source", type=Path, required=True)
+    parser.add_argument("--source", type=Path)
+    parser.add_argument(
+        "--vendored-only",
+        action="store_true",
+        help="Verify committed vendored assets when the external baseline is unavailable in CI.",
+    )
     return parser.parse_args()
 
 
@@ -25,23 +30,27 @@ def sha256(path: Path) -> str:
 
 def main() -> int:
     args = parse_args()
+    if args.source is None and not args.vendored_only:
+        print("provide --source or --vendored-only", file=sys.stderr)
+        return 2
     provenance = json.loads(PROVENANCE.read_text(encoding="utf-8"))
     files = provenance["files"]
-    for record in files:
-        name = record["source"]
-        expected = record["sha256"]
-        path = args.source / name
-        if not path.is_file():
-            print(f"missing external template file: {path}", file=sys.stderr)
-            return 1
-        observed = sha256(path)
-        if observed != expected:
-            print(
-                f"external template changed: {name} "
-                f"expected={expected} observed={observed}",
-                file=sys.stderr,
-            )
-            return 1
+    if args.source is not None:
+        for record in files:
+            name = record["source"]
+            expected = record["sha256"]
+            path = args.source / name
+            if not path.is_file():
+                print(f"missing external template file: {path}", file=sys.stderr)
+                return 1
+            observed = sha256(path)
+            if observed != expected:
+                print(
+                    f"external template changed: {name} "
+                    f"expected={expected} observed={observed}",
+                    file=sys.stderr,
+                )
+                return 1
 
     vendored = [record for record in files if record.get("vendored")]
     for record in vendored:
@@ -54,7 +63,10 @@ def main() -> int:
             return 1
 
     print(f"template={provenance['template']}")
-    print(f"external-baseline=passed files={len(files)}")
+    if args.source is not None:
+        print(f"external-baseline=passed files={len(files)}")
+    else:
+        print("external-baseline=not-available ci-vendored-check=used")
     print(f"vendored-assets=passed files={len(vendored)}")
     return 0
 

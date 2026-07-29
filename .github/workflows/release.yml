@@ -18,10 +18,7 @@ jobs:
           python-version: "3.13"
       - run: choco install miktex --no-progress -y
       - run: uv sync
-      - run: uv run python -m unittest discover -s tests
-      # Tagged releases are the final two-volume publication boundary. Ordinary
-      # upper-volume CI builds only upper plus its attached supplements.
-      - run: uv run python tools/build_books.py --volume all
+      - run: uv run python tools/build_release.py --vendored-template-only
       - uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: true
@@ -29,3 +26,5 @@ jobs:
             output/pdf/math-for-quant-upper.pdf
             output/pdf/math-for-quant-upper-solutions.pdf
             output/pdf/math-for-quant-lower.pdf
+            output/math-for-quant-notebooks.zip
+            output/release/release-manifest.json

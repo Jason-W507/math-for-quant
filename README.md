@@ -43,6 +43,12 @@ uv run python tools/build_books.py --volume upper
 
 下册改动改用 `--volume lower`；只有共享源或正式全书发布才使用 `--volume all`。原模板目录保持不变，项目内模板来源见 `docs/template-provenance.md`。
 
+正式发布使用统一入口；它执行全部 Jupytext 源、构建三份 PDF、核对学习单元/Capstone/模板基线，并生成带校验值和许可证的发行清单：
+
+```powershell
+uv run python tools/build_release.py
+```
+
 ## 权威来源
 
 - 数学正文：`tex/`
