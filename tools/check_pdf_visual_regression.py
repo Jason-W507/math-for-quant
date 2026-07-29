@@ -52,11 +52,40 @@ def resolve_page(document: fitz.Document, selector: dict[str, object]) -> int:
         if len(matches) != 1:
             raise ValueError(f"bookmark selector must match exactly one page: {marker!r}")
         return matches[0]
-    marker = str(selector["text"])
-    matches = [index for index, page in enumerate(document) if marker in page.get_text()]
-    if len(matches) != 1:
-        raise ValueError(f"text selector must match exactly one page: {marker!r}")
-    return matches[0]
+    raise ValueError("visual page selector requires either 'page' or 'bookmark'")
+
+
+def validate_pdf_structure(
+    document: fitz.Document, publication: dict[str, object]
+) -> None:
+    expected_metadata = publication.get("metadata", {})
+    for field in ("title", "author"):
+        expected = str(expected_metadata.get(field, ""))
+        if expected and document.metadata.get(field) != expected:
+            raise ValueError(
+                f"{publication['id']}: PDF metadata {field} differs from {expected!r}"
+            )
+    if not document.get_toc():
+        raise ValueError(f"{publication['id']}: PDF has no bookmarks")
+    fonts = {
+        font
+        for page in document
+        for font in page.get_fonts(full=True)
+    }
+    if not fonts or any(font[0] <= 0 for font in fonts):
+        raise ValueError(f"{publication['id']}: PDF contains an unembedded font")
+    for page_number, page in enumerate(document):
+        for link in page.get_links():
+            destination = int(link.get("page", -1))
+            if destination >= document.page_count:
+                raise ValueError(
+                    f"{publication['id']}: link on page {page_number + 1} "
+                    "targets a page outside the PDF"
+                )
+            if link.get("kind") == fitz.LINK_URI and not link.get("uri"):
+                raise ValueError(
+                    f"{publication['id']}: empty external link on page {page_number + 1}"
+                )
 
 
 def observed_hashes(config: dict[str, object], root: Path = ROOT) -> dict[str, str]:
@@ -67,6 +96,8 @@ def observed_hashes(config: dict[str, object], root: Path = ROOT) -> dict[str, s
         if not pdf.is_file():
             raise ValueError(f"visual regression PDF is missing: {pdf}")
         with fitz.open(pdf) as document:
+            if publication.get("metadata"):
+                validate_pdf_structure(document, publication)
             for selector in publication["pages"]:
                 page_index = resolve_page(document, selector)
                 key = f"{publication['id']}:{selector['id']}"

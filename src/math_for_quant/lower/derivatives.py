@@ -195,9 +195,17 @@ def validate_novikov_exponential_moment(
     return moment
 
 
-def validate_measure_change(theta_energy: float, maximum_energy: float) -> None:
-    """Backward-compatible name for the explicit research energy budget."""
-    validate_market_price_risk_energy(theta_energy, maximum_energy)
+def terminal_singular_theta_energy(horizon: float, cutoff: float) -> float:
+    """Return half the energy of theta_t=(horizon-t)^(-1/2) up to T-cutoff."""
+    if horizon <= 0.0:
+        raise ValueError("Novikov witness requires a positive horizon")
+    if cutoff <= 0.0:
+        raise ValueError(
+            "Novikov condition failed: integral of theta_t^2 diverges at the horizon"
+        )
+    if cutoff >= horizon:
+        raise ValueError("Novikov witness cutoff must lie inside the horizon")
+    return 0.5 * math.log(horizon / cutoff)
 
 
 def validate_risk_neutral_drift(physical_drift: float, rate: float, sigma: float, theta: float) -> None:
@@ -320,7 +328,7 @@ def main(oracle_path: Path = Path("evidence/lower-ch04/oracle.json")) -> int:
     bad_surface[1]["price"] += 5.0
     failures = (
         expect_rejection(
-            lambda: validate_novikov_exponential_moment([float("inf")], [1.0]),
+            lambda: terminal_singular_theta_energy(maturity, 0.0),
             "Novikov condition",
         ),
         expect_rejection(lambda: validate_risk_neutral_drift(float(parameters["physical_drift"]), rate, sigma, -theta), "wrong risk-neutral drift"),

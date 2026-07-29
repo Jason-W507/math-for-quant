@@ -1,22 +1,100 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import subprocess
 import sys
 from pathlib import Path
 
-from contract.curriculum import load_registries, validate_prerequisites, validate_shared
-from contract.evidence import (
-    REQUIRED_EVIDENCE_FIELDS,
-    artifact_paths,
-    run_oracle,
-    validate_content,
-)
-from contract.publication import validate as validate_publications
-from contract.schema import validate_document
+try:
+    from tools.contract.curriculum import (
+        load_registries,
+        validate_prerequisites,
+        validate_shared,
+    )
+    from tools.contract.evidence import (
+        REQUIRED_EVIDENCE_FIELDS,
+        artifact_paths,
+        run_oracle,
+        validate_content,
+    )
+    from tools.contract.publication import validate as validate_publications
+    from tools.contract.schema import validate_document
+except ModuleNotFoundError:  # Direct execution puts tools/ rather than the root on sys.path.
+    from contract.curriculum import load_registries, validate_prerequisites, validate_shared
+    from contract.evidence import (
+        REQUIRED_EVIDENCE_FIELDS,
+        artifact_paths,
+        run_oracle,
+        validate_content,
+    )
+    from contract.publication import validate as validate_publications
+    from contract.schema import validate_document
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def validate_route_evidence(unit: dict[str, object]) -> str | None:
+    evidence = unit["evidence"]
+    data = evidence["dual_track_data"]
+    implementation = evidence["dual_implementation"]
+    report = evidence["route_report"]
+    paths = [
+        data["oracle_fixture"],
+        data["real_data_snapshot"],
+        data["license"],
+        data["time_protocol"],
+        implementation["transparent"],
+        implementation["library"],
+        evidence["teaching_notebook"],
+        report["source"],
+        report["expected"],
+        evidence["shared_solutions"],
+    ]
+    for relative in paths:
+        if not (ROOT / relative).is_file():
+            return f"{unit['id']}: missing route artifact {relative}"
+    snapshot = ROOT / data["real_data_snapshot"]
+    observed_hash = hashlib.sha256(snapshot.read_bytes()).hexdigest()
+    if observed_hash != data["sha256"]:
+        return f"{unit['id']}: real-data snapshot hash differs from manifest"
+    command = [sys.executable if part == "{python}" else part for part in report["command"]]
+    result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, check=False)
+    if result.returncode != 0:
+        return f"{unit['id']}: route report failed: {result.stderr.strip()}"
+    expected = (ROOT / report["expected"]).read_text(encoding="utf-8")
+    if result.stdout != expected:
+        return f"{unit['id']}: route report differs from registered expected output"
+    return None
+
+
+def selected_track_units(
+    track: dict[str, object], accepted: list[dict[str, object]]
+) -> tuple[list[dict[str, object]], str | None]:
+    identifier = str(track["id"])
+    units = [
+        unit
+        for unit in accepted
+        if unit.get("track") == identifier and unit.get("published")
+    ]
+    required_stages = {
+        "model-math",
+        "estimation-numerics",
+        "oos-frictions-capstone",
+    }
+    observed_stages = {str(unit.get("track_stage")) for unit in units}
+    if len(units) != 3 or observed_stages != required_stages:
+        return units, (
+            f"{identifier}: route requires exactly three accepted learning units "
+            "covering model-math, estimation-numerics, and oos-frictions-capstone"
+        )
+    planned = set(track.get("planned_units", []))
+    observed = {str(unit.get("id")) for unit in units}
+    if observed != planned:
+        return units, f"{identifier}: accepted learning units differ from the route plan"
+    return units, None
 
 
 def parse_args() -> argparse.Namespace:
@@ -128,27 +206,13 @@ def main() -> int:
         )
         if track is None:
             return fail(f"unknown track: {args.track}")
-        track_units = [
-            unit
-            for unit in accepted
-            if unit.get("track") == args.track and unit.get("published")
-        ]
-        required_stages = {
-            "model-math",
-            "estimation-numerics",
-            "oos-frictions-capstone",
-        }
-        observed_stages = {str(unit.get("track_stage")) for unit in track_units}
-        if len(track_units) != 3 or observed_stages != required_stages:
-            return fail(
-                f"{args.track}: route requires exactly three accepted learning units "
-                "covering model-math, estimation-numerics, and oos-frictions-capstone"
-            )
-        planned = set(track.get("planned_units", []))
-        observed = {str(unit.get("id")) for unit in track_units}
-        if observed != planned:
-            return fail(f"{args.track}: accepted learning units differ from the route plan")
+        track_units, track_error = selected_track_units(track, accepted)
+        if track_error is not None:
+            return fail(track_error)
         for unit in track_units:
+            route_error = validate_route_evidence(unit)
+            if route_error is not None:
+                return fail(route_error)
             result = run_oracle(unit["evidence"], ROOT)
             if result.returncode != 0:
                 return fail(f"{unit.get('id')}: oracle failed: {result.stderr.strip()}")

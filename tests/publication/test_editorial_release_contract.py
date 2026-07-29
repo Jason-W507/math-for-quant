@@ -9,6 +9,14 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class EditorialReleaseContractTests(unittest.TestCase):
+    def test_editorial_preamble_prevents_orphan_and_widow_lines(self) -> None:
+        source = (ROOT / "tex/common/editorial-environments.tex").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("\\clubpenalty=10000", source)
+        self.assertIn("\\widowpenalty=10000", source)
+        self.assertIn("\\displaywidowpenalty=10000", source)
+
     def test_upper_volume_is_citable_reproducible_and_honestly_described(self) -> None:
         upper_main = (ROOT / "tex" / "upper" / "main.tex").read_text(
             encoding="utf-8"

@@ -16,6 +16,7 @@ from math_for_quant.lower.derivatives import (
     render_experiment_budget,
     validate_market_price_risk_energy,
     validate_novikov_exponential_moment,
+    terminal_singular_theta_energy,
     validate_risk_neutral_drift,
     validate_surface_constraints,
 )
@@ -135,8 +136,11 @@ class LowerDerivativesTests(unittest.TestCase):
 
     def test_novikov_condition_is_not_an_arbitrary_energy_threshold(self) -> None:
         self.assertTrue(validate_novikov_exponential_moment([100.0], [1.0]) > 0.0)
+        coarse = terminal_singular_theta_energy(1.0, 1e-2)
+        fine = terminal_singular_theta_energy(1.0, 1e-6)
+        self.assertGreater(fine, coarse)
         with self.assertRaisesRegex(ValueError, "Novikov condition"):
-            validate_novikov_exponential_moment([float("inf")], [1.0])
+            terminal_singular_theta_energy(1.0, 0.0)
         with self.assertRaisesRegex(ValueError, "risk energy budget"):
             validate_market_price_risk_energy(2.0, 1.0)
 

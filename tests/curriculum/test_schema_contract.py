@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from tools.contract.schema import validate_document
+from tools.check_learning_unit import selected_track_units
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -128,6 +129,58 @@ class SchemaDrivenCurriculumTests(unittest.TestCase):
         result = self.run_contract(path)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("manifest schema validation failed", result.stderr)
+
+    def test_route_unit_schema_requires_the_v03_evidence_contract(self) -> None:
+        manifest = json.loads(
+            (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
+        )
+        route_unit = json.loads(json.dumps(manifest["units"][1]))
+        route_unit.update(
+            {
+                "id": "lower.multifactor.model",
+                "volume": "lower",
+                "track": "multifactor",
+                "track_stage": "model-math",
+            }
+        )
+        manifest["units"].append(route_unit)
+
+        error = validate_document(manifest, "manifest")
+
+        self.assertIsNotNone(error)
+        self.assertIn("dual_track_data", error)
+
+    def test_route_selection_rejects_non_route_and_cross_route_drift(self) -> None:
+        track = {
+            "id": "multifactor",
+            "planned_units": [
+                "lower.multifactor.model",
+                "lower.multifactor.estimation",
+                "lower.multifactor.research",
+            ],
+        }
+        units = [
+            {
+                "id": identifier,
+                "state": "accepted",
+                "published": True,
+                "track": "multifactor",
+                "track_stage": stage,
+            }
+            for identifier, stage in zip(
+                track["planned_units"],
+                ("model-math", "estimation-numerics", "oos-frictions-capstone"),
+            )
+        ]
+        _, error = selected_track_units(track, units)
+        self.assertIsNone(error)
+
+        units[0].pop("track")
+        _, error = selected_track_units(track, units)
+        self.assertIn("exactly three", error)
+        units[0]["track"] = "stat-arb"
+        _, error = selected_track_units(track, units)
+        self.assertIn("exactly three", error)
 
 
 if __name__ == "__main__":

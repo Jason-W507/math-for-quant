@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
 from pathlib import Path
 import sys
 
@@ -10,6 +9,11 @@ import numpy as np
 
 from math_for_quant.evidence import load_oracle_bundle
 from math_for_quant.lower.time_boundaries import validate_chronological_split, validate_fit_cutoff
+from math_for_quant.lower.trading_ledger import (
+    TradingLedger,
+    TurnoverConvention,
+    evaluate_trading_ledger,
+)
 
 
 def mse(target: np.ndarray, prediction: np.ndarray) -> float:
@@ -47,15 +51,6 @@ def fit_stump(features: np.ndarray, target: np.ndarray) -> tuple[float, float, f
     return threshold, left_value, right_value
 
 
-@dataclass(frozen=True)
-class ReturnLedger:
-    positions: np.ndarray
-    gross_return: float
-    turnover: float
-    cost: float
-    net_return: float
-
-
 def prediction_to_return_ledger(
     *,
     scores: np.ndarray,
@@ -63,18 +58,18 @@ def prediction_to_return_ledger(
     threshold: float,
     position_limit: float,
     cost_per_unit_turnover: float,
-) -> ReturnLedger:
+) -> TradingLedger:
     if scores.ndim != 1 or realized_returns.shape != scores.shape:
         raise ValueError("scores and realized returns must be aligned one-dimensional arrays")
     if position_limit <= 0.0:
         raise ValueError("position limit must be positive")
-    if cost_per_unit_turnover < 0.0:
-        raise ValueError("turnover cost must be nonnegative")
     positions = np.where(scores >= threshold, position_limit, -position_limit)
-    turnover = float(np.abs(positions).sum())
-    gross = float(positions @ realized_returns)
-    cost = cost_per_unit_turnover * turnover
-    return ReturnLedger(positions, gross, turnover, cost, gross - cost)
+    return evaluate_trading_ledger(
+        positions=positions,
+        realized_returns=realized_returns,
+        cost_per_unit_turnover=cost_per_unit_turnover,
+        turnover_convention=TurnoverConvention.CROSS_SECTIONAL_OPEN,
+    )
 
 
 def predict_stump(features: np.ndarray, stump: tuple[float, float, float]) -> np.ndarray:

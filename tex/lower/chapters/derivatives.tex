@@ -49,7 +49,12 @@
 \[
  \mathbb E\exp\!\left(\frac12\int_0^T\theta_t^2\,\mathrm dt\right)<\infty.
 \]
-在相应等价鞅测度 $\mathbb Q$ 下，$\mathrm dS_t/S_t=r\,\mathrm dt+\sigma\,\mathrm dW_t^{\mathbb Q}$，贴现资产才是鞅。不可积的密度或错误符号会破坏测度变换。代码把两种检查分开：Novikov 检查只问指数矩是否有限；另一个“市场价格风险能量预算”是教材自定义的研究风险限额，不是 Novikov 条件。确定常数 $\theta$ 在有限 $T$ 上即使能量很大，其指数矩仍有限；真正的失败负例让能量以正概率发散。
+在相应等价鞅测度 $\mathbb Q$ 下，$\mathrm dS_t/S_t=r\,\mathrm dt+\sigma\,\mathrm dW_t^{\mathbb Q}$，贴现资产才是鞅。不可积的密度或错误符号会破坏测度变换。代码把两种检查分开：Novikov 检查只问指数矩是否有限；另一个“市场价格风险能量预算”是教材自定义的研究风险限额，不是 Novikov 条件。确定常数 $\theta$ 在有限 $T$ 上即使能量很大，其指数矩仍有限。真正的失败见证取 $\theta_t=(T-t)^{-1/2}$；截到 $T-\varepsilon$ 时，
+\[
+\frac12\int_0^{T-\varepsilon}\theta_t^2\,\mathrm dt
+=\frac12\log\frac{T}{\varepsilon}\longrightarrow\infty,
+\]
+所以令 $\varepsilon\downarrow0$ 时不是超过某个任意常数，而是积分本身发散。
 
 \section{PDE、Feynman--Kac 与独立定价}
 

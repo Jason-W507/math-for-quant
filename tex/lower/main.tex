@@ -7,9 +7,12 @@
 \subtitle{下册：方向模型与研究项目}
 \author{Jason W.}
 \providecommand{\MFQReleaseDate}{2026-07-28}
-\providecommand{\MFQVersion}{0.2.0}
+\ifdefined\MFQVersion\else
+  \PackageError{math-for-quant}{MFQVersion is undefined}{Build with tools/build_books.py so VERSION is injected.}
+\fi
 \date{\MFQReleaseDate}
 \version{\MFQVersion}
+\hypersetup{pdftitle={量化研究数学：下册},pdfauthor={Jason W.},pdfsubject={方向模型与研究项目}}
 \extrainfo{按方向选择路线，用证据约束模型。}
 \cover{assets/cover.jpg}
 \setcounter{tocdepth}{2}

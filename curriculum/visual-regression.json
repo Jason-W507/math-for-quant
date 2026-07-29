@@ -6,6 +6,7 @@
     {
       "id": "upper",
       "pdf": "output/pdf/math-for-quant-upper.pdf",
+      "metadata": {"title": "量化研究数学：上册", "author": "Jason W."},
       "pages": [
         {"id": "cover", "page": 1},
         {"id": "course-map", "bookmark": "课程地图与最小证据实验"},
@@ -15,6 +16,7 @@
     {
       "id": "lower",
       "pdf": "output/pdf/math-for-quant-lower.pdf",
+      "metadata": {"title": "量化研究数学：下册", "author": "Jason W."},
       "pages": [
         {"id": "cover", "page": 1},
         {"id": "route-contract", "bookmark": "1.1 六条路线的共同结构"},
@@ -24,6 +26,7 @@
     {
       "id": "solutions",
       "pdf": "output/pdf/math-for-quant-solutions.pdf",
+      "metadata": {"title": "量化研究数学：共享答案", "author": "Jason W."},
       "pages": [
         {"id": "cover", "page": 1},
         {"id": "upper-solutions", "bookmark": "第一部分 上册答案"},

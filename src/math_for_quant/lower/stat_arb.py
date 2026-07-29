@@ -9,6 +9,10 @@ import numpy as np
 
 from math_for_quant.evidence import load_oracle_bundle
 from math_for_quant.lower.time_boundaries import validate_chronological_split, validate_fit_cutoff
+from math_for_quant.lower.trading_ledger import (
+    TurnoverConvention,
+    evaluate_trading_ledger,
+)
 
 
 def ar1_coefficient(values: np.ndarray) -> float:
@@ -108,38 +112,36 @@ class RollingLedger:
 
 def rolling_ledger(windows: list[dict[str, object]]) -> RollingLedger:
     coefficients, errors, positions = [], [], []
-    gross, cost, previous_position = 0.0, 0.0, 0.0
+    realized_returns, turnover_costs = [], []
     for window in windows:
         train = np.asarray(window["train_values"], dtype=float)
         coefficient = ar1_coefficient(train)
         forecast = coefficient * float(train[-1])
         coefficients.append(coefficient)
         errors.append(float(window["validation_value"]) - forecast)
-        if "realized_return" in window:
-            threshold = float(window.get("signal_threshold", 0.0))
-            limit = float(window.get("position_limit", 1.0))
-            if limit <= 0.0:
-                raise ValueError("position limit must be positive")
-            position = limit if forecast >= threshold else -limit
-            turnover = abs(position - previous_position)
-            unit_cost = float(window.get("cost_per_unit_turnover", 0.0))
-            if unit_cost < 0.0:
-                raise ValueError("turnover cost must be nonnegative")
-            gross += position * float(window["realized_return"])
-            cost += turnover * unit_cost
-            previous_position = position
-            positions.append(position)
-        else:
-            positions.append(0.0)
-            gross += float(window["trade_return"])
-            cost += float(window["cost"])
-    total_turnover = 0.0
-    previous = 0.0
-    for position in positions:
-        total_turnover += abs(position - previous)
-        previous = position
+        if "realized_return" not in window:
+            raise ValueError("walk-forward window requires a realized return")
+        threshold = float(window.get("signal_threshold", 0.0))
+        limit = float(window.get("position_limit", 1.0))
+        if limit <= 0.0:
+            raise ValueError("position limit must be positive")
+        positions.append(limit if forecast >= threshold else -limit)
+        realized_returns.append(float(window["realized_return"]))
+        turnover_costs.append(float(window.get("cost_per_unit_turnover", 0.0)))
+    trading = evaluate_trading_ledger(
+        positions=np.asarray(positions),
+        realized_returns=np.asarray(realized_returns),
+        cost_per_unit_turnover=np.asarray(turnover_costs),
+        turnover_convention=TurnoverConvention.SEQUENTIAL_REBALANCE,
+    )
     return RollingLedger(
-        coefficients, errors, positions, gross, total_turnover, cost, gross - cost
+        coefficients,
+        errors,
+        trading.positions.tolist(),
+        trading.gross_return,
+        trading.turnover,
+        trading.cost,
+        trading.net_return,
     )
 
 

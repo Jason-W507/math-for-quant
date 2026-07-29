@@ -18,6 +18,8 @@ FATAL_LOG_MARKERS = (
     "LaTeX Error:",
     "There were undefined references",
     "Missing character:",
+    "Too many unprocessed floats",
+    "Float too large for page",
 )
 MAX_OVERFULL_POINTS = 2.0
 
