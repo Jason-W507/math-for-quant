@@ -2,13 +2,18 @@ from __future__ import annotations
 
 import json
 import unittest
+import zipfile
 from pathlib import Path
 
 from tools.build_release import (
+    ReleaseAsset,
+    build_notebook_archive,
     canonical_notebooks,
     capstone_units,
     curriculum_counts,
+    registered_data_assets,
     release_asset_records,
+    release_tag_error,
 )
 from tools.contract.schema import validate_document
 
@@ -33,17 +38,72 @@ class FullReleaseContractTests(unittest.TestCase):
         fixture.parent.mkdir(parents=True, exist_ok=True)
         fixture.write_text("release-evidence\n", encoding="utf-8")
         records = release_asset_records(
-            ROOT, [(fixture, "test", "MIT", "repository")]
+            ROOT,
+            [
+                ReleaseAsset(
+                    path=fixture,
+                    kind="test",
+                    license_id="MIT",
+                    license_files=("LICENSE",),
+                    source="repository",
+                    version="0.2.0",
+                )
+            ],
         )
         self.assertEqual(len(records), 1)
         record = records[0]
         self.assertEqual(record["path"], fixture.relative_to(ROOT).as_posix())
         self.assertEqual(record["kind"], "test")
         self.assertEqual(record["license_id"], "MIT")
+        self.assertEqual(record["license_files"], ["LICENSE"])
         self.assertEqual(record["version"], "0.2.0")
         self.assertEqual(record["source"], "repository")
         self.assertEqual(len(record["sha256"]), 64)
         self.assertGreater(record["bytes"], 0)
+
+    def test_registered_data_assets_cover_every_payload(self) -> None:
+        assets = registered_data_assets(ROOT)
+        self.assertEqual(len(assets), 25)
+        self.assertTrue(all(asset.license_id == "CC0-1.0" for asset in assets))
+
+    def test_release_tag_must_match_version(self) -> None:
+        self.assertIsNone(release_tag_error(None, "0.2.0"))
+        self.assertIsNone(release_tag_error("v0.2.0", "0.2.0"))
+        self.assertEqual(
+            release_tag_error("v0.3.0", "0.2.0"),
+            "release tag 'v0.3.0' does not match VERSION 'v0.2.0'",
+        )
+
+    def test_notebook_archive_carries_both_licenses_and_policy(self) -> None:
+        test_root = ROOT / "build" / "test-release" / "archive-root"
+        output = test_root / "output" / "notebooks" / "test-release.ipynb"
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text("{}\n", encoding="utf-8")
+        (test_root / "docs").mkdir(parents=True, exist_ok=True)
+        (test_root / "LICENSE").write_text("MIT License\n", encoding="utf-8")
+        (test_root / "LICENSE-CONTENT.md").write_text(
+            "CC BY-NC-SA 4.0\n", encoding="utf-8"
+        )
+        (test_root / "docs" / "release-license-policy.md").write_text(
+            "license map\n", encoding="utf-8"
+        )
+        archive = ROOT / "build" / "test-release" / "notebooks.zip"
+        build_notebook_archive(
+            [(test_root / "canonical.py", output)],
+            315532800,
+            root=test_root,
+            archive_path=archive,
+        )
+        with zipfile.ZipFile(archive) as package:
+            self.assertEqual(
+                set(package.namelist()),
+                {
+                    "LICENSE",
+                    "LICENSE-CONTENT.md",
+                    "docs/release-license-policy.md",
+                    "notebooks/test-release.ipynb",
+                },
+            )
 
     def test_curriculum_counts_are_derived_from_the_manifest(self) -> None:
         manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
@@ -78,6 +138,7 @@ class FullReleaseContractTests(unittest.TestCase):
                     "path": "artifact.txt",
                     "kind": "test",
                     "license_id": "MIT",
+                    "license_files": ["LICENSE"],
                     "version": "0.2.0",
                     "source": "repository",
                     "bytes": 1,

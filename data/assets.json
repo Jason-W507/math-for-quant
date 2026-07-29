@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "id": "teaching-fixtures",
+      "paths": [
+        "data/fixtures/ch01.json",
+        "data/fixtures/ch02.json",
+        "data/fixtures/ch03.json",
+        "data/fixtures/ch04.json",
+        "data/fixtures/ch05.json",
+        "data/fixtures/ch06.json",
+        "data/fixtures/ch07.json",
+        "data/fixtures/ch08.json",
+        "data/fixtures/ch09.json",
+        "data/fixtures/ch10.json",
+        "data/fixtures/ch11.json",
+        "data/fixtures/ch12.json",
+        "data/fixtures/ch13.json",
+        "data/fixtures/ch14.json",
+        "data/fixtures/ch15.json",
+        "data/fixtures/ch16.json",
+        "data/fixtures/ch17.json",
+        "data/fixtures/foundation.json",
+        "data/fixtures/lower-ch01.json",
+        "data/fixtures/lower-ch02.json",
+        "data/fixtures/lower-ch03.json",
+        "data/fixtures/lower-ch04.json",
+        "data/fixtures/lower-ch05.json",
+        "data/fixtures/lower-ch06.json"
+      ],
+      "kind": "synthetic-data",
+      "source": "original synthetic teaching fixtures",
+      "version": "fixture-set-0.2.0",
+      "license_id": "CC0-1.0",
+      "license_file": "data/README.md",
+      "required_marker": "SPDX-License-Identifier: CC0-1.0"
+    },
+    {
+      "id": "chapter-17-research-rows",
+      "paths": ["data/ch17/research_rows.csv"],
+      "kind": "synthetic-data",
+      "source": "original synthetic Chapter 17 research rows",
+      "version": "ch17-synthetic-v1",
+      "license_id": "CC0-1.0",
+      "license_file": "data/ch17/README.md",
+      "required_marker": "SPDX-License-Identifier: CC0-1.0"
+    }
+  ]
+}

@@ -81,7 +81,15 @@ class SchemaDrivenCurriculumTests(unittest.TestCase):
         self.assertIn("volumes=2 upper_chapters=17 tracks=1", result.stdout)
 
     def test_all_public_json_documents_have_declared_schemas(self) -> None:
-        for name in ("manifest", "notation", "glossary", "oracle", "licenses"):
+        for name in (
+            "manifest",
+            "notation",
+            "glossary",
+            "oracle",
+            "licenses",
+            "data-assets",
+            "release-manifest",
+        ):
             with self.subTest(name=name):
                 self.assertTrue((ROOT / "schemas" / f"{name}.schema.json").is_file())
 

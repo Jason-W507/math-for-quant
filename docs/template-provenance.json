@@ -6,6 +6,8 @@
     {
       "source": "elegantbook.cls",
       "sha256": "D2CDB802B3DE46B1D659D1A8EB36979AECD761402D3E95296936F433F97549EB",
+      "vendored": "vendor/elegantbook/elegantbook.cls",
+      "vendored_sha256": "E9A44D80FC7E1DECD5AC3F6A80C47D217C2F881192E380773FC08D5A82963FCC",
       "note": "Baseline before the documented local compatibility patch."
     },
     {

@@ -225,7 +225,7 @@ class ContractTests(LearningUnitCase):
             result.stdout,
             "template=ElegantBook-4.7\n"
             "external-baseline=passed files=3\n"
-            "vendored-assets=passed files=2\n",
+            "vendored-assets=passed files=3\n",
         )
         self.assertEqual(result.stderr, "")
 

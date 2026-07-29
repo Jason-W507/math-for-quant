@@ -3,9 +3,12 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
+import zipfile
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,6 +19,16 @@ except ModuleNotFoundError:  # Imported as tools.build_release by tests.
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+@dataclass(frozen=True)
+class ReleaseAsset:
+    path: Path
+    kind: str
+    license_id: str
+    license_files: tuple[str, ...]
+    source: str
+    version: str
 
 
 def canonical_notebooks(root: Path = ROOT) -> list[tuple[Path, Path]]:
@@ -43,27 +56,107 @@ def curriculum_counts(manifest: dict[str, object]) -> dict[str, int]:
 
 
 def release_asset_records(
-    root: Path, assets: list[tuple[Path, str, str, str]]
+    root: Path, assets: list[ReleaseAsset]
 ) -> list[dict[str, object]]:
-    version = (root / "VERSION").read_text(encoding="utf-8").strip()
     records: list[dict[str, object]] = []
-    for path, kind, license_id, source in assets:
-        resolved = path.resolve()
+    for asset in assets:
+        resolved = asset.path.resolve()
         if not resolved.is_file() or not resolved.is_relative_to(root.resolve()):
-            raise ValueError(f"release asset is missing or outside repository: {path}")
+            raise ValueError(
+                f"release asset is missing or outside repository: {asset.path}"
+            )
+        for license_file in asset.license_files:
+            if not (root / license_file).is_file():
+                raise ValueError(
+                    f"release asset license file is missing: {license_file}"
+                )
         content = resolved.read_bytes()
         records.append(
             {
                 "path": resolved.relative_to(root.resolve()).as_posix(),
-                "kind": kind,
-                "license_id": license_id,
-                "version": version,
-                "source": source,
+                "kind": asset.kind,
+                "license_id": asset.license_id,
+                "license_files": list(asset.license_files),
+                "version": asset.version,
+                "source": asset.source,
                 "bytes": len(content),
                 "sha256": hashlib.sha256(content).hexdigest(),
             }
         )
     return records
+
+
+def registered_data_assets(root: Path = ROOT) -> list[ReleaseAsset]:
+    registry_path = root / "data" / "assets.json"
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    schema_error = validate_document(registry, "data-assets")
+    if schema_error is not None:
+        raise ValueError(schema_error)
+
+    registered: set[str] = set()
+    license_files = {str(item["license_file"]) for item in registry["assets"]}
+    assets: list[ReleaseAsset] = []
+    for group in registry["assets"]:
+        license_file = str(group["license_file"])
+        license_text = (root / license_file).read_text(encoding="utf-8")
+        if str(group["required_marker"]) not in license_text:
+            raise ValueError(
+                f"data license marker missing for {group['id']}: {license_file}"
+            )
+        for relative in group["paths"]:
+            relative = str(relative)
+            if relative in registered:
+                raise ValueError(f"data asset is registered more than once: {relative}")
+            registered.add(relative)
+            assets.append(
+                ReleaseAsset(
+                    path=root / relative,
+                    kind=str(group["kind"]),
+                    license_id=str(group["license_id"]),
+                    license_files=(license_file,),
+                    source=str(group["source"]),
+                    version=str(group["version"]),
+                )
+            )
+
+    excluded = {"data/assets.json", *license_files}
+    observed = {
+        path.relative_to(root).as_posix()
+        for path in (root / "data").rglob("*")
+        if path.is_file() and path.relative_to(root).as_posix() not in excluded
+    }
+    if registered != observed:
+        missing = sorted(observed - registered)
+        stale = sorted(registered - observed)
+        raise ValueError(
+            f"data asset registry mismatch: unregistered={missing} missing={stale}"
+        )
+    return assets
+
+
+def release_tag_error(tag: str | None, version: str) -> str | None:
+    if tag is None:
+        return None
+    expected = f"v{version}"
+    if tag != expected:
+        return f"release tag {tag!r} does not match VERSION {expected!r}"
+    return None
+
+
+def ensure_clean_worktree() -> None:
+    result = subprocess.run(
+        ["git", "status", "--porcelain", "--untracked-files=normal"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError("release could not inspect the Git worktree")
+    if result.stdout.strip():
+        raise RuntimeError(
+            "release requires a clean Git worktree; commit or remove source changes"
+        )
 
 
 def run(command: list[str]) -> None:
@@ -121,68 +214,133 @@ def git_value(format_string: str) -> str:
     return result.stdout.strip()
 
 
+def build_notebook_archive(
+    notebooks: list[tuple[Path, Path]],
+    source_date_epoch: int,
+    root: Path = ROOT,
+    archive_path: Path | None = None,
+) -> Path:
+    archive_path = archive_path or root / "output" / "math-for-quant-notebooks.zip"
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.fromtimestamp(
+        max(source_date_epoch, 315532800), tz=timezone.utc
+    ).timetuple()[:6]
+    entries = [
+        (
+            output,
+            "notebooks/"
+            + output.relative_to(root / "output" / "notebooks").as_posix(),
+        )
+        for _, output in notebooks
+    ] + [
+        (root / "LICENSE", "LICENSE"),
+        (root / "LICENSE-CONTENT.md", "LICENSE-CONTENT.md"),
+        (
+            root / "docs" / "release-license-policy.md",
+            "docs/release-license-policy.md",
+        ),
+    ]
+    with zipfile.ZipFile(
+        archive_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9
+    ) as archive:
+        for source, member in sorted(entries, key=lambda item: item[1]):
+            if not source.is_file():
+                raise ValueError(f"notebook archive member is missing: {source}")
+            info = zipfile.ZipInfo(member, date_time=timestamp)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = 0o100644 << 16
+            archive.writestr(info, source.read_bytes())
+    return archive_path
+
+
 def write_release_manifest(
     notebooks: list[tuple[Path, Path]],
     capstones: list[str],
     counts: dict[str, int],
     curriculum: dict[str, object],
 ) -> Path:
+    release_version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     publications = list(curriculum["volumes"]) + list(curriculum["supplements"])
     pdfs = [ROOT / publication["pdf"] for publication in publications]
-    data_files = sorted(path for path in (ROOT / "data").rglob("*") if path.is_file())
-    archive_base = ROOT / "output" / "math-for-quant-notebooks"
-    archive_path = Path(shutil.make_archive(str(archive_base), "zip", ROOT / "output" / "notebooks"))
+    source_date_epoch = int(git_value("%ct"))
+    archive_path = build_notebook_archive(notebooks, source_date_epoch)
     assets = (
         [
-            (path, "pdf", "CC-BY-NC-SA-4.0", "generated from repository TeX sources")
+            ReleaseAsset(
+                path=path,
+                kind="pdf",
+                license_id="CC-BY-NC-SA-4.0",
+                license_files=("LICENSE-CONTENT.md",),
+                source="generated from repository TeX sources",
+                version=release_version,
+            )
             for path in pdfs
         ]
         + [
-            (
-                output,
-                "executed-notebook",
-                "MIT-and-CC-BY-NC-SA-4.0",
-                source.relative_to(ROOT).as_posix(),
+            ReleaseAsset(
+                path=output,
+                kind="executed-notebook",
+                license_id="MIT-and-CC-BY-NC-SA-4.0",
+                license_files=("LICENSE", "LICENSE-CONTENT.md"),
+                source=source.relative_to(ROOT).as_posix(),
+                version=release_version,
             )
             for source, output in notebooks
         ]
         + [
-            (
-                archive_path,
-                "notebook-archive",
-                "MIT-and-CC-BY-NC-SA-4.0",
-                "output/notebooks",
+            ReleaseAsset(
+                path=archive_path,
+                kind="notebook-archive",
+                license_id="MIT-and-CC-BY-NC-SA-4.0",
+                license_files=(
+                    "LICENSE",
+                    "LICENSE-CONTENT.md",
+                    "docs/release-license-policy.md",
+                ),
+                source="output/notebooks",
+                version=release_version,
             )
         ]
+        + registered_data_assets(ROOT)
         + [
-            (
-                path,
-                "synthetic-data",
-                "CC0-1.0",
-                "original synthetic repository fixture",
-            )
-            for path in data_files
-        ]
-        + [
-            (
-                ROOT / "vendor/elegantbook/elegantbook.cls",
-                "template",
-                "LPPL-1.3c",
-                "ElegantBook 4.7 with documented local compatibility patch",
+            ReleaseAsset(
+                path=ROOT / "vendor/elegantbook/elegantbook.cls",
+                kind="template",
+                license_id="LPPL-1.3c",
+                license_files=("vendor/elegantbook/LPPL-License.txt",),
+                source="ElegantBook 4.7 with documented local compatibility patch",
+                version="ElegantBook-4.7",
             ),
-            (
-                ROOT / "assets/cover.jpg",
-                "template-asset",
-                "LPPL-1.3c",
-                "ElegantBook 4.7 template asset",
+            ReleaseAsset(
+                path=ROOT / "assets/cover.jpg",
+                kind="template-asset",
+                license_id="LPPL-1.3c",
+                license_files=("vendor/elegantbook/LPPL-License.txt",),
+                source="ElegantBook 4.7 template asset",
+                version="ElegantBook-4.7",
+            ),
+            ReleaseAsset(
+                path=ROOT / "data/assets.json",
+                kind="data-registry",
+                license_id="CC0-1.0",
+                license_files=("data/README.md",),
+                source="repository data provenance registry",
+                version=release_version,
+            ),
+            ReleaseAsset(
+                path=ROOT / "docs/release-license-policy.md",
+                kind="license-policy",
+                license_id="CC-BY-NC-SA-4.0",
+                license_files=("LICENSE-CONTENT.md",),
+                source="repository release policy",
+                version=release_version,
             ),
         ]
     )
     records = release_asset_records(ROOT, assets)
-    source_date_epoch = int(git_value("%ct"))
     manifest = {
         "schema_version": 1,
-        "version": (ROOT / "VERSION").read_text(encoding="utf-8").strip(),
+        "version": release_version,
         "git_commit": git_value("%H"),
         "source_date_epoch": source_date_epoch,
         "generated_at_utc": datetime.fromtimestamp(
@@ -223,8 +381,13 @@ def main() -> int:
         raise SystemExit(f"release requires 24 canonical notebooks, observed {len(notebooks)}")
     if len(capstones) != 7:
         raise SystemExit(f"release requires seven Capstones, observed {len(capstones)}")
-    clean_generated_outputs(manifest)
     try:
+        version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        tag_error = release_tag_error(os.environ.get("MFQ_RELEASE_TAG"), version)
+        if tag_error is not None:
+            raise ValueError(tag_error)
+        ensure_clean_worktree()
+        clean_generated_outputs(manifest)
         if not args.skip_tests:
             run([sys.executable, "-m", "unittest", "discover", "-s", "tests"])
         run([sys.executable, "tools/render_shared_registries.py", "--check"])

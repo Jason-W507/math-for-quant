@@ -55,7 +55,8 @@ def main() -> int:
     vendored = [record for record in files if record.get("vendored")]
     for record in vendored:
         path = ROOT / record["vendored"]
-        if not path.is_file() or sha256(path) != record["sha256"]:
+        expected = record.get("vendored_sha256", record["sha256"])
+        if not path.is_file() or sha256(path) != expected:
             print(
                 f"vendored asset does not match its source: {record['vendored']}",
                 file=sys.stderr,
