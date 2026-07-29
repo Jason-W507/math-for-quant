@@ -534,6 +534,29 @@
         "solutions": "tex/lower/chapters/portfolio-risk-solutions.tex",
         "capstone_connection": "tex/lower/chapters/portfolio-risk.tex"
       }
+    },
+    {
+      "id": "lower.ch06",
+      "title": "高频、微观结构与执行：从订单流到事件时间研究",
+      "volume": "lower",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
+      "evidence": {
+        "notation_symbols": ["N_t", "\\lambda(t\\mid\\mathcal F_{t^-})", "V_t(x)"],
+        "glossary_terms": ["条件强度", "Hawkes 过程", "价格时间优先", "临时冲击", "实现差额"],
+        "notation_and_assumptions": "tex/lower/chapters/microstructure.tex",
+        "core_derivation": "tex/lower/chapters/microstructure.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/ch06_microstructure.py",
+          "oracle": "evidence/lower-ch06/oracle.json",
+          "command": ["{python}", "notebooks/lower/ch06_microstructure.py", "evidence/lower-ch06/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/microstructure-questions.tex",
+        "hints": "tex/lower/chapters/microstructure-hints.tex",
+        "solutions": "tex/lower/chapters/microstructure-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/microstructure.tex"
+      }
     }
   ],
   "reading_routes": [

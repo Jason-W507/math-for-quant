@@ -359,6 +359,10 @@
       "en": "reproducible research package",
       "definition": "包含版本化输入、环境、命令、独立 oracle、失败协议与限制报告，使陌生审计者能从干净位置重建声明证据的研究交付物。"
     },
+    {"zh": "条件强度", "en": "conditional intensity", "definition": "给定事件发生前信息时，点过程在局部时间区间发生新事件的瞬时速率。"},
+    {"zh": "Hawkes 过程", "en": "Hawkes process", "definition": "历史事件通过衰减核提高未来条件强度的自激点过程；平稳版本需要满足分枝比条件。"},
+    {"zh": "价格时间优先", "en": "price-time priority", "definition": "先按更优价格、再按同价位到达顺序决定订单成交优先级的撮合规则。"},
+    {"zh": "临时冲击", "en": "temporary market impact", "definition": "订单执行期间由流动性消耗产生、在模型中不会永久保留于价格的成本分量。"},
     {"zh": "协方差矩阵", "en": "covariance matrix", "definition": "由资产两两协方差组成的对称半正定矩阵；估计时必须声明时间对齐、样本窗口和缺失值协议。"},
     {"zh": "因子风险模型", "en": "factor risk model", "definition": "用因子暴露、因子协方差与特异方差分解资产协方差结构的模型。"},
     {"zh": "风险价值", "en": "Value at Risk", "definition": "损失分布在给定置信水平下的分位数阈值，不单独描述阈值以外损失大小。"},

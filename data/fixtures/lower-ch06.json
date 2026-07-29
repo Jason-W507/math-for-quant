@@ -1,0 +1,12 @@
+{
+  "interarrivals": [0.5, 1.0, 1.5, 1.0],
+  "events": [
+    {"type": "add", "order_id": "b1", "side": "buy", "price": 100.0, "quantity": 5},
+    {"type": "add", "order_id": "b2", "side": "buy", "price": 100.0, "quantity": 4},
+    {"type": "add", "order_id": "a1", "side": "sell", "price": 101.0, "quantity": 6},
+    {"type": "market", "side": "sell", "quantity": 7},
+    {"type": "cancel", "order_id": "b2", "quantity": 1},
+    {"type": "market", "side": "buy", "quantity": 4}
+  ],
+  "expected_fill_ids": ["b1", "b2", "a1"]
+}
