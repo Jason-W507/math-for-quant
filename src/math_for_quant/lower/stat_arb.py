@@ -10,6 +10,7 @@ import numpy as np
 from math_for_quant.evidence import load_oracle_bundle
 from math_for_quant.lower.time_boundaries import validate_chronological_split, validate_fit_cutoff
 from math_for_quant.lower.trading_ledger import (
+    TradingLedger,
     TurnoverConvention,
     evaluate_trading_ledger,
 )
@@ -97,17 +98,13 @@ def validate_online_state(observed_through: str, decision_date: str) -> None:
 class RollingLedger:
     coefficients: list[float]
     errors: list[float]
-    positions: list[float]
-    gross_return: float
-    turnover: float
-    cost: float
-    net_return: float
+    trading: TradingLedger
 
     def __iter__(self):
         yield self.coefficients
         yield self.errors
-        yield self.gross_return
-        yield self.net_return
+        yield self.trading.gross_return
+        yield self.trading.net_return
 
 
 def rolling_ledger(windows: list[dict[str, object]]) -> RollingLedger:
@@ -134,15 +131,7 @@ def rolling_ledger(windows: list[dict[str, object]]) -> RollingLedger:
         cost_per_unit_turnover=np.asarray(turnover_costs),
         turnover_convention=TurnoverConvention.SEQUENTIAL_REBALANCE,
     )
-    return RollingLedger(
-        coefficients,
-        errors,
-        trading.positions.tolist(),
-        trading.gross_return,
-        trading.turnover,
-        trading.cost,
-        trading.net_return,
-    )
+    return RollingLedger(coefficients, errors, trading)
 
 
 def main(oracle_path: Path = Path("evidence/lower-ch02/oracle.json")) -> int:

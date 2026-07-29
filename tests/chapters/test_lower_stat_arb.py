@@ -116,11 +116,11 @@ class LowerStatArbTests(unittest.TestCase):
             },
         ]
         ledger = rolling_ledger(windows)
-        self.assertEqual(ledger.positions, [1.0, -1.0])
-        self.assertAlmostEqual(ledger.gross_return, 0.03)
-        self.assertAlmostEqual(ledger.turnover, 3.0)
-        self.assertAlmostEqual(ledger.cost, 0.009)
-        self.assertAlmostEqual(ledger.net_return, 0.021)
+        np.testing.assert_allclose(ledger.trading.positions, np.array([1.0, -1.0]))
+        self.assertAlmostEqual(ledger.trading.gross_return, 0.03)
+        self.assertAlmostEqual(ledger.trading.turnover, 3.0)
+        self.assertAlmostEqual(ledger.trading.cost, 0.009)
+        self.assertAlmostEqual(ledger.trading.net_return, 0.021)
 
 
 if __name__ == "__main__":
