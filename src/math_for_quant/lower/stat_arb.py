@@ -43,17 +43,21 @@ def kalman_update(prior_mean: float, prior_variance: float, observation: float, 
     return gain, prior_mean + gain * (observation - prior_mean), (1.0 - gain) * prior_variance
 
 
-def detect_change(values: np.ndarray, true_change: int, minimum_segment: int, threshold: float) -> tuple[int, int, int, int]:
+def detect_alarms(values: np.ndarray, minimum_segment: int, threshold: float) -> list[int]:
     baseline = float(values[:minimum_segment].mean())
     candidates = list(range(minimum_segment, values.size))
     scores = [abs(float(values[index]) - baseline) for index in candidates]
-    alarms = [index for index, score in zip(candidates, scores) if score >= threshold]
+    return [index for index, score in zip(candidates, scores) if score >= threshold]
+
+
+def evaluate_alarms(alarms: list[int], true_change: int) -> tuple[int, int, int, int, int]:
+    first_alarm = alarms[0] if alarms else -1
     false_alarms = sum(i < true_change for i in alarms)
     valid = [i for i in alarms if i >= true_change]
     if not valid:
-        return -1, -1, false_alarms, 1
+        return first_alarm, -1, -1, false_alarms, 1
     detected = valid[0]
-    return detected, detected - true_change, false_alarms, 0
+    return first_alarm, detected, detected - true_change, false_alarms, 0
 
 
 def validate_walk_forward(windows: list[dict[str, str]]) -> None:
@@ -111,9 +115,10 @@ def main(oracle_path: Path = Path("evidence/lower-ch02/oracle.json")) -> int:
 
     change_values = np.asarray(oracle["change_values"], dtype=float)
     true_change = int(oracle["true_change"])
-    change = detect_change(change_values, true_change, int(oracle["minimum_segment"]), float(oracle["change_threshold"]))
-    low = detect_change(change_values, true_change, int(oracle["minimum_segment"]), float(oracle["sensitivity_thresholds"][0]))
-    high = detect_change(change_values, true_change, int(oracle["minimum_segment"]), float(oracle["sensitivity_thresholds"][1]))
+    minimum_segment = int(oracle["minimum_segment"])
+    change = evaluate_alarms(detect_alarms(change_values, minimum_segment, float(oracle["change_threshold"])), true_change)
+    low = evaluate_alarms(detect_alarms(change_values, minimum_segment, float(oracle["sensitivity_thresholds"][0])), true_change)
+    high = evaluate_alarms(detect_alarms(change_values, minimum_segment, float(oracle["sensitivity_thresholds"][1])), true_change)
 
     x = np.asarray(oracle["cointegration_x"], dtype=float)
     y = np.asarray(oracle["cointegration_y"], dtype=float)
@@ -140,8 +145,8 @@ def main(oracle_path: Path = Path("evidence/lower-ch02/oracle.json")) -> int:
         "ar_phi": ar_phi, "misspec_acf": misspec_acf,
         "ma_forecast": ma_forecast, "var_first": float(var_forecast[0]), "var_second": float(var_forecast[1]), "garch_variance": garch_variance,
         "kalman_gain": kalman[0], "kalman_mean": kalman[1], "kalman_variance": kalman[2],
-        "change_index": change[0], "detection_delay": change[1], "false_alarms": change[2], "missed": change[3],
-        "low_false_alarms": low[2], "high_missed": high[3],
+        "change_index": change[1], "detection_delay": change[2], "false_alarms": change[3], "missed": change[4],
+        "low_false_alarms": low[3], "high_missed": high[4],
         "spread_ar": spread_ar, "pseudo_rejected": pseudo_rejected,
         "rolling_windows": len(coefficients), "rolling_error_max": max(abs(value) for value in errors),
         "gross": gross, "net": net,
@@ -159,7 +164,7 @@ def main(oracle_path: Path = Path("evidence/lower-ch02/oracle.json")) -> int:
         f"ar_phi={ar_phi:.6f} misspec_acf={misspec_acf:.6f} "
         f"dynamic=({ma_forecast:.6f},{var_forecast[0]:.6f},{var_forecast[1]:.6f},{garch_variance:.6f}) "
         f"kalman=({kalman[0]:.6f},{kalman[1]:.6f},{kalman[2]:.6f}) "
-        f"change=({change[0]},{change[1]},{change[2]},{change[3]}) sensitivity=({low[2]},{high[3]}) "
+        f"change=({change[1]},{change[2]},{change[3]},{change[4]}) sensitivity=({low[0]},{low[3]},{high[4]}) "
         f"cointegration=({spread_ar:.6f},{pseudo_rejected}) rolling=({len(coefficients)},{max(abs(value) for value in errors):.6f}) "
         f"returns=({gross:.6f},{net:.6f}) failures=({failures[0]},{failures[1]},{failures[2]})"
     )
