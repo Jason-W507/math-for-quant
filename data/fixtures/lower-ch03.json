@@ -1,11 +1,11 @@
 {
-  "train_target": [0.0, 1.0],
-  "train_prediction": [0.0, 1.0],
-  "target": [0.0, 0.0],
-  "baseline_prediction": [0.2, -0.2],
+  "known_dgp": "y = 0.2 * x + 0.8 * 1[x > 0]",
+  "train_features": [-2.0, -1.0, 0.0, 1.0, 2.0],
+  "validation_features": [2.5, 3.0],
+  "inference_features": [3.5, 4.0],
   "regularization_lambda": 0.01,
   "weight_norm_squared": 1.0,
-  "model_predictions": [[0.3, -0.3], [0.2, -0.2], [0.1, -0.1]],
+  "boosting_rounds": 2,
   "time_split": {"train": [0, 1, 2], "validation": [3, 4], "inference": [5, 6]},
   "preprocessor": {"fit_end": "2019-12", "train_end": "2019-12"},
   "seed": 20260729,
@@ -13,9 +13,20 @@
   "sequence_shape": [2, 3, 2],
   "sequence_mask": [[1, 1, 1], [1, 1, 0]],
   "target_offset": 1,
-  "sequence_target": [0.0, 0.0],
-  "sequence_baseline_prediction": [0.3, -0.3],
-  "sequence_model_prediction": [0.1, -0.1],
+  "representation_width": 4,
+  "sequence_train": [
+    [[-2.0, 0.0], [-1.0, 0.0], [0.0, 0.0]],
+    [[-1.0, 1.0], [0.0, 1.0], [1.0, 1.0]],
+    [[0.0, -1.0], [1.0, -1.0], [2.0, -1.0]],
+    [[1.0, 0.0], [2.0, 0.0], [3.0, 0.0]],
+    [[2.0, 1.0], [3.0, 1.0], [4.0, 1.0]],
+    [[-2.0, -1.0], [-1.0, -1.0], [0.0, -1.0]]
+  ],
+  "sequence_train_mask": [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]],
+  "sequence_inference": [
+    [[0.5, 0.0], [1.5, 0.0], [2.5, 0.0]],
+    [[-1.5, 0.5], [-0.5, 0.5], [99.0, 99.0]]
+  ],
   "reference_values": [0.0, 0.0, 0.0, 0.0],
   "monitor_values": [0.8, 0.8, 0.8, 0.8],
   "drift_threshold": 0.5,
@@ -31,6 +42,7 @@
   "bad_preprocessor": {"fit_end": "2024-12", "train_end": "2019-12"},
   "bad_sequence_shape": [2, 2, 2],
   "missing_seed": null,
-  "bad_model_report": {"train_score": 0.0, "validation_score": null, "attempts": 12, "attempt_limit": 5},
+  "bad_train_only_report": {"train_score": 0.0, "validation_score": null, "attempts": 3, "attempt_limit": 5},
+  "bad_overtuned_report": {"train_score": 0.0, "validation_score": 0.04, "attempts": 12, "attempt_limit": 5},
   "bad_explanation_claim": "causal"
 }

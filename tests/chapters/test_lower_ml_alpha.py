@@ -24,12 +24,23 @@ class LowerMlAlphaTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(
             result.stdout,
-            "oracle=passed risks=(0.000000,0.040000,0.010000) "
-            "models=(0.090000,0.040000,0.010000) sequence=(2,3,2,1,0.090000,0.010000) "
+            "oracle=passed risks=(0.425600,1.515400,0.435600) "
+            "models=(1.515400,0.205000,0.162500,2) sequence=(2,3,2,1,2.866084,0.403863) "
             "drift=(0.800000,1) calibration=(0.025000,0.160000) "
             "explanation=(0.333333,0) returns=(0.030000,0.024000) "
-            "failures=(1,1,1,1,1,1)\n",
+            "fingerprint=1ee0b9a0c428 failures=(1,1,1,1,1,1,1,1)\n",
         )
+
+    def test_failure_categories_are_independent(self) -> None:
+        result = self.run_oracle()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("failures=(1,1,1,1,1,1,1,1)", result.stdout)
+
+    def test_pipeline_fits_models_instead_of_reading_predictions(self) -> None:
+        fixture = (ROOT / "data/fixtures/lower-ch03.json").read_text(encoding="utf-8")
+        self.assertIn('"known_dgp"', fixture)
+        self.assertNotIn('"model_predictions"', fixture)
+        self.assertNotIn('"sequence_model_prediction"', fixture)
 
     def test_notebook_is_only_a_guarded_module_wrapper(self) -> None:
         source = (ROOT / "notebooks/lower/ch03_ml_alpha.py").read_text(encoding="utf-8")

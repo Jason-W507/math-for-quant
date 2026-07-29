@@ -7,6 +7,7 @@ import sys
 import numpy as np
 
 from math_for_quant.evidence import load_oracle_bundle
+from math_for_quant.lower.time_boundaries import validate_chronological_split, validate_fit_cutoff
 
 
 def ar1_coefficient(values: np.ndarray) -> float:
@@ -75,13 +76,11 @@ def validate_walk_forward(windows: list[dict[str, str]]) -> None:
 
 
 def validate_split(train: list[int], validation: list[int], trade: list[int]) -> None:
-    if not train or not validation or not trade or not (max(train) < min(validation) and max(validation) < min(trade)):
-        raise ValueError("random or overlapping time split rejected")
+    validate_chronological_split(train, validation, trade)
 
 
 def validate_scaler(fit_end: str, train_end: str) -> None:
-    if date.fromisoformat(fit_end + "-01") > date.fromisoformat(train_end + "-01"):
-        raise ValueError("scaler used observations after the training window")
+    validate_fit_cutoff(fit_end, train_end)
 
 
 def validate_online_state(observed_through: str, decision_date: str) -> None:
