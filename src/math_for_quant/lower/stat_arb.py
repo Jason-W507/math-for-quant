@@ -44,9 +44,10 @@ def kalman_update(prior_mean: float, prior_variance: float, observation: float, 
 
 
 def detect_change(values: np.ndarray, true_change: int, minimum_segment: int, threshold: float) -> tuple[int, int, int, int]:
-    candidates = list(range(minimum_segment, values.size - minimum_segment + 1))
-    scores = [abs(float(values[:i].mean() - values[i:].mean())) for i in candidates]
-    alarms = [i for i, score in zip(candidates, scores) if score >= threshold]
+    baseline = float(values[:minimum_segment].mean())
+    candidates = list(range(minimum_segment, values.size))
+    scores = [abs(float(values[index]) - baseline) for index in candidates]
+    alarms = [index for index, score in zip(candidates, scores) if score >= threshold]
     false_alarms = sum(i < true_change for i in alarms)
     valid = [i for i in alarms if i >= true_change]
     if not valid:
