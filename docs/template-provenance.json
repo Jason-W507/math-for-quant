@@ -4,6 +4,26 @@
   "external_source": "D:/Latex/Templates/ElegantBook",
   "files": [
     {
+      "source": ".gitattributes",
+      "sha256": "E0395CCE72D452510DBF2BCF5955496EB5C7197E28BCFB25C5C2675B2E7740C5"
+    },
+    {
+      "source": ".gitignore",
+      "sha256": "C9FF817DBEEA3B2A0A62A0AD17BBD4325C68644C9E45326AB2CB8DF697354386"
+    },
+    {
+      "source": "build.lua",
+      "sha256": "9CBC7F860543264BAFCCFDC406350AB2B4262A78E37A91AAA631C7491877941C"
+    },
+    {
+      "source": "elegantbook-cn.tex",
+      "sha256": "D4E1A5CB246960D905A878BAEEDFAA4E0D8A9915ECAE6ACCA412C75126499FE7"
+    },
+    {
+      "source": "elegantbook-en.tex",
+      "sha256": "25C53B5FB948166CC467416C457F4F185ECC2C9A50B6FC1947FA55DB020F163B"
+    },
+    {
       "source": "elegantbook.cls",
       "sha256": "D2CDB802B3DE46B1D659D1A8EB36979AECD761402D3E95296936F433F97549EB",
       "vendored": "vendor/elegantbook/elegantbook.cls",
@@ -11,14 +31,34 @@
       "note": "Baseline before the documented local compatibility patch."
     },
     {
+      "source": "figure/cover.jpg",
+      "vendored": "assets/cover.jpg",
+      "sha256": "0748354F5D61633F9032DAB0A4A6774CB91CF1A0FC5892CC52D73A47A4552A0B"
+    },
+    {
+      "source": "figure/logo-blue.png",
+      "sha256": "9242497DAA6F51011BB80B0CDDE13D85D88539A4B5878218B439062AE195142D"
+    },
+    {
+      "source": "image/founder.png",
+      "sha256": "57D2F4FC3176F0CFD85E7DA2B6AB93943C23C6EE7C523D3D06250D1DBBDCC52A"
+    },
+    {
+      "source": "image/scatter.jpg",
+      "sha256": "2B2D30350AA518AAA167E2F345559BBB35147531A8A61FEEDDA53A7D499095A1"
+    },
+    {
       "source": "License",
       "vendored": "vendor/elegantbook/LPPL-License.txt",
       "sha256": "5F05FCF6EF25A6C31BCCD2DF7C0C46B23107BBEB2CE5CDBA74EFB5CC357F4DBB"
     },
     {
-      "source": "figure/cover.jpg",
-      "vendored": "assets/cover.jpg",
-      "sha256": "0748354F5D61633F9032DAB0A4A6774CB91CF1A0FC5892CC52D73A47A4552A0B"
+      "source": "README.md",
+      "sha256": "1787F8F3147E2F020A66BE7462D9F19B3E15E501F2D29849FAAFCDC023E6D97C"
+    },
+    {
+      "source": "reference.bib",
+      "sha256": "0581994F7803DDD05EB73178D0A1A04B4A4205E4902978C4CAD0FDE4069D5E63"
     }
   ]
 }

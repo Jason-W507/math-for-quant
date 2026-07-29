@@ -36,6 +36,20 @@ def main() -> int:
     provenance = json.loads(PROVENANCE.read_text(encoding="utf-8"))
     files = provenance["files"]
     if args.source is not None:
+        declared = {str(record["source"]) for record in files}
+        observed = {
+            path.relative_to(args.source).as_posix()
+            for path in args.source.rglob("*")
+            if path.is_file()
+        }
+        if declared != observed:
+            missing = sorted(declared - observed)
+            extra = sorted(observed - declared)
+            print(
+                f"external template inventory changed: missing={missing} extra={extra}",
+                file=sys.stderr,
+            )
+            return 1
         for record in files:
             name = record["source"]
             expected = record["sha256"]
