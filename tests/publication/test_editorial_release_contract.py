@@ -61,8 +61,19 @@ class EditorialReleaseContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("tags:", release_workflow)
-        self.assertIn("tools/build_books.py --volume all", release_workflow)
+        self.assertIn(
+            "tools/build_release.py --vendored-template-only", release_workflow
+        )
+        self.assertIn("MFQ_RELEASE_TAG: ${{ github.ref_name }}", release_workflow)
         self.assertIn("math-for-quant-upper-solutions.pdf", release_workflow)
+
+        release_driver = (ROOT / "tools" / "build_release.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            'run([sys.executable, "tools/build_books.py", "--volume", "all"])',
+            release_driver,
+        )
 
     def test_complete_solutions_are_published_as_an_upper_supplement(self) -> None:
         upper_main = (ROOT / "tex" / "upper" / "main.tex").read_text(
