@@ -8,8 +8,10 @@ import unittest
 from pathlib import Path
 
 from math_for_quant.lower.microstructure import (
+    OrderBook,
     optimal_execution,
     poisson_mle,
+    render_execution_contract,
     replay,
     twap_schedule,
     validate_constant_intensity,
@@ -32,7 +34,7 @@ class LowerMicrostructureTests(unittest.TestCase):
             result.stdout,
             "oracle=passed point=(1.000000,-4.000000,1) "
             "book=(100.000000,1,101.000000,2,11) "
-            "execution=(2,2,2,3,2,1,12.000000,17.000000) failures=(1,1,1,1,1,1)\n",
+            "execution=(2,2,2,3,2,1,12.000000,17.000000) failures=(1,1,1,1,1,1,1)\n",
         )
 
     def test_poisson_mle_has_hand_calculated_oracle(self) -> None:
@@ -81,6 +83,35 @@ class LowerMicrostructureTests(unittest.TestCase):
             optimal_execution(6, 3, 1.0, 0.3, 7, 3)
         with self.assertRaisesRegex(ValueError, "future price"):
             validate_information_time(10.0, 11.0)
+
+    def test_rejected_market_order_is_atomic_and_crossed_limits_are_explicit(self) -> None:
+        book = OrderBook()
+        book.add("a1", "sell", 101.0, 2)
+        with self.assertRaisesRegex(ValueError, "insufficient displayed liquidity"):
+            book.market("buy", 3)
+        self.assertEqual(book.best("sell"), (101.0, 2))
+        self.assertEqual(book.traded_quantity, 0)
+        with self.assertRaisesRegex(ValueError, "crossed limit order"):
+            book.add("b1", "buy", 101.0, 1)
+        self.assertEqual(book.best("sell"), (101.0, 2))
+
+    def test_nonfinite_inputs_are_rejected(self) -> None:
+        with self.assertRaisesRegex(ValueError, "positive"):
+            poisson_mle([0.5, float("nan")])
+        book = OrderBook()
+        with self.assertRaisesRegex(ValueError, "invalid limit order"):
+            book.add("bad", "buy", float("nan"), 1)
+        with self.assertRaisesRegex(ValueError, "impact"):
+            optimal_execution(6, 3, float("nan"), 0.3, 3, 3)
+
+    def test_execution_report_contract_is_parameter_driven(self) -> None:
+        text = render_execution_contract(
+            {"hawkes_alpha": 0.2, "hawkes_beta": 0.8, "true_intensity": 3.0,
+             "inventory": 8, "steps": 4, "impact": 1.5, "inventory_risk": 0.4,
+             "max_slice": 2, "displayed_liquidity": 5, "total_latency_ms": 9.0}
+        )
+        for marker in ("0.2000", "0.8000", "3.0000", "inventory=8", "steps=4", "1.5000", "0.4000", "max_slice=2", "displayed_liquidity=5", "9.000"):
+            self.assertIn(marker, text)
 
     def test_clean_copy_reproduces_the_research_package(self) -> None:
         clean = ROOT / "build" / "test-packages" / "lower-ch06-clean"
