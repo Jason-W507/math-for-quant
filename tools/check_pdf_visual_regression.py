@@ -67,12 +67,17 @@ def validate_pdf_structure(
             )
     if not document.get_toc():
         raise ValueError(f"{publication['id']}: PDF has no bookmarks")
-    fonts = {
-        font
-        for page in document
-        for font in page.get_fonts(full=True)
-    }
-    if not fonts or any(font[0] <= 0 for font in fonts):
+    fonts = {font for page in document for font in page.get_fonts(full=True)}
+    embedded_buffers = [
+        document.extract_font(font[0])[3]
+        for font in fonts
+        if font[0] > 0
+    ]
+    if (
+        not fonts
+        or len(embedded_buffers) != len(fonts)
+        or any(not buffer for buffer in embedded_buffers)
+    ):
         raise ValueError(f"{publication['id']}: PDF contains an unembedded font")
     for page_number, page in enumerate(document):
         for link in page.get_links():
