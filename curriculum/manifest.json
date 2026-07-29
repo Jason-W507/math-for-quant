@@ -465,6 +465,29 @@
         "solutions": "tex/lower/chapters/stat-arb-solutions.tex",
         "capstone_connection": "tex/lower/chapters/stat-arb.tex"
       }
+    },
+    {
+      "id": "lower.ch03",
+      "title": "机器学习与 AI Alpha：从泛化到防泄漏 Pipeline",
+      "volume": "lower",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch05", "upper.ch06", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
+      "evidence": {
+        "notation_symbols": ["R^{\\mathrm{net}}"],
+        "glossary_terms": ["数据泄漏", "样本外", "滚动向前验证", "交易成本", "可复现研究包"],
+        "notation_and_assumptions": "tex/lower/chapters/ml-alpha.tex",
+        "core_derivation": "tex/lower/chapters/ml-alpha.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/ch03_ml_alpha.py",
+          "oracle": "evidence/lower-ch03/oracle.json",
+          "command": ["{python}", "notebooks/lower/ch03_ml_alpha.py", "evidence/lower-ch03/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/ml-alpha-questions.tex",
+        "hints": "tex/lower/chapters/ml-alpha-hints.tex",
+        "solutions": "tex/lower/chapters/ml-alpha-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/ml-alpha.tex"
+      }
     }
   ],
   "reading_routes": [
