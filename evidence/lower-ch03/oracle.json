@@ -14,8 +14,8 @@
     "steps": 3,
     "features": 2,
     "target_offset": 1,
-    "sequence_baseline_loss": 2.8660837950138545,
-    "sequence_model_loss": 0.4038630920521083,
+    "sequence_baseline_loss": 6.398978531855977,
+    "sequence_model_loss": 1.0515763004249947,
     "drift": 0.8,
     "drift_response": 1,
     "calibrated_brier": 0.025,
@@ -44,6 +44,6 @@
   ],
   "fixture": {
     "path": "data/fixtures/lower-ch03.json",
-    "sha256": "738512f77f451ee3bf1a79a31cc2113162ecc5a242ca7008e553e37b9e1bc0bb"
+    "sha256": "3f47999e9605a41882fa9252f47e8195d22c05a375a15d2cc3b8d212d6abdf03"
   }
 }

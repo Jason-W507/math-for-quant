@@ -5,6 +5,10 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
+from math_for_quant.lower.ml_alpha import build_sequence_task, validate_model_report
+
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -25,16 +29,21 @@ class LowerMlAlphaTests(unittest.TestCase):
         self.assertEqual(
             result.stdout,
             "oracle=passed risks=(0.425600,1.515400,0.435600) "
-            "models=(1.515400,0.205000,0.162500,2) sequence=(2,3,2,1,2.866084,0.403863) "
+            "models=(1.515400,0.205000,0.162500,2) sequence=(2,3,2,1,6.398979,1.051576) "
             "drift=(0.800000,1) calibration=(0.025000,0.160000) "
             "explanation=(0.333333,0) returns=(0.030000,0.024000) "
             "fingerprint=1ee0b9a0c428 failures=(1,1,1,1,1,1,1,1)\n",
         )
 
     def test_failure_categories_are_independent(self) -> None:
-        result = self.run_oracle()
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("failures=(1,1,1,1,1,1,1,1)", result.stdout)
+        paths = np.zeros((2, 4, 2))
+        mask = np.ones((2, 4))
+        with self.assertRaisesRegex(ValueError, "target must follow"):
+            build_sequence_task(paths, mask, 3, 0)
+        with self.assertRaisesRegex(ValueError, "train-only"):
+            validate_model_report(0.0, None, 3, 5)
+        with self.assertRaisesRegex(ValueError, "budget exceeded"):
+            validate_model_report(0.0, 0.1, 12, 5)
 
     def test_pipeline_fits_models_instead_of_reading_predictions(self) -> None:
         fixture = (ROOT / "data/fixtures/lower-ch03.json").read_text(encoding="utf-8")

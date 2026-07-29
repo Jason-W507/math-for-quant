@@ -123,7 +123,7 @@ def render_report(observed: dict[str, float | int], fingerprint: str) -> str:
     return f"""# 机器学习 Alpha 可复现研究包
 
 - 数据生成过程：`y = 0.2 * x + 0.8 * 1[x > 0]`，目标由代码生成而非预填预测。
-- 训练窗口：索引 0--2；验证窗口：索引 3--4；固定推理窗口：索引 5--6。
+- 训练窗口：索引 0--4；验证窗口：索引 5--6；固定推理窗口：索引 7--8。
 - 切分审计：随机切分：拒绝；全样本预处理：拒绝；未来目标对齐：拒绝；张量维度错误：拒绝。
 - 模型选择：验证集 MSE 为 baseline={observed['validation_baseline_loss']:.4f}、tree={observed['validation_tree_loss']:.4f}、boosting={observed['validation_boosting_loss']:.4f}；冻结选择 boosting。
 - 固定推理：MSE 为 baseline={observed['baseline_loss']:.4f}、tree={observed['tree_loss']:.4f}、boosting={observed['boosting_loss']:.4f}；模型指纹 `{fingerprint}`。
@@ -143,6 +143,24 @@ def validate_sequence(shape: list[int], mask: list[list[int]], target_offset: in
     if target_offset <= 0:
         raise ValueError("sequence target must follow the input window")
     return shape[0], shape[1], shape[2], target_offset
+
+
+def build_sequence_task(
+    paths: np.ndarray,
+    full_mask: np.ndarray,
+    input_steps: int,
+    target_offset: int,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    if paths.ndim != 3 or full_mask.shape != paths.shape[:2]:
+        raise ValueError("sequence paths and full mask dimensions disagree")
+    if target_offset <= 0:
+        raise ValueError("sequence target must follow the input window")
+    label_index = input_steps - 1 + target_offset
+    if input_steps <= 0 or label_index >= paths.shape[1]:
+        raise ValueError("future target lies outside the observed timeline")
+    if np.any(full_mask[:, label_index] != 1):
+        raise ValueError("future target is missing")
+    return paths[:, :input_steps], full_mask[:, :input_steps], sequence_dgp(paths[:, label_index, :])
 
 
 def validate_reproducibility(seed: int | None) -> None:
@@ -180,9 +198,12 @@ def top_feature_jaccard(left: np.ndarray, right: np.ndarray, count: int) -> floa
 def main(oracle_path: Path = Path("evidence/lower-ch03/oracle.json")) -> int:
     oracle = load_oracle_bundle(oracle_path)
     tolerance = float(oracle["absolute_tolerance"])
-    train_features = np.asarray(oracle["train_features"], dtype=float)
-    validation_features = np.asarray(oracle["validation_features"], dtype=float)
-    inference_features = np.asarray(oracle["inference_features"], dtype=float)
+    all_features = np.asarray(oracle["all_features"], dtype=float)
+    split = oracle["time_split"]
+    validate_time_split(**split)
+    train_features = all_features[np.asarray(split["train"], dtype=int)]
+    validation_features = all_features[np.asarray(split["validation"], dtype=int)]
+    inference_features = all_features[np.asarray(split["inference"], dtype=int)]
     train_target = known_dgp(train_features)
     validation_target = known_dgp(validation_features)
     target = known_dgp(inference_features)
@@ -206,17 +227,22 @@ def main(oracle_path: Path = Path("evidence/lower-ch03/oracle.json")) -> int:
     selected_model = int(np.argmin(validation_losses))
     fingerprint = model_fingerprint(stump, boosting)
 
-    validate_time_split(**oracle["time_split"])
     validate_preprocessor(**oracle["preprocessor"])
     validate_reproducibility(oracle["seed"])
     validate_model_report(**oracle["model_report"])
     sequence = validate_sequence(oracle["sequence_shape"], oracle["sequence_mask"], int(oracle["target_offset"]))
-    sequence_train = np.asarray(oracle["sequence_train"], dtype=float)
-    sequence_train_mask = np.asarray(oracle["sequence_train_mask"], dtype=float)
-    sequence_inference = np.asarray(oracle["sequence_inference"], dtype=float)
-    sequence_inference_mask = np.asarray(oracle["sequence_mask"], dtype=float)
-    sequence_train_target = sequence_dgp(masked_mean(sequence_train, sequence_train_mask))
-    sequence_target = sequence_dgp(masked_mean(sequence_inference, sequence_inference_mask))
+    sequence_train, sequence_train_mask, sequence_train_target = build_sequence_task(
+        np.asarray(oracle["sequence_train_paths"], dtype=float),
+        np.asarray(oracle["sequence_train_full_mask"], dtype=float),
+        int(oracle["input_steps"]),
+        int(oracle["target_offset"]),
+    )
+    sequence_inference, sequence_inference_mask, sequence_target = build_sequence_task(
+        np.asarray(oracle["sequence_inference_paths"], dtype=float),
+        np.asarray(oracle["sequence_inference_full_mask"], dtype=float),
+        int(oracle["input_steps"]),
+        int(oracle["target_offset"]),
+    )
     sequence_baseline = fit_linear(last_valid_step(sequence_train, sequence_train_mask), sequence_train_target)
     sequence_model = fit_random_feature_model(
         masked_mean(sequence_train, sequence_train_mask), sequence_train_target, int(oracle["seed"]), int(oracle["representation_width"])
@@ -233,7 +259,7 @@ def main(oracle_path: Path = Path("evidence/lower-ch03/oracle.json")) -> int:
     failure_cases = (
         (lambda: validate_time_split(**oracle["bad_split"]), "random or overlapping time split"),
         (lambda: validate_preprocessor(**oracle["bad_preprocessor"]), "after the training window"),
-        (lambda: validate_sequence(oracle["sequence_shape"], oracle["sequence_mask"], 0), "target must follow"),
+        (lambda: build_sequence_task(np.asarray(oracle["sequence_inference_paths"], dtype=float), np.asarray(oracle["sequence_inference_full_mask"], dtype=float), int(oracle["input_steps"]), 0), "target must follow"),
         (lambda: validate_sequence(oracle["bad_sequence_shape"], oracle["sequence_mask"], int(oracle["target_offset"])), "dimensions disagree"),
         (lambda: validate_reproducibility(oracle["missing_seed"]), "seed is not frozen"),
         (lambda: validate_model_report(**oracle["bad_train_only_report"]), "train-only"),
