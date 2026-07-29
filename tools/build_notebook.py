@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import copy
 import os
 import re
 import sys
@@ -12,6 +13,7 @@ from pathlib import Path
 os.environ.setdefault("JUPYTER_ALLOW_INSECURE_WRITES", "true")
 
 import jupytext
+import nbformat
 from nbclient import NotebookClient
 
 
@@ -70,6 +72,7 @@ def execute_with_isolated_kernel_stderr(notebook: object) -> object:
                     notebook,
                     timeout=60,
                     kernel_name="python3",
+                    allow_error_names=["SystemExit"],
                     extra_arguments=["--log-level=ERROR"],
                     resources={"metadata": {"path": str(ROOT)}},
                 ).execute(stderr=kernel_stderr)
@@ -78,6 +81,42 @@ def execute_with_isolated_kernel_stderr(notebook: object) -> object:
             raise
         _replay_unexpected_kernel_stderr(_read_kernel_stderr(kernel_stderr))
         return executed
+
+
+def execute_release_notebook(notebook: object) -> object:
+    """Execute with kernel CLI arguments hidden, then remove the bootstrap cell."""
+    execution_copy = copy.deepcopy(notebook)
+    execution_copy.cells.insert(
+        0,
+        nbformat.v4.new_code_cell(
+            "import sys\n"
+            "sys.argv = [sys.argv[0]]\n"
+        ),
+    )
+    executed = execute_with_isolated_kernel_stderr(execution_copy)
+    del executed.cells[0]
+    for cell in executed.cells:
+        cleaned_outputs = []
+        for output in cell.get("outputs", []):
+            if output.get("output_type") == "error":
+                if output.get("ename") != "SystemExit" or str(
+                    output.get("evalue")
+                ) not in {"", "0", "None"}:
+                    raise RuntimeError(
+                        "notebook execution produced an unexpected error: "
+                        f"{output.get('ename')}: {output.get('evalue')}"
+                    )
+                continue
+            if (
+                output.get("output_type") == "stream"
+                and output.get("name") == "stderr"
+                and "To exit: use 'exit', 'quit', or Ctrl-D."
+                in str(output.get("text", ""))
+            ):
+                continue
+            cleaned_outputs.append(output)
+        cell["outputs"] = cleaned_outputs
+    return executed
 
 
 def main() -> int:
@@ -108,7 +147,10 @@ def main() -> int:
         runtime.mkdir(parents=True, exist_ok=True)
         os.environ["JUPYTER_RUNTIME_DIR"] = str(runtime)
         os.environ["IPYTHONDIR"] = str(ROOT / "build" / "ipython")
-        executed = execute_with_isolated_kernel_stderr(generated_notebook)
+        executed = execute_release_notebook(generated_notebook)
+        if semantic_cells(executed) != source_cells:
+            print("notebook execution changed canonical cell semantics", file=sys.stderr)
+            return 1
         output_text = "".join(
             str(item.get("text", ""))
             for cell in executed.cells

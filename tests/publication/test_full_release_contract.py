@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import unittest
 import zipfile
 from pathlib import Path
@@ -28,6 +30,32 @@ class FullReleaseContractTests(unittest.TestCase):
         self.assertEqual(len({output for _, output in pairs}), 24)
         self.assertTrue(all(source.suffix == ".py" for source, _ in pairs))
         self.assertTrue(all(output.suffix == ".ipynb" for _, output in pairs))
+
+    def test_lower_notebook_ignores_ipykernel_connection_arguments(self) -> None:
+        output = ROOT / "build" / "notebooks" / "release-lower-ch01.ipynb"
+        result = subprocess.run(
+            [
+                sys.executable,
+                "tools/build_notebook.py",
+                "--source",
+                "notebooks/lower/ch01_multifactor.py",
+                "--output",
+                output.relative_to(ROOT).as_posix(),
+                "--execute",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("execution=passed oracle=passed", result.stdout)
+        notebook = json.loads(output.read_text(encoding="utf-8"))
+        self.assertEqual(len(notebook["cells"]), 2)
+        self.assertNotIn(
+            "sys.argv = [sys.argv[0]]",
+            "\n".join(str(cell["source"]) for cell in notebook["cells"]),
+        )
 
     def test_seven_capstones_are_derived_from_the_curriculum(self) -> None:
         manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
