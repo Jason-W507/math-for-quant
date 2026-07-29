@@ -1,7 +1,7 @@
 {
   "fixture": {
     "path": "data/fixtures/lower-ch05.json",
-    "sha256": "c10600d40f0470dd4548f1ce4df5ad4ec79f872c554df688d9798078c3757fdf"
+    "sha256": "42d7318118ede04e401511db8f5769a4f083aed364e0a31cea7e776a4e7be24a"
   },
   "ridge": 0.0075,
   "risk_aversion": 1.0,
@@ -12,7 +12,7 @@
   "confidence": 0.75,
   "absolute_tolerance": 1e-10,
   "report": "reports/lower-ch05-summary.md",
-  "provenance": "The direct covariance and one-factor decomposition are independently specified; the two-asset minimum-variance solution is derived by hand; the rebalance is enumerable on a declared grid; VaR, strict-tail ES, transaction cost, and stress loss have independent ledgers.",
+  "provenance": "The direct covariance and one-factor decomposition are independently specified; the two-asset minimum-variance solution is derived by hand; an ill-conditioned baseline, small perturbation, and ridge stabilization are compared; the rebalance is enumerable on a declared grid; quantile-integral ES, transaction cost, and stress loss have independent ledgers.",
   "published_markers": [
     "最小方差权重为 $(8/11,3/11)$",
     "双边换手为 $0.4$",
@@ -24,8 +24,9 @@
     "variance_2": 0.09,
     "minimum_weight_1": 0.7272727272727273,
     "minimum_weight_2": 0.2727272727272727,
-    "robust_weight_1": 0.7,
-    "robust_weight_2": 0.3,
+    "ill_weight": 0.5,
+    "perturbed_weight": 0.25,
+    "stabilized_weight": 0.49350649350649334,
     "rebalance_weight_1": 0.6,
     "rebalance_weight_2": 0.4,
     "turnover": 0.4,

@@ -22,6 +22,9 @@ def factor_covariance(loadings: np.ndarray, factor_variance: np.ndarray, idiosyn
         raise ValueError("factor covariance dimensions disagree")
     if loadings.shape[0] != idiosyncratic_variance.size:
         raise ValueError("idiosyncratic variance dimensions disagree")
+    validate_covariance(factor_variance)
+    if np.any(idiosyncratic_variance < 0.0):
+        raise ValueError("idiosyncratic variances must be nonnegative")
     covariance = loadings @ factor_variance @ loadings.T + np.diag(idiosyncratic_variance)
     validate_covariance(covariance)
     return covariance
@@ -77,11 +80,6 @@ def cost_aware_rebalance(
     return best, turnover, capital * cost_rate * turnover
 
 
-def reject_untradable_change(current: np.ndarray, proposed: np.ndarray, tradable: np.ndarray) -> None:
-    if np.any((tradable == 0) & (np.abs(proposed - current) > 1e-12)):
-        raise ValueError("untradable asset weight cannot change")
-
-
 def empirical_var_es(losses: np.ndarray, confidence: float) -> tuple[float, float]:
     if losses.ndim != 1 or losses.size < 4:
         raise ValueError("tail sample requires at least four losses")
@@ -90,10 +88,15 @@ def empirical_var_es(losses: np.ndarray, confidence: float) -> tuple[float, floa
     ordered = np.sort(losses)
     index = int(np.ceil(confidence * ordered.size)) - 1
     value_at_risk = float(ordered[index])
-    tail = ordered[index + 1 :]
-    if tail.size == 0:
+    tail_mass = (1.0 - confidence) * ordered.size
+    full_count = int(np.floor(tail_mass))
+    fractional = tail_mass - full_count
+    tail_sum = float(ordered[-full_count:].sum()) if full_count else 0.0
+    if fractional > 1e-15:
+        tail_sum += fractional * float(ordered[-full_count - 1])
+    if tail_mass <= 0.0:
         raise ValueError("tail sample is empty at this confidence")
-    return value_at_risk, float(tail.mean())
+    return value_at_risk, tail_sum / tail_mass
 
 
 def expect_rejection(action, diagnostic: str) -> int:
@@ -106,13 +109,24 @@ def expect_rejection(action, diagnostic: str) -> int:
     raise AssertionError(f"expected rejection containing {diagnostic!r}")
 
 
+def render_experiment_contract(observed: dict[str, float | int]) -> str:
+    return (
+        f"confidence={observed['confidence']:.4f}，ridge={observed['ridge']:.6f}，"
+        f"risk_aversion={observed['risk_aversion']:.4f}，cost_rate={observed['cost_rate']:.6f}，"
+        f"maximum_weight={observed['maximum_weight']:.4f}，grid_step={observed['grid_step']:.4f}，"
+        f"tradable_assets={int(observed['tradable_assets'])}"
+    )
+
+
 def render_report(observed: dict[str, float | int]) -> str:
+    contract = render_experiment_contract(observed)
     return f"""# 组合与风险可复现研究包
 
 - 协方差 oracle：$\\sigma_1^2={observed['variance_1']:.6f}$，$\\sigma_{{12}}={observed['covariance_12']:.6f}$，$\\sigma_2^2={observed['variance_2']:.6f}$；因子分解与直接矩阵一致。
-- 优化：二资产最小方差权重为 ({observed['minimum_weight_1']:.6f}, {observed['minimum_weight_2']:.6f})；加入协方差 ridge 后为 ({observed['robust_weight_1']:.6f}, {observed['robust_weight_2']:.6f})，说明输入扰动会改变解。
-- 再平衡台账：目标权重 ({observed['rebalance_weight_1']:.6f}, {observed['rebalance_weight_2']:.6f})，双边换手 {observed['turnover']:.6f}，线性成本 {observed['cost_cash']:.2f}；最大权重与可交易约束在搜索中生效。
-- 风险：75% 经验 VaR 为 {observed['var']:.6f}，严格尾部 ES 为 {observed['es']:.6f}，压力情景损失为 {observed['stress_loss']:.6f}。
+- 优化：二资产最小方差权重为 ({observed['minimum_weight_1']:.6f}, {observed['minimum_weight_2']:.6f})。病态基准、小扰动和 ridge 稳健处理的第一资产权重依次为 {observed['ill_weight']:.6f}、{observed['perturbed_weight']:.6f}、{observed['stabilized_weight']:.6f}。
+- 再平衡台账：目标权重 ({observed['rebalance_weight_1']:.6f}, {observed['rebalance_weight_2']:.6f})，双边换手 {observed['turnover']:.6f}，线性成本 {observed['cost_cash']:.2f}；最大权重在基准搜索中活跃，不可交易冻结由独立无可行解负例验证。
+- 风险：置信水平 {observed['confidence']:.2%} 的经验 VaR 为 {observed['var']:.6f}，积分分位数 ES 为 {observed['es']:.6f}，压力情景损失为 {observed['stress_loss']:.6f}。
+- 实验契约：{contract}。
 - 失败边界：非正定协方差、不可交易资产变仓、尾部样本不足分别拒绝；正态轻尾近似不能替代经验尾部和压力情景。
 - 限制：两资产网格不是生产优化器；线性成本忽略冲击与容量；历史 VaR/ES 不保证未来尾部稳定。
 - 复现命令：`uv run python notebooks/lower/ch05_portfolio_risk.py evidence/lower-ch05/oracle.json`。
@@ -130,7 +144,11 @@ def main(oracle_path: Path = Path("evidence/lower-ch05/oracle.json")) -> int:
     if not np.allclose(direct, modeled, atol=float(oracle["absolute_tolerance"])):
         raise SystemExit("factor covariance disagrees with direct oracle")
     minimum = minimum_variance_two_asset(direct)
-    robust = minimum_variance_two_asset(direct, float(oracle["ridge"]))
+    ill_conditioned = np.asarray(oracle["ill_conditioned_covariance"], dtype=float)
+    perturbed = np.asarray(oracle["perturbed_covariance"], dtype=float)
+    ill_weight = minimum_variance_two_asset(ill_conditioned)[0]
+    perturbed_weight = minimum_variance_two_asset(perturbed)[0]
+    stabilized_weight = minimum_variance_two_asset(perturbed, float(oracle["ridge"]))[0]
     weights, turnover, cost_cash = cost_aware_rebalance(
         np.asarray(oracle["expected_returns"], dtype=float),
         direct,
@@ -146,15 +164,26 @@ def main(oracle_path: Path = Path("evidence/lower-ch05/oracle.json")) -> int:
     stress_loss = float(np.asarray(oracle["stress_shocks"], dtype=float) @ weights * -1.0)
     failures = (
         expect_rejection(lambda: validate_covariance(np.array([[1.0, 2.0], [2.0, 1.0]])), "positive semidefinite"),
-        expect_rejection(lambda: reject_untradable_change(np.array([0.4, 0.6]), np.array([0.5, 0.5]), np.array([0, 1])), "untradable"),
+        expect_rejection(
+            lambda: cost_aware_rebalance(
+                np.array([0.08, 0.04]), direct, np.array([0.7, 0.3]), risk_aversion=1.0,
+                cost_rate=0.001, capital=100000.0, maximum_weight=0.6,
+                tradable=np.array([0, 1]), grid_step=0.1,
+            ),
+            "no feasible portfolio",
+        ),
         expect_rejection(lambda: empirical_var_es(np.array([1.0, 2.0, 3.0]), 0.95), "at least four"),
     )
     observed: dict[str, float | int] = {
         "variance_1": direct[0, 0], "covariance_12": direct[0, 1], "variance_2": direct[1, 1],
         "minimum_weight_1": minimum[0], "minimum_weight_2": minimum[1],
-        "robust_weight_1": robust[0], "robust_weight_2": robust[1],
+        "ill_weight": ill_weight, "perturbed_weight": perturbed_weight, "stabilized_weight": stabilized_weight,
         "rebalance_weight_1": weights[0], "rebalance_weight_2": weights[1],
         "turnover": turnover, "cost_cash": cost_cash, "var": var, "es": es, "stress_loss": stress_loss,
+        "confidence": float(oracle["confidence"]), "ridge": float(oracle["ridge"]),
+        "risk_aversion": float(oracle["risk_aversion"]), "cost_rate": float(oracle["cost_rate"]),
+        "maximum_weight": float(oracle["maximum_weight"]), "grid_step": float(oracle["grid_step"]),
+        "tradable_assets": int(np.asarray(oracle["tradable"], dtype=int).sum()),
         "covariance_rejected": failures[0], "untradable_rejected": failures[1], "tail_sample_rejected": failures[2],
     }
     tolerance = float(oracle["absolute_tolerance"])
@@ -171,7 +200,8 @@ def main(oracle_path: Path = Path("evidence/lower-ch05/oracle.json")) -> int:
     print(
         "oracle=passed "
         f"covariance=({direct[0,0]:.6f},{direct[0,1]:.6f},{direct[1,1]:.6f}) "
-        f"weights=({minimum[0]:.6f},{minimum[1]:.6f},{robust[0]:.6f},{robust[1]:.6f}) "
+        f"weights=({minimum[0]:.6f},{minimum[1]:.6f}) "
+        f"stability=({ill_weight:.6f},{perturbed_weight:.6f},{stabilized_weight:.6f}) "
         f"rebalance=({weights[0]:.6f},{weights[1]:.6f},{turnover:.6f},{cost_cash:.6f}) "
         f"risk=({var:.6f},{es:.6f},{stress_loss:.6f}) failures=({','.join(str(value) for value in failures)})"
     )
