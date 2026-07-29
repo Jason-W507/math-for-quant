@@ -208,13 +208,22 @@ def expect_rejection(action: Callable[[], object], diagnostic: str) -> int:
     raise AssertionError(f"expected rejection containing {diagnostic!r}")
 
 
+def render_experiment_budget(observed: dict[str, float | int]) -> str:
+    return (
+        f"二叉树 {int(observed['tree_steps'])} 步，$\\Delta t={observed['tree_dt']:.6f}$；"
+        f"Monte Carlo {int(observed['mc_samples'])} 路径，seed={int(observed['seed'])}；"
+        f"波动率曲面 {int(observed['surface_nodes'])} 个执行价/期限节点"
+    )
+
+
 def render_report(observed: dict[str, float | int]) -> str:
+    experiment_budget = render_experiment_budget(observed)
     return f"""# 衍生品定价与对冲可复现研究包
 
 - 二次变差：离散值 {observed['quadratic_variation']:.6f}；Itô 离散恒等式两侧为 {observed['ito_left']:.6f} 与 {observed['ito_right']:.6f}。
 - SDE：GBM 解析终值 {observed['gbm_exact']:.6f}，Euler 终值 {observed['gbm_euler']:.6f}；差异属于离散化误差。
-- Black--Scholes 闭式价格 {observed['closed_price']:.6f}；二叉树 {observed['tree_price']:.6f}（400 步，$\\Delta t=0.0025$）；Monte Carlo {observed['mc_price']:.6f}（100000 路径，seed=20260722），样本方差 {observed['mc_variance']:.6f}，标准误 {observed['mc_standard_error']:.6f}，95% 半宽 {observed['mc_half_width']:.6f}。
-- 波动率曲面：6 个执行价/期限节点的加权价格平方误差 {observed['surface_objective']:.12f}，最大隐波恢复误差 {observed['surface_max_sigma_error']:.12f}；执行价单调、蝶式凸性与日历单调约束均通过。
+- Black--Scholes 闭式价格 {observed['closed_price']:.6f}；二叉树 {observed['tree_price']:.6f}；Monte Carlo {observed['mc_price']:.6f}，样本方差 {observed['mc_variance']:.6f}，标准误 {observed['mc_standard_error']:.6f}，95% 半宽 {observed['mc_half_width']:.6f}。实验预算：{experiment_budget}。
+- 波动率曲面：加权价格平方误差 {observed['surface_objective']:.12f}，最大隐波恢复误差 {observed['surface_max_sigma_error']:.12f}；执行价单调、蝶式凸性与日历单调约束均通过。
 - 隐含波动率：由合成报价反解为 {observed['implied_volatility']:.6f}；套利不一致报价与病态校准必须拒绝。
 - Greeks：解析 Delta {observed['analytic_delta']:.6f}，差分 Delta {observed['fd_delta']:.6f}；解析 Vega {observed['analytic_vega']:.6f}。
 - 离散对冲：无成本复制误差 {observed['hedge_no_cost_error']:.6f}，成本后误差 {observed['hedge_after_cost_error']:.6f}，融资后成本拖累 {observed['hedge_cost_drag']:.6f}，名义成本现金流 {observed['hedge_raw_cost']:.6f}。
@@ -270,6 +279,9 @@ def main(oracle_path: Path = Path("evidence/lower-ch04/oracle.json")) -> int:
         "mc_variance": mc_variance, "mc_half_width": mc_half_width,
         "tree_agrees": tree_agrees, "mc_agrees": mc_agrees,
         "surface_objective": surface_objective, "surface_max_sigma_error": surface_max_sigma_error,
+        "tree_steps": int(oracle["tree_steps"]), "tree_dt": maturity / int(oracle["tree_steps"]),
+        "mc_samples": int(oracle["mc_samples"]), "seed": int(oracle["seed"]),
+        "surface_nodes": len(surface_nodes),
         "implied_volatility": implied, "analytic_delta": analytic_delta, "fd_delta": fd_delta, "analytic_vega": analytic_vega,
         "hedge_no_cost_error": hedge_no_cost_error, "hedge_after_cost_error": hedge_after_cost_error,
         "hedge_cost_drag": hedge_cost_drag, "hedge_raw_cost": hedge_raw_cost,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import shutil
 import sys
@@ -8,7 +9,13 @@ from pathlib import Path
 
 import numpy as np
 
-from math_for_quant.lower.derivatives import call_delta, delta_hedge, implied_volatility, validate_risk_neutral_drift
+from math_for_quant.lower.derivatives import (
+    call_delta,
+    delta_hedge,
+    implied_volatility,
+    render_experiment_budget,
+    validate_risk_neutral_drift,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -55,13 +62,35 @@ class LowerDerivativesTests(unittest.TestCase):
         if clean.exists():
             shutil.rmtree(clean)
         try:
-            for relative in ("data/fixtures/lower-ch04.json", "evidence/lower-ch04/oracle.json", "reports/lower-ch04-summary.md"):
+            for relative in (
+                "data/fixtures/lower-ch04.json",
+                "evidence/lower-ch04/oracle.json",
+                "reports/lower-ch04-summary.md",
+                "src/math_for_quant/__init__.py",
+                "src/math_for_quant/evidence.py",
+                "src/math_for_quant/lower/__init__.py",
+                "src/math_for_quant/lower/derivatives.py",
+            ):
                 destination = clean / relative
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(ROOT / relative, destination)
+            environment = os.environ.copy()
+            environment["PYTHONPATH"] = str(clean / "src")
+            loaded = subprocess.run(
+                [sys.executable, "-c", "import math_for_quant.lower.derivatives as module; print(module.__file__)"],
+                cwd=clean,
+                env=environment,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(loaded.returncode, 0, loaded.stderr)
+            module_path = Path(loaded.stdout.strip()).resolve()
+            self.assertTrue(module_path.is_relative_to(clean.resolve()), module_path)
             result = subprocess.run(
                 [sys.executable, "-m", "math_for_quant.lower.derivatives", "evidence/lower-ch04/oracle.json"],
                 cwd=clean,
+                env=environment,
                 text=True,
                 capture_output=True,
                 check=False,
@@ -71,6 +100,16 @@ class LowerDerivativesTests(unittest.TestCase):
         finally:
             if clean.exists():
                 shutil.rmtree(clean)
+
+    def test_report_budget_is_derived_from_experiment_parameters(self) -> None:
+        line = render_experiment_budget(
+            {"tree_steps": 8, "tree_dt": 0.125, "mc_samples": 16, "seed": 7, "surface_nodes": 4}
+        )
+        self.assertIn("8 步", line)
+        self.assertIn("0.125000", line)
+        self.assertIn("16 路径", line)
+        self.assertIn("seed=7", line)
+        self.assertIn("4 个执行价/期限节点", line)
 
     def test_one_step_hedge_cost_has_an_independent_hand_ledger(self) -> None:
         no_cost, after_cost, drag, raw_cost = delta_hedge(100.0, 100.0, 0.02, 0.2, 1.0, np.array([0.0]), 0.0005)
