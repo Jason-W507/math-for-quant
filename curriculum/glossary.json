@@ -359,6 +359,10 @@
       "en": "reproducible research package",
       "definition": "包含版本化输入、环境、命令、独立 oracle、失败协议与限制报告，使陌生审计者能从干净位置重建声明证据的研究交付物。"
     },
+    {"zh": "协方差矩阵", "en": "covariance matrix", "definition": "由资产两两协方差组成的对称半正定矩阵；估计时必须声明时间对齐、样本窗口和缺失值协议。"},
+    {"zh": "因子风险模型", "en": "factor risk model", "definition": "用因子暴露、因子协方差与特异方差分解资产协方差结构的模型。"},
+    {"zh": "风险价值", "en": "Value at Risk", "definition": "损失分布在给定置信水平下的分位数阈值，不单独描述阈值以外损失大小。"},
+    {"zh": "预期损失", "en": "Expected Shortfall", "definition": "给定尾部口径下超过风险阈值的平均损失；离散分布必须声明边界质量点处理。"},
     {
       "zh": "数据来源追踪",
       "en": "data provenance",

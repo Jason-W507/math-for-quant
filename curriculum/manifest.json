@@ -511,6 +511,29 @@
         "solutions": "tex/lower/chapters/derivatives-solutions.tex",
         "capstone_connection": "tex/lower/chapters/derivatives.tex"
       }
+    },
+    {
+      "id": "lower.ch05",
+      "title": "组合与风险：从协方差到成本感知组合",
+      "volume": "lower",
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch06", "upper.ch10", "upper.ch13", "upper.ch14", "upper.ch16", "upper.ch17"],
+      "evidence": {
+        "notation_symbols": ["w_i", "\\Sigma", "\\operatorname{VaR}_\\alpha(L)", "\\operatorname{ES}_\\alpha(L)"],
+        "glossary_terms": ["协方差矩阵", "因子风险模型", "风险价值", "预期损失", "换手率", "交易成本"],
+        "notation_and_assumptions": "tex/lower/chapters/portfolio-risk.tex",
+        "core_derivation": "tex/lower/chapters/portfolio-risk.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/ch05_portfolio_risk.py",
+          "oracle": "evidence/lower-ch05/oracle.json",
+          "command": ["{python}", "notebooks/lower/ch05_portfolio_risk.py", "evidence/lower-ch05/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/portfolio-risk-questions.tex",
+        "hints": "tex/lower/chapters/portfolio-risk-hints.tex",
+        "solutions": "tex/lower/chapters/portfolio-risk-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/portfolio-risk.tex"
+      }
     }
   ],
   "reading_routes": [
