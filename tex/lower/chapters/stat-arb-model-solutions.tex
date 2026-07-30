@@ -1,0 +1,10 @@
+\chapter{动态与长期关系分层答案}
+\begin{enumerate}[leftmargin=*]
+  \item 单位根下回归量的极限由 Brownian 泛函决定，普通 t 临界值不适用；确定性项和滞后还会改变分布。
+  \item 相关衡量给定窗口中的中心化共动；协整要求若干 $I(1)$ 水平序列存在 $I(0)$ 线性组合，二者互不推出。
+  \item $\kappa=-\log\phi/\Delta$，故 $t_{1/2}=\log2/\kappa$；只有 $0<\phi<1$ 才能映射为该 OU。
+  \item 从 $w_t=A_1w_{t-1}+\cdots+A_pw_{t-p}+u_t$ 减去 $w_{t-1}$，得 $\Delta w_t=\Pi w_{t-1}+\sum\Gamma_j\Delta w_{t-j}+u_t$；$\beta$ 给长期组合，$\alpha$ 给调整方向和速度。
+  \item 随 $\phi\uparrow1$，半衰期发散；$\phi\le0$ 不能用实数 $\kappa$ 的等间隔 OU 映射，$\phi\ge1$ 不均值回归。
+  \item 透明回归验证代数；库函数提供 MacKinnon 或 Johansen 非标准临界值。若回归规格不同，统计量差异不是实现错误。
+  \item 500 次选择使最终 p 值带有选择权。应在训练期冻结候选规则，做多重检验或嵌套选择，并用从未参与选择的测试期评价。
+\end{enumerate}

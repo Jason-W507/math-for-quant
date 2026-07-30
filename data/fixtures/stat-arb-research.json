@@ -1,0 +1,17 @@
+{
+  "decision_periods": ["2022Q1", "2022Q2", "2022Q3", "2022Q4"],
+  "return_periods": ["2022Q2", "2022Q3", "2022Q4", "2023Q1"],
+  "forecasts": [0.8, -0.7, 0.1, 0.9],
+  "realized_returns": [0.02, -0.01, 0.03, 0.04],
+  "fill_fractions": [1.0, 0.5, 1.0, 0.0],
+  "entry_threshold": 0.5,
+  "position_limit": 1.0,
+  "holding_period": 1,
+  "rebalance_every": 1,
+  "cost_per_unit_turnover": 0.002,
+  "train_indices": [0, 1, 2, 3, 4, 5],
+  "validation_indices": [8, 9],
+  "trade_indices": [12, 13],
+  "label_horizon": 2,
+  "embargo": 2
+}

@@ -1,0 +1,12 @@
+{
+  "expected": {
+    "filtered_last": 2.309598432908913,
+    "smoothed_second": 1.0763956904995104,
+    "regime_one_last": 0.9999999999980131,
+    "future_smoother_rejected": 1,
+    "change_index": 2
+  },
+  "absolute_tolerance": 1e-10,
+  "provenance": "Scalar Kalman recursions, Gaussian Bayes regime probabilities and the known synthetic break are independently reproducible.",
+  "fixture": {"path":"data/fixtures/stat-arb-estimation.json","sha256":"7232f0e7a75afc4c561a5567181978082c45d1f951cc893596c44ca7251be636"}
+}

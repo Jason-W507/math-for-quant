@@ -1,0 +1,9 @@
+{
+  "start_period": "2000Q1",
+  "observation_count": 30,
+  "x_increments": [1.0, 2.0, 1.5],
+  "cointegration_intercept": 1.5,
+  "cointegration_slope": 2.0,
+  "residual_phi": 0.55,
+  "step": 1.0
+}

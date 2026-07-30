@@ -1,0 +1,67 @@
+\chapter{统计套利研究：从预测到净收益}
+\label{ch:lower-stat-arb-research}
+
+\begin{itemize}
+  \item 直接先修：第 \ref{ch:lower-stat-arb-estimation} 章。
+  \item 学习产出：交付 forecast、仓位、成交、成本与失效检测相互可追溯的 walk-forward 研究包。
+  \item 研究边界：本章验证协议和账本，不声称合成策略具有市场 alpha。
+\end{itemize}
+
+\section{先画时间轴，再拟合模型}
+
+标签跨越 $h$ 期时，训练末端样本的结果可能落入验证区，因此训练与验证之间要 purge；验证期参与选择后，交易期前再留 embargo。冻结示例为训练索引 $0{:}5$、验证 $8{:}9$、交易 $12{:}13$，$h=2$、embargo=2。若训练扩到 6，其标签触及验证起点，验证器立即拒绝。随机 K 折、全样本 scaler、用交易期重新选阈值也由同一信息时间轴判断，而不是靠函数名称判断。
+
+\begin{center}
+\begin{tikzpicture}[x=0.7cm,y=0.7cm,>=latex]
+  \draw[->] (0,0) -- (14,0) node[right]{时间};
+  \fill[blue!25] (0,0.2) rectangle (5.8,0.8);
+  \fill[gray!25] (5.8,0.2) rectangle (7.8,0.8);
+  \fill[orange!30] (7.8,0.2) rectangle (9.8,0.8);
+  \fill[gray!25] (9.8,0.2) rectangle (11.8,0.8);
+  \fill[green!30] (11.8,0.2) rectangle (13.8,0.8);
+  \node[font=\small] at (2.9,0.5) {训练};
+  \node[font=\scriptsize] at (6.8,0.5) {purge};
+  \node[font=\small] at (8.8,0.5) {验证};
+  \node[font=\scriptsize] at (10.8,0.5) {embargo};
+  \node[font=\small] at (12.8,0.5) {交易};
+\end{tikzpicture}
+\end{center}
+
+\section{预测必须真实决定仓位}
+
+冻结决策映射为
+\[
+s_t=\begin{cases}
++1,&\hat z_{t+1}\ge c,\\
+-1,&\hat z_{t+1}\le-c,\\
+0,&|\hat z_{t+1}|<c,
+\end{cases}
+\qquad w_t=\min(L,|s_t|L)\operatorname{sign}(s_t).
+\]
+同时声明阈值 $c=0.5$、上限 $L=1$、持有期 1、每期调仓。预测 $[0.8,-0.7,0.1,0.9]$ 因而产生目标仓位 $[1,-1,0,1]$，不是从 oracle 直接读取交易收益。
+
+成交比例 $[1,0.5,1,0]$ 产生实际仓位 $[1,-0.5,0,0]$。最后一笔未成交，绝不能仍按目标仓位计收益。毛收益逐期为 $w_t r_{t+1}$，换手从空仓开始：
+\[
+\text{turnover}=|1-0|+|-0.5-1|+|0+0.5|+|0-0|=3.
+\]
+实现收益 $[0.02,-0.01,0.03,0.04]$ 给出毛收益 $0.025$；单位换手成本 $0.002$ 给出成本 $0.006$，故 $R^{\mathrm{net}}=0.019$。
+
+\section{失效检测与研究包}
+
+研究包必须逐窗保存：估计截止、模型参数、残差诊断、状态概率、预测、目标仓位、成交比例、实际仓位、换手、成本与净收益。失效规则可包括协整残差单位根恶化、半衰期超出持有期、状态概率熵升高、变点警报和成交率下降。规则必须在交易期前冻结；用全样本挑选“最早正确警报”没有意义。
+
+错误研究包审计要追问：预测是否真实进入仓位？收益日期是否晚于决策？未成交是否仍计收益？成本是否按实际仓位变化计算？scaler、协整向量与阈值是否只在训练窗口拟合？这些问题比多加一个模型名称更能决定研究可信度。
+
+\section{Route Capstone}
+
+开放项目选择一组有经济联系的价格或利差，先声明数据许可与发布时间，再交付：研究问题、单位根/协整规格、透明与成熟库对照、状态估计、walk-forward 切分、独立零仓基线、成交与成本、故障注入、失效规则、限制报告和一键复现命令。若数据不支持交易时点，项目应停在方法演示，不得包装成回测。
+
+\begin{implementationnote}
+\begin{lstlisting}[language=bash]
+uv run python notebooks/lower/stat_arb_research.py \
+  evidence/stat-arb-research/oracle.json
+\end{lstlisting}
+路线级命令会验收三个学习单元、逐字重建报告，并只构建下册与共享答案册。
+\end{implementationnote}
+
+\input{tex/lower/chapters/stat-arb-research-questions}

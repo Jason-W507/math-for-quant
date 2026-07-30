@@ -1,0 +1,81 @@
+\chapter{动态与长期关系：从单位根到 OU}
+\label{ch:lower-stat-arb-model}
+
+\begin{itemize}
+  \item 直接先修：上册第 9、11、12、14、15、16、17 章；路线诊断见第 \ref{route:stat-arb} 节。
+  \item 学习产出：能把单位根诊断、Engle--Granger、Johansen、ECM 与 OU 半衰期串成一条有条件的推断链。
+  \item 研究边界：合成路径是数学 oracle；宏观公开快照只验证外部数据管线，不代表可交易配对。
+\end{itemize}
+
+\section{先区分平稳、单位根与共同趋势}
+
+AR(1) 模型 $X_t=\phi X_{t-1}+\varepsilon_t$ 在 $|\phi|<1$ 且创新满足适当矩条件时具有稳定二阶结构。若 $\phi=1$，冲击永久进入水平，通常要研究 $\Delta X_t$。Dickey--Fuller 回归
+\[
+\Delta X_t=a+\gamma X_{t-1}+u_t
+\]
+检验 $\gamma=0$，其 t 统计量不服从普通 Student t 分布，必须使用与确定性项、滞后阶相匹配的临界值。ADF 不是“平稳证明器”：低功效、结构突变和错误滞后都可能改变结论。
+所有滞后、变换与预测都必须可由决策时信息集 $\mathcal F_t$ 构造；全样本选规格不属于该信息集。
+
+\begin{diagnostic}
+先画水平、差分和滚动尺度，再冻结确定性项与最大滞后。看到一个小 p 值以后才选择含趋势或不含趋势的规格，会把规格搜索藏进检验。
+\end{diagnostic}
+
+\section{Engle--Granger 与误差修正}
+
+若 $x_t,y_t$ 都是 $I(1)$，但存在 $\beta$ 使 $z_t=y_t-a-\beta x_t$ 为 $I(0)$，则二者协整。Engle--Granger 两步法先估长期关系，再对残差做专用单位根检验\cite{engle1987cointegration}。冻结合成数据令
+\[
+y_t=1.5+2x_t+0.55^t,
+\]
+透明 OLS 恢复斜率约 $1.9912$，残差 DF 统计量约 $-8.3135$。斜率没有精确等于 2，是有限样本中确定性残差与趋势相关造成的可解释偏差。
+
+长期偏离进入误差修正模型：
+\[
+\Delta y_t=c+\alpha z_{t-1}+\delta\Delta x_t+u_t.
+\]
+合成例得到 $\hat\alpha\approx-0.4606$；负号表示 $y_t$ 对正偏离向下调整。只有在协整向量、方向和时点协议固定后，$\alpha$ 才能解释为调整速度。
+
+\section{Johansen：多变量秩问题}
+
+VAR 的 VECM 形式为
+\[
+\Delta w_t=\Pi w_{t-1}+\sum_{j=1}^{p-1}\Gamma_j\Delta w_{t-j}+u_t,
+\qquad \Pi=\alpha\beta^{\mathsf T}.
+\]
+$\operatorname{rank}(\Pi)=r$ 是协整秩。Johansen 方法用广义特征值构造 trace 与最大特征根统计量，并按确定性项与滞后阶读取非标准临界值\cite{johansen1991estimation}。本项目的透明奇异值诊断只帮助理解“共同趋势方向”；正式 rank=1 结论由 \texttt{statsmodels} Johansen 临界值表独立计算。两者假设不同，不能把透明诊断冒充正式检验。
+
+\section{从离散 AR 映射到 OU}
+
+连续时间 OU 过程
+\[
+dZ_t=\kappa(\mu-Z_t)dt+\sigma dW_t
+\]
+在等间隔 $\Delta$ 下对应 $\phi=e^{-\kappa\Delta}$。当 $0<\hat\phi<1$ 时，
+\[
+\hat\kappa=-\frac{\log\hat\phi}{\Delta},
+\qquad t_{1/2}=\frac{\log 2}{\hat\kappa}.
+\]
+合成残差给出 $\hat\phi\approx0.5442$、半衰期约 $1.1393$ 个周期。项目另给出 $1/\hat\kappa$ 作为教学性的回归时间尺度；它不是一般首次通过时间的闭式解。严格首次通过时间依赖起点、边界与扩散率，应解边值问题或做经过误差控制的模拟。
+
+\begin{note}[Python 边界]
+\texttt{adfuller}、\texttt{coint} 与 \texttt{coint\_johansen} 的默认确定性项、自动滞后和临界值并不相同。调用函数前先把统计问题写成完整规格，再在报告中保存库版本与参数。
+\end{note}
+
+\section{双轨数据与可执行实验}
+
+\begin{itemize}
+  \item 合成正确性 oracle：\path{data/fixtures/stat-arb-model.json}；
+  \item 公开领域宏观快照：\path{data/real/stat-arb-us-macro-1999q4-2009q3.json}。
+\end{itemize}
+快照保存来源、频率、观察截止和 SHA-256。它只能证明数据适配器与估计管线可复现，不能把 GDP 与消费称作统计套利交易对。
+
+\begin{implementationnote}
+\begin{lstlisting}[language=bash]
+uv run python notebooks/lower/stat_arb_model.py \
+  evidence/stat-arb-model/oracle.json
+\end{lstlisting}
+该 notebook 包含手算 oracle、残差图、爆炸序列故障注入、参数敏感性与限制说明。
+\end{implementationnote}
+
+本单元向 Route Capstone 交付冻结的长期关系、单位根规格、ECM 参数与 OU 时间尺度；交易规则尚不在本章作出。
+
+\input{tex/lower/chapters/stat-arb-model-questions}

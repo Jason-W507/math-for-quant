@@ -569,27 +569,48 @@
       }
     },
     {
-      "id": "lower.ch02",
-      "title": "时间序列与统计套利：从动态模型到滚动验证",
-      "volume": "lower",
-      "capstone": true,
-      "state": "accepted",
-      "published": true,
+      "id": "lower.stat-arb.model",
+      "title": "动态与长期关系：从单位根到 OU",
+      "volume": "lower", "track": "stat-arb", "track_stage": "model-math",
+      "state": "accepted", "published": true,
       "prerequisites": ["upper.ch09", "upper.ch11", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
       "evidence": {
-        "notation_symbols": ["\\mathcal F_t", "\\rho(h)", "R^{\\mathrm{net}}"],
-        "glossary_terms": ["协整", "状态空间模型", "Kalman 滤波", "滚动向前验证", "交易成本"],
-        "notation_and_assumptions": "tex/lower/chapters/stat-arb.tex",
-        "core_derivation": "tex/lower/chapters/stat-arb.tex",
-        "independent_oracle": {
-          "source": "notebooks/lower/ch02_stat_arb.py",
-          "oracle": "evidence/lower-ch02/oracle.json",
-          "command": ["{python}", "notebooks/lower/ch02_stat_arb.py", "evidence/lower-ch02/oracle.json"]
-        },
-        "questions": "tex/lower/chapters/stat-arb-questions.tex",
-        "hints": "tex/lower/chapters/stat-arb-hints.tex",
-        "solutions": "tex/lower/chapters/stat-arb-solutions.tex",
-        "capstone_connection": "tex/lower/chapters/stat-arb.tex"
+        "notation_symbols": ["\\mathcal F_t"],
+        "glossary_terms": ["协整", "滚动向前验证"],
+        "notation_and_assumptions": "tex/lower/chapters/stat-arb-model.tex",
+        "core_derivation": "tex/lower/chapters/stat-arb-model.tex",
+        "independent_oracle": {"source":"notebooks/lower/stat_arb_model.py","oracle":"evidence/stat-arb-model/oracle.json","command":["{python}","notebooks/lower/stat_arb_model.py","evidence/stat-arb-model/oracle.json"]},
+        "questions": "tex/lower/chapters/stat-arb-model-questions.tex", "hints": "tex/lower/chapters/stat-arb-model-hints.tex", "solutions": "tex/lower/chapters/stat-arb-model-solutions.tex", "capstone_connection": "tex/lower/chapters/stat-arb-model.tex",
+        "dual_track_data": {"oracle_fixture":"data/fixtures/stat-arb-model.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/stat-arb/real-data-oracle.json","real_data_oracle":{"source":"evidence/stat-arb/validate_real_data.py","oracle":"evidence/stat-arb/real-data-oracle.json","command":["{python}","evidence/stat-arb/validate_real_data.py","evidence/stat-arb/real-data-oracle.json"]}},
+        "dual_implementation": {"transparent":"src/math_for_quant/lower/stat_arb_models.py","library":"src/math_for_quant/lower/stat_arb_library.py"}, "teaching_notebook":"notebooks/lower/stat_arb_model.py", "route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"}, "shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id": "lower.stat-arb.estimation",
+      "title": "估计与状态推断：滤波、切换与变点",
+      "volume": "lower", "track": "stat-arb", "track_stage": "estimation-numerics",
+      "state": "accepted", "published": true, "prerequisites": ["lower.stat-arb.model"],
+      "evidence": {
+        "notation_symbols": ["\\mathcal F_t"], "glossary_terms": ["状态空间模型", "Kalman 滤波"],
+        "notation_and_assumptions":"tex/lower/chapters/stat-arb-estimation.tex","core_derivation":"tex/lower/chapters/stat-arb-estimation.tex",
+        "independent_oracle":{"source":"notebooks/lower/stat_arb_estimation.py","oracle":"evidence/stat-arb-estimation/oracle.json","command":["{python}","notebooks/lower/stat_arb_estimation.py","evidence/stat-arb-estimation/oracle.json"]},
+        "questions":"tex/lower/chapters/stat-arb-estimation-questions.tex","hints":"tex/lower/chapters/stat-arb-estimation-hints.tex","solutions":"tex/lower/chapters/stat-arb-estimation-solutions.tex","capstone_connection":"tex/lower/chapters/stat-arb-estimation.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/stat-arb-estimation.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/stat-arb/real-data-oracle.json","real_data_oracle":{"source":"evidence/stat-arb/validate_real_data.py","oracle":"evidence/stat-arb/real-data-oracle.json","command":["{python}","evidence/stat-arb/validate_real_data.py","evidence/stat-arb/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/stat_arb_estimation.py","library":"src/math_for_quant/lower/stat_arb_library.py"},"teaching_notebook":"notebooks/lower/stat_arb_estimation.py","route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id": "lower.stat-arb.research",
+      "title": "统计套利研究：从预测到净收益",
+      "volume": "lower", "track": "stat-arb", "track_stage": "oos-frictions-capstone", "capstone": true,
+      "state": "accepted", "published": true, "prerequisites": ["lower.stat-arb.estimation"],
+      "evidence": {
+        "notation_symbols":["R^{\\mathrm{net}}"],"glossary_terms":["滚动向前验证","交易成本","可复现研究包"],
+        "notation_and_assumptions":"tex/lower/chapters/stat-arb-research.tex","core_derivation":"tex/lower/chapters/stat-arb-research.tex",
+        "independent_oracle":{"source":"notebooks/lower/stat_arb_research.py","oracle":"evidence/stat-arb-research/oracle.json","command":["{python}","notebooks/lower/stat_arb_research.py","evidence/stat-arb-research/oracle.json"]},
+        "questions":"tex/lower/chapters/stat-arb-research-questions.tex","hints":"tex/lower/chapters/stat-arb-research-hints.tex","solutions":"tex/lower/chapters/stat-arb-research-solutions.tex","capstone_connection":"tex/lower/chapters/stat-arb-research.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/stat-arb-research.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/stat-arb/real-data-oracle.json","real_data_oracle":{"source":"evidence/stat-arb/validate_real_data.py","oracle":"evidence/stat-arb/real-data-oracle.json","command":["{python}","evidence/stat-arb/validate_real_data.py","evidence/stat-arb/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/stat_arb_research.py","library":"src/math_for_quant/lower/stat_arb_library.py"},"teaching_notebook":"notebooks/lower/stat_arb_research.py","route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {

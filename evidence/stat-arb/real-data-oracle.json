@@ -1,0 +1,13 @@
+{
+  "expected": {
+    "rows": 40,
+    "slope": 0.8511688435537762,
+    "slope_gap": 0.0
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "The row count and log-level OLS slope were independently recomputed from the frozen public-domain snapshot.",
+  "fixture": {
+    "path": "data/real/stat-arb-us-macro-1999q4-2009q3.json",
+    "sha256": "fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1"
+  }
+}

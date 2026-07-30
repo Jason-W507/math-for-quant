@@ -124,7 +124,10 @@ class FullReleaseContractTests(unittest.TestCase):
         assets = registered_data_assets(ROOT)
         registry = json.loads((ROOT / "data/assets.json").read_text(encoding="utf-8"))
         self.assertEqual(len(assets), sum(len(group["paths"]) for group in registry["assets"]))
-        self.assertEqual({asset.license_id for asset in assets}, {"CC0-1.0", "CC-BY-4.0"})
+        self.assertEqual(
+            {asset.license_id for asset in assets},
+            {"CC0-1.0", "CC-BY-4.0", "Public-Domain"},
+        )
 
     def test_release_tag_must_match_version(self) -> None:
         self.assertIsNone(release_tag_error(None, "0.2.0"))

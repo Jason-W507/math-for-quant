@@ -30,7 +30,10 @@
         "data/fixtures/lower-ch06.json",
         "data/fixtures/multifactor-model.json",
         "data/fixtures/multifactor-estimation.json",
-        "data/fixtures/multifactor-research.json"
+        "data/fixtures/multifactor-research.json",
+        "data/fixtures/stat-arb-model.json",
+        "data/fixtures/stat-arb-estimation.json",
+        "data/fixtures/stat-arb-research.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",
@@ -58,6 +61,16 @@
       "license_id": "CC-BY-4.0",
       "license_file": "data/real/WORLD-BANK-CC-BY-4.0.md",
       "required_marker": "Creative Commons Attribution 4.0"
+    },
+    {
+      "id": "stat-arb-us-macro-snapshot",
+      "paths": ["data/real/stat-arb-us-macro-1999q4-2009q3.json"],
+      "kind": "frozen-public-data",
+      "source": "statsmodels macrodata; FRED and U.S. Bureau of Labor Statistics",
+      "version": "1999Q4-2009Q3-snapshot",
+      "license_id": "Public-Domain",
+      "license_file": "data/real/US-MACRO-PUBLIC-DOMAIN.md",
+      "required_marker": "public domain"
     }
   ]
 }

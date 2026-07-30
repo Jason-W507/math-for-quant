@@ -1,0 +1,63 @@
+\chapter{估计与状态推断：滤波、切换与变点}
+\label{ch:lower-stat-arb-estimation}
+
+\begin{itemize}
+  \item 直接先修：第 \ref{ch:lower-stat-arb-model} 章。
+  \item 学习产出：能区分预测、滤波与平滑信息集，并实现 Kalman、regime filtering 与变点评价。
+  \item 研究边界：状态编号没有天然经济含义；状态数、分布与初值都属于模型选择。
+\end{itemize}
+
+\section{状态空间：三种条件分布}
+
+线性高斯模型写成
+\[
+s_t=Fs_{t-1}+\eta_t,\qquad y_t=Hs_t+\epsilon_t,
+\]
+其中 $\eta_t\sim N(0,Q)$、$\epsilon_t\sim N(0,R)$。预测分布只条件于 $y_{1:t-1}$；滤波分布条件于 $y_{1:t}$；平滑分布条件于完整 $y_{1:T}$。Kalman 更新
+\[
+K_t=P_{t|t-1}H^{\mathsf T}
+(HP_{t|t-1}H^{\mathsf T}+R)^{-1}
+\]
+该式表示用创新协方差缩放预测误差；实现中应使用线性求解而非显式求逆\cite{kalman1960new}。
+定义在线信息集
+\[
+\mathcal F_t=\sigma(y_1,\ldots,y_t).
+\]
+交易决策最多使用条件于 $\mathcal F_t$ 的滤波量。
+
+冻结四期观测 $0,0.2,2.8,3.1$ 后，在线滤波末值约 $2.3096$；第二期平滑值约 $1.0764$，明显使用了后两期信息。回测在第二期决策时读取该平滑值就是未来函数。
+
+\section{两状态过滤与可识别性}
+
+隐状态 $S_t\in\{0,1\}$ 按转移矩阵 $P$ 演化，观测密度为 $p(y_t\mid S_t=j)$。Hamilton 过滤递推为
+\[
+\Pr(S_t=j\mid y_{1:t})\propto
+p(y_t\mid S_t=j)\sum_i p_{ij}\Pr(S_{t-1}=i\mid y_{1:t-1}).
+\]
+取均值 $0,3$、方差 $0.2$、持续概率 $0.95$，最后两期大观测令状态 1 概率接近 1。成熟库的 Markov switching 最大似然估计用于对照；透明实现只验证给定参数的 Bayes 过滤。标签交换意味着“状态 1=牛市”不是识别约束\cite{hamilton1989new}。
+
+\begin{diagnostic}
+只报告最可能状态会隐藏参数不确定性。至少保存全概率路径、转移概率、初值、多起点结果与标签排序规则；若不同起点得到相近似然但不同解释，应报告不可识别。
+\end{diagnostic}
+
+\section{变点：误报、漏检与延迟}
+
+变点算法必须冻结最短样本、阈值和损失。已知真值为索引 2 时，检测评价至少包含：提前警报数、首次有效警报、检测延迟和漏检。调低阈值通常增加误报，调高阈值通常增加漏检；只展示一条“漂亮”的检测线没有样本外含义。
+
+regime switching 假设状态持续随机转换，change-point 假设参数在未知时点发生结构变化。二者可以描述相似图形，却回答不同问题。把事后变点分段当作事前可交易状态同样是泄漏。
+
+\section{数值实现与失败恢复}
+
+协方差矩阵应保持对称半正定；概率应归一化；对数似然应使用 log-sum-exp 防下溢。缺测规则必须写明“跳过更新”还是“插值后更新”。当优化器不收敛时，不应只增加迭代次数：先检查尺度、参数边界、初值、多峰似然与状态可分性。
+
+\begin{implementationnote}
+\begin{lstlisting}[language=bash]
+uv run python notebooks/lower/stat_arb_estimation.py \
+  evidence/stat-arb-estimation/oracle.json
+\end{lstlisting}
+实验逐项比较在线滤波与平滑，画出状态路径，并用真实时间验证器拒绝未来平滑状态。
+\end{implementationnote}
+
+本单元向 Route Capstone 交付仅使用当时信息的滤波状态、状态概率、变点指标和失效标志；成交与收益留到下一单元。
+
+\input{tex/lower/chapters/stat-arb-estimation-questions}
