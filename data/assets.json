@@ -33,7 +33,10 @@
         "data/fixtures/multifactor-research.json",
         "data/fixtures/stat-arb-model.json",
         "data/fixtures/stat-arb-estimation.json",
-        "data/fixtures/stat-arb-research.json"
+        "data/fixtures/stat-arb-research.json",
+        "data/fixtures/ml-alpha-model.json",
+        "data/fixtures/ml-alpha-validation.json",
+        "data/fixtures/ml-alpha-research.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",

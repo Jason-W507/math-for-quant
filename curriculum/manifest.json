@@ -614,27 +614,37 @@
       }
     },
     {
-      "id": "lower.ch03",
-      "title": "机器学习与 AI Alpha：从泛化到防泄漏 Pipeline",
-      "volume": "lower",
-      "capstone": true,
-      "state": "accepted",
-      "published": true,
-      "prerequisites": ["upper.ch05", "upper.ch06", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
-      "evidence": {
-        "notation_symbols": ["R^{\\mathrm{net}}"],
-        "glossary_terms": ["数据泄漏", "样本外", "滚动向前验证", "交易成本", "可复现研究包"],
-        "notation_and_assumptions": "tex/lower/chapters/ml-alpha.tex",
-        "core_derivation": "tex/lower/chapters/ml-alpha.tex",
-        "independent_oracle": {
-          "source": "notebooks/lower/ch03_ml_alpha.py",
-          "oracle": "evidence/lower-ch03/oracle.json",
-          "command": ["{python}", "notebooks/lower/ch03_ml_alpha.py", "evidence/lower-ch03/oracle.json"]
-        },
-        "questions": "tex/lower/chapters/ml-alpha-questions.tex",
-        "hints": "tex/lower/chapters/ml-alpha-hints.tex",
-        "solutions": "tex/lower/chapters/ml-alpha-solutions.tex",
-        "capstone_connection": "tex/lower/chapters/ml-alpha.tex"
+      "id":"lower.ml-alpha.model","title":"模型与表示：从基线到 PyTorch、Transformer 与文本适配","volume":"lower","track":"ml-alpha","track_stage":"model-math","state":"accepted","published":true,
+      "prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],
+      "evidence":{
+        "notation_symbols":["h(D)"],"glossary_terms":["数据泄漏","样本外"],
+        "notation_and_assumptions":"tex/lower/chapters/ml-alpha-model.tex","core_derivation":"tex/lower/chapters/ml-alpha-model.tex",
+        "independent_oracle":{"source":"notebooks/lower/ml_alpha_model.py","oracle":"evidence/ml-alpha-model/oracle.json","command":["{python}","notebooks/lower/ml_alpha_model.py","evidence/ml-alpha-model/oracle.json"]},
+        "questions":"tex/lower/chapters/ml-alpha-model-questions.tex","hints":"tex/lower/chapters/ml-alpha-model-hints.tex","solutions":"tex/lower/chapters/ml-alpha-model-solutions.tex","capstone_connection":"tex/lower/chapters/ml-alpha-model.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/ml-alpha-model.json","real_data_snapshot":"data/real/multifactor-wdi-2013-2014.json","license":"data/real/WORLD-BANK-CC-BY-4.0.md","sha256":"9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b","time_protocol":"evidence/ml-alpha/real-data-oracle.json","real_data_oracle":{"source":"evidence/ml-alpha/validate_real_data.py","oracle":"evidence/ml-alpha/real-data-oracle.json","command":["{python}","evidence/ml-alpha/validate_real_data.py","evidence/ml-alpha/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha.py","library":"src/math_for_quant/lower/ml_alpha_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_model.py","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id":"lower.ml-alpha.validation","title":"验证与监控：嵌套时序、校准、解释与漂移","volume":"lower","track":"ml-alpha","track_stage":"estimation-numerics","state":"accepted","published":true,"prerequisites":["lower.ml-alpha.model"],
+      "evidence":{
+        "notation_symbols":["\\mathcal I_t"],"glossary_terms":["滚动向前验证","数据泄漏"],
+        "notation_and_assumptions":"tex/lower/chapters/ml-alpha-validation.tex","core_derivation":"tex/lower/chapters/ml-alpha-validation.tex",
+        "independent_oracle":{"source":"notebooks/lower/ml_alpha_validation.py","oracle":"evidence/ml-alpha-validation/oracle.json","command":["{python}","notebooks/lower/ml_alpha_validation.py","evidence/ml-alpha-validation/oracle.json"]},
+        "questions":"tex/lower/chapters/ml-alpha-validation-questions.tex","hints":"tex/lower/chapters/ml-alpha-validation-hints.tex","solutions":"tex/lower/chapters/ml-alpha-validation-solutions.tex","capstone_connection":"tex/lower/chapters/ml-alpha-validation.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/ml-alpha-validation.json","real_data_snapshot":"data/real/multifactor-wdi-2013-2014.json","license":"data/real/WORLD-BANK-CC-BY-4.0.md","sha256":"9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b","time_protocol":"evidence/ml-alpha/real-data-oracle.json","real_data_oracle":{"source":"evidence/ml-alpha/validate_real_data.py","oracle":"evidence/ml-alpha/real-data-oracle.json","command":["{python}","evidence/ml-alpha/validate_real_data.py","evidence/ml-alpha/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha_validation.py","library":"src/math_for_quant/lower/ml_alpha_validation_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_validation.py","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id":"lower.ml-alpha.research","title":"Alpha 决策与研究包：从损失到净收益","volume":"lower","track":"ml-alpha","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.ml-alpha.validation"],
+      "evidence":{
+        "notation_symbols":["R^{\\mathrm{net}}"],"glossary_terms":["交易成本","可复现研究包","数据泄漏"],
+        "notation_and_assumptions":"tex/lower/chapters/ml-alpha-research.tex","core_derivation":"tex/lower/chapters/ml-alpha-research.tex",
+        "independent_oracle":{"source":"notebooks/lower/ml_alpha_research.py","oracle":"evidence/ml-alpha-research/oracle.json","command":["{python}","notebooks/lower/ml_alpha_research.py","evidence/ml-alpha-research/oracle.json"]},
+        "questions":"tex/lower/chapters/ml-alpha-research-questions.tex","hints":"tex/lower/chapters/ml-alpha-research-hints.tex","solutions":"tex/lower/chapters/ml-alpha-research-solutions.tex","capstone_connection":"tex/lower/chapters/ml-alpha-research.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/ml-alpha-research.json","real_data_snapshot":"data/real/multifactor-wdi-2013-2014.json","license":"data/real/WORLD-BANK-CC-BY-4.0.md","sha256":"9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b","time_protocol":"evidence/ml-alpha/real-data-oracle.json","real_data_oracle":{"source":"evidence/ml-alpha/validate_real_data.py","oracle":"evidence/ml-alpha/real-data-oracle.json","command":["{python}","evidence/ml-alpha/validate_real_data.py","evidence/ml-alpha/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha_research.py","library":"src/math_for_quant/lower/ml_alpha_execution_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_research.py","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -737,7 +747,7 @@
   "tracks": [
     {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.multifactor.model","lower.multifactor.estimation","lower.multifactor.research"]},
     {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.stat-arb.model","lower.stat-arb.estimation","lower.stat-arb.research"]},
-    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.ml-alpha.model","lower.ml-alpha.estimation","lower.ml-alpha.research"]},
+    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.ml-alpha.model","lower.ml-alpha.validation","lower.ml-alpha.research"]},
     {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.derivatives.model","lower.derivatives.estimation","lower.derivatives.research"]},
     {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.portfolio-risk.model","lower.portfolio-risk.estimation","lower.portfolio-risk.research"]},
     {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.microstructure.model","lower.microstructure.estimation","lower.microstructure.research"]}

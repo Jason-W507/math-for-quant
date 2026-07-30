@@ -1,0 +1,11 @@
+\chapter{ML 模型与表示分层答案}
+\begin{enumerate}[leftmargin=*]
+  \item shape 绑定 batch/time/feature 语义；dtype 与 device 限定数值和算子；\texttt{requires\_grad} 决定 autograd 是否追踪。
+  \item 特征顺序任意。应先取排序唯一值，再取相邻中点，否则行置换会改变模型。
+  \item $h=\phi(W_1x+b_1)$、$\hat y=W_2h+b_2$、$L=(\hat y-y)^2$；梯度从 $L$ 经 $W_2$、$\phi'$ 回传到 $W_1$。
+  \item 同步置换 token 会同步置换 $Q,K,V$，注意力输出只随位置重排；没有位置或因果结构就不知道先后。
+  \item 冻结 oracle 中均值差为 0；因果卷积、RNN、Attention 与 Transformer 差均大于 0，证明实现读取顺序。
+  \item checkpoint 指纹哈希训练配置与参数字节；恢复后预测逐项相同。仅保存权重而漏 tokenizer/预处理仍不合格。
+  \item 若输入先做时间均值，任何时序置换都相同；没有可训练序列层、位置结构和置换负例时只能称表示基线。
+  \item 全量微调表达力最高、成本和遗忘风险也高；任务头与 PEFT 冻结大部分编码器，证据必须报告可训练参数比例和基础模型版本。
+\end{enumerate}

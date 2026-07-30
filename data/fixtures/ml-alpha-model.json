@@ -1,0 +1,17 @@
+{
+  "features": [[-1.0], [0.0], [1.0], [2.0]],
+  "target": [-1.0, 0.0, 1.0, 2.0],
+  "seed": 17,
+  "epochs": 80,
+  "learning_rate": 0.03,
+  "sequence": [[[1.0], [2.0], [4.0], [8.0]]],
+  "sequence_seed": 23,
+  "classical_features": [-2.0, -1.0, 0.0, 1.0, 2.0],
+  "classical_target": [-0.4, -0.2, 0.0, 1.0, 1.2],
+  "classical_evaluation": [-1.5, 0.5, 1.5],
+  "boosting_rounds": 2,
+  "train_texts": ["profit growth", "loss warning", "profit upgrade", "loss decline"],
+  "train_labels": [1, 0, 1, 0],
+  "inference_texts": ["profit warning", "loss upgrade"],
+  "text_seed": 29
+}

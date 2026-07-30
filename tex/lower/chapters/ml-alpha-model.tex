@@ -1,0 +1,61 @@
+\chapter{模型与表示：从基线到 PyTorch、Transformer 与文本适配}
+\label{ch:lower-ml-model}
+
+\begin{itemize}
+  \item 直接先修：上册第 5、6、9、10、12、14、15、16、17 章。
+  \item 学习产出：能从 NumPy 基线迁移到可复现的 PyTorch 训练，并证明序列模型确实保留顺序。
+  \item 研究边界：本章的小模型用于暴露训练与信息协议，不声称达到生产模型容量。
+\end{itemize}
+
+\section{先冻结简单基线}
+
+回归树桩在候选阈值 $c$ 上最小化两侧平方误差。候选集合必须来自排序后的唯一特征值中点；若直接使用输入相邻项，中点集合会依赖行顺序。透明实现先计算
+\[
+\mathcal C=\left\{\frac{x_{(j)}+x_{(j+1)}}2:x_{(j)}<x_{(j+1)}\right\},
+\]
+再逐个比较。成熟库对照使用 \texttt{DecisionTreeRegressor(max\_depth=1)}；两者在冻结数据上的预测差为 0。两轮残差 boosting 也与 \texttt{GradientBoostingRegressor} 对拍。这里的“双实现”只验证同一平方损失与树深，不代表不同库默认值天然等价。
+
+线性、树和 boosting 不是被深度模型淘汰的装饰品。它们提供训练时间、解释难度和样本外损失的下界；复杂模型若不能在冻结验证协议下改善决策结果，应保留基线。资产定价中的系统比较也表明，模型灵活性必须与正则化和严格样本外评价一起解释\cite{gu2020mlassetpricing}。
+
+\section{PyTorch：从张量到 checkpoint}
+
+张量同时携带数值、形状、dtype 和 device。训练循环的最小闭环分为三步：
+\begin{enumerate}
+  \item \texttt{Dataset} 保存样本语义，\texttt{DataLoader} 决定批次与顺序；
+  \item 前向传播产生损失，\texttt{autograd} 计算梯度，优化器更新参数；
+  \item 在评估模式与无梯度上下文中冻结推理。
+\end{enumerate}
+代码还固定随机种子、CPU device、epoch 数与学习率，并把配置和参数字节 $D$ 哈希为 checkpoint 指纹 $h(D)$\cite{paszke2019pytorch}。
+
+对四个样本训练两层 MLP，最终 MSE 约为 $6.34\times10^{-4}$。这个数不是模型质量结论；真正的证据是同一配置两次运行得到完全相同预测和指纹。若更换 GPU、算子或框架版本，必须重新声明可复现级别，而非默认逐位一致。
+
+\begin{diagnostic}
+只保存 \texttt{state\_dict} 不够：还要保存 tokenizer、特征顺序、预处理参数、随机种子、优化器状态、代码版本和数据截止。checkpoint 是推理契约，不只是权重文件。
+\end{diagnostic}
+
+\section{因果卷积、RNN、Attention 与 Transformer}
+
+序列输入为 $X\in\mathbb R^{B\times T\times F}$。因果卷积的 $t$ 时点只读取 $\{X_s:s\le t\}$；RNN 递推 $h_t=\phi(W_xX_t+W_hh_{t-1})$；self-attention 通过
+\[
+\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt d}+M\right)V
+\]
+聚合位置，其中因果 mask $M$ 屏蔽未来。Transformer 再叠加前馈、残差与归一化\cite{vaswani2017attention}。没有位置编码的 attention 对置换近似等变，不能自动识别先后。
+
+冻结负例把 $[1,2,4,8]$ 反转。时间均值差为 0，而因果卷积、RNN、带位置与因果 mask 的 Attention/Transformer 输出均发生变化。这个实验不证明模型预测有效，只证明实现没有把顺序悄悄压成均值。padding mask、缺失 mask 与因果 mask 必须分别记录。
+
+\section{NLP/LLM：任务边界先于模型规模}
+
+文本链从 tokenizer 和 embedding 开始，再进入预训练编码器、任务头与决策映射。零样本依赖任务提示或词义规则；少样本利用少量标注形成原型；全量微调更新编码器全部参数；PEFT 只训练 adapter、LoRA 或任务头。LoRA 的核心是冻结预训练权重并学习低秩更新\cite{hu2022lora}。冻结实验以小型编码器代理说明参数边界：可训练参数仅占总参数约 $15.8\%$，不是把它包装成基础模型。
+
+真实预训练编码器必须绑定模型卡、许可、权重版本和 tokenizer。新闻或公告还要同时保存首次发布时间、抓取时间与修订时间；决策日后的修订不能回填历史。LLM 生成的标签需保留 prompt、采样参数、原文证据和人工抽查，零/少样本结果不能免除时间审计。
+
+\begin{implementationnote}
+\begin{lstlisting}[language=bash]
+uv run python notebooks/lower/ml_alpha_model.py \
+  evidence/ml-alpha-model/oracle.json
+\end{lstlisting}
+\end{implementationnote}
+
+本单元向 Route Capstone 交付：基线表、PyTorch checkpoint、顺序负例、文本适配协议和算力/随机性限制。
+
+\input{tex/lower/chapters/ml-alpha-model-questions}

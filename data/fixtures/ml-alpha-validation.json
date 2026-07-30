@@ -1,0 +1,29 @@
+{
+  "train": [0,1,2,3,4,5,6,7],
+  "validation": [10,11],
+  "test": [14,15],
+  "label_horizon": 2,
+  "embargo": 2,
+  "crossfit_features": [[0.0],[1.0],[2.0],[3.0],[4.0],[5.0],[6.0],[7.0],[8.0],[9.0],[10.0],[11.0]],
+  "crossfit_target": [1.0,1.5,2.0,2.5,3.0,3.5,4.0,4.5,5.0,5.5,6.0,6.5],
+  "crossfit_folds": [
+    {"train":[0,1,2,3],"validation":[4,5]},
+    {"train":[0,1,2,3,4,5],"validation":[6,7]}
+  ],
+  "ridge_alpha": 0.1,
+  "calibration_scores": [-2.0,-1.0,-0.5,0.5,1.0,2.0],
+  "calibration_labels": [0,0,0,1,1,1],
+  "importance_train": [0.7,0.2,0.1,0.0],
+  "importance_test": [0.6,0.1,0.25,0.05],
+  "top_k": 2,
+  "reference_values": [0.0,0.1,-0.1,0.0],
+  "monitor_values": [0.7,0.8,0.6,0.9],
+  "drift_threshold": 0.5,
+  "preprocessing_fitted_through": 7,
+  "evaluation_starts": 10,
+  "feature_time": 7,
+  "target_time": 9,
+  "prediction_horizon": 2,
+  "selection_attempts": 3,
+  "selection_budget": 3
+}

@@ -1,0 +1,17 @@
+{
+  "expected": {
+    "cross_sectional_mse": 0.47950000000000004,
+    "ranking_loss": 0.29474458859664887,
+    "return_weighted_loss": -0.008666666666666668,
+    "gross_return": 0.049999999999999996,
+    "turnover": 4.0,
+    "cost": 0.004,
+    "net_return": 0.046,
+    "execution_library_gap": 0.0,
+    "revision_leakage_rejected": 1,
+    "unfilled_orders": 1
+  },
+  "absolute_tolerance": 1e-10,
+  "provenance": "Scores, ranks, order deltas, fills, period returns, turnover and costs are hand-reconstructible from the two-period fixture.",
+  "fixture": {"path":"data/fixtures/ml-alpha-research.json","sha256":"adcbf4576af7a1aabee7800cb997c32e417c0e1a22218501ac103989a39fc68d"}
+}

@@ -1,0 +1,14 @@
+{
+  "expected": {
+    "rows": 7,
+    "train_rows": 5,
+    "test_rows": 2,
+    "test_mse": 51.60107769526848
+  },
+  "absolute_tolerance": 1e-10,
+  "provenance": "A pure-Python five-country OLS fit and two-country held-out MSE independently audit the frozen WDI snapshot without importing production ML modules.",
+  "fixture": {
+    "path": "data/real/multifactor-wdi-2013-2014.json",
+    "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b"
+  }
+}

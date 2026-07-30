@@ -1,0 +1,11 @@
+\chapter{ML 模型与表示提示}
+\begin{enumerate}[leftmargin=*]
+  \item shape 是语义轴，dtype/device 决定算子，梯度状态决定是否进入反向图。
+  \item 相邻输入行不等于相邻特征值。
+  \item 依次写仿射、激活、仿射和链式法则。
+  \item 关注 $QK^{\mathsf T}$ 在同步置换下的变化。
+  \item 均值应为零差，四种顺序模型应为正差。
+  \item 同时冻结配置与参数字节。
+  \item 查找是否有位置、因果 mask 和置换负例。
+  \item 比较可训练参数、任务数据与基础表示是否更新。
+\end{enumerate}

@@ -1,0 +1,12 @@
+{
+  "scores": [[0.9,0.2,-0.8],[-0.7,0.8,0.1]],
+  "realized_returns": [[0.02,0.0,-0.01],[-0.02,0.03,0.01]],
+  "fill_fractions": [[1.0,1.0,1.0],[0.5,1.0,0.0]],
+  "long_count": 1,
+  "short_count": 1,
+  "gross_limit": 2.0,
+  "cost_per_unit_turnover": 0.001,
+  "publication_dates": ["2024-01-01","2024-01-02"],
+  "revision_dates": ["2024-01-01","2024-01-02"],
+  "decision_date": "2024-01-03"
+}

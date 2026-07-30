@@ -1,0 +1,20 @@
+{
+  "expected": {
+    "crossfit_count": 4,
+    "crossfit_library_gap": 0.0,
+    "raw_brier": 0.07635859378122507,
+    "calibrated_brier": 0.06354681995379557,
+    "importance_jaccard": 0.3333333333333333,
+    "drift": 0.75,
+    "drift_triggered": 1,
+    "purge_rejected": 1,
+    "embargo_rejected": 1,
+    "future_preprocessing_rejected": 1,
+    "target_misalignment_rejected": 1,
+    "selection_budget_rejected": 1,
+    "test_reselection_rejected": 1
+  },
+  "absolute_tolerance": 1e-10,
+  "provenance": "The time gaps, cross-fit rows, Brier scores, feature-set overlap and drift distance are independently reconstructible from the fixture.",
+  "fixture": {"path":"data/fixtures/ml-alpha-validation.json","sha256":"0438e7610d431473007bb744ff20fad38263e01c53d02c55c3649e7d5f81bd35"}
+}

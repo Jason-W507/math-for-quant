@@ -1,0 +1,57 @@
+\chapter{验证与监控：嵌套时序、校准、解释与漂移}
+\label{ch:lower-ml-validation}
+
+\begin{itemize}
+  \item 直接先修：第 \ref{ch:lower-ml-model} 章。
+  \item 学习产出：构造 purge/embargo 的嵌套时序验证，生成 cross-fitted 预测，并分别评价校准、解释稳定性与漂移。
+  \item 研究边界：验证集用于选择，最终测试集只能在协议冻结后打开一次。
+\end{itemize}
+
+\section{嵌套时间轴与选择权}
+
+标签跨越 $h$ 期时，训练末端观测的结果可能落入验证期，因此必须 purge；验证参与模型选择后，测试期前再留 embargo。冻结索引满足
+\[
+\max I_{\rm train}+h<\min I_{\rm val},\qquad
+\max I_{\rm val}+e<\min I_{\rm test}.
+\]
+本章取训练 $0{:}7$、验证 $10{:}11$、测试 $14{:}15$，$h=e=2$。训练扩到 8 会触发 purge；测试提前到 13 会触发 embargo。
+
+\begin{center}
+\begin{tikzpicture}[x=0.62cm,y=0.65cm,>=latex]
+  \draw[->] (0,0)--(16,0) node[right]{时间};
+  \fill[blue!25] (0,.2) rectangle (7.8,.8); \node at (3.9,.5){外层训练};
+  \fill[gray!25] (7.8,.2) rectangle (9.8,.8); \node[font=\scriptsize] at (8.8,.5){purge};
+  \fill[orange!30] (9.8,.2) rectangle (11.8,.8); \node at (10.8,.5){验证};
+  \fill[gray!25] (11.8,.2) rectangle (13.8,.8); \node[font=\scriptsize] at (12.8,.5){embargo};
+  \fill[green!30] (13.8,.2) rectangle (15.8,.8); \node at (14.8,.5){测试};
+\end{tikzpicture}
+\end{center}
+
+内层只能在外层训练区内选择超参数；外层测试衡量整个选择程序。合法特征只可由决策时点的信息集 $\mathcal I_t$ 构造。把测试结果反馈给模型后，它就变成新的验证集。尝试次数、搜索空间和提前停止规则都属于研究选择权账本。
+
+\section{Cross-fitting 与概率校准}
+
+cross-fitting 对每个验证块只使用更早训练块拟合，再把预测写回原时间索引。它减少同一样本同时拟合 nuisance model 和评价主效应的污染，但不能自动解决非平稳或标签泄漏。冻结两折产生索引 4--7 的四个真正样本外预测。
+
+概率校准拟合 $\Pr(Y=1\mid s)$，例如 Platt scaling 的 logistic 映射。Brier 分数
+\[
+\operatorname{BS}=n^{-1}\sum_i(p_i-y_i)^2
+\]
+从 $0.07636$ 降到 $0.06355$。校准器也必须只在校准窗口拟合；同一小样本上改善不代表未来可靠。可靠性图、样本数与置信区间应同时报告\cite{niculescu2005probabilities}。
+
+\section{解释稳定性与漂移响应}
+
+Top-$k$ 重要特征集合的 Jaccard 衡量两个窗口使用的特征是否一致。本章 Top-2 只有 $1/3$，必须报告不稳定；即使为 1，也不证明因果。正式研究可加入 permutation importance、SHAP 或消融，但每种方法都要声明背景分布和相关特征处理。
+
+漂移至少区分输入漂移 $P(X)$、标签漂移 $P(Y)$、概念漂移 $P(Y\mid X)$ 与执行漂移。冻结均值距离为 $0.75$，超过 0.5 后停止自动上线并进入重校准/重训练审批。响应动作需事前冻结，不能看到亏损后再挑指标解释。
+
+\begin{implementationnote}
+\begin{lstlisting}[language=bash]
+uv run python notebooks/lower/ml_alpha_validation.py \
+  evidence/ml-alpha-validation/oracle.json
+\end{lstlisting}
+\end{implementationnote}
+
+本单元向 Route Capstone 交付：嵌套切分、cross-fitted 预测、校准报告、解释稳定性和漂移响应账本。
+
+\input{tex/lower/chapters/ml-alpha-validation-questions}
