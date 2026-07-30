@@ -8,7 +8,6 @@
     "surface_library_gap": 0.0,
     "closed_library_gap": 0.0,
     "pde_library_gap": 0.0,
-    "mc_library_gap": 0.0,
     "forward_calendar_passed": 1
   },
   "absolute_tolerance": 1e-9,

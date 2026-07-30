@@ -80,16 +80,13 @@ def library_implicit_fd_call(
     return float(np.interp(spot, grid, values))
 
 
-def library_monte_carlo_call(
+def library_quadrature_call(
     spot: float,
     strike: float,
     rate: float,
     sigma: float,
     maturity: float,
-    samples: int,
-    seed: int,
 ) -> tuple[float, float]:
-    del samples, seed
     root_t = math.sqrt(maturity)
 
     def discounted_payoff(z_value: float) -> float:
@@ -123,6 +120,6 @@ __all__ = [
     "library_black_scholes_call",
     "library_binomial_call",
     "library_implicit_fd_call",
-    "library_monte_carlo_call",
+    "library_quadrature_call",
     "library_total_variance_coefficients",
 ]

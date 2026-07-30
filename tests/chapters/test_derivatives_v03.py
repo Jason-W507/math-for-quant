@@ -19,7 +19,7 @@ from math_for_quant.lower.derivatives_numerics_library import (
     library_black_scholes_call,
     library_binomial_call,
     library_implicit_fd_call,
-    library_monte_carlo_call,
+    library_quadrature_call,
 )
 from math_for_quant.lower.derivatives_stochastic import (
     nested_quadratic_variation,
@@ -75,11 +75,11 @@ class DerivativesV03Tests(unittest.TestCase):
             ),
             0.03,
         )
-        price, standard_error = library_monte_carlo_call(
-            100.0, 100.0, 0.02, 0.2, 1.0, 20_000, 23
+        price, quadrature_error = library_quadrature_call(
+            100.0, 100.0, 0.02, 0.2, 1.0
         )
         self.assertLess(abs(price - closed), 1e-8)
-        self.assertLess(standard_error, 1e-8)
+        self.assertLess(quadrature_error, 1e-8)
 
     def test_forward_normalized_calendar_gate_supports_dividends(self) -> None:
         nodes = []
@@ -117,6 +117,9 @@ class DerivativesV03Tests(unittest.TestCase):
         ):
             self.assertIn(key, observed)
         self.assertEqual(observed["forward_calendar_passed"], 1)
+        self.assertLessEqual(
+            observed["mc_library_gap"], 2.0 * observed["mc_standard_error"]
+        )
         greeks = greek_convergence(
             100.0, 100.0, 0.02, 0.2, 1.0, steps=(1.0, 0.5, 0.25, 0.125)
         )

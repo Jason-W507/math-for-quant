@@ -48,9 +48,11 @@ def main(oracle_path: Path) -> int:
         raise SystemExit("nonuniform convexity failure injection did not reject")
     if max(
         observed["closed_library_gap"], observed["tree_library_gap"],
-        observed["pde_library_gap"], observed["mc_library_gap"],
+        observed["pde_library_gap"],
     ) > 1e-10:
         raise SystemExit("transparent/mature-library pricing paths diverged")
+    if observed["mc_library_gap"] > 2.0 * observed["mc_standard_error"]:
+        raise SystemExit("Monte Carlo estimate misses the quadrature reference budget")
     print("derivatives-numerics=passed " + " ".join(f"{key}={value:.6g}" for key, value in observed.items()))
     return 0
 
@@ -58,7 +60,8 @@ def main(oracle_path: Path) -> int:
 # %% [markdown]
 # **中间证据与敏感性。** 图中分别保留空间网格、时间网格、价格域边界和采样标准误，
 # 因而总 PDE 偏差不会被错误地贴成单一“离散误差”。透明 Thomas 求解与 SciPy
-# `solve_banded`、逐层树与 SciPy 二项分布、手写正态 CDF 与 SciPy `ndtr` 分别对照。
+# `solve_banded`、逐层树与 SciPy 二项分布、手写正态 CDF 与 SciPy `ndtr` 分别对照；
+# Monte Carlo 则与不共享随机样本的 SciPy 自适应积分比较，并以标准误解释差距。
 #
 # **限制。** 合成曲面由模型自身生成，只能验证恢复与约束；真实报价还需要 bid/ask、
 # 报价时间、远期和贴现曲线。固定网格的误差差值是诊断，不是严格误差上界。
