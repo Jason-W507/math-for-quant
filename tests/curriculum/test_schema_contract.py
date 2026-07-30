@@ -102,12 +102,20 @@ class SchemaDrivenCurriculumTests(unittest.TestCase):
         self.assertIsNone(validate_document(licenses, "licenses"))
 
     def test_track_seam_rejects_a_route_before_three_units_are_accepted(self) -> None:
+        path = self.fixture(
+            "multifactor-one-draft.json",
+            lambda manifest: next(
+                unit
+                for unit in manifest["units"]
+                if unit["id"] == "lower.multifactor.estimation"
+            ).__setitem__("state", "draft"),
+        )
         result = subprocess.run(
             [
                 sys.executable,
                 str(ROOT / "tools" / "check_learning_unit.py"),
                 "--manifest",
-                str(ROOT / "curriculum" / "manifest.json"),
+                str(path),
                 "--track",
                 "multifactor",
             ],

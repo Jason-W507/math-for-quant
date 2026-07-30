@@ -27,7 +27,10 @@
         "data/fixtures/lower-ch03.json",
         "data/fixtures/lower-ch04.json",
         "data/fixtures/lower-ch05.json",
-        "data/fixtures/lower-ch06.json"
+        "data/fixtures/lower-ch06.json",
+        "data/fixtures/multifactor-model.json",
+        "data/fixtures/multifactor-estimation.json",
+        "data/fixtures/multifactor-research.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",
@@ -45,6 +48,16 @@
       "license_id": "CC0-1.0",
       "license_file": "data/ch17/README.md",
       "required_marker": "SPDX-License-Identifier: CC0-1.0"
+    },
+    {
+      "id": "multifactor-wdi-snapshot",
+      "paths": ["data/real/multifactor-wdi-2013-2014.json"],
+      "kind": "frozen-public-data",
+      "source": "World Bank World Development Indicators",
+      "version": "2013-signal-2014-outcome-snapshot",
+      "license_id": "CC-BY-4.0",
+      "license_file": "data/real/WORLD-BANK-CC-BY-4.0.md",
+      "required_marker": "Creative Commons Attribution 4.0"
     }
   ]
 }

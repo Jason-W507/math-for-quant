@@ -249,7 +249,13 @@ class ContractTests(LearningUnitCase):
             f"accepted-units={accepted}\n"
             "learning-unit contract passed\n",
         )
-        self.assertIn("lower.ch01", {unit["id"] for unit in units})
+        self.assertTrue(
+            {
+                "lower.multifactor.model",
+                "lower.multifactor.estimation",
+                "lower.multifactor.research",
+            }.issubset({unit["id"] for unit in units})
+        )
         self.assertEqual(result.stderr, "")
 
     def test_reader_registries_cover_every_published_unit_term(self) -> None:

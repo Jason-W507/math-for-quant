@@ -422,27 +422,135 @@
       }
     },
     {
-      "id": "lower.ch01",
-      "title": "多因子与计量：从横截面信号到研究包",
+      "id": "lower.multifactor.model",
+      "title": "多因子模型：预测回归与风险价格",
       "volume": "lower",
-      "capstone": true,
+      "track": "multifactor",
+      "track_stage": "model-math",
+      "capstone": false,
       "state": "accepted",
       "published": true,
       "prerequisites": ["upper.ch06", "upper.ch10", "upper.ch13", "upper.ch14", "upper.ch16", "upper.ch17"],
       "evidence": {
-        "notation_symbols": ["\\mathcal I_t", "R^{\\mathrm{net}}"],
-        "glossary_terms": ["时点数据", "数据泄漏", "交易成本", "容量", "可复现研究包"],
-        "notation_and_assumptions": "tex/lower/chapters/multifactor.tex",
-        "core_derivation": "tex/lower/chapters/multifactor.tex",
+        "notation_symbols": ["\\mathcal I_t"],
+        "glossary_terms": ["时点数据", "数据泄漏", "多重检验"],
+        "notation_and_assumptions": "tex/lower/chapters/multifactor-model.tex",
+        "core_derivation": "tex/lower/chapters/multifactor-model.tex",
         "independent_oracle": {
-          "source": "notebooks/lower/ch01_multifactor.py",
-          "oracle": "evidence/lower-ch01/oracle.json",
-          "command": ["{python}", "notebooks/lower/ch01_multifactor.py", "evidence/lower-ch01/oracle.json"]
+          "source": "notebooks/lower/multifactor_model.py",
+          "oracle": "evidence/multifactor-model/oracle.json",
+          "command": ["{python}", "notebooks/lower/multifactor_model.py", "evidence/multifactor-model/oracle.json"]
         },
-        "questions": "tex/lower/chapters/multifactor-questions.tex",
-        "hints": "tex/lower/chapters/multifactor-hints.tex",
-        "solutions": "tex/lower/chapters/multifactor-solutions.tex",
-        "capstone_connection": "tex/lower/chapters/multifactor.tex"
+        "questions": "tex/lower/chapters/multifactor-model-questions.tex",
+        "hints": "tex/lower/chapters/multifactor-model-hints.tex",
+        "solutions": "tex/lower/chapters/multifactor-model-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/multifactor-model.tex",
+        "dual_track_data": {
+          "oracle_fixture": "data/fixtures/multifactor-model.json",
+          "real_data_snapshot": "data/real/multifactor-wdi-2013-2014.json",
+          "license": "data/real/WORLD-BANK-CC-BY-4.0.md",
+          "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b",
+          "time_protocol": "evidence/multifactor/real-data.json"
+        },
+        "dual_implementation": {
+          "transparent": "src/math_for_quant/lower/multifactor_estimation.py",
+          "library": "src/math_for_quant/lower/multifactor_library.py"
+        },
+        "teaching_notebook": "notebooks/lower/multifactor_model.py",
+        "route_report": {
+          "source": "tools/build_multifactor_report.py",
+          "command": ["{python}", "tools/build_multifactor_report.py"],
+          "expected": "reports/multifactor-v03-summary.md"
+        },
+        "shared_solutions": "tex/solutions-main.tex"
+      }
+    },
+    {
+      "id": "lower.multifactor.estimation",
+      "title": "多因子估计：正则化、数值实现与外部数据",
+      "volume": "lower",
+      "track": "multifactor",
+      "track_stage": "estimation-numerics",
+      "capstone": false,
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["lower.multifactor.model"],
+      "evidence": {
+        "notation_symbols": ["\\mathcal I_t"],
+        "glossary_terms": ["时点数据", "数据泄漏", "数值稳定性"],
+        "notation_and_assumptions": "tex/lower/chapters/multifactor-estimation.tex",
+        "core_derivation": "tex/lower/chapters/multifactor-estimation.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/multifactor_estimation.py",
+          "oracle": "evidence/multifactor-estimation/oracle.json",
+          "command": ["{python}", "notebooks/lower/multifactor_estimation.py", "evidence/multifactor-estimation/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/multifactor-estimation-questions.tex",
+        "hints": "tex/lower/chapters/multifactor-estimation-hints.tex",
+        "solutions": "tex/lower/chapters/multifactor-estimation-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/multifactor-estimation.tex",
+        "dual_track_data": {
+          "oracle_fixture": "data/fixtures/multifactor-estimation.json",
+          "real_data_snapshot": "data/real/multifactor-wdi-2013-2014.json",
+          "license": "data/real/WORLD-BANK-CC-BY-4.0.md",
+          "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b",
+          "time_protocol": "evidence/multifactor/real-data.json"
+        },
+        "dual_implementation": {
+          "transparent": "src/math_for_quant/lower/multifactor_estimation.py",
+          "library": "src/math_for_quant/lower/multifactor_library.py"
+        },
+        "teaching_notebook": "notebooks/lower/multifactor_estimation.py",
+        "route_report": {
+          "source": "tools/build_multifactor_report.py",
+          "command": ["{python}", "tools/build_multifactor_report.py"],
+          "expected": "reports/multifactor-v03-summary.md"
+        },
+        "shared_solutions": "tex/solutions-main.tex"
+      }
+    },
+    {
+      "id": "lower.multifactor.research",
+      "title": "多因子研究：组合、摩擦与可复现研究包",
+      "volume": "lower",
+      "track": "multifactor",
+      "track_stage": "oos-frictions-capstone",
+      "capstone": true,
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["lower.multifactor.estimation"],
+      "evidence": {
+        "notation_symbols": ["R^{\\mathrm{net}}"],
+        "glossary_terms": ["交易成本", "换手率", "容量", "可复现研究包"],
+        "notation_and_assumptions": "tex/lower/chapters/multifactor-research.tex",
+        "core_derivation": "tex/lower/chapters/multifactor-research.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/multifactor_research.py",
+          "oracle": "evidence/multifactor-research/oracle.json",
+          "command": ["{python}", "notebooks/lower/multifactor_research.py", "evidence/multifactor-research/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/multifactor-research-questions.tex",
+        "hints": "tex/lower/chapters/multifactor-research-hints.tex",
+        "solutions": "tex/lower/chapters/multifactor-research-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/multifactor-research.tex",
+        "dual_track_data": {
+          "oracle_fixture": "data/fixtures/multifactor-research.json",
+          "real_data_snapshot": "data/real/multifactor-wdi-2013-2014.json",
+          "license": "data/real/WORLD-BANK-CC-BY-4.0.md",
+          "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b",
+          "time_protocol": "evidence/multifactor/real-data.json"
+        },
+        "dual_implementation": {
+          "transparent": "src/math_for_quant/lower/multifactor_research.py",
+          "library": "src/math_for_quant/lower/multifactor_library.py"
+        },
+        "teaching_notebook": "notebooks/lower/multifactor_research.py",
+        "route_report": {
+          "source": "tools/build_multifactor_report.py",
+          "command": ["{python}", "tools/build_multifactor_report.py"],
+          "expected": "reports/multifactor-v03-summary.md"
+        },
+        "shared_solutions": "tex/solutions-main.tex"
       }
     },
     {

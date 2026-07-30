@@ -1,0 +1,9 @@
+{
+  "signals": [[-2.0, -1.0, 1.0, 2.0], [-1.0, 2.0, -2.0, 1.0]],
+  "realized_returns": [[-0.02, -0.01, 0.01, 0.03], [-0.01, 0.02, -0.02, 0.01]],
+  "market_caps": [[1.0, 2.0, 3.0, 4.0], [1.0, 4.0, 2.0, 3.0]],
+  "quantiles": 2,
+  "holding_periods": 1,
+  "cost_per_unit_turnover": 0.001,
+  "capacity_impact": 0.0005
+}

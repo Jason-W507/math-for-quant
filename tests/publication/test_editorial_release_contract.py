@@ -95,19 +95,20 @@ class EditorialReleaseContractTests(unittest.TestCase):
         solutions = solutions_main.read_text(encoding="utf-8")
         for number in range(1, 18):
             self.assertIn(rf"\input{{tex/upper/solutions/ch{number:02d}}}", solutions)
-        for route in (
-            "multifactor",
-            "stat-arb",
-            "ml-alpha",
-            "derivatives",
-            "portfolio-risk",
-            "microstructure",
-        ):
-            self.assertIn(rf"\input{{tex/lower/chapters/{route}-solutions}}", solutions)
-
         manifest = __import__("json").loads(
             (ROOT / "curriculum" / "manifest.json").read_text(encoding="utf-8")
         )
+        lower_solutions = {
+            unit["evidence"]["solutions"]
+            for unit in manifest["units"]
+            if unit.get("volume") == "lower"
+            and unit.get("published")
+            and unit.get("state") == "accepted"
+        }
+        for path in lower_solutions:
+            source = path.removesuffix(".tex")
+            self.assertIn(rf"\input{{{source}}}", solutions)
+
         supplement = next(
             item for item in manifest["supplements"] if item["id"] == "solutions"
         )

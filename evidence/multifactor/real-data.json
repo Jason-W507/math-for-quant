@@ -1,0 +1,14 @@
+{
+  "source": "World Bank World Development Indicators",
+  "source_url": "https://databank.worldbank.org/source/world-development-indicators",
+  "upstream_snapshot": "https://gist.github.com/sachinsdate/67b12abd253c571b73c42eae8ea79f91",
+  "license": "CC-BY-4.0",
+  "license_url": "https://www.worldbank.org/en/about/legal/terms-of-use-for-datasets",
+  "snapshot_date": "2026-07-30",
+  "signal_year": 2013,
+  "outcome_year": 2014,
+  "time_protocol": "For every country, the 2013 gross-capital-formation growth value is the signal and the 2014 GDP-per-capita growth value is the later outcome.",
+  "transformation": "Selected the seven countries with both named observations and serialized the published decimal values without imputation or rescaling.",
+  "scope_limit": "Macroeconomic cross-sectional workflow illustration only; not equity-alpha evidence and not a correctness oracle.",
+  "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b"
+}

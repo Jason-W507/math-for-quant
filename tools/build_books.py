@@ -27,6 +27,11 @@ MAX_OVERFULL_POINTS = 2.0
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build the two ElegantBook volumes.")
     parser.add_argument("--volume", default="all")
+    parser.add_argument(
+        "--skip-supplements",
+        action="store_true",
+        help="Build only the selected main volume; useful for local layout iteration.",
+    )
     return parser.parse_args()
 
 
@@ -167,7 +172,9 @@ def main() -> int:
         for identifier in selected:
             pdf = build_volume(volumes[identifier])
             print(f"volume={identifier} pdf={pdf.relative_to(ROOT).as_posix()}")
-            for supplement in attached_supplements(manifest, identifier):
+            for supplement in (
+                [] if args.skip_supplements else attached_supplements(manifest, identifier)
+            ):
                 if supplement["id"] in built_supplements:
                     continue
                 supplement_pdf = build_volume(supplement)

@@ -1,0 +1,81 @@
+\chapter{多因子模型：预测回归与风险价格}
+\label{ch:lower-multifactor-model}
+
+\begin{itemize}
+  \item 直接先修：上册第 6、10、13、14、16、17 章；路线诊断见第 \ref{route:multifactor} 节。
+  \item 学习产出：能从估计对象、数据轴和识别假设区分预测型 Fama--MacBeth 与经典两遍资产定价回归。
+  \item 研究边界：本章的精确线性面板是计算 oracle，不是市场规律、因果证据或实盘 alpha。
+\end{itemize}
+
+\section{先画清三根轴}
+
+令 $i$ 表示资产，$t$ 表示决策时点，$k$ 表示特征或因子。预测研究在 $t$ 时刻只能使用合法信息集 $\mathcal I_t$ 中的 $x_{i,t}$，目标是之后实现的 $r_{i,t+1}$：
+\[
+r_{i,t+1}=a_t+x_{i,t}^{\mathsf T}b_t+u_{i,t+1}.
+\]
+这里的 $b_t$ 是当期横截面预测系数。它不自动是结构性风险价格，也不等于因果处理效应。若把财报修订值、未来指数成分或 $t+1$ 的标准化参数回填到 $t$，线性代数仍可正确运行，但研究问题已经失效。
+
+对单一中心化信号，含截距 OLS 斜率为
+\[
+\hat b_t=\frac{\sum_i(x_{i,t}-\bar x_t)(r_{i,t+1}-\bar r_{t+1})}
+{\sum_i(x_{i,t}-\bar x_t)^2}.
+\]
+冻结小面板的两期斜率是 $0.020$ 与 $0.030$，所以时间均值是 $0.025$。把第二期信号乘以 2 会把该期斜率缩为 $0.015$，但不改变排序。这说明系数的单位依赖信号尺度，而 Rank IC 不依赖正的线性缩放。
+
+\begin{diagnostic}
+信号日期必须严格早于结果日期。整体调用 \texttt{shift(-1)} 只能改变数组位置，不能证明发布日期、修订历史、成分股资格和停牌状态已按时点冻结。
+\end{diagnostic}
+
+\section{预测型 Fama--MacBeth}
+
+第一步在每个 $t$ 做一次横截面回归，保存 $\hat b_t$；第二步对完整系数序列求均值：
+\[
+\bar b=\frac1T\sum_{t=1}^T\hat b_t,
+\qquad
+\widehat{\operatorname{se}}(\bar b)
+=\sqrt{\frac{1}{T(T-1)}\sum_{t=1}^T(\hat b_t-\bar b)^2}.
+\]
+若滚动收益或平滑信号令 $\hat b_t$ 自相关，应使用声明带宽的 HAC 长期方差，而不能把同一期资产数当成独立时间样本\cite{fama1973risk,newey1987simple}。预测型协议回答“给定时点特征是否预测下一期收益”；它不要求特征是可交易因子的 beta。
+
+\section{经典两遍资产定价回归}
+
+经典两遍法的第一步沿时间轴估计每个资产对可交易或已声明因子 $f_t$ 的暴露：
+\[
+r_{i,t}=\alpha_i+\beta_i^{\mathsf T}f_t+\varepsilon_{i,t}.
+\]
+第二步沿资产轴回归平均收益：
+\[
+\bar r_i=\lambda_0+\beta_i^{\mathsf T}\lambda+\eta_i.
+\]
+$\lambda$ 才是该模型中的因子风险价格。本章精确面板设 $\beta=(0.5,1,1.5)$、资产 alpha 为 $0.004$，因子收益均值为 $0.006$；两遍回归恢复相同 beta，并得到 $\hat\lambda=0.006$。这与前一节的预测斜率 $0.025$ 是不同估计对象，数值相等也不能互换含义。
+
+第二遍使用第一遍估计的 $\hat\beta_i$，因此解释变量含估计误差。Shanken 型修正讨论这类生成回归量对风险价格推断的影响；常见标量诊断包含
+\[
+\sqrt{1+\lambda^{\mathsf T}\Sigma_f^{-1}\lambda}.
+\]
+它依赖具体模型、同方差/条件分布、因子可交易性和样本设定，不能把这个乘数机械套在所有预测回归标准误上\cite{shanken1992beta}。
+
+\section{相关、秩相关与中性化}
+
+Pearson IC 保留线性距离，Rank IC 只保留次序并需要声明并列秩规则。中性化则把信号投影到暴露矩阵 $Z_t$ 的正交补：
+\[
+x_t^\perp=x_t-Z_t(Z_t^{\mathsf T}Z_t)^{-1}Z_t^{\mathsf T}x_t,
+\qquad Z_t^{\mathsf T}x_t^\perp=0.
+\]
+实现应使用 QR、SVD 或最小二乘而非显式求逆，并在秩亏或条件数过高时拒绝。中性化不是免费的“清洁”：若规模同时承载预测信息，残差化会连同风险暴露一起删除。
+
+\section{多重检验的保证边界}
+
+每尝试一个特征、窗口、预处理、持有期或资产池，就消耗一次研究选择权。Benjamini--Hochberg（BH）把排序后的 $p_{(j)}$ 与 $j\alpha/m$ 比较，在独立或适当正依赖条件下控制 FDR\cite{benjamini1995controlling}。任意相关、层级搜索或根据结果重定义检验族时，不能只报告“BH 已通过”；应保存完整尝试账本，并考虑更保守校正、重采样或独立最终测试。
+
+冻结零信号搜索进行 20 次尝试，朴素 $p<0.05$ 留下 2 项，BH 拒绝 0 项。这不是证明所有信号无效，而是说明当前检验族的证据不足。删除 18 个失败尝试后把 $m$ 写成 2，会直接破坏审计边界\cite{white2000reality,bailey2017backtest}。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/multifactor_model.py}。图中分别显示预测斜率序列与经典风险价格；日期相等的故障注入必须以稳定类别拒绝。
+\end{implementationnote}
+
+\section{连接到路线 Capstone}
+
+Capstone 的模型卡必须先声明属于“特征预测”还是“beta 定价”，列出时间轴、资产轴、因子轴、参数单位和识别限制。只有模型对象冻结后，下一章的正则化与库实现才有可比较的目标。
+
+\input{tex/lower/chapters/multifactor-model-questions}

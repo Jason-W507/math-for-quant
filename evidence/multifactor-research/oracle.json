@@ -1,0 +1,20 @@
+{
+  "expected": {
+    "gross": 0.0325,
+    "net": 0.03,
+    "turnover": 2.0,
+    "capitalization_net": 0.02014285714285714,
+    "real_correlation": -0.3366540584305577,
+    "misalignment_rejected": 1
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "The two synthetic long-short period returns are hand-calculated as 0.035 and 0.030; costs follow from explicit turnover. The frozen WDI correlation is illustrative and is not the oracle.",
+  "published_markers": [
+    "两期等权分组毛收益为 $0.035$ 与 $0.030$，期均值为 $0.0325$。",
+    "扣除 $0.002$ 换手成本和 $0.0005$ 容量冲击后，净收益为 $0.0300$。"
+  ],
+  "fixture": {
+    "path": "data/fixtures/multifactor-research.json",
+    "sha256": "6b73f163bf0b607c365839f91be86588ed9b82f4aaec36fbaa8af3ea7d844c6f"
+  }
+}

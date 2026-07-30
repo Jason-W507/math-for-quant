@@ -1,0 +1,16 @@
+{
+  "source": "World Development Indicators",
+  "signal_name": "Gross capital formation growth (annual percent)",
+  "outcome_name": "GDP per capita growth (annual percent)",
+  "signal_year": 2013,
+  "outcome_year": 2014,
+  "rows": [
+    {"country": "Belgium", "signal": -3.785966190, "outcome": 1.128595725},
+    {"country": "Czech Republic", "signal": -4.241565603, "outcome": 2.154500479},
+    {"country": "France", "signal": 0.251852805, "outcome": 0.479077572},
+    {"country": "Ireland", "signal": -5.929377347, "outcome": 7.921896745},
+    {"country": "Portugal", "signal": -5.055748940, "outcome": 1.337119967},
+    {"country": "United Kingdom", "signal": 7.044558349, "outcome": 2.235458153},
+    {"country": "United States", "signal": 4.665742553, "outcome": 1.776837703}
+  ]
+}

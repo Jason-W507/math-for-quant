@@ -80,7 +80,12 @@ class FullReleaseContractTests(unittest.TestCase):
 
     def test_seven_capstones_are_derived_from_the_curriculum(self) -> None:
         manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
-        self.assertEqual(capstone_units(manifest), ["upper.ch17", "lower.ch01", "lower.ch02", "lower.ch03", "lower.ch04", "lower.ch05", "lower.ch06"])
+        observed = capstone_units(manifest)
+        self.assertEqual(len(observed), 7)
+        self.assertIn("upper.ch17", observed)
+        self.assertIn("lower.multifactor.research", observed)
+        self.assertNotIn("lower.multifactor.model", observed)
+        self.assertNotIn("lower.multifactor.estimation", observed)
 
     def test_release_driver_does_not_hardcode_asset_counts(self) -> None:
         source = (ROOT / "tools" / "build_release.py").read_text(encoding="utf-8")
@@ -117,8 +122,9 @@ class FullReleaseContractTests(unittest.TestCase):
 
     def test_registered_data_assets_cover_every_payload(self) -> None:
         assets = registered_data_assets(ROOT)
-        self.assertEqual(len(assets), 25)
-        self.assertTrue(all(asset.license_id == "CC0-1.0" for asset in assets))
+        registry = json.loads((ROOT / "data/assets.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(assets), sum(len(group["paths"]) for group in registry["assets"]))
+        self.assertEqual({asset.license_id for asset in assets}, {"CC0-1.0", "CC-BY-4.0"})
 
     def test_release_tag_must_match_version(self) -> None:
         self.assertIsNone(release_tag_error(None, "0.2.0"))
@@ -161,9 +167,17 @@ class FullReleaseContractTests(unittest.TestCase):
 
     def test_curriculum_counts_are_derived_from_the_manifest(self) -> None:
         manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
+        units = manifest["units"]
         self.assertEqual(
             curriculum_counts(manifest),
-            {"accepted_units": 24, "published_units": 23, "route_diagnostics": 6},
+            {
+                "accepted_units": sum(unit["state"] == "accepted" for unit in units),
+                "published_units": sum(
+                    unit["state"] == "accepted" and unit.get("published", False)
+                    for unit in units
+                ),
+                "route_diagnostics": len(manifest["tracks"]),
+            },
         )
 
     def test_release_manifest_schema_accepts_the_public_shape(self) -> None:

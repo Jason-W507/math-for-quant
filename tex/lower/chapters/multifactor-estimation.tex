@@ -1,0 +1,74 @@
+\chapter{多因子估计：正则化、数值实现与外部数据}
+\label{ch:lower-multifactor-estimation}
+
+\begin{itemize}
+  \item 直接先修：第 \ref{ch:lower-multifactor-model} 章与上册数值稳定、优化章节。
+  \item 学习产出：能手写并验证 OLS、ridge、lasso 与中性化，再用成熟库交叉检查而不外包数学理解。
+  \item 双轨数据：合成小面板负责正确性；冻结 WDI 截面只负责外部来源、许可、哈希和时序协议演示。
+\end{itemize}
+
+\section{从正规方程到数值求解}
+
+所有变换参数都必须由决策时点的信息集 $\mathcal I_t$ 估计并冻结；这条时间边界先于任何求解器选择。
+
+线性模型 $y=X\beta+\varepsilon$ 的 OLS 目标是
+\[
+\min_\beta \frac12\lVert y-X\beta\rVert_2^2.
+\]
+满列秩时正规方程给出 $(X^{\mathsf T}X)\hat\beta=X^{\mathsf T}y$，但实现不应显式计算逆矩阵。QR 保留最小二乘几何，SVD 还能揭示近零奇异值；条件数门禁回答“该样本能否稳定区分这些暴露”，不能被“求解器返回成功”替代。
+
+面板研究还要声明误差依赖：同一资产跨期相关、同一期资产共同冲击、行业聚类与重叠持有期会改变标准误。固定效应吸收常数异质性，但不会自动解决未来信息、动态偏误或错误聚类层级。
+
+\section{Ridge：用偏差换稳定}
+
+Ridge 目标为
+\[
+\min_\beta \frac12\lVert y-X\beta\rVert_2^2+\frac\lambda2\lVert\beta\rVert_2^2,
+\qquad
+\hat\beta_{\mathrm{ridge}}=(X^{\mathsf T}X+\lambda I)^{-1}X^{\mathsf T}y.
+\]
+$\lambda>0$ 抬高小特征值，缓和共线性导致的方差放大，但引入偏差\cite{hoerl1970ridge}。惩罚参数必须只在训练/选择窗口决定；用最终测试期选 $\lambda$ 会把样本外变成调参样本。
+
+本章一列设计的透明 ridge 系数为 $0.465574$。\texttt{scikit-learn} 在同一目标定义、同一截距处理下给出相同结果。若库默认标准化、自动拟合截距或使用不同损失缩放，系数差异首先是契约差异，不应立即归因于数值错误。
+
+\section{Lasso：稀疏不是稳定选择}
+
+Lasso 目标为
+\[
+\min_\beta \frac12\lVert y-X\beta\rVert_2^2+\lambda\lVert\beta\rVert_1.
+\]
+坐标下降更新第 $j$ 维时，对去除本维后的残差计算得分 $z_j=x_j^{\mathsf T}r_{-j}$，再使用软阈值
+\[
+\beta_j\leftarrow\frac{\operatorname{sign}(z_j)(|z_j|-\lambda)_+}{x_j^{\mathsf T}x_j}.
+\]
+透明实现得到 $0.470000$，与库实现误差低于 $10^{-10}$\cite{tibshirani1996regression}。零范数特征列必须在迭代前拒绝；高度相关特征中“选中哪一个”可能随小扰动改变，所以稀疏不等于经济解释稳定。
+
+\section{双实现协议}
+
+透明实现负责：展示目标函数、单位、截距规则、更新公式和失败条件。成熟库负责：提供独立实现、更多诊断和工业级数值路径。交叉检查覆盖横截面与面板回归、中性化残差、IC、Rank IC、衰减、BH、ridge 与 lasso；至少比较系数、预测、残差、目标函数与退出状态。只比较“程序跑完”没有证据强度。
+
+\begin{longtable}{p{0.18\textwidth}p{0.34\textwidth}p{0.34\textwidth}}
+\toprule
+任务 & 透明路径 & 成熟库路径 \\
+\midrule
+横截面/两遍回归 & NumPy 最小二乘与手算 oracle & \texttt{statsmodels.OLS} \\
+Ridge & 闭式线性方程 & \texttt{sklearn.linear\_model.Ridge} \\
+Lasso & 坐标下降与软阈值 & \texttt{sklearn.linear\_model.Lasso} \\
+\bottomrule
+\end{longtable}
+
+\section{WDI 冻结截面：只演示研究协议}
+
+外部快照使用 2013 年资本形成增速作信号、2014 年人均 GDP 增速作结果，覆盖 7 个国家，严格满足信号年早于结果年。文件绑定 SHA-256，并记录 World Bank WDI 来源与 CC BY 4.0 许可。冻结相关系数约为 $-0.336654$。
+
+这个数不能被称为股票因子收益：样本只有 7 个国家，变量是宏观增速，没有可交易资产、发布日期滞后、交易成本或因果识别。它的唯一用途是让读者练习“外部数据必须同时带来源、许可、哈希、字段解释、时间协议和限制声明”。合成面板仍是唯一正确性 oracle。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/multifactor_estimation.py}。惩罚路径图展示 ridge 收缩；将设计矩阵换成全零列会触发稳定失败。随后核对透明实现与两个成熟库的最大系数差。
+\end{implementationnote}
+
+\section{连接到路线 Capstone}
+
+Capstone 必须保存训练期变换参数、惩罚路径、选择规则、库版本、条件数和实现差异。若透明实现与库实现不一致，先冻结输入和目标函数，不允许挑选看起来更好的一份输出。
+
+\input{tex/lower/chapters/multifactor-estimation-questions}

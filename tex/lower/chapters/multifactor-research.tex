@@ -1,0 +1,77 @@
+\chapter{多因子研究：组合、摩擦与可复现研究包}
+\label{ch:lower-multifactor-research}
+
+\begin{itemize}
+  \item 直接先修：第 \ref{ch:lower-multifactor-model}--\ref{ch:lower-multifactor-estimation} 章。
+  \item 学习产出：把信号确定性映射为仓位、持有期、换手、成本、容量冲击和净收益。
+  \item 交付边界：一条命令重建路线报告；报告中的每个数字都能回到冻结输入或独立算术。
+\end{itemize}
+
+\section{模型输出不是策略收益}
+
+完整链路必须写成
+\[
+x_{i,t}\longrightarrow \tilde x_{i,t}\longrightarrow q_{i,t}
+\longrightarrow w_{i,t}\longrightarrow R^{\mathrm{gross}}_{t+1}
+\longrightarrow R^{\mathrm{net}}_{t+1}.
+\]
+$\tilde x$ 是时点预处理后的信号，$q$ 是分组，$w$ 是实际仓位。若代码一边计算 IC，一边从 fixture 直接读取“策略收益”，模型与交易台账仍是两条互不相连的管线。
+
+\begin{center}
+\begin{tikzpicture}[node distance=2mm,>=stealth,
+  every node/.style={draw,rounded corners,align=center,minimum height=8mm,
+    text width=16mm,font=\small,inner sep=2pt}]
+\node (signal) {时点\\信号};
+\node[right=of signal] (neutral) {中性化};
+\node[right=of neutral] (group) {分组与\\权重};
+\node[right=of group] (hold) {重叠\\持有};
+\node[right=of hold] (trade) {换手与\\成交};
+\node[right=of trade] (net) {净收益};
+\draw[->] (signal)--(neutral); \draw[->] (neutral)--(group);
+\draw[->] (group)--(hold); \draw[->] (hold)--(trade); \draw[->] (trade)--(net);
+\end{tikzpicture}
+\end{center}
+
+\section{分组、权重与重叠持有期}
+
+先在每个调仓日用冻结资产池排序，再把最低组做空、最高组做多。等权使每一侧绝对权重和为 1；市值权重则在组内按正市值归一化。两者回答不同问题，不能因为某一结果更好而事后选择。
+
+若持有 $H$ 期，每个时点的有效仓位是仍存续 vintage 的平均：
+\[
+w_t=\frac1{|A_t|}\sum_{s\in A_t}w_t^{(s)},
+\qquad A_t=\{s:t-H+1\le s\le t\}.
+\]
+这会平滑仓位并引入收益重叠；推断时需处理序列相关。资产退市、停牌或不可卖空不能靠删除行解决，必须进入可交易集合和退出规则。
+
+\section{换手、成本与容量}
+
+双边换手定义为 $\tau_t=\sum_i|w_{i,t}-w_{i,t-1}|$。最小净收益台账为
+\[
+R^{\mathrm{net}}_{t+1}=w_t^{\mathsf T}r_{t+1}
+-c\tau_t-\operatorname{impact}(w_t,\mathrm{ADV}_t,\sigma_t).
+\]
+冻结两期等权例的毛收益分别为 $0.035$ 与 $0.030$，期均毛收益 $0.0325$；平均双边换手为 2，单位换手成本 $0.001$，容量冲击 $0.0005$，所以净收益为 $0.0300$。市值加权与两期持有给出不同仓位和净收益，这是一项预先声明的敏感性分析，不是择优汇报。
+
+真实报告应拆出佣金、价差、冲击、借券、税费、参与率、成交完成率与资金规模。容量不是一个永久常数；应报告规模到净收益、参与率和成交失败的曲线。
+
+\section{两个错误研究包}
+
+\textbf{错误包 A：预测与收益断开。} 程序打印 AR、回归或 ML 预测，但 \texttt{trade\_return} 直接来自 fixture。审计步骤是追踪每一笔 $w_t$ 是否由冻结预测生成，并用 $w_t r_{t+1}$ 独立重算。修复不是给报告补一句“模型驱动”，而是删除外生收益字段。
+
+\textbf{错误包 B：选择后重写检验族。} 研究者测试 500 个信号，只把 20 个较好结果交给 BH，并把 $m$ 写成 20。审计需要恢复完整尝试账本、参数网格和失败结果；若无法恢复，该证据不能升级为样本外结论。
+
+\section{Route Capstone：可复现多因子研究包}
+
+Capstone 固定交付：研究问题、数据与时间协议、手算小面板、预测或定价模型卡、透明与库实现、训练/选择/最终测试、分组组合、成本容量、两类故障注入、限制报告和一键复现命令。全球通用协议与 A 股涨跌停、停牌、T+1、融券可得性必须分层陈述。
+
+冻结路线报告由下面的命令生成，并与仓库中的期望报告逐字比较：
+\begin{lstlisting}[language=bash]
+uv run python tools/build_multifactor_report.py
+\end{lstlisting}
+报告源文件和期望文件分别登记在课程清单中。WDI 截面只验证外部数据责任；合成组合只验证算术；两者都不允许被描述为实盘业绩。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/multifactor_research.py}。柱状图并列毛收益、成本、容量冲击和净收益；故意裁掉收益面板一列必须触发形状错位失败。
+\end{implementationnote}
+
+\input{tex/lower/chapters/multifactor-research-questions}

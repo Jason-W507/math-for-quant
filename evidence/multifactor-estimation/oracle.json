@@ -1,0 +1,20 @@
+{
+  "expected": {
+    "ridge": 0.46557377049180326,
+    "lasso": 0.47,
+    "ridge_gap": 0.0,
+    "lasso_gap": 0.0,
+    "route_gap": 0.0,
+    "zero_column_rejected": 1
+  },
+  "absolute_tolerance": 1e-10,
+  "provenance": "The one-column ridge and lasso coefficients follow from the closed form and soft-threshold formula; statsmodels and scikit-learn are independent implementation cross-checks.",
+  "published_markers": [
+    "透明 ridge 系数为 $0.465574$，透明 lasso 系数为 $0.470000$。",
+    "零范数特征列必须在迭代前被拒绝。"
+  ],
+  "fixture": {
+    "path": "data/fixtures/multifactor-estimation.json",
+    "sha256": "73f9090d358ca4965cba5106a56575ae3fa40a024fd90864c563e4553830170b"
+  }
+}
