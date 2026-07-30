@@ -82,15 +82,29 @@ def cross_fitted_ridge_predictions(
     return predictions
 
 
-def platt_calibrate(scores: np.ndarray, labels: np.ndarray) -> np.ndarray:
+def platt_calibrate(
+    fit_scores: np.ndarray,
+    fit_labels: np.ndarray,
+    evaluation_scores: np.ndarray,
+    *,
+    fit_ends: int | None = None,
+    evaluation_starts: int | None = None,
+) -> np.ndarray:
     from sklearn.linear_model import LogisticRegression
 
-    values = np.asarray(scores, dtype=float)
-    target = np.asarray(labels, dtype=int)
+    values = np.asarray(fit_scores, dtype=float)
+    target = np.asarray(fit_labels, dtype=int)
+    evaluation = np.asarray(evaluation_scores, dtype=float)
     if values.ndim != 1 or target.shape != values.shape or np.unique(target).size != 2:
         raise ValueError("calibration requires aligned scores and both classes")
+    if evaluation.ndim != 1:
+        raise ValueError("calibration evaluation scores must be a vector")
+    if (fit_ends is None) != (evaluation_starts is None):
+        raise ValueError("calibration time boundary is incomplete")
+    if fit_ends is not None and fit_ends >= evaluation_starts:
+        raise ValueError("calibration evaluation must be later than calibration fit")
     model = LogisticRegression(C=1.0, solver="lbfgs", random_state=0)
-    return model.fit(values[:, None], target).predict_proba(values[:, None])[:, 1]
+    return model.fit(values[:, None], target).predict_proba(evaluation[:, None])[:, 1]
 
 
 def importance_jaccard(left: np.ndarray, right: np.ndarray, *, top_k: int) -> float:

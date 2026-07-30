@@ -1,0 +1,17 @@
+{
+  "expected": {
+    "mlp_loss": 0.0006340625113807619,
+    "checkpoint_restore_gap": 0.0,
+    "rnn_order_gap": 1.1350940465927124,
+    "attention_order_gap": 0.5838527083396912,
+    "transformer_order_gap": 1.037554383277893,
+    "linear_library_gap": 5.551115123125783e-17,
+    "stump_library_gap": 0.0,
+    "boosting_library_gap": 0.0,
+    "lora_parameter_ratio": 0.3178294573643411,
+    "full_finetune_score_mean": 0.5252046585083008,
+    "lora_score_mean": 0.5175034999847412
+  },
+  "absolute_tolerance": 1e-6,
+  "provenance": "Deterministic implementation-regression values; this file is deliberately not called an independent oracle."
+}

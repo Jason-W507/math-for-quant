@@ -6,10 +6,13 @@ import numpy as np
 
 from math_for_quant.lower.ml_alpha_models import (
     TorchTrainingConfig,
+    restore_tiny_mlp_predictions,
     sequence_order_sensitivity,
     train_tiny_mlp,
 )
+from math_for_quant.lower.ml_alpha_library import cross_check_classical_models
 from math_for_quant.lower.ml_alpha_research import (
+    AlphaLedgerInputs,
     PortfolioPolicy,
     build_alpha_ledger,
     pairwise_ranking_loss,
@@ -22,6 +25,7 @@ from math_for_quant.lower.ml_alpha_text import (
 from math_for_quant.lower.ml_alpha_validation import (
     PurgedNestedSplit,
     cross_fitted_ridge_predictions,
+    platt_calibrate,
     validate_model_selection,
     validate_nested_time_split,
     validate_preprocessing_cutoff,
@@ -43,8 +47,21 @@ class MlAlphaV03Tests(unittest.TestCase):
         right = train_tiny_mlp(features, target, config=config)
         np.testing.assert_allclose(left.predictions, right.predictions, atol=0.0)
         self.assertEqual(left.checkpoint_sha256, right.checkpoint_sha256)
+        restored = restore_tiny_mlp_predictions(left.checkpoint, features)
+        np.testing.assert_allclose(restored, left.predictions, atol=0.0)
         self.assertLess(left.loss, 0.03)
         self.assertEqual(left.batch_count, 1)
+
+    def test_classical_route_exercises_linear_tree_and_boosting(self) -> None:
+        result = cross_check_classical_models(
+            np.asarray([-2.0, -1.0, 0.0, 1.0, 2.0]),
+            np.asarray([-0.4, -0.2, 0.0, 1.0, 1.2]),
+            np.asarray([-1.5, 0.5, 1.5]),
+            boosting_rounds=2,
+        )
+        self.assertLess(result.linear_max_gap, 1e-12)
+        self.assertLess(result.stump_max_gap, 1e-12)
+        self.assertLess(result.boosting_max_gap, 1e-12)
 
     def test_sequence_models_retain_order(self) -> None:
         sequence = np.asarray([[[1.0], [2.0], [4.0], [8.0]]], dtype=np.float32)
@@ -88,6 +105,22 @@ class MlAlphaV03Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "test reselection"):
             validate_model_selection(attempts=3, budget=3, test_reused=True)
 
+    def test_probability_calibration_is_evaluated_after_its_fit_window(self) -> None:
+        calibrated = platt_calibrate(
+            np.asarray([-2.0, -1.0, -0.5, 0.5, 1.0, 2.0]),
+            np.asarray([0, 0, 0, 1, 1, 1]),
+            np.asarray([-1.5, -0.25, 0.25, 1.5]),
+        )
+        self.assertEqual(calibrated.shape, (4,))
+        with self.assertRaisesRegex(ValueError, "later than calibration fit"):
+            platt_calibrate(
+                np.asarray([-2.0, 2.0]),
+                np.asarray([0, 1]),
+                np.asarray([-1.0, 1.0]),
+                fit_ends=8,
+                evaluation_starts=8,
+            )
+
     def test_text_adaptation_and_revision_audit_are_explicit(self) -> None:
         audit_text_timestamps(
             publication_dates=["2024-01-01", "2024-01-02"],
@@ -105,30 +138,30 @@ class MlAlphaV03Tests(unittest.TestCase):
             seed=29,
         )
         self.assertEqual(result.token_count, 6)
-        self.assertEqual(result.peft_trainable_parameters < result.full_parameters, True)
+        self.assertEqual(result.encoder_id, "mfq-tiny-text-encoder")
+        self.assertEqual(result.encoder_version, "1.0.0")
+        self.assertEqual(result.encoder_license, "CC0-1.0")
+        self.assertLess(result.lora_trainable_parameters, result.full_trainable_parameters)
         self.assertEqual(result.zero_shot_scores.shape, (2,))
         self.assertEqual(result.few_shot_scores.shape, (2,))
-        self.assertEqual(result.peft_scores.shape, (2,))
+        self.assertEqual(result.full_finetune_scores.shape, (2,))
+        self.assertEqual(result.lora_scores.shape, (2,))
 
     def test_predictions_drive_fills_turnover_costs_and_net_return(self) -> None:
         scores = np.asarray([[0.9, 0.2, -0.8], [-0.7, 0.8, 0.1]])
         realized = np.asarray([[0.02, 0.00, -0.01], [-0.02, 0.03, 0.01]])
         fills = np.asarray([[1.0, 1.0, 1.0], [0.5, 1.0, 0.0]])
-        ledger = build_alpha_ledger(
-            scores=scores,
-            realized_returns=realized,
-            fill_fractions=fills,
-            policy=PortfolioPolicy(long_count=1, short_count=1, gross_limit=2.0, cost_per_unit_turnover=0.001),
+        inputs = AlphaLedgerInputs(
+            scores, realized, fills,
+            PortfolioPolicy(long_count=1, short_count=1, gross_limit=2.0, cost_per_unit_turnover=0.001),
         )
+        ledger = build_alpha_ledger(inputs=inputs)
         np.testing.assert_allclose(ledger.target_positions[0], [1.0, 0.0, -1.0])
         np.testing.assert_allclose(ledger.filled_positions[1], [0.0, 1.0, -1.0])
         self.assertAlmostEqual(ledger.gross_return, 0.05)
         self.assertAlmostEqual(ledger.turnover, 4.0)
         self.assertAlmostEqual(ledger.net_return, 0.046)
-        library_ledger = library_alpha_ledger(
-            scores=scores, realized_returns=realized, fill_fractions=fills,
-            policy=PortfolioPolicy(1, 1, 2.0, 0.001),
-        )
+        library_ledger = library_alpha_ledger(inputs=inputs)
         np.testing.assert_allclose(ledger.filled_positions, library_ledger.filled_positions)
         self.assertGreater(pairwise_ranking_loss(np.asarray([0.8, 0.1]), np.asarray([0.02, -0.01])), 0.0)
         self.assertLess(return_weighted_loss(np.asarray([0.8, -0.5]), np.asarray([0.02, -0.01])), 0.0)

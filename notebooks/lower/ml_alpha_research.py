@@ -16,7 +16,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
-from math_for_quant.lower.ml_alpha_research import PortfolioPolicy, build_alpha_ledger, cross_sectional_mse, pairwise_ranking_loss, return_weighted_loss
+from math_for_quant.lower.ml_alpha_research import AlphaLedgerInputs, PortfolioPolicy, build_alpha_ledger, cross_sectional_mse, pairwise_ranking_loss, return_weighted_loss
 from math_for_quant.lower.ml_alpha_text import audit_text_timestamps
 from math_for_quant.lower.ml_alpha_execution_library import library_alpha_ledger
 from math_for_quant.lower.notebook_evidence import assert_expected, load_oracle_and_fixture
@@ -25,8 +25,9 @@ from math_for_quant.lower.notebook_evidence import assert_expected, load_oracle_
 def main(oracle_path: Path) -> int:
     oracle, fixture = load_oracle_and_fixture(oracle_path)
     scores=np.asarray(fixture["scores"]); returns=np.asarray(fixture["realized_returns"]); fills=np.asarray(fixture["fill_fractions"])
-    ledger=build_alpha_ledger(scores=scores, realized_returns=returns, fill_fractions=fills, policy=PortfolioPolicy(int(fixture["long_count"]),int(fixture["short_count"]),float(fixture["gross_limit"]),float(fixture["cost_per_unit_turnover"])))
-    library_ledger=library_alpha_ledger(scores=scores, realized_returns=returns, fill_fractions=fills, policy=PortfolioPolicy(int(fixture["long_count"]),int(fixture["short_count"]),float(fixture["gross_limit"]),float(fixture["cost_per_unit_turnover"])))
+    inputs=AlphaLedgerInputs(scores, returns, fills, PortfolioPolicy(int(fixture["long_count"]),int(fixture["short_count"]),float(fixture["gross_limit"]),float(fixture["cost_per_unit_turnover"])))
+    ledger=build_alpha_ledger(inputs=inputs)
+    library_ledger=library_alpha_ledger(inputs=inputs)
     audit_text_timestamps(publication_dates=fixture["publication_dates"], revision_dates=fixture["revision_dates"], decision_date=fixture["decision_date"])
     revision_rejected=0
     try: audit_text_timestamps(publication_dates=["2024-01-01"], revision_dates=["2024-01-05"], decision_date="2024-01-03")

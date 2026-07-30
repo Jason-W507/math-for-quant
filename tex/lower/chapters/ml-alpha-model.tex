@@ -13,7 +13,7 @@
 \[
 \mathcal C=\left\{\frac{x_{(j)}+x_{(j+1)}}2:x_{(j)}<x_{(j+1)}\right\},
 \]
-再逐个比较。成熟库对照使用 \texttt{DecisionTreeRegressor(max\_depth=1)}；两者在冻结数据上的预测差为 0。两轮残差 boosting 也与 \texttt{GradientBoostingRegressor} 对拍。这里的“双实现”只验证同一平方损失与树深，不代表不同库默认值天然等价。
+再逐个比较。线性基线先以含截距的 NumPy 最小二乘拟合，再与 \texttt{LinearRegression} 对拍。树桩对照使用 \texttt{DecisionTree}\allowbreak\texttt{Regressor}，并单独固定 \texttt{max\_depth=1}；两轮残差 boosting 与 \texttt{GradientBoosting}\allowbreak\texttt{Regressor} 对拍。三组冻结预测差均为 0。这里的“双实现”只验证声明的截距、平方损失、学习率与树深，不代表不同库默认值天然等价。
 
 线性、树和 boosting 不是被深度模型淘汰的装饰品。它们提供训练时间、解释难度和样本外损失的下界；复杂模型若不能在冻结验证协议下改善决策结果，应保留基线。资产定价中的系统比较也表明，模型灵活性必须与正则化和严格样本外评价一起解释\cite{gu2020mlassetpricing}。
 
@@ -25,7 +25,7 @@
   \item 前向传播产生损失，\texttt{autograd} 计算梯度，优化器更新参数；
   \item 在评估模式与无梯度上下文中冻结推理。
 \end{enumerate}
-代码还固定随机种子、CPU device、epoch 数与学习率，并把配置和参数字节 $D$ 哈希为 checkpoint 指纹 $h(D)$\cite{paszke2019pytorch}。
+代码还固定随机种子、CPU device、epoch 数与学习率，把模型状态、优化器状态、配置和输入维度真正序列化为 checkpoint，再从该文件恢复模型并逐项核对预测；参数字节 $D$ 的指纹记为 $h(D)$\cite{paszke2019pytorch}。
 
 对四个样本训练两层 MLP，最终 MSE 约为 $6.34\times10^{-4}$。这个数不是模型质量结论；真正的证据是同一配置两次运行得到完全相同预测和指纹。若更换 GPU、算子或框架版本，必须重新声明可复现级别，而非默认逐位一致。
 
@@ -45,7 +45,7 @@
 
 \section{NLP/LLM：任务边界先于模型规模}
 
-文本链从 tokenizer 和 embedding 开始，再进入预训练编码器、任务头与决策映射。零样本依赖任务提示或词义规则；少样本利用少量标注形成原型；全量微调更新编码器全部参数；PEFT 只训练 adapter、LoRA 或任务头。LoRA 的核心是冻结预训练权重并学习低秩更新\cite{hu2022lora}。冻结实验以小型编码器代理说明参数边界：可训练参数仅占总参数约 $15.8\%$，不是把它包装成基础模型。
+文本链从 tokenizer 和 embedding 开始，再进入预训练编码器、任务头与决策映射。冻结实验先在无标签文本上做词袋重构预训练，再保存版本为 \texttt{mfq-tiny-text-encoder@1.0.0}、许可为 CC0-1.0 的本地编码器。零样本使用事前词义规则，少样本使用预训练表示原型；全量微调更新 embedding、投影与任务头；LoRA 路径冻结 embedding 和投影基座，只学习投影的低秩更新与任务头\cite{hu2022lora}。它是真实执行的微型预训练/适配链，但不具备基础模型的语料、容量或迁移结论。
 
 真实预训练编码器必须绑定模型卡、许可、权重版本和 tokenizer。新闻或公告还要同时保存首次发布时间、抓取时间与修订时间；决策日后的修订不能回填历史。LLM 生成的标签需保留 prompt、采样参数、原文证据和人工抽查，零/少样本结果不能免除时间审计。
 

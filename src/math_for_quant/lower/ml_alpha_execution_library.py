@@ -3,21 +3,15 @@ from __future__ import annotations
 import numpy as np
 from scipy.linalg import solve_triangular
 
-from math_for_quant.lower.ml_alpha_research import AlphaLedger, PortfolioPolicy
+from math_for_quant.lower.ml_alpha_research import AlphaLedger, AlphaLedgerInputs
 
 
 def library_alpha_ledger(
     *,
-    scores: np.ndarray,
-    realized_returns: np.ndarray,
-    fill_fractions: np.ndarray,
-    policy: PortfolioPolicy,
+    inputs: AlphaLedgerInputs,
 ) -> AlphaLedger:
-    values = np.asarray(scores, dtype=float)
-    returns = np.asarray(realized_returns, dtype=float)
-    fills = np.asarray(fill_fractions, dtype=float)
-    if values.ndim != 2 or returns.shape != values.shape or fills.shape != values.shape:
-        raise ValueError("alpha ledger matrices are misaligned")
+    values, returns, fills = inputs.validated_arrays()
+    policy = inputs.policy
     targets = np.zeros_like(values)
     long_weight = policy.gross_limit / (2.0 * policy.long_count)
     short_weight = policy.gross_limit / (2.0 * policy.short_count)

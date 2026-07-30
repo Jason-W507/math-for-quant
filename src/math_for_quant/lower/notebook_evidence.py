@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
+from collections.abc import Callable
 
 
 def load_oracle_and_fixture(oracle_path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -20,3 +21,13 @@ def assert_expected(
         value = observed[key]
         if abs(float(value) - float(expected)) > tolerance:
             raise SystemExit(f"{key} mismatch: observed={value} expected={expected}")
+
+
+def expect_value_error(callable_: Callable[[], object], diagnostic: str) -> int:
+    try:
+        callable_()
+    except ValueError as error:
+        if diagnostic not in str(error):
+            raise AssertionError(f"wrong diagnostic: {error!s}") from error
+        return 1
+    raise AssertionError(f"expected rejection containing {diagnostic!r}")

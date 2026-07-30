@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import hashlib
+import io
 import json
 
 import numpy as np
@@ -23,8 +24,34 @@ class TrainingArtifact:
     predictions: np.ndarray
     loss: float
     checkpoint_sha256: str
+    checkpoint: bytes
     device: str
     batch_count: int
+
+
+def _tiny_mlp(input_size: int) -> nn.Module:
+    return nn.Sequential(nn.Linear(input_size, 8), nn.Tanh(), nn.Linear(8, 1))
+
+
+def _serialize_checkpoint(
+    model: nn.Module,
+    optimizer: torch.optim.Optimizer,
+    config: TorchTrainingConfig,
+    input_size: int,
+) -> bytes:
+    stream = io.BytesIO()
+    torch.save(
+        {
+            "format": "mfq-tiny-mlp-v1",
+            "config": config.__dict__,
+            "input_size": input_size,
+            "model_state": model.state_dict(),
+            "optimizer_state": optimizer.state_dict(),
+        },
+        stream,
+        _use_new_zipfile_serialization=False,
+    )
+    return stream.getvalue()
 
 
 def _checkpoint_fingerprint(model: nn.Module, config: TorchTrainingConfig) -> str:
@@ -35,6 +62,26 @@ def _checkpoint_fingerprint(model: nn.Module, config: TorchTrainingConfig) -> st
         digest.update(name.encode("utf-8"))
         digest.update(parameter.detach().cpu().contiguous().numpy().tobytes())
     return digest.hexdigest()
+
+
+def restore_tiny_mlp_predictions(
+    checkpoint: bytes, features: np.ndarray, *, device: str = "cpu"
+) -> np.ndarray:
+    requested_device = torch.device(device)
+    if requested_device.type == "cuda" and not torch.cuda.is_available():
+        raise ValueError("requested CUDA device is unavailable")
+    bundle = torch.load(io.BytesIO(checkpoint), map_location=requested_device, weights_only=False)
+    if bundle.get("format") != "mfq-tiny-mlp-v1":
+        raise ValueError("unsupported checkpoint format")
+    x = np.asarray(features, dtype=np.float32)
+    if x.ndim != 2 or x.shape[1] != int(bundle["input_size"]):
+        raise ValueError("checkpoint input shape is incompatible")
+    model = _tiny_mlp(int(bundle["input_size"])).to(requested_device)
+    model.load_state_dict(bundle["model_state"])
+    model.eval()
+    with torch.no_grad():
+        prediction = model(torch.from_numpy(x).to(requested_device)).squeeze(1)
+    return prediction.cpu().numpy().copy()
 
 
 def train_tiny_mlp(
@@ -49,13 +96,14 @@ def train_tiny_mlp(
         raise ValueError("MLP features and target are misaligned")
     if config.epochs < 1 or config.learning_rate <= 0.0:
         raise ValueError("training configuration is invalid")
-    if config.device != "cpu":
-        raise ValueError("the published evidence contract uses the CPU device")
+    device = torch.device(config.device)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise ValueError("requested CUDA device is unavailable")
     torch.manual_seed(config.seed)
     torch.use_deterministic_algorithms(True)
     dataset = TensorDataset(torch.from_numpy(x), torch.from_numpy(y[:, None]))
     loader = DataLoader(dataset, batch_size=len(dataset), shuffle=False)
-    model = nn.Sequential(nn.Linear(x.shape[1], 8), nn.Tanh(), nn.Linear(8, 1))
+    model = _tiny_mlp(x.shape[1]).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
     loss_function = nn.MSELoss()
     batch_count = 0
@@ -63,19 +111,22 @@ def train_tiny_mlp(
     for _ in range(config.epochs):
         for batch_x, batch_y in loader:
             batch_count = len(loader)
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)
             optimizer.zero_grad(set_to_none=True)
             loss = loss_function(model(batch_x), batch_y)
             loss.backward()
             optimizer.step()
     model.eval()
     with torch.no_grad():
-        prediction = model(torch.from_numpy(x)).squeeze(1)
-        final_loss = loss_function(prediction, torch.from_numpy(y))
+        prediction = model(torch.from_numpy(x).to(device)).squeeze(1)
+        final_loss = loss_function(prediction, torch.from_numpy(y).to(device))
+    checkpoint = _serialize_checkpoint(model, optimizer, config, x.shape[1])
     return TrainingArtifact(
-        predictions=prediction.numpy().copy(),
+        predictions=prediction.cpu().numpy().copy(),
         loss=float(final_loss),
         checkpoint_sha256=_checkpoint_fingerprint(model, config),
-        device=config.device,
+        checkpoint=checkpoint,
+        device=str(device),
         batch_count=batch_count,
     )
 

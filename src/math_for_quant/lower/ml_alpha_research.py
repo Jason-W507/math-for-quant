@@ -14,6 +14,31 @@ class PortfolioPolicy:
 
 
 @dataclass(frozen=True)
+class AlphaLedgerInputs:
+    scores: np.ndarray
+    realized_returns: np.ndarray
+    fill_fractions: np.ndarray
+    policy: PortfolioPolicy
+
+    def validated_arrays(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        values = np.asarray(self.scores, dtype=float)
+        returns = np.asarray(self.realized_returns, dtype=float)
+        fills = np.asarray(self.fill_fractions, dtype=float)
+        if values.ndim != 2 or returns.shape != values.shape or fills.shape != values.shape:
+            raise ValueError("alpha ledger matrices are misaligned")
+        if not all(np.isfinite(item).all() for item in (values, returns, fills)):
+            raise ValueError("alpha ledger inputs must be finite")
+        if np.any((fills < 0.0) | (fills > 1.0)):
+            raise ValueError("fill fractions must lie in [0, 1]")
+        assets = values.shape[1]
+        if self.policy.long_count < 1 or self.policy.short_count < 1 or self.policy.long_count + self.policy.short_count > assets:
+            raise ValueError("portfolio counts are invalid")
+        if self.policy.gross_limit <= 0.0 or self.policy.cost_per_unit_turnover < 0.0:
+            raise ValueError("portfolio limits or costs are invalid")
+        return values, returns, fills
+
+
+@dataclass(frozen=True)
 class AlphaLedger:
     target_positions: np.ndarray
     filled_positions: np.ndarray
@@ -58,25 +83,11 @@ def cross_sectional_mse(scores: np.ndarray, realized_returns: np.ndarray) -> flo
 
 def build_alpha_ledger(
     *,
-    scores: np.ndarray,
-    realized_returns: np.ndarray,
-    fill_fractions: np.ndarray,
-    policy: PortfolioPolicy,
+    inputs: AlphaLedgerInputs,
 ) -> AlphaLedger:
-    values = np.asarray(scores, dtype=float)
-    returns = np.asarray(realized_returns, dtype=float)
-    fills = np.asarray(fill_fractions, dtype=float)
-    if values.ndim != 2 or returns.shape != values.shape or fills.shape != values.shape:
-        raise ValueError("alpha ledger matrices are misaligned")
-    if not all(np.isfinite(item).all() for item in (values, returns, fills)):
-        raise ValueError("alpha ledger inputs must be finite")
-    if np.any((fills < 0.0) | (fills > 1.0)):
-        raise ValueError("fill fractions must lie in [0, 1]")
+    values, returns, fills = inputs.validated_arrays()
+    policy = inputs.policy
     assets = values.shape[1]
-    if policy.long_count < 1 or policy.short_count < 1 or policy.long_count + policy.short_count > assets:
-        raise ValueError("portfolio counts are invalid")
-    if policy.gross_limit <= 0.0 or policy.cost_per_unit_turnover < 0.0:
-        raise ValueError("portfolio limits or costs are invalid")
     targets = np.zeros_like(values)
     long_weight = policy.gross_limit / (2.0 * policy.long_count)
     short_weight = policy.gross_limit / (2.0 * policy.short_count)

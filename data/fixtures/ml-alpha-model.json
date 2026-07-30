@@ -13,5 +13,8 @@
   "train_texts": ["profit growth", "loss warning", "profit upgrade", "loss decline"],
   "train_labels": [1, 0, 1, 0],
   "inference_texts": ["profit warning", "loss upgrade"],
-  "text_seed": 29
+  "text_seed": 29,
+  "encoder_id": "mfq-tiny-text-encoder",
+  "encoder_version": "1.0.0",
+  "encoder_license": "CC0-1.0"
 }

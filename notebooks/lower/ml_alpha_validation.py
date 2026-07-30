@@ -18,13 +18,7 @@ import numpy as np
 
 from math_for_quant.lower.ml_alpha_validation import PurgedNestedSplit, cross_fitted_ridge_predictions, importance_jaccard, platt_calibrate, validate_model_selection, validate_nested_time_split, validate_preprocessing_cutoff, validate_target_alignment
 from math_for_quant.lower.ml_alpha_validation_library import library_cross_fitted_ridge_predictions, maximum_prediction_gap
-from math_for_quant.lower.notebook_evidence import assert_expected, load_oracle_and_fixture
-
-
-def _rejects(callable_) -> int:
-    try: callable_()
-    except ValueError: return 1
-    return 0
+from math_for_quant.lower.notebook_evidence import assert_expected, expect_value_error, load_oracle_and_fixture
 
 
 def main(oracle_path: Path) -> int:
@@ -34,18 +28,19 @@ def main(oracle_path: Path) -> int:
     folds = [(range(min(item["train"]), max(item["train"])+1), range(min(item["validation"]), max(item["validation"])+1)) for item in fixture["crossfit_folds"]]
     crossfit = cross_fitted_ridge_predictions(np.asarray(fixture["crossfit_features"]), np.asarray(fixture["crossfit_target"]), folds=folds, alpha=float(fixture["ridge_alpha"]))
     library_crossfit = library_cross_fitted_ridge_predictions(np.asarray(fixture["crossfit_features"]), np.asarray(fixture["crossfit_target"]), folds=folds, alpha=float(fixture["ridge_alpha"]))
-    scores, labels = np.asarray(fixture["calibration_scores"]), np.asarray(fixture["calibration_labels"])
-    calibrated = platt_calibrate(scores, labels)
-    raw = 1.0 / (1.0 + np.exp(-scores))
-    raw_brier = float(np.mean((raw-labels)**2)); calibrated_brier = float(np.mean((calibrated-labels)**2))
+    fit_scores, fit_labels = np.asarray(fixture["calibration_fit_scores"]), np.asarray(fixture["calibration_fit_labels"])
+    evaluation_scores, evaluation_labels = np.asarray(fixture["calibration_evaluation_scores"]), np.asarray(fixture["calibration_evaluation_labels"])
+    calibrated = platt_calibrate(fit_scores, fit_labels, evaluation_scores, fit_ends=int(fixture["calibration_fit_ends"]), evaluation_starts=int(fixture["calibration_evaluation_starts"]))
+    raw = 1.0 / (1.0 + np.exp(-evaluation_scores))
+    raw_brier = float(np.mean((raw-evaluation_labels)**2)); calibrated_brier = float(np.mean((calibrated-evaluation_labels)**2))
     stability = importance_jaccard(np.asarray(fixture["importance_train"]), np.asarray(fixture["importance_test"]), top_k=int(fixture["top_k"]))
     drift = abs(float(np.mean(fixture["monitor_values"])) - float(np.mean(fixture["reference_values"])))
-    purge_rejected = _rejects(lambda: validate_nested_time_split(PurgedNestedSplit(range(0,9), range(10,12), range(14,16), 2, 2)))
-    embargo_rejected = _rejects(lambda: validate_nested_time_split(PurgedNestedSplit(range(0,8), range(10,12), range(13,16), 2, 2)))
-    future_preprocessing_rejected = _rejects(lambda: validate_preprocessing_cutoff(fitted_through=int(fixture["evaluation_starts"]), evaluation_starts=int(fixture["evaluation_starts"])))
-    target_misalignment_rejected = _rejects(lambda: validate_target_alignment(feature_time=int(fixture["feature_time"]), target_time=int(fixture["target_time"])+1, horizon=int(fixture["prediction_horizon"])))
-    selection_budget_rejected = _rejects(lambda: validate_model_selection(attempts=int(fixture["selection_budget"])+1, budget=int(fixture["selection_budget"]), test_reused=False))
-    test_reselection_rejected = _rejects(lambda: validate_model_selection(attempts=int(fixture["selection_attempts"]), budget=int(fixture["selection_budget"]), test_reused=True))
+    purge_rejected = expect_value_error(lambda: validate_nested_time_split(PurgedNestedSplit(range(0,9), range(10,12), range(14,16), 2, 2)), "purge gap")
+    embargo_rejected = expect_value_error(lambda: validate_nested_time_split(PurgedNestedSplit(range(0,8), range(10,12), range(13,16), 2, 2)), "embargo gap")
+    future_preprocessing_rejected = expect_value_error(lambda: validate_preprocessing_cutoff(fitted_through=int(fixture["evaluation_starts"]), evaluation_starts=int(fixture["evaluation_starts"])), "future preprocessing")
+    target_misalignment_rejected = expect_value_error(lambda: validate_target_alignment(feature_time=int(fixture["feature_time"]), target_time=int(fixture["target_time"])+1, horizon=int(fixture["prediction_horizon"])), "target misalignment")
+    selection_budget_rejected = expect_value_error(lambda: validate_model_selection(attempts=int(fixture["selection_budget"])+1, budget=int(fixture["selection_budget"]), test_reused=False), "selection budget")
+    test_reselection_rejected = expect_value_error(lambda: validate_model_selection(attempts=int(fixture["selection_attempts"]), budget=int(fixture["selection_budget"]), test_reused=True), "test reselection")
     plt.figure(figsize=(5,2.5)); plt.plot(sorted(crossfit), [crossfit[key] for key in sorted(crossfit)]); plt.close()
     observed = {"crossfit_count":len(crossfit), "crossfit_library_gap":maximum_prediction_gap(crossfit,library_crossfit), "raw_brier":raw_brier, "calibrated_brier":calibrated_brier, "importance_jaccard":stability, "drift":drift, "drift_triggered":int(drift >= float(fixture["drift_threshold"])), "purge_rejected":purge_rejected, "embargo_rejected":embargo_rejected, "future_preprocessing_rejected":future_preprocessing_rejected, "target_misalignment_rejected":target_misalignment_rejected, "selection_budget_rejected":selection_budget_rejected, "test_reselection_rejected":test_reselection_rejected}
     assert_expected(observed, oracle)
