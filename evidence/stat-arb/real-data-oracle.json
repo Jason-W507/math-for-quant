@@ -1,8 +1,7 @@
 {
   "expected": {
     "rows": 40,
-    "slope": 0.8511688435537762,
-    "slope_gap": 0.0
+    "slope": 0.8511688435537762
   },
   "absolute_tolerance": 1e-12,
   "provenance": "The row count and log-level OLS slope were independently recomputed from the frozen public-domain snapshot.",

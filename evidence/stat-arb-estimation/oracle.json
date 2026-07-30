@@ -4,7 +4,10 @@
     "smoothed_second": 1.0763956904995104,
     "regime_one_last": 0.9999999999980131,
     "future_smoother_rejected": 1,
-    "change_index": 2
+    "change_index": 2,
+    "library_kalman_max_gap": 4.440892098500626e-16,
+    "markov_probability_sum_gap": 0.0,
+    "process_noise_sensitivity": 0.6614240109813614
   },
   "absolute_tolerance": 1e-10,
   "provenance": "Scalar Kalman recursions, Gaussian Bayes regime probabilities and the known synthetic break are independently reproducible.",

@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 
 from math_for_quant.lower.stat_arb_estimation import (
+    ScalarStateSpaceSpec,
     kalman_filter_and_smooth,
     regime_filter,
 )
@@ -22,8 +23,13 @@ from math_for_quant.lower.stat_arb_research import (
     ExecutionPolicy,
     build_forecast_ledger,
     validate_purged_walk_forward,
+    validate_failure_state,
 )
-from math_for_quant.lower.stat_arb_library import cross_check_long_run
+from math_for_quant.lower.stat_arb_library import (
+    cross_check_long_run,
+    library_kalman_filter_and_smooth,
+)
+from math_for_quant.lower.stat_arb_execution_library import library_forecast_ledger
 from tools import validate_stat_arb_route
 
 
@@ -45,17 +51,22 @@ class StatArbV03Tests(unittest.TestCase):
         diagnostics = ou_diagnostics(relation.residuals, step=1.0)
         self.assertGreater(diagnostics.half_life, 0.0)
         self.assertGreater(diagnostics.expected_first_passage, 0.0)
+        at_boundary = ou_diagnostics(
+            relation.residuals, step=1.0, starting_displacement=0.0
+        )
+        self.assertEqual(at_boundary.expected_first_passage, 0.0)
+        farther = ou_diagnostics(
+            relation.residuals, step=1.0, starting_displacement=1.0
+        )
+        self.assertGreater(
+            farther.expected_first_passage, diagnostics.expected_first_passage
+        )
 
     def test_filter_and_smoother_have_different_information_sets(self) -> None:
         observations = np.asarray([0.0, 0.2, 2.8, 3.1])
         states = kalman_filter_and_smooth(
             observations,
-            transition=1.0,
-            observation_loading=1.0,
-            process_variance=0.1,
-            observation_variance=0.2,
-            initial_mean=0.0,
-            initial_variance=1.0,
+            spec=ScalarStateSpaceSpec(1.0, 1.0, 0.1, 0.2, 0.0, 1.0),
         )
         self.assertEqual(states.filtered.shape, observations.shape)
         self.assertNotAlmostEqual(states.filtered[1], states.smoothed[1])
@@ -69,6 +80,13 @@ class StatArbV03Tests(unittest.TestCase):
         )
         self.assertGreater(probabilities[-1, 1], 0.99)
         np.testing.assert_allclose(probabilities.sum(axis=1), 1.0)
+
+        library = library_kalman_filter_and_smooth(
+            observations,
+            spec=ScalarStateSpaceSpec(1.0, 1.0, 0.1, 0.2, 0.0, 1.0),
+        )
+        np.testing.assert_allclose(states.filtered, library.filtered, atol=1e-12)
+        np.testing.assert_allclose(states.smoothed, library.smoothed, atol=1e-12)
 
     def test_purge_and_embargo_are_enforced_at_the_label_boundary(self) -> None:
         validate_purged_walk_forward(
@@ -86,6 +104,21 @@ class StatArbV03Tests(unittest.TestCase):
                 label_horizon=2,
                 embargo=2,
             )
+        with self.assertRaisesRegex(ValueError, "embargo"):
+            validate_purged_walk_forward(
+                train_indices=range(0, 6),
+                validation_indices=range(8, 10),
+                trade_indices=range(11, 14),
+                label_horizon=2,
+                embargo=2,
+            )
+        with self.assertRaisesRegex(ValueError, "half-life"):
+            validate_failure_state(
+                half_life=9.0,
+                maximum_half_life=4.0,
+                fill_rate=0.9,
+                minimum_fill_rate=0.5,
+            )
 
     def test_forecasts_determine_positions_fills_and_net_returns(self) -> None:
         ledger = build_forecast_ledger(
@@ -101,10 +134,26 @@ class StatArbV03Tests(unittest.TestCase):
             ),
         )
         np.testing.assert_allclose(ledger.target_positions, [1.0, -1.0, 0.0, 1.0])
-        np.testing.assert_allclose(ledger.filled_positions, [1.0, -0.5, 0.0, 0.0])
-        self.assertAlmostEqual(ledger.gross_return, 0.025)
-        self.assertAlmostEqual(ledger.turnover, 3.0)
-        self.assertAlmostEqual(ledger.net_return, 0.019)
+        np.testing.assert_allclose(ledger.filled_positions, [1.0, 0.0, 0.0, 0.0])
+        self.assertAlmostEqual(ledger.gross_return, 0.02)
+        self.assertAlmostEqual(ledger.turnover, 2.0)
+        self.assertAlmostEqual(ledger.net_return, 0.016)
+        library_ledger = library_forecast_ledger(
+            forecasts=np.asarray([0.8, -0.7, 0.1, 0.9]),
+            realized_returns=np.asarray([0.02, -0.01, 0.03, 0.04]),
+            fill_fractions=np.asarray([1.0, 0.5, 1.0, 0.0]),
+            policy=ExecutionPolicy(0.5, 1.0, 1, 1, 0.002),
+        )
+        np.testing.assert_allclose(ledger.filled_positions, library_ledger.filled_positions)
+        self.assertAlmostEqual(ledger.net_return, library_ledger.net_return)
+
+        zero_fill = build_forecast_ledger(
+            forecasts=np.asarray([0.8, 0.8]),
+            realized_returns=np.asarray([0.0, 0.0]),
+            fill_fractions=np.asarray([1.0, 0.0]),
+            policy=ExecutionPolicy(0.5, 1.0, 1, 1, 0.0),
+        )
+        np.testing.assert_allclose(zero_fill.filled_positions, [1.0, 1.0])
 
     def test_mature_library_cross_checks_the_public_snapshot(self) -> None:
         snapshot = ROOT / "data/real/stat-arb-us-macro-1999q4-2009q3.json"

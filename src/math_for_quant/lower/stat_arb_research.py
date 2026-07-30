@@ -27,6 +27,26 @@ class ForecastLedger:
     net_return: float
 
 
+def validate_failure_state(
+    *,
+    half_life: float,
+    maximum_half_life: float,
+    fill_rate: float,
+    minimum_fill_rate: float,
+) -> None:
+    if not all(
+        np.isfinite(value)
+        for value in (half_life, maximum_half_life, fill_rate, minimum_fill_rate)
+    ):
+        raise ValueError("failure-state inputs must be finite")
+    if maximum_half_life <= 0.0 or not 0.0 <= minimum_fill_rate <= 1.0:
+        raise ValueError("failure-state thresholds are invalid")
+    if half_life > maximum_half_life:
+        raise ValueError("half-life exceeds the frozen holding horizon")
+    if fill_rate < minimum_fill_rate:
+        raise ValueError("fill rate falls below the frozen execution floor")
+
+
 def validate_purged_walk_forward(
     *,
     train_indices: range,
@@ -77,7 +97,12 @@ def build_forecast_ledger(
             age = 0
         targets[index] = active
         age += 1
-    positions = targets * fills
+    positions = np.empty_like(targets)
+    current_position = 0.0
+    for index, (target, fill_fraction) in enumerate(zip(targets, fills, strict=True)):
+        order = target - current_position
+        current_position += fill_fraction * order
+        positions[index] = current_position
     previous = np.concatenate([[0.0], positions[:-1]])
     turnover = float(np.abs(positions - previous).sum())
     period_gross = positions * realized

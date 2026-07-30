@@ -41,6 +41,7 @@ def main(oracle_path: Path) -> int:
         "johansen_rank": johansen_rank(np.column_stack([y, x])),
         "ecm_speed": ecm.adjustment_speed,
         "half_life": ou.half_life,
+        "expected_first_passage": ou.expected_first_passage,
         "nonstationary_ou_rejected": rejected,
     }
     assert_expected(observed, oracle)

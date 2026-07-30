@@ -1,11 +1,17 @@
 {
   "expected": {
-    "gross_return": 0.025,
-    "turnover": 3.0,
-    "cost": 0.006,
-    "net_return": 0.019,
+    "gross_return": 0.02,
+    "turnover": 2.0,
+    "cost": 0.004,
+    "net_return": 0.016,
     "unfilled_orders": 1,
-    "purge_failure_rejected": 1
+    "purge_failure_rejected": 1,
+    "embargo_failure_rejected": 1,
+    "walk_forward_failure_rejected": 1,
+    "scaler_failure_rejected": 1,
+    "failure_state_rejected": 1,
+    "cost_sensitivity": 0.004,
+    "execution_library_max_gap": 0.0
   },
   "absolute_tolerance": 1e-12,
   "provenance": "Every target, partial fill, period return, turnover increment and cost is hand-reconstructible from four timestamped decisions.",

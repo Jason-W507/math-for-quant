@@ -54,7 +54,13 @@ dZ_t=\kappa(\mu-Z_t)dt+\sigma dW_t
 \hat\kappa=-\frac{\log\hat\phi}{\Delta},
 \qquad t_{1/2}=\frac{\log 2}{\hat\kappa}.
 \]
-合成残差给出 $\hat\phi\approx0.5442$、半衰期约 $1.1393$ 个周期。项目另给出 $1/\hat\kappa$ 作为教学性的回归时间尺度；它不是一般首次通过时间的闭式解。严格首次通过时间依赖起点、边界与扩散率，应解边值问题或做经过误差控制的模拟。
+合成残差给出 $\hat\phi\approx0.5442$、半衰期约 $1.1393$ 个周期。$1/\hat\kappa$ 只是特征回归时间，不是首次通过时间。若从 $z_0>0$ 首次命中均值边界 0，扩散率为 $\sigma$，边值问题的解为
+\[
+\mathbb E_{z_0}\tau_0
+=\frac{\sqrt\pi}{\kappa}
+\int_0^{z_0\sqrt\kappa/\sigma}e^{u^2}\operatorname{erfc}(u)\,du.
+\]
+实现从离散创新方差映射 $\sigma$，并数值积分该式；起点、边界或扩散率改变时必须重算，不能用半衰期替代。
 
 \begin{note}[Python 边界]
 \texttt{adfuller}、\texttt{coint} 与 \texttt{coint\_johansen} 的默认确定性项、自动滞后和临界值并不相同。调用函数前先把统计问题写成完整规格，再在报告中保存库版本与参数。

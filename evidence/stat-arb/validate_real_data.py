@@ -2,12 +2,24 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 
-import numpy as np
 
-from math_for_quant.lower.stat_arb_library import cross_check_long_run
+def independent_log_level_slope(rows: list[dict[str, object]]) -> float:
+    """Compute OLS with scalar arithmetic, independent of route implementations."""
+    x = [math.log(float(row["realcons"])) for row in rows]
+    y = [math.log(float(row["realgdp"])) for row in rows]
+    x_mean = sum(x) / len(x)
+    y_mean = sum(y) / len(y)
+    denominator = sum((value - x_mean) ** 2 for value in x)
+    if denominator == 0.0:
+        raise SystemExit("real-data oracle has zero regressor variance")
+    return sum(
+        (x_value - x_mean) * (y_value - y_mean)
+        for x_value, y_value in zip(x, y, strict=True)
+    ) / denominator
 
 
 def main(oracle_path: Path) -> int:
@@ -21,13 +33,9 @@ def main(oracle_path: Path) -> int:
     periods = [row["period"] for row in rows]
     if periods != sorted(periods) or periods[-1] != snapshot["observed_through"]:
         raise SystemExit("real-data time protocol rejected")
-    y = np.log(np.asarray([row["realgdp"] for row in rows], dtype=float))
-    x = np.log(np.asarray([row["realcons"] for row in rows], dtype=float))
-    check = cross_check_long_run(y, x)
     observed = {
         "rows": len(rows),
-        "slope": check.transparent_slope,
-        "slope_gap": abs(check.transparent_slope - check.library_slope),
+        "slope": independent_log_level_slope(rows),
     }
     tolerance = float(oracle["absolute_tolerance"])
     for key, expected in oracle["expected"].items():
@@ -37,8 +45,7 @@ def main(oracle_path: Path) -> int:
             )
     print(
         "real-data-oracle=passed "
-        f"rows={observed['rows']} slope={observed['slope']:.6f} "
-        f"slope_gap={observed['slope_gap']:.3e}"
+        f"rows={observed['rows']} slope={observed['slope']:.6f}"
     )
     return 0
 

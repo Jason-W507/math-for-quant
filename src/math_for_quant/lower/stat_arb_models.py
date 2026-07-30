@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import math
 
 import numpy as np
+from scipy.integrate import quad
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,8 @@ class OUDiagnostics:
     discrete_phi: float
     mean_reversion_rate: float
     half_life: float
+    characteristic_time: float
+    diffusion: float
     expected_first_passage: float
 
 
@@ -108,7 +111,9 @@ def fit_ecm(
     return ErrorCorrectionFit(*(float(value) for value in coefficients))
 
 
-def ou_diagnostics(values: np.ndarray, *, step: float) -> OUDiagnostics:
+def ou_diagnostics(
+    values: np.ndarray, *, step: float, starting_displacement: float | None = None
+) -> OUDiagnostics:
     series = _as_series(values, name="OU input")
     if step <= 0.0:
         raise ValueError("OU step must be positive")
@@ -120,9 +125,27 @@ def ou_diagnostics(values: np.ndarray, *, step: float) -> OUDiagnostics:
     if not 0.0 < phi < 1.0:
         raise ValueError("continuous mean-reverting OU mapping requires 0 < phi < 1")
     rate = -math.log(phi) / step
+    innovations = centered[1:] - phi * centered[:-1]
+    innovation_variance = float(innovations @ innovations / innovations.size)
+    if innovation_variance <= 0.0:
+        raise ValueError("OU diffusion is unidentified")
+    diffusion = math.sqrt(innovation_variance * 2.0 * rate / (1.0 - phi**2))
+    displacement = (
+        abs(float(centered[0]))
+        if starting_displacement is None
+        else abs(float(starting_displacement))
+    )
+    scaled_boundary = displacement * math.sqrt(rate) / diffusion
+    first_passage = math.sqrt(math.pi) / rate * quad(
+        lambda value: math.exp(value * value) * math.erfc(value),
+        0.0,
+        scaled_boundary,
+    )[0]
     return OUDiagnostics(
         discrete_phi=phi,
         mean_reversion_rate=rate,
         half_life=math.log(2.0) / rate,
-        expected_first_passage=1.0 / rate,
+        characteristic_time=1.0 / rate,
+        diffusion=diffusion,
+        expected_first_passage=first_passage,
     )
