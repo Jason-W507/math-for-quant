@@ -12,7 +12,10 @@ from math_for_quant.lower.multifactor_estimation import (
     predictive_fama_macbeth,
     ridge_closed_form,
 )
-from math_for_quant.lower.multifactor_library import cross_check_route_statistics
+from math_for_quant.lower.multifactor_library import (
+    cross_check_estimators,
+    cross_check_route_statistics,
+)
 from math_for_quant.lower.multifactor_research import (
     PortfolioInputs,
     PortfolioPolicy,
@@ -48,6 +51,30 @@ def build_report() -> str:
         float(estimation["lasso_penalty"]),
         100_000,
     )
+    library_estimators = cross_check_estimators(
+        signals=signals,
+        future_returns=future,
+        asset_returns=assets,
+        factor_returns=factors,
+        regularization_design=regularization_design,
+        regularization_target=regularization_target,
+        ridge_penalty=float(estimation["ridge_penalty"]),
+        lasso_penalty=float(estimation["lasso_penalty"]),
+    )
+    estimator_gap = max(
+        abs(library_estimators.predictive_mean - predictive.mean_coefficient),
+        float(np.max(np.abs(library_estimators.classic_betas - classic.betas))),
+        float(
+            np.max(
+                np.abs(
+                    library_estimators.classic_risk_prices
+                    - classic.risk_prices
+                )
+            )
+        ),
+        float(np.max(np.abs(library_estimators.ridge_coefficients - ridge))),
+        float(np.max(np.abs(library_estimators.lasso_coefficients - lasso))),
+    )
     route_check = cross_check_route_statistics(
         panel_design=np.asarray([[0.0], [1.0], [0.0], [1.0], [1.0], [2.0]]),
         panel_target=np.asarray([1.0, 1.4, -2.0, -1.6, 0.9, 1.3]),
@@ -64,6 +91,7 @@ def build_report() -> str:
         alpha=0.05,
     )
     route_gap = max(
+        estimator_gap,
         route_check.panel_slope_gap,
         route_check.neutralization_gap,
         route_check.ic_gap,
