@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "no_cost_bias": -0.08634774905626598,
+    "no_cost_rmse": 1.416359670139287,
+    "after_cost_bias": -0.19210268581193984,
+    "after_cost_rmse": 1.4341423708549264,
+    "error_q05": -2.485457451154215,
+    "error_q50": -0.05264565576104019,
+    "error_q95": 1.9608502283868157,
+    "mean_cost": 0.10441454009174334,
+    "cost_q95": 0.14972032212519784
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "Deterministic multi-path simulation regression values for the declared seed; not called an independent oracle."
+}

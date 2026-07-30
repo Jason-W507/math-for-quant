@@ -1,0 +1,13 @@
+{
+  "source": "U.S. Department of the Treasury, Daily Treasury Par Yield Curve Rates",
+  "source_url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?field_tdr_date_value_month=202412&type=daily_treasury_yield_curve",
+  "license": "U.S. federal government public-domain work",
+  "observation_date": "2024-12-02",
+  "accessed_date": "2026-07-30",
+  "rates_percent": {
+    "3_month": 4.51,
+    "6_month": 4.43,
+    "1_year": 4.30
+  },
+  "scope_limit": "Discount-input provenance demonstration only; not an option quote, volatility surface, trading signal, or current-rate feed."
+}

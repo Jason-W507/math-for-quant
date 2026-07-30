@@ -1,0 +1,113 @@
+\chapter{随机分析与无套利：从二次变差到风险中性测度}
+\label{ch:lower-derivatives-stochastic}
+
+\begin{itemize}
+  \item 直接先修：上册第 7--9、11、14、16、17 章。
+  \item 学习产出：说明 Brownian 二次变差的收敛方式，构造 Itô 积分与公式，并逐项核对风险中性测度的成立条件。
+  \item 研究边界：数学上的充分条件、教材风险限额与经验稳定性检查是三种不同强度的命题。
+\end{itemize}
+
+\input{tex/lower/figures/derivatives-route}
+
+\section{同一条路径上的嵌套分割}
+
+设 $W$ 是标准 Brownian 运动，$\pi_n=\{0=t_0<\cdots<t_{m_n}=T\}$ 的网格宽度 $|\pi_n|\to0$。二次变差定理写成
+\[
+  \sum_i (W_{t_{i+1}}-W_{t_i})^2\xrightarrow{P}T.
+\]
+这里是\textbf{依概率收敛}；单条有限路径越来越接近 $T$ 只是数值现象，不能替代定理。实验从同一组 4096 个最细增量出发，把相邻增量按 64、16、4、1 个聚合后再平方，避免不同网格其实来自不同随机路径。冻结路径的粗、细值为 $1.164390$ 与 $1.012519$。
+
+离散恒等式
+\[
+ W_T^2=2\sum_i W_{t_i}\Delta W_i+\sum_i(\Delta W_i)^2
+\]
+解释了普通链式法则为何少一项。取极限得到
+\[
+ W_T^2=2\int_0^T W_t\,\mathrm dW_t+T.
+\]
+代码的恒等式误差约为 $6.7\times10^{-16}$；它验证代数实现，不验证二次变差定理。
+
+\section{从简单过程到 Itô 公式}
+
+对适应简单过程 $H_t=\sum_k H_k\mathbf 1_{(t_k,t_{k+1}]}(t)$，其中 $H_k$ 对 $\mathcal F_{t_k}$ 可测，定义
+\[
+ \int_0^T H_t\,\mathrm dW_t
+ =\sum_k H_k(W_{t_{k+1}}-W_{t_k}).
+\]
+Itô 等距
+\[
+ \mathbb E\left[\left(\int_0^T H_t\,\mathrm dW_t\right)^2\right]
+ =\mathbb E\int_0^T H_t^2\,\mathrm dt
+\]
+让积分从简单过程延拓到平方可积适应过程。它不是逐路径 Riemann--Stieltjes 积分；适应性阻止积分在时点 $t$ 读取未来增量。
+
+这里有三个容易混淆的层次。首先，$H$ 对滤过适应只约束信息时点；其次，$\mathbb E\int_0^T H_t^2\,\mathrm dt<\infty$ 保证当前构造下的平方可积；最后，样本路径通常仍没有有限变差。Python 中把两个数组点乘不会自动满足任何一条，研究者必须先声明时间索引、滤过和可积性，再解释数组运算对应哪个数学对象。
+
+若 $\mathrm dX_t=\mu(t,X_t)\,\mathrm dt+\sigma(t,X_t)\,\mathrm dW_t$ 且 $f\in C^{1,2}$，则
+\[
+ \mathrm df(t,X_t)=\left(f_t+\mu f_x+\tfrac12\sigma^2f_{xx}\right)\mathrm dt
+ +\sigma f_x\,\mathrm dW_t.
+\]
+额外的二阶项正来自 $\mathrm d[W]_t=\mathrm dt$。对 $f(x)=\log x$ 应用该式可得 GBM 的 $-\sigma^2/2$ 修正；忘掉它会系统性错写终值分布。
+
+\section{无套利、复制与风险中性测度}
+
+在无摩擦、可连续交易且标的满足
+\[
+ \frac{\mathrm dS_t}{S_t}=\mu\,\mathrm dt+\sigma\,\mathrm dW_t
+\]
+的模型中，对期权 $V(t,S)$ 取 $\Delta=V_S$ 消去瞬时 Brownian 风险，得到 Black--Scholes--Merton PDE
+\[
+ V_t+\tfrac12\sigma^2S^2V_{SS}+rSV_S-rV=0.
+\]
+该推导依赖复制与自融资，不是把历史漂移机械替换为 $r$。同一条件下，贴现资产在等价鞅测度 $\mathbb Q$ 下为鞅，Feynman--Kac 给出
+\[
+ V(t,S_t)=e^{-r(T-t)}\mathbb E^{\mathbb Q}[g(S_T)\mid\mathcal F_t].
+\]
+PDE、复制和风险中性期望是同一模型的三种表达，而不是三份彼此独立的市场事实\cite{black1973pricing,merton1973rational,shreve2004stochastic}。
+
+更具体地，定义随机指数
+\[
+ Z_T=\exp\left(-\int_0^T\theta_t\,\mathrm dW_t
+ -\frac12\int_0^T\theta_t^2\,\mathrm dt\right),
+ \qquad \frac{\mathrm d\mathbb Q}{\mathrm d\mathbb P}=Z_T.
+\]
+若 $Z$ 是严格正的真鞅且 $\mathbb E Z_T=1$，Girsanov 定理给出
+\[
+ W_t^{\mathbb Q}=W_t+\int_0^t\theta_s\,\mathrm ds,
+\]
+它在 $\mathbb Q$ 下是 Brownian 运动。对常数参数，$\theta=(\mu-r)/\sigma$，所以
+\[
+ \mu\,\mathrm dt+\sigma\,\mathrm dW_t
+ =r\,\mathrm dt+\sigma\,\mathrm dW_t^{\mathbb Q}.
+\]
+符号取决于密度过程采用的约定；最安全的检查不是背符号，而是代回后验证贴现资产漂移为零。冻结例中 $\theta=0.3$，错误地取 $-0.3$ 会把变换后漂移写成 0.14，而不是 0.02。
+
+“存在等价鞅测度”与“市场完备”也要分开。无套利对应等价局部鞅测度的存在；唯一性与每个或有要求可复制相关。在一般连续时间市场里还需技术条件，不能只从一条 SDE 和一个密度公式宣布基本定理全部成立。
+
+\section{Novikov 条件不是固定能量上限}
+
+令 $\theta_t$ 为市场价格风险。密度随机指数成为真鞅的一个常用充分条件是
+\[
+ \mathbb E\exp\left(\frac12\int_0^T\theta_t^2\,\mathrm dt\right)<\infty.
+\]
+确定常数 $\theta$ 在有限 $T$ 上即使能量为 100，指数仍是有限数；不能因为超过人为阈值就声称 Novikov 失败。仓库另有“市场价格风险能量预算”，它只是一条教材风险限额，名称和诊断都与数学条件分开。
+
+真正的失败见证取 $\theta_t=(T-t)^{-1/2}$。截到 $T-\varepsilon$ 时
+\[
+ \frac12\int_0^{T-\varepsilon}\theta_t^2\,\mathrm dt
+ =\frac12\log\frac{T}{\varepsilon},
+\]
+当 $\varepsilon\downarrow0$ 发散。冻结实验从 $2.302585$ 增至 $6.907755$，完整端点给出稳定的不可积诊断。Novikov 只是充分条件；它失败时不能直接推出不存在其他方式证明密度为真鞅。
+
+\begin{diagnostic}
+若程序只检查 $\int\theta^2\mathrm dt$ 是否小于某个常数，它验证的是内部风险政策；若检查有限场景的指数矩，它仍只覆盖离散近似；若要声称连续时间 Novikov 条件成立，必须对随机过程的指数矩本身给出数学论证。三个层次应使用不同字段和诊断名称。
+\end{diagnostic}
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/derivatives_stochastic.py}。oracle 只保存代数恒等式、漂移变换和不可积见证；随机路径具体数值另存为 regression，避免把模拟输出冒充独立数学答案。
+\end{implementationnote}
+
+本单元向 Route Capstone 与下一章交付：风险中性动力学、PDE、贴现期望及全部成立条件。
+
+\input{tex/lower/chapters/derivatives-stochastic-questions}

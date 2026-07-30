@@ -1,0 +1,12 @@
+{
+  "expected": {
+    "qv_coarse": 1.1643899008463063,
+    "qv_medium": 1.132000034757274,
+    "qv_fine": 1.0125188825891303,
+    "qv_fine_error": 0.012518882589130254,
+    "singular_coarse_energy": 2.302585092994046,
+    "singular_fine_energy": 6.907755278982137
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "Deterministic seeded-path regression values; deliberately separated from the independent mathematical oracle."
+}

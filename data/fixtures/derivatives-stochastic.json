@@ -1,0 +1,12 @@
+{
+  "seed": 17,
+  "fine_grid_size": 4096,
+  "block_sizes": [64, 16, 4, 1],
+  "maturity": 1.0,
+  "physical_drift": 0.08,
+  "rate": 0.02,
+  "sigma": 0.2,
+  "large_finite_energy": 100.0,
+  "singular_coarse_cutoff": 0.01,
+  "singular_fine_cutoff": 0.000001
+}

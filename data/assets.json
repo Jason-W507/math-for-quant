@@ -36,7 +36,10 @@
         "data/fixtures/stat-arb-research.json",
         "data/fixtures/ml-alpha-model.json",
         "data/fixtures/ml-alpha-validation.json",
-        "data/fixtures/ml-alpha-research.json"
+        "data/fixtures/ml-alpha-research.json",
+        "data/fixtures/derivatives-stochastic.json",
+        "data/fixtures/derivatives-numerics.json",
+        "data/fixtures/derivatives-hedging.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",
@@ -73,6 +76,16 @@
       "version": "1999Q4-2009Q3-snapshot",
       "license_id": "Public-Domain",
       "license_file": "data/real/US-MACRO-PUBLIC-DOMAIN.md",
+      "required_marker": "public domain"
+    },
+    {
+      "id": "derivatives-us-treasury-snapshot",
+      "paths": ["data/real/derivatives-treasury-2024-12-02.json"],
+      "kind": "frozen-public-data",
+      "source": "U.S. Department of the Treasury Daily Treasury Par Yield Curve Rates",
+      "version": "2024-12-02-snapshot",
+      "license_id": "Public-Domain",
+      "license_file": "data/real/US-TREASURY-PUBLIC-DOMAIN.md",
       "required_marker": "public domain"
     }
   ]

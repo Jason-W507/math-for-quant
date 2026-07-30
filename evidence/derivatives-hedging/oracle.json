@@ -1,0 +1,14 @@
+{
+  "expected": {
+    "paths": 512,
+    "steps": 24,
+    "summary_gap": 0.0
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "Path and rebalancing counts are declared inputs; the transparent per-path ledger and vectorized implementation must agree exactly up to floating-point tolerance.",
+  "regression": "evidence/derivatives-hedging/regression.json",
+  "fixture": {
+    "path": "data/fixtures/derivatives-hedging.json",
+    "sha256": "b843c0508fa0527631d12a45edbb2b8947cd13def4cac6b801084be5eb0121a0"
+  }
+}

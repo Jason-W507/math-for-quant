@@ -1,0 +1,17 @@
+{
+  "expected": {
+    "closed_price": 8.916037278572539,
+    "point_iv_count": 15,
+    "surface_a": 0.035,
+    "surface_b": 0.08,
+    "surface_c": 0.006,
+    "surface_library_gap": 0.0
+  },
+  "absolute_tolerance": 1e-9,
+  "provenance": "Black--Scholes is evaluated from the analytic formula; the quote count and total-variance coefficients are declared before quote generation; transparent weighted least squares is checked against sklearn.",
+  "regression": "evidence/derivatives-numerics/regression.json",
+  "fixture": {
+    "path": "data/fixtures/derivatives-numerics.json",
+    "sha256": "89325f4af1dc8197e6b8ad51272e73689a120d528a6ee09d28d25cc1826e820e"
+  }
+}

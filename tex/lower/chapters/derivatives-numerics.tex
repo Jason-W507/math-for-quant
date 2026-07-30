@@ -1,0 +1,95 @@
+\chapter{定价与校准：从闭式、树和 PDE 到参数化曲面}
+\label{ch:lower-derivatives-numerics}
+
+\begin{itemize}
+  \item 直接先修：第 \ref{ch:lower-derivatives-stochastic} 章。
+  \item 学习产出：分别衡量树、PDE、Monte Carlo 的误差，并区分逐点隐波反演和参数化曲面校准。
+  \item 研究边界：数值一致不证明模型正确；报价时点、远期、贴现和 bid/ask 仍需独立协议。
+\end{itemize}
+
+\section{同一价格，不同误差来源}
+
+欧式看涨闭式价格为
+\[
+ C=S_0\Phi(d_1)-Ke^{-rT}\Phi(d_2),\qquad
+ d_{1,2}=\frac{\log(S_0/K)+(r\pm\sigma^2/2)T}{\sigma\sqrt T}.
+\]
+在 $S_0=K=100,r=2\%,\sigma=20\%,T=1$ 下，解析值是 $8.916037$。它是当前模型中的参考值，不是真实市场的“正确价格”。
+
+为了避免“多实现一致”掩盖共同错误，先写出每条路径独立的验收对象：
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+方法 & 首要误差 & 最小门禁\\
+\midrule
+闭式 & 参数/模型错设 & 边界、单位与极限情形\\
+CRR 树 & 时间离散 & $p\in[0,1]$ 与步数敏感性\\
+隐式 PDE & 空间、时间、截断 & 边界条件与三维网格敏感性\\
+Monte Carlo & 采样与方差 & 独立种子、标准误与区间\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+CRR 树取 $u=e^{\sigma\sqrt{\Delta t}},d=u^{-1}$ 和
+\[
+ p=\frac{e^{r\Delta t}-d}{u-d}.
+\]
+需要先验证 $p\in[0,1]$，再从终端收益反推。256 步价格为 $8.908302$，其误差主要来自时间离散\cite{cox1979option}。
+
+隐式有限差分在 $S\in[0,S_{\max}]$ 上离散 PDE。每个时间层解三对角线性系统
+\[
+ (I-\Delta t L_h)V^{n+1}=V^n,
+\]
+并使用 $V(\tau,0)=0$、$V(\tau,S_{\max})\approx S_{\max}-Ke^{-r\tau}$。冻结网格给出 $8.908382$。误差同时包含空间离散、时间离散和右边界截断；只加密时间而固定 $S_{\max}$ 不能消除全部误差。
+
+风险中性 Monte Carlo 使用
+\[
+ S_T=S_0\exp\left((r-\tfrac12\sigma^2)T+\sigma\sqrt T Z\right)
+\]
+和贴现收益均值，其中 Brownian 过程记为 $W_t$，且 $Z=W_T/\sqrt T\sim N(0,1)$。20,000 条路径给出 $8.779633$，标准误 $0.096831$；解析值落在约两个标准误内。随机误差按 $N^{-1/2}$ 收敛，方差缩减、准 Monte Carlo 或多层方法改变的是计算效率，不修复模型错设\cite{glasserman2004montecarlo}。
+
+报告不能只给四个价格。树要保存 $\Delta t$ 与步数；PDE 要保存 $S_{\max},\Delta S,\Delta t$ 和边界；Monte Carlo 要保存路径数、随机数生成器、seed、样本方差和置信区间。若解析值不在区间内，先区分随机波动、实现错误与模型参数不一致，而不是扩大容差直到通过。
+
+\section{先反演单点，再校准曲面}
+
+给定单个报价 $C^{\mathrm{mkt}}$，隐含波动率解
+\[
+ C^{BS}(S,K,r,T,\sigma_{\mathrm{impl}})=C^{\mathrm{mkt}}.
+\]
+这是一维根求解。每个节点各自找到一个 $\sigma_j$，目标损失接近零是必然结果，不能称为“曲面模型校准”。根必须被静态套利上下界 bracket；Vega 太小时还应报告病态性。
+
+二分法的优点是只依赖单调性和 bracket；Newton 法利用 Vega 收敛更快，但在深度实值、深度虚值或短期限节点可能跳出合法区间。可靠实现可先用套利界拒绝不可能报价，再用带 bracket 的方法求根，同时保存价格残差和 Vega。bid/ask 区间内存在许多可接受隐波时，返回过多小数位只会制造虚假精度。
+
+第二阶段才拟合参数化总方差。冻结教学模型令 $k=\log(K/F_T)$，
+\[
+ w(k,T)=\sigma^2(k,T)T=aT+bk^2+cT^2.
+\]
+15 个非等距执行价/期限节点先逐点反演，再以加权最小二乘恢复 $(a,b,c)=(0.035,0.080,0.006)$。透明 NumPy 与 \texttt{LinearRegression} 使用相同的无截距设计矩阵和权重，系数差为 0。该模型只为暴露“观测--参数--价格残差”链路，不是通用无套利参数化；真实生产可考虑更合适的局部波动率或随机波动率框架\cite{dupire1994pricing}。
+
+校准的识别对象是共享参数，不是节点隐波列表。必须报告设计矩阵条件数、参数约束、权重来源和留出节点重定价；否则参数可能在样本内重定价良好，却对缺失期限剧烈外推。权重若取 inverse bid/ask variance，应在报价冻结前声明，不能看到残差后再降低异常节点权重。
+
+\section{非等距凸性与期限条件}
+
+看涨价格随执行价递减。非等距网格的凸性应比较斜率
+\[
+ \frac{C_i-C_{i-1}}{K_i-K_{i-1}}
+ \le
+ \frac{C_{i+1}-C_i}{K_{i+1}-K_i},
+\]
+不能直接用 $C_{i-1}-2C_i+C_{i+1}\ge0$。后者只在等距网格对应离散二阶差分。
+
+固定执行价的看涨价格随期限不降，需要无分红与非负利率等条件。存在分红、负利率或不同远期时，应先明确贴现因子与远期归一化，再选择适用的日历无套利条件；验证器因此要求显式声明日历检查模式，不会无条件套用单调性。
+
+\section{双轨数据：贴现输入不是期权曲面}
+
+合成节点负责正确性 oracle。真实轨只冻结美国财政部 2024-12-02 的 3 个月、6 个月和 1 年期国债收益率，并保存官方 URL、观察日、访问日、许可说明和 SHA-256。它只演示如何把决策日前的公开利率转换为贴现因子；国债 par yield 也不等于期权定价所需的完整零息曲线。该快照不能验证隐波、校准或交易收益。
+
+从 par yield 到零息贴现因子通常还需 bootstrap，并明确日计数、复利方式和结算日。冻结代码直接用连续复利只是教学算术 oracle，因此在真实研究中必须替换为与合约一致的曲线构造。把 1 年 par yield 直接塞进所有期限的 Black--Scholes 公式，会同时制造期限错配与插值偏差。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/derivatives_numerics.py} 比较四条定价路径并重建曲面；运行 \path{evidence/derivatives/validate_real_data.py} 独立检查财政部快照的哈希、日期和贴现算术。
+\end{implementationnote}
+
+本单元向 Route Capstone 与下一章交付：价格、Delta、曲面参数、误差预算与市场输入协议。
+
+\input{tex/lower/chapters/derivatives-numerics-questions}

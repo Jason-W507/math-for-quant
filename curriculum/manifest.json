@@ -648,27 +648,37 @@
       }
     },
     {
-      "id": "lower.ch04",
-      "title": "衍生品定价与对冲：从 Itô 到校准与对冲",
-      "volume": "lower",
-      "capstone": true,
-      "state": "accepted",
-      "published": true,
-      "prerequisites": ["upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11", "upper.ch13", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
-      "evidence": {
-        "notation_symbols": ["W_t"],
-        "glossary_terms": ["鞅", "二次变差", "Monte Carlo", "交易成本"],
-        "notation_and_assumptions": "tex/lower/chapters/derivatives.tex",
-        "core_derivation": "tex/lower/chapters/derivatives.tex",
-        "independent_oracle": {
-          "source": "notebooks/lower/ch04_derivatives.py",
-          "oracle": "evidence/lower-ch04/oracle.json",
-          "command": ["{python}", "notebooks/lower/ch04_derivatives.py", "evidence/lower-ch04/oracle.json"]
-        },
-        "questions": "tex/lower/chapters/derivatives-questions.tex",
-        "hints": "tex/lower/chapters/derivatives-hints.tex",
-        "solutions": "tex/lower/chapters/derivatives-solutions.tex",
-        "capstone_connection": "tex/lower/chapters/derivatives.tex"
+      "id":"lower.derivatives.stochastic","title":"随机分析与无套利：从二次变差到风险中性测度","volume":"lower","track":"derivatives","track_stage":"model-math","state":"accepted","published":true,
+      "prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch14","upper.ch16","upper.ch17"],
+      "evidence":{
+        "notation_symbols":["W_t"],"glossary_terms":["鞅","二次变差"],
+        "notation_and_assumptions":"tex/lower/chapters/derivatives-stochastic.tex","core_derivation":"tex/lower/chapters/derivatives-stochastic.tex",
+        "independent_oracle":{"source":"notebooks/lower/derivatives_stochastic.py","oracle":"evidence/derivatives-stochastic/oracle.json","command":["{python}","notebooks/lower/derivatives_stochastic.py","evidence/derivatives-stochastic/oracle.json"]},
+        "questions":"tex/lower/chapters/derivatives-stochastic-questions.tex","hints":"tex/lower/chapters/derivatives-stochastic-hints.tex","solutions":"tex/lower/chapters/derivatives-stochastic-solutions.tex","capstone_connection":"tex/lower/chapters/derivatives-stochastic.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/derivatives-stochastic.json","real_data_snapshot":"data/real/derivatives-treasury-2024-12-02.json","license":"data/real/US-TREASURY-PUBLIC-DOMAIN.md","sha256":"9d13fbafaf4f329d073bc3d75948ec8a177ddc4187a5cd31fc69da6cf1df67cc","time_protocol":"evidence/derivatives/real-data-oracle.json","real_data_oracle":{"source":"evidence/derivatives/validate_real_data.py","oracle":"evidence/derivatives/real-data-oracle.json","command":["{python}","evidence/derivatives/validate_real_data.py","evidence/derivatives/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives.py","library":"src/math_for_quant/lower/derivatives_stochastic.py"},"teaching_notebook":"notebooks/lower/derivatives_stochastic.py","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id":"lower.derivatives.numerics","title":"定价与校准：从闭式、树和 PDE 到参数化曲面","volume":"lower","track":"derivatives","track_stage":"estimation-numerics","state":"accepted","published":true,"prerequisites":["lower.derivatives.stochastic"],
+      "evidence":{
+        "notation_symbols":["W_t"],"glossary_terms":["Monte Carlo","二次变差"],
+        "notation_and_assumptions":"tex/lower/chapters/derivatives-numerics.tex","core_derivation":"tex/lower/chapters/derivatives-numerics.tex",
+        "independent_oracle":{"source":"notebooks/lower/derivatives_numerics.py","oracle":"evidence/derivatives-numerics/oracle.json","command":["{python}","notebooks/lower/derivatives_numerics.py","evidence/derivatives-numerics/oracle.json"]},
+        "questions":"tex/lower/chapters/derivatives-numerics-questions.tex","hints":"tex/lower/chapters/derivatives-numerics-hints.tex","solutions":"tex/lower/chapters/derivatives-numerics-solutions.tex","capstone_connection":"tex/lower/chapters/derivatives-numerics.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/derivatives-numerics.json","real_data_snapshot":"data/real/derivatives-treasury-2024-12-02.json","license":"data/real/US-TREASURY-PUBLIC-DOMAIN.md","sha256":"9d13fbafaf4f329d073bc3d75948ec8a177ddc4187a5cd31fc69da6cf1df67cc","time_protocol":"evidence/derivatives/real-data-oracle.json","real_data_oracle":{"source":"evidence/derivatives/validate_real_data.py","oracle":"evidence/derivatives/real-data-oracle.json","command":["{python}","evidence/derivatives/validate_real_data.py","evidence/derivatives/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_numerics.py","library":"src/math_for_quant/lower/derivatives_numerics_library.py"},"teaching_notebook":"notebooks/lower/derivatives_numerics.py","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id":"lower.derivatives.hedging","title":"对冲失效与研究包：从 Greeks 到误差分布","volume":"lower","track":"derivatives","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.derivatives.numerics"],
+      "evidence":{
+        "notation_symbols":["W_t"],"glossary_terms":["交易成本","可复现研究包"],
+        "notation_and_assumptions":"tex/lower/chapters/derivatives-hedging.tex","core_derivation":"tex/lower/chapters/derivatives-hedging.tex",
+        "independent_oracle":{"source":"notebooks/lower/derivatives_hedging.py","oracle":"evidence/derivatives-hedging/oracle.json","command":["{python}","notebooks/lower/derivatives_hedging.py","evidence/derivatives-hedging/oracle.json"]},
+        "questions":"tex/lower/chapters/derivatives-hedging-questions.tex","hints":"tex/lower/chapters/derivatives-hedging-hints.tex","solutions":"tex/lower/chapters/derivatives-hedging-solutions.tex","capstone_connection":"tex/lower/chapters/derivatives-hedging.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/derivatives-hedging.json","real_data_snapshot":"data/real/derivatives-treasury-2024-12-02.json","license":"data/real/US-TREASURY-PUBLIC-DOMAIN.md","sha256":"9d13fbafaf4f329d073bc3d75948ec8a177ddc4187a5cd31fc69da6cf1df67cc","time_protocol":"evidence/derivatives/real-data-oracle.json","real_data_oracle":{"source":"evidence/derivatives/validate_real_data.py","oracle":"evidence/derivatives/real-data-oracle.json","command":["{python}","evidence/derivatives/validate_real_data.py","evidence/derivatives/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_hedging.py","library":"src/math_for_quant/lower/derivatives_hedging_library.py"},"teaching_notebook":"notebooks/lower/derivatives_hedging.py","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -748,7 +758,7 @@
     {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.multifactor.model","lower.multifactor.estimation","lower.multifactor.research"]},
     {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.stat-arb.model","lower.stat-arb.estimation","lower.stat-arb.research"]},
     {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.ml-alpha.model","lower.ml-alpha.validation","lower.ml-alpha.research"]},
-    {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.derivatives.model","lower.derivatives.estimation","lower.derivatives.research"]},
+    {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.derivatives.stochastic","lower.derivatives.numerics","lower.derivatives.hedging"]},
     {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.portfolio-risk.model","lower.portfolio-risk.estimation","lower.portfolio-risk.research"]},
     {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.microstructure.model","lower.microstructure.estimation","lower.microstructure.research"]}
   ]
