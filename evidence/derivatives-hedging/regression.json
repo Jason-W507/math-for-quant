@@ -11,12 +11,18 @@
     "cost_q95": 0.1497203221251978,
     "summary_gap": 5.684341886080802e-14,
     "delta_gap": 1.0183323158052815e-06,
+    "delta_coarse_gap": 6.514104170518564e-05,
     "gamma_gap": 4.8372060780510484e-08,
+    "gamma_coarse_gap": 3.095634982776263e-06,
     "vega_gap": 1.0183699437504856e-05,
+    "vega_coarse_gap": 0.0006529530571768305,
     "coarse_after_cost_rmse": 2.040788734517941,
     "fine_after_cost_rmse": 0.9196956456028982,
     "coarse_mean_cost": 0.08124588570562073,
-    "fine_mean_cost": 0.13957851204656788
+    "fine_mean_cost": 0.13957851204656788,
+    "one_step_raw_cost": 0.02896298547195515,
+    "one_step_financed_drag": 0.029548076589669847,
+    "one_step_cost_identity_gap": 0.0
   },
   "absolute_tolerance": 1e-12,
   "provenance": "Deterministic multi-path simulation regression values for the declared seed; not called an independent oracle."

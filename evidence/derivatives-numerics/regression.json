@@ -13,7 +13,9 @@
     "mc_error": 0.13640458993892324,
     "surface_max_price_error": 1.4210854715202004e-14,
     "surface_weighted_loss": 1.5651000359584874e-27,
-    "mc_library_se_gap": 0.0
+    "mc_quadrature_error": 4.7474063605503205e-12,
+    "raw_calendar_rejected": 1,
+    "nonuniform_convexity_rejected": 1
   },
   "absolute_tolerance": 1e-9,
   "provenance": "Deterministic numerical regression values for the declared grids and random seed; not called an independent oracle."

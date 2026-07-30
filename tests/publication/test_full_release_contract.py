@@ -231,6 +231,10 @@ class FullReleaseContractTests(unittest.TestCase):
             ],
         }
         self.assertIsNone(validate_document(document, "release-manifest"))
+        document["assets"][0]["kind"] = "frozen-public-data"
+        error = validate_document(document, "release-manifest")
+        self.assertIsNotNone(error)
+        self.assertIn("provenance", error)
 
 
 if __name__ == "__main__":

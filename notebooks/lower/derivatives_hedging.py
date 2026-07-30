@@ -13,12 +13,14 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 import sys
 
 import matplotlib.pyplot as plt
 
 from math_for_quant.lower.derivatives import call_delta
+from math_for_quant.lower.derivatives_hedging import greek_convergence
 from math_for_quant.lower.derivatives_route import run_hedging
 from math_for_quant.lower.notebook_evidence import assert_expected, load_oracle_and_fixture
 
@@ -38,6 +40,15 @@ def main(oracle_path: Path) -> int:
         ))
         * float(fixture["spot"])
     )
+    financed_hand_cost = hand_initial_cost * math.exp(
+        float(fixture["rate"]) * float(fixture["maturity"])
+    )
+    if abs(hand_initial_cost - observed["one_step_raw_cost"]) > 1e-12:
+        raise SystemExit("one-step raw cost disagrees with the hand oracle")
+    if abs(financed_hand_cost - observed["one_step_financed_drag"]) > 1e-12:
+        raise SystemExit("one-step financed cost disagrees with the hand oracle")
+    if observed["one_step_cost_identity_gap"] > 1e-12:
+        raise SystemExit("one-step self-financing identity failed")
     if hand_initial_cost <= 0.0 or observed["negative_cost_rejected"] != 1:
         raise SystemExit("hedging hand oracle or failure injection did not pass")
     plt.figure(figsize=(5, 2.5))
@@ -56,6 +67,18 @@ def main(oracle_path: Path) -> int:
         marker="s",
         label="mean cost",
     )
+    plt.legend()
+    plt.close()
+    greek_errors = greek_convergence(
+        float(fixture["spot"]), float(fixture["strike"]),
+        float(fixture["rate"]), float(fixture["sigma"]),
+        float(fixture["maturity"]),
+        steps=tuple(float(value) for value in fixture["greek_steps"]),
+    )
+    plt.figure(figsize=(5, 2.5))
+    plt.loglog(greek_errors.steps, greek_errors.delta_errors, marker="o", label="Delta")
+    plt.loglog(greek_errors.steps, greek_errors.gamma_errors, marker="s", label="Gamma")
+    plt.loglog(greek_errors.steps, greek_errors.vega_errors, marker="^", label="Vega")
     plt.legend()
     plt.close()
     print("derivatives-hedging=passed " + " ".join(f"{key}={value:.6g}" for key, value in observed.items()))

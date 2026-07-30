@@ -3,9 +3,10 @@ from __future__ import annotations
 import math
 
 import numpy as np
+from scipy.integrate import quad
 from scipy.linalg import solve_banded
 from scipy.special import ndtr
-from scipy.stats import binom, sem
+from scipy.stats import binom, norm
 from sklearn.linear_model import LinearRegression
 
 
@@ -88,13 +89,23 @@ def library_monte_carlo_call(
     samples: int,
     seed: int,
 ) -> tuple[float, float]:
-    normals = np.random.default_rng(seed).standard_normal(samples)
-    terminal = spot * np.exp(
-        (rate - 0.5 * sigma * sigma) * maturity
-        + sigma * math.sqrt(maturity) * normals
+    del samples, seed
+    root_t = math.sqrt(maturity)
+
+    def discounted_payoff(z_value: float) -> float:
+        terminal = spot * math.exp(
+            (rate - 0.5 * sigma * sigma) * maturity + sigma * root_t * z_value
+        )
+        return (
+            math.exp(-rate * maturity)
+            * max(terminal - strike, 0.0)
+            * float(norm.pdf(z_value))
+        )
+
+    price, quadrature_error = quad(
+        discounted_payoff, -10.0, 10.0, epsabs=1e-11, epsrel=1e-11, limit=200
     )
-    discounted = math.exp(-rate * maturity) * np.maximum(terminal - strike, 0.0)
-    return float(np.mean(discounted)), float(sem(discounted))
+    return float(price), float(quadrature_error)
 
 
 def library_total_variance_coefficients(

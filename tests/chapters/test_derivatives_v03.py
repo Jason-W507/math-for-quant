@@ -78,7 +78,8 @@ class DerivativesV03Tests(unittest.TestCase):
         price, standard_error = library_monte_carlo_call(
             100.0, 100.0, 0.02, 0.2, 1.0, 20_000, 23
         )
-        self.assertLess(abs(price - closed), 3.0 * standard_error)
+        self.assertLess(abs(price - closed), 1e-8)
+        self.assertLess(standard_error, 1e-8)
 
     def test_forward_normalized_calendar_gate_supports_dividends(self) -> None:
         nodes = []
@@ -122,6 +123,10 @@ class DerivativesV03Tests(unittest.TestCase):
         self.assertLess(greeks.delta_gap, 1e-5)
         self.assertLess(greeks.gamma_gap, 1e-5)
         self.assertLess(greeks.vega_gap, 1e-3)
+        self.assertEqual(greeks.steps, (1.0, 0.5, 0.25, 0.125))
+        self.assertLess(greeks.delta_errors[-1], greeks.delta_errors[0])
+        self.assertLess(greeks.gamma_errors[-1], greeks.gamma_errors[0])
+        self.assertLess(greeks.vega_errors[-1], greeks.vega_errors[0])
         self.assertLess(measure_change_density_gap(theta=0.3, observation=0.7), 1e-12)
 
     def test_point_inversion_is_separate_from_parametric_surface_calibration(self) -> None:

@@ -42,6 +42,10 @@ def main(oracle_path: Path) -> int:
     plt.close()
     if observed["forward_calendar_passed"] != 1:
         raise SystemExit("forward-normalized calendar experiment did not pass")
+    if observed["raw_calendar_rejected"] != 1:
+        raise SystemExit("raw calendar gate failed to reject dividend assumptions")
+    if observed["nonuniform_convexity_rejected"] != 1:
+        raise SystemExit("nonuniform convexity failure injection did not reject")
     if max(
         observed["closed_library_gap"], observed["tree_library_gap"],
         observed["pde_library_gap"], observed["mc_library_gap"],

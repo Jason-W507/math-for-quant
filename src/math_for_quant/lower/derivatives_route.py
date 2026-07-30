@@ -8,6 +8,7 @@ import numpy as np
 from math_for_quant.lower.derivatives import (
     binomial_call,
     black_scholes_call,
+    delta_hedge,
     monte_carlo_call,
     quadratic_variation_and_ito,
     validate_surface_constraints,
@@ -171,7 +172,7 @@ def run_numerics(fixture: dict[str, Any]) -> dict[str, float | int]:
         int(fixture["mc_paths"]),
         int(fixture["mc_seed"]),
     )
-    mc_library, mc_library_se = library_monte_carlo_call(
+    mc_library, mc_quadrature_error = library_monte_carlo_call(
         spot, strike, rate, sigma, maturity,
         int(fixture["mc_paths"]), int(fixture["mc_seed"]),
     )
@@ -218,8 +219,8 @@ def run_numerics(fixture: dict[str, Any]) -> dict[str, float | int]:
         "mc_price": mc_price,
         "mc_standard_error": mc_se,
         "mc_error": abs(mc_price - closed),
-        "mc_library_gap": abs(mc_library - mc_price),
-        "mc_library_se_gap": abs(mc_library_se - mc_se),
+        "mc_library_gap": abs(mc_library - closed),
+        "mc_quadrature_error": mc_quadrature_error,
         "point_iv_count": int(point_vols.size),
         "surface_a": float(fit.coefficients[0]),
         "surface_b": float(fit.coefficients[1]),
@@ -228,6 +229,26 @@ def run_numerics(fixture: dict[str, Any]) -> dict[str, float | int]:
         "surface_weighted_loss": fit.weighted_price_loss,
         "surface_library_gap": fit.library_coefficient_gap,
         "forward_calendar_passed": 1,
+        "raw_calendar_rejected": expect_value_error(
+            lambda: validate_surface_constraints(
+                normalized_nodes,
+                rate=rate,
+                dividend_yield=dividend_yield,
+                calendar_mode="nonnegative-rate-no-dividend",
+            ),
+            "requires nonnegative rates and no dividends",
+        ),
+        "nonuniform_convexity_rejected": expect_value_error(
+            lambda: validate_surface_constraints(
+                [
+                    {"maturity": 1.0, "strike": 90.0, "price": 15.0},
+                    {"maturity": 1.0, "strike": 100.0, "price": 13.0},
+                    {"maturity": 1.0, "strike": 130.0, "price": 3.0},
+                ],
+                calendar_mode="skip",
+            ),
+            "butterfly convexity",
+        ),
     }
 
 
@@ -272,6 +293,14 @@ def run_hedging(fixture: dict[str, Any]) -> dict[str, float | int]:
         ),
         "cannot be negative",
     )
+    one_step_no_cost, one_step_after_cost, one_step_drag, one_step_raw_cost = (
+        delta_hedge(
+            float(fixture["spot"]), float(fixture["strike"]),
+            float(fixture["rate"]), float(fixture["sigma"]),
+            float(fixture["maturity"]), np.asarray([0.0]),
+            float(fixture["cost_rate"]),
+        )
+    )
     return {
         "paths": result.paths,
         "steps": result.steps,
@@ -286,13 +315,21 @@ def run_hedging(fixture: dict[str, Any]) -> dict[str, float | int]:
         "cost_q95": result.cost_q95,
         "summary_gap": result.summary_gap,
         "delta_gap": greeks.delta_gap,
+        "delta_coarse_gap": greeks.delta_errors[0],
         "gamma_gap": greeks.gamma_gap,
+        "gamma_coarse_gap": greeks.gamma_errors[0],
         "vega_gap": greeks.vega_gap,
+        "vega_coarse_gap": greeks.vega_errors[0],
         "coarse_after_cost_rmse": coarse.after_cost_rmse,
         "fine_after_cost_rmse": fine.after_cost_rmse,
         "coarse_mean_cost": coarse.mean_cost,
         "fine_mean_cost": fine.mean_cost,
         "negative_cost_rejected": negative_cost_rejected,
+        "one_step_raw_cost": one_step_raw_cost,
+        "one_step_financed_drag": one_step_drag,
+        "one_step_cost_identity_gap": abs(
+            (one_step_no_cost - one_step_after_cost) - one_step_drag
+        ),
     }
 
 
@@ -307,7 +344,7 @@ def render_route_report(
 - 无套利：物理漂移经市场价格风险变换为 {stochastic['risk_neutral_drift']:.6f}；有限但很大的确定性能量仍通过 Novikov 指数矩检查，教材能量预算另行报告。
 - 定价：Black--Scholes 闭式 {numerics['closed_price']:.6f}；树 {numerics['tree_price']:.6f}（误差 {numerics['tree_error']:.6f}）；隐式 PDE {numerics['pde_price']:.6f}（总偏差 {numerics['pde_error']:.6f}，空间/时间/边界扰动 {numerics['pde_space_gap']:.6f}/{numerics['pde_time_gap']:.6f}/{numerics['pde_boundary_gap']:.3e}）；Monte Carlo {numerics['mc_price']:.6f}（标准误 {numerics['mc_standard_error']:.6f}，绝对误差 {numerics['mc_error']:.6f}）；闭式/树/PDE/MC 成熟库差分别为 {numerics['closed_library_gap']:.3e}/{numerics['tree_library_gap']:.3e}/{numerics['pde_library_gap']:.3e}/{numerics['mc_library_gap']:.3e}。
 - 校准：先逐点反演 {int(numerics['point_iv_count'])} 个隐含波动率，再拟合参数化总方差系数 ({numerics['surface_a']:.6f}, {numerics['surface_b']:.6f}, {numerics['surface_c']:.6f})；最大价格误差 {numerics['surface_max_price_error']:.3e}，透明/成熟库系数差 {numerics['surface_library_gap']:.3e}；含分红的 forward/discount 归一化日历门禁通过。
-- 对冲：{int(hedging['paths'])} 路径、{int(hedging['steps'])} 次离散步；无成本误差 bias/RMSE=({hedging['no_cost_bias']:.6f}, {hedging['no_cost_rmse']:.6f})，成本后=({hedging['after_cost_bias']:.6f}, {hedging['after_cost_rmse']:.6f})；成本后误差 5%/50%/95%=({hedging['error_q05']:.6f}, {hedging['error_q50']:.6f}, {hedging['error_q95']:.6f})；平均成本 {hedging['mean_cost']:.6f}，95% 成本 {hedging['cost_q95']:.6f}；Delta/Gamma/Vega 差分差 {hedging['delta_gap']:.3e}/{hedging['gamma_gap']:.3e}/{hedging['vega_gap']:.3e}；12/52 次调仓成本后 RMSE {hedging['coarse_after_cost_rmse']:.6f}/{hedging['fine_after_cost_rmse']:.6f}。
+- 对冲：{int(hedging['paths'])} 路径、{int(hedging['steps'])} 次离散步；无成本误差 bias/RMSE=({hedging['no_cost_bias']:.6f}, {hedging['no_cost_rmse']:.6f})，成本后=({hedging['after_cost_bias']:.6f}, {hedging['after_cost_rmse']:.6f})；成本后误差 5%/50%/95%=({hedging['error_q05']:.6f}, {hedging['error_q50']:.6f}, {hedging['error_q95']:.6f})；平均成本 {hedging['mean_cost']:.6f}，95% 成本 {hedging['cost_q95']:.6f}；Delta/Gamma/Vega 差分差从 {hedging['delta_coarse_gap']:.3e}/{hedging['gamma_coarse_gap']:.3e}/{hedging['vega_coarse_gap']:.3e} 收敛到 {hedging['delta_gap']:.3e}/{hedging['gamma_gap']:.3e}/{hedging['vega_gap']:.3e}；12/52 次调仓成本后 RMSE {hedging['coarse_after_cost_rmse']:.6f}/{hedging['fine_after_cost_rmse']:.6f}。
 - 限制：合成 GBM、常波动率、无跳跃和简化交易成本只支持方法验证；财政部收益率快照只演示贴现输入的来源、日期、许可与哈希，不是期权曲面或盈利证据。
 """
 

@@ -103,7 +103,10 @@
                       "required": ["transparent", "library"],
                       "properties": {
                         "transparent": {"type": "string", "minLength": 1},
-                        "library": {"type": "string", "minLength": 1}
+                        "library": {"type": "string", "minLength": 1},
+                        "comparison_kind": {
+                          "enum": ["mature-library", "independent-vectorized"]
+                        }
                       }
                     },
                     "teaching_notebook": {"type": "string", "minLength": 1},
