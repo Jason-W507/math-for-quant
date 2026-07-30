@@ -3,7 +3,11 @@
 #
 # **研究目标。** 在同一条合成路径上区分水平回归、残差单位根、
 # Engle--Granger、Johansen、ECM 与 OU 映射。
+# **假设。** 两条水平序列共享一条固定长期关系，残差服从平稳 AR(1)，
+# 采样间隔固定；OU 映射只在估计自回归系数落于 `(0, 1)` 时成立。
 # **手算 oracle。** 长期斜率接近 2，残差按 0.55 衰减。
+# **敏感性。** 固定过程参数，将起点偏离从 `0.25` 提高到 `1.0`；
+# 命中均值的期望时间必须增加。
 
 # %%
 from __future__ import annotations
@@ -29,6 +33,16 @@ def main(oracle_path: Path) -> int:
     relation = engle_granger(y, x)
     ecm = fit_ecm(y, x, relation)
     ou = ou_diagnostics(relation.residuals, step=float(fixture["step"]))
+    near_start = ou_diagnostics(
+        relation.residuals,
+        step=float(fixture["step"]),
+        starting_displacement=0.25,
+    )
+    far_start = ou_diagnostics(
+        relation.residuals,
+        step=float(fixture["step"]),
+        starting_displacement=1.0,
+    )
     plt.figure(figsize=(5, 2.5)); plt.plot(relation.residuals); plt.axhline(0.0, color="black"); plt.close()
     rejected = 0
     try:
@@ -43,6 +57,9 @@ def main(oracle_path: Path) -> int:
         "half_life": ou.half_life,
         "expected_first_passage": ou.expected_first_passage,
         "nonstationary_ou_rejected": rejected,
+        "first_passage_displacement_sensitivity": (
+            far_start.expected_first_passage - near_start.expected_first_passage
+        ),
     }
     assert_expected(observed, oracle)
     print("stat-arb-model=passed " + " ".join(f"{key}={value:.6f}" for key, value in observed.items()))

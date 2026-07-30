@@ -6,7 +6,8 @@
     "ecm_speed": -0.46056154698491136,
     "half_life": 1.1393307423034074,
     "expected_first_passage": 5.028401253923599,
-    "nonstationary_ou_rejected": 1
+    "nonstationary_ou_rejected": 1,
+    "first_passage_displacement_sensitivity": 2.2310833184540755
   },
   "absolute_tolerance": 1e-10,
   "provenance": "The level relation, residual recursion, ECM adjustment and OU mapping are independently calculable from the deterministic synthetic path.",
