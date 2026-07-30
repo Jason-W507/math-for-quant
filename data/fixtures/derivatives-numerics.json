@@ -10,6 +10,7 @@
   "pde_spot_max": 400.0,
   "mc_paths": 20000,
   "mc_seed": 23,
+  "calendar_dividend_yield": 0.03,
   "surface_coefficients": [0.035, 0.08, 0.006],
   "surface_strikes": [82.0, 93.0, 100.0, 112.0, 131.0],
   "surface_maturities": [0.5, 1.0, 1.5]

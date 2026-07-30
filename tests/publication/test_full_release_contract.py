@@ -128,6 +128,19 @@ class FullReleaseContractTests(unittest.TestCase):
             {asset.license_id for asset in assets},
             {"CC0-1.0", "CC-BY-4.0", "Public-Domain"},
         )
+        public_groups = [
+            group for group in registry["assets"]
+            if group["kind"] == "frozen-public-data"
+        ]
+        for group in public_groups:
+            for field in ("schema", "selection", "missing_values", "transformations"):
+                self.assertTrue(group[field], f"{group['id']} missing {field}")
+        treasury = next(
+            asset for asset in assets
+            if asset.path.name == "derivatives-treasury-2024-12-02.json"
+        )
+        self.assertIsNotNone(treasury.provenance)
+        self.assertIn("transformations", treasury.provenance)
 
     def test_release_tag_must_match_version(self) -> None:
         self.assertIsNone(release_tag_error(None, "0.2.0"))

@@ -2,13 +2,14 @@
   "expected": {
     "paths": 512,
     "steps": 24,
-    "summary_gap": 0.0
+    "summary_gap": 0.0,
+    "negative_cost_rejected": 1
   },
   "absolute_tolerance": 1e-12,
-  "provenance": "Path and rebalancing counts are declared inputs; the transparent per-path ledger and vectorized implementation must agree exactly up to floating-point tolerance.",
+  "provenance": "Path and rebalancing counts are declared inputs; the transparent ledger and SciPy-special vectorized implementation must agree up to floating-point tolerance; a negative cost rate is rejected by definition.",
   "regression": "evidence/derivatives-hedging/regression.json",
   "fixture": {
     "path": "data/fixtures/derivatives-hedging.json",
-    "sha256": "b843c0508fa0527631d12a45edbb2b8947cd13def4cac6b801084be5eb0121a0"
+    "sha256": "c10cc0c2382ea3a4978274337516154b84813d33fb14b623666aea328d123ac2"
   }
 }

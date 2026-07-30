@@ -4,6 +4,14 @@
   "license": "U.S. federal government public-domain work",
   "observation_date": "2024-12-02",
   "accessed_date": "2026-07-30",
+  "schema": {
+    "observation_date": "ISO-8601 date",
+    "rates_percent": "mapping from maturity label to annual par yield in percentage points"
+  },
+  "selection": "Selected the 3-month, 6-month and 1-year columns from the official 2024-12-02 row.",
+  "missing_values": "No selected observation was missing; validation rejects absent or nonnumeric maturities.",
+  "transformations": "Copied displayed percentage values without interpolation; downstream examples divide by 100 before using a rate.",
+  "snapshot_version": "treasury-par-yield-2024-12-02-v1",
   "rates_percent": {
     "3_month": 4.51,
     "6_month": 4.43,

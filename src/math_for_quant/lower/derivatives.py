@@ -39,6 +39,13 @@ def call_vega(spot: float, strike: float, rate: float, sigma: float, maturity: f
     return spot * normal_pdf(d1) * math.sqrt(maturity)
 
 
+def call_gamma(spot: float, strike: float, rate: float, sigma: float, maturity: float) -> float:
+    if min(spot, strike, sigma, maturity) <= 0.0:
+        raise ValueError("positive spot, strike, volatility, and maturity required")
+    d1 = (math.log(spot / strike) + (rate + 0.5 * sigma * sigma) * maturity) / (sigma * math.sqrt(maturity))
+    return normal_pdf(d1) / (spot * sigma * math.sqrt(maturity))
+
+
 def binomial_call(spot: float, strike: float, rate: float, sigma: float, maturity: float, steps: int) -> float:
     if steps <= 0:
         raise ValueError("binomial grid requires positive steps")
@@ -114,11 +121,22 @@ def validate_surface_constraints(
     dividend_yield: float = 0.0,
     calendar_mode: str = "nonnegative-rate-no-dividend",
 ) -> None:
-    maturities = sorted({node["maturity"] for node in nodes})
-    strikes = sorted({node["strike"] for node in nodes})
-    lookup = {(node["maturity"], node["strike"]): node["price"] for node in nodes}
+    if not nodes:
+        raise ValueError("surface validation requires at least one node")
+    maturities = sorted({float(node["maturity"]) for node in nodes})
+    by_maturity = {
+        maturity: sorted(
+            (node for node in nodes if float(node["maturity"]) == maturity),
+            key=lambda node: float(node["strike"]),
+        )
+        for maturity in maturities
+    }
     for maturity in maturities:
-        prices = [lookup[(maturity, strike)] for strike in strikes]
+        maturity_nodes = by_maturity[maturity]
+        strikes = [float(node["strike"]) for node in maturity_nodes]
+        prices = [float(node["price"]) for node in maturity_nodes]
+        if len(set(strikes)) != len(strikes):
+            raise ValueError("surface contains duplicate strike/maturity nodes")
         if any(left < right for left, right in zip(prices, prices[1:])):
             raise ValueError("surface violates strike monotonicity")
         if len(strikes) >= 3:
@@ -132,6 +150,28 @@ def validate_surface_constraints(
                 raise ValueError("surface violates butterfly convexity")
     if calendar_mode == "skip":
         return
+    if calendar_mode == "forward-normalized":
+        normalized: dict[float, list[tuple[float, float]]] = {}
+        for maturity in maturities:
+            for node in by_maturity[maturity]:
+                forward = float(node.get("forward", 0.0))
+                discount = float(node.get("discount_factor", 0.0))
+                if forward <= 0.0 or discount <= 0.0:
+                    raise ValueError(
+                        "forward-normalized calendar gate requires positive forward and discount_factor"
+                    )
+                moneyness = round(float(node["strike"]) / forward, 12)
+                normalized_price = float(node["price"]) / (discount * forward)
+                normalized.setdefault(moneyness, []).append((maturity, normalized_price))
+        if any(len(values) != len(maturities) for values in normalized.values()):
+            raise ValueError(
+                "forward-normalized calendar gate requires a complete moneyness grid"
+            )
+        for values in normalized.values():
+            prices = [price for _, price in sorted(values)]
+            if any(later < earlier - 1e-12 for earlier, later in zip(prices, prices[1:])):
+                raise ValueError("surface violates forward-normalized calendar monotonicity")
+        return
     if calendar_mode != "nonnegative-rate-no-dividend":
         raise ValueError("unknown calendar monotonicity mode")
     if rate < 0.0 or abs(dividend_yield) > 1e-15:
@@ -139,8 +179,17 @@ def validate_surface_constraints(
             "calendar monotonicity requires nonnegative rates and no dividends; "
             "use forward-normalized quotes or skip this gate"
         )
-    for strike in strikes:
-        prices = [lookup[(maturity, strike)] for maturity in maturities]
+    strike_sets = [
+        {float(node["strike"]) for node in by_maturity[maturity]}
+        for maturity in maturities
+    ]
+    if any(strikes != strike_sets[0] for strikes in strike_sets[1:]):
+        raise ValueError("raw calendar gate requires a complete fixed-strike grid")
+    for strike in sorted(strike_sets[0]):
+        prices = [
+            next(float(node["price"]) for node in by_maturity[maturity] if float(node["strike"]) == strike)
+            for maturity in maturities
+        ]
         if any(later < earlier for earlier, later in zip(prices, prices[1:])):
             raise ValueError("surface violates calendar monotonicity")
 

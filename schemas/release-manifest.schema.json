@@ -40,6 +40,17 @@
           "source": {"type": "string", "minLength": 1},
           "bytes": {"type": "integer", "minimum": 1},
           "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          ,"provenance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["schema", "selection", "missing_values", "transformations"],
+            "properties": {
+              "schema": {"type": "string", "minLength": 1},
+              "selection": {"type": "string", "minLength": 1},
+              "missing_values": {"type": "string", "minLength": 1},
+              "transformations": {"type": "string", "minLength": 1}
+            }
+          }
         }
       }
     }

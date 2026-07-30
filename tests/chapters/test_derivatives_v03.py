@@ -14,12 +14,26 @@ from math_for_quant.lower.derivatives_numerics import (
     implicit_fd_call,
     point_implied_volatilities,
 )
+from math_for_quant.lower.derivatives import validate_surface_constraints
+from math_for_quant.lower.derivatives_numerics_library import (
+    library_black_scholes_call,
+    library_binomial_call,
+    library_implicit_fd_call,
+    library_monte_carlo_call,
+)
 from math_for_quant.lower.derivatives_stochastic import (
     nested_quadratic_variation,
     terminal_singular_theta_energy,
     validate_novikov_exponential_moment,
 )
-from math_for_quant.lower.derivatives_hedging import simulate_hedging_distribution
+from math_for_quant.lower.derivatives_hedging import (
+    greek_convergence,
+    simulate_hedging_distribution,
+)
+from math_for_quant.lower.derivatives_stochastic_library import (
+    measure_change_density_gap,
+)
+from math_for_quant.lower.derivatives_route import run_numerics
 
 
 class DerivativesV03Tests(unittest.TestCase):
@@ -39,6 +53,76 @@ class DerivativesV03Tests(unittest.TestCase):
             space_steps=240, time_steps=1200, spot_max=400.0,
         )
         self.assertLess(abs(pde - closed), 0.03)
+
+    def test_mature_library_pricing_paths_agree_with_transparent_paths(self) -> None:
+        closed = black_scholes_call(100.0, 100.0, 0.02, 0.2, 1.0)
+        self.assertAlmostEqual(
+            library_black_scholes_call(100.0, 100.0, 0.02, 0.2, 1.0),
+            closed,
+            places=12,
+        )
+        self.assertLess(
+            abs(library_binomial_call(100.0, 100.0, 0.02, 0.2, 1.0, 256) - closed),
+            0.02,
+        )
+        self.assertLess(
+            abs(
+                library_implicit_fd_call(
+                    100.0, 100.0, 0.02, 0.2, 1.0,
+                    space_steps=240, time_steps=1200, spot_max=400.0,
+                )
+                - closed
+            ),
+            0.03,
+        )
+        price, standard_error = library_monte_carlo_call(
+            100.0, 100.0, 0.02, 0.2, 1.0, 20_000, 23
+        )
+        self.assertLess(abs(price - closed), 3.0 * standard_error)
+
+    def test_forward_normalized_calendar_gate_supports_dividends(self) -> None:
+        nodes = []
+        for maturity, forward, discount, normalized_prices in (
+            (0.5, 98.0, 0.99, (0.24, 0.12, 0.04)),
+            (1.0, 96.0, 0.97, (0.26, 0.14, 0.06)),
+        ):
+            for moneyness, normalized_price in zip((0.9, 1.0, 1.1), normalized_prices):
+                nodes.append(
+                    {
+                        "maturity": maturity,
+                        "strike": moneyness * forward,
+                        "price": normalized_price * discount * forward,
+                        "forward": forward,
+                        "discount_factor": discount,
+                    }
+                )
+        validate_surface_constraints(
+            nodes,
+            rate=-0.01,
+            dividend_yield=0.03,
+            calendar_mode="forward-normalized",
+        )
+
+    def test_route_splits_pde_errors_and_checks_greeks(self) -> None:
+        root = Path(__file__).resolve().parents[2]
+        fixture = __import__("json").loads(
+            (root / "data/fixtures/derivatives-numerics.json").read_text(encoding="utf-8")
+        )
+        observed = run_numerics(fixture)
+        for key in (
+            "closed_library_gap", "tree_library_gap", "pde_library_gap",
+            "mc_library_gap", "pde_space_gap", "pde_time_gap", "pde_boundary_gap",
+            "forward_calendar_passed",
+        ):
+            self.assertIn(key, observed)
+        self.assertEqual(observed["forward_calendar_passed"], 1)
+        greeks = greek_convergence(
+            100.0, 100.0, 0.02, 0.2, 1.0, steps=(1.0, 0.5, 0.25, 0.125)
+        )
+        self.assertLess(greeks.delta_gap, 1e-5)
+        self.assertLess(greeks.gamma_gap, 1e-5)
+        self.assertLess(greeks.vega_gap, 1e-3)
+        self.assertLess(measure_change_density_gap(theta=0.3, observation=0.7), 1e-12)
 
     def test_point_inversion_is_separate_from_parametric_surface_calibration(self) -> None:
         spot, rate = 100.0, 0.02

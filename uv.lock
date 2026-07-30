@@ -667,6 +667,8 @@ dependencies = [
     { name = "pymupdf" },
     { name = "pypdf" },
     { name = "scikit-learn" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "scipy", version = "1.18.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "statsmodels" },
     { name = "torch" },
 ]
@@ -683,6 +685,7 @@ requires-dist = [
     { name = "pymupdf", specifier = ">=1.26,<2" },
     { name = "pypdf", specifier = ">=6,<7" },
     { name = "scikit-learn", specifier = ">=1.5,<2" },
+    { name = "scipy", specifier = ">=1.13,<2" },
     { name = "statsmodels", specifier = ">=0.14,<1" },
     { name = "torch", specifier = ">=2.7,<3" },
 ]

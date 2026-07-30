@@ -2,13 +2,18 @@
   "expected": {
     "tree_price": 8.908301688957067,
     "tree_error": 0.007735589615471383,
+    "tree_library_gap": 6.750155989720952e-14,
     "pde_price": 8.908382126508316,
     "pde_error": 0.007655152064222293,
+    "pde_space_gap": 0.020504953442564755,
+    "pde_time_gap": 0.0008574870437048077,
+    "pde_boundary_gap": 4.440892098500626e-14,
     "mc_price": 8.779632688633615,
     "mc_standard_error": 0.09683112129000239,
     "mc_error": 0.13640458993892324,
     "surface_max_price_error": 1.4210854715202004e-14,
-    "surface_weighted_loss": 1.5651000359584874e-27
+    "surface_weighted_loss": 1.5651000359584874e-27,
+    "mc_library_se_gap": 0.0
   },
   "absolute_tolerance": 1e-9,
   "provenance": "Deterministic numerical regression values for the declared grids and random seed; not called an independent oracle."

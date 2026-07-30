@@ -1,6 +1,6 @@
 {
   "snapshot": "data/real/derivatives-treasury-2024-12-02.json",
-  "sha256": "9d13fbafaf4f329d073bc3d75948ec8a177ddc4187a5cd31fc69da6cf1df67cc",
+  "sha256": "9216e38a6fcee5af5926849c14fbd1b9a793c28d9779b567439a08e587a4a8ac",
   "decision_date": "2024-12-03",
   "expected_discount_factors": {
     "3_month": 0.9887883245941193,

@@ -3,13 +3,14 @@
     "ito_identity_gap": 0.0,
     "risk_neutral_drift": 0.02,
     "large_energy_finite": 1,
-    "singular_rejected": 1
+    "singular_rejected": 1,
+    "measure_change_library_gap": 0.0
   },
   "absolute_tolerance": 1e-12,
   "provenance": "The discrete Ito square identity is algebraic, the risk-neutral drift is a hand substitution, every finite deterministic energy has a finite exponential, and the endpoint singularity has a divergent log integral.",
   "regression": "evidence/derivatives-stochastic/regression.json",
   "fixture": {
     "path": "data/fixtures/derivatives-stochastic.json",
-    "sha256": "07a050ee6909c0f88eabbda47c90dabbb5850a4ce16d8eb8182079f31011ecb3"
+    "sha256": "1b1268ec8a14bb1591a8fd07e62440573f7c0e9ecc309de421f44f416fa69621"
   }
 }

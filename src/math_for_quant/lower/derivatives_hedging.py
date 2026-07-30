@@ -3,7 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 import numpy as np
 
-from math_for_quant.lower.derivatives import delta_hedge
+from math_for_quant.lower.derivatives import (
+    black_scholes_call,
+    call_delta,
+    call_gamma,
+    call_vega,
+    delta_hedge,
+)
 from math_for_quant.lower.derivatives_hedging_library import vectorized_delta_hedges
 
 
@@ -21,6 +27,42 @@ class HedgingDistribution:
     mean_cost: float
     cost_q95: float
     summary_gap: float
+
+
+@dataclass(frozen=True)
+class GreekConvergence:
+    delta_gap: float
+    gamma_gap: float
+    vega_gap: float
+
+
+def greek_convergence(
+    spot: float,
+    strike: float,
+    rate: float,
+    sigma: float,
+    maturity: float,
+    *,
+    steps: tuple[float, ...],
+) -> GreekConvergence:
+    if not steps or any(step <= 0.0 or step >= spot for step in steps):
+        raise ValueError("Greek finite-difference steps must be positive and below spot")
+    center = black_scholes_call(spot, strike, rate, sigma, maturity)
+    spot_step = min(steps)
+    up = black_scholes_call(spot + spot_step, strike, rate, sigma, maturity)
+    down = black_scholes_call(spot - spot_step, strike, rate, sigma, maturity)
+    delta_fd = (up - down) / (2.0 * spot_step)
+    gamma_fd = (up - 2.0 * center + down) / (spot_step * spot_step)
+    volatility_step = spot_step / 100.0
+    vega_fd = (
+        black_scholes_call(spot, strike, rate, sigma + volatility_step, maturity)
+        - black_scholes_call(spot, strike, rate, sigma - volatility_step, maturity)
+    ) / (2.0 * volatility_step)
+    return GreekConvergence(
+        delta_gap=abs(delta_fd - call_delta(spot, strike, rate, sigma, maturity)),
+        gamma_gap=abs(gamma_fd - call_gamma(spot, strike, rate, sigma, maturity)),
+        vega_gap=abs(vega_fd - call_vega(spot, strike, rate, sigma, maturity)),
+    )
 
 
 def simulate_hedging_distribution(
@@ -80,4 +122,9 @@ def simulate_hedging_distribution(
     )
 
 
-__all__ = ["HedgingDistribution", "simulate_hedging_distribution"]
+__all__ = [
+    "GreekConvergence",
+    "HedgingDistribution",
+    "greek_convergence",
+    "simulate_hedging_distribution",
+]

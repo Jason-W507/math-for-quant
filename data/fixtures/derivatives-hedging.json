@@ -6,6 +6,9 @@
   "maturity": 1.0,
   "paths": 512,
   "steps": 24,
+  "coarse_steps": 12,
+  "fine_steps": 52,
+  "greek_steps": [1.0, 0.5, 0.25, 0.125],
   "cost_rate": 0.0005,
   "seed": 29
 }

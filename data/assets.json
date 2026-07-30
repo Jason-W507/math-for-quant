@@ -64,6 +64,10 @@
       "kind": "frozen-public-data",
       "source": "World Bank World Development Indicators",
       "version": "2013-signal-2014-outcome-snapshot",
+      "schema": "country:string, signal:annual percent, outcome:annual percent",
+      "selection": "Seven named countries with both 2013 signal and 2014 outcome observations",
+      "missing_values": "Rows missing either required observation are excluded",
+      "transformations": "WDI values are copied without rescaling into signal/outcome fields",
       "license_id": "CC-BY-4.0",
       "license_file": "data/real/WORLD-BANK-CC-BY-4.0.md",
       "required_marker": "Creative Commons Attribution 4.0"
@@ -74,6 +78,10 @@
       "kind": "frozen-public-data",
       "source": "statsmodels macrodata; FRED and U.S. Bureau of Labor Statistics",
       "version": "1999Q4-2009Q3-snapshot",
+      "schema": "period:quarter, realgdp:billions chained 2005 USD SAAR, realcons:billions chained 2005 USD SAAR",
+      "selection": "Contiguous quarterly macrodata rows from 1999Q4 through 2009Q3",
+      "missing_values": "No missing values occur in the selected realgdp and realcons fields",
+      "transformations": "Selected source columns are copied without rescaling",
       "license_id": "Public-Domain",
       "license_file": "data/real/US-MACRO-PUBLIC-DOMAIN.md",
       "required_marker": "public domain"
@@ -84,6 +92,10 @@
       "kind": "frozen-public-data",
       "source": "U.S. Department of the Treasury Daily Treasury Par Yield Curve Rates",
       "version": "2024-12-02-snapshot",
+      "schema": "observation_date:ISO date, maturity:3_month|6_month|1_year, rate:percent per annum",
+      "selection": "The 3-month, 6-month and 1-year columns from the official 2024-12-02 row",
+      "missing_values": "Publication fails if any selected maturity is absent or nonnumeric",
+      "transformations": "Display percentages are copied as percent values; downstream code divides by 100 before rate use",
       "license_id": "Public-Domain",
       "license_file": "data/real/US-TREASURY-PUBLIC-DOMAIN.md",
       "required_marker": "public domain"

@@ -28,7 +28,19 @@
           "license_id": {"type": "string", "minLength": 1},
           "license_file": {"type": "string", "minLength": 1},
           "required_marker": {"type": "string", "minLength": 1}
-        }
+          ,"schema": {"type": "string", "minLength": 1}
+          ,"selection": {"type": "string", "minLength": 1}
+          ,"missing_values": {"type": "string", "minLength": 1}
+          ,"transformations": {"type": "string", "minLength": 1}
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"kind": {"const": "frozen-public-data"}}},
+            "then": {
+              "required": ["schema", "selection", "missing_values", "transformations"]
+            }
+          }
+        ]
       }
     }
   }

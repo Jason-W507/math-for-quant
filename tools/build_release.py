@@ -29,6 +29,7 @@ class ReleaseAsset:
     license_files: tuple[str, ...]
     source: str
     version: str
+    provenance: dict[str, str] | None = None
 
 
 def canonical_notebooks(root: Path = ROOT) -> list[tuple[Path, Path]]:
@@ -76,8 +77,7 @@ def release_asset_records(
                     f"release asset license file is missing: {license_file}"
                 )
         content = resolved.read_bytes()
-        records.append(
-            {
+        record: dict[str, object] = {
                 "path": resolved.relative_to(root.resolve()).as_posix(),
                 "kind": asset.kind,
                 "license_id": asset.license_id,
@@ -87,7 +87,9 @@ def release_asset_records(
                 "bytes": len(content),
                 "sha256": hashlib.sha256(content).hexdigest(),
             }
-        )
+        if asset.provenance is not None:
+            record["provenance"] = dict(asset.provenance)
+        records.append(record)
     return records
 
 
@@ -121,6 +123,14 @@ def registered_data_assets(root: Path = ROOT) -> list[ReleaseAsset]:
                     license_files=(license_file,),
                     source=str(group["source"]),
                     version=str(group["version"]),
+                    provenance=(
+                        {
+                            key: str(group[key])
+                            for key in ("schema", "selection", "missing_values", "transformations")
+                        }
+                        if group["kind"] == "frozen-public-data"
+                        else None
+                    ),
                 )
             )
 
