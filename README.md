@@ -3,14 +3,14 @@
 《量化研究数学》是一套面向具备经济学或金融学基础、已经会 Python 的读者的双册自学教程：
 
 - 上册《通用工具与研究证据》初稿已完成，包含 17 个学习单元、四级习题、可执行实验与独立 oracle；完整答案单独成册，便于先作答再核对；
-- 下册《方向模型与研究项目》已完成路线诊断、统一 Capstone 契约，以及多因子、统计套利、机器学习 Alpha、衍生品定价、组合风险和微观结构六个完整学习单元。
+- 下册《方向模型与研究项目》已完成路线诊断与统一 Capstone 契约；v0.3 正把六条路线分别扩展为三个正式学习单元。多因子与计量路线已经完成三单元升级，其余路线仍在实施。
 
 ## 获取成品
 
 - [最新 GitHub Release](https://github.com/Jason-W507/math-for-quant/releases/latest)
 - 本地构建产物：`output/pdf/math-for-quant-upper.pdf`
 - 上下册共享答案：`output/pdf/math-for-quant-solutions.pdf`
-- 下册路线导论：`output/pdf/math-for-quant-lower.pdf`
+- 下册方向路线：`output/pdf/math-for-quant-lower.pdf`
 - 已确认勘误：[ERRATA.md](ERRATA.md)
 
 生成 PDF 不提交到源码历史；正式版本由 tag 构建并上传到 Release。
@@ -42,6 +42,12 @@ uv run python tools/build_books.py --volume upper
 ```
 
 下册改动改用 `--volume lower`；只有共享源或正式全书发布才使用 `--volume all`。原模板目录保持不变，项目内模板来源见 `docs/template-provenance.md`。
+
+多因子路线的公共验收命令会先验证三个学习单元，再且只重建下册与共享答案册：
+
+```powershell
+uv run python tools/validate_multifactor_route.py
+```
 
 正式发布使用统一入口；它要求干净工作树，执行全部 Jupytext 源、构建三份 PDF、核对学习单元/Capstone/模板基线，并生成带来源、版本、校验值和许可证文件的发行清单。Notebook 压缩包同时携带代码与书稿许可文本：
 

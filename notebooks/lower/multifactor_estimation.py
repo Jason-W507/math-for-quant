@@ -9,7 +9,6 @@
 # %%
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import sys
 
@@ -24,11 +23,16 @@ from math_for_quant.lower.multifactor_library import (
     cross_check_estimators,
     cross_check_route_statistics,
 )
+from math_for_quant.lower.multifactor import validate_time_boundary
+from math_for_quant.lower.notebook_evidence import (
+    assert_expected,
+    load_oracle_and_fixture,
+)
 
 
 def main(oracle_path: Path) -> int:
-    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
-    fixture = json.loads(Path(oracle["fixture"]["path"]).read_text(encoding="utf-8"))
+    oracle, fixture = load_oracle_and_fixture(oracle_path)
+    validate_time_boundary(fixture["feature_timestamp"], fixture["outcome_timestamp"])
     design = np.asarray(fixture["design"], dtype=float)
     target = np.asarray(fixture["target"], dtype=float)
     ridge_penalty = float(fixture["ridge_penalty"])
@@ -97,9 +101,7 @@ def main(oracle_path: Path) -> int:
         "route_gap": route_gap,
         "zero_column_rejected": zero_column_rejected,
     }
-    for key, expected in oracle["expected"].items():
-        if abs(float(observed[key]) - float(expected)) > float(oracle["absolute_tolerance"]):
-            raise SystemExit(f"{key} mismatch: observed={observed[key]} expected={expected}")
+    assert_expected(observed, oracle)
     print(
         f"estimation-oracle=passed ridge={ridge[0]:.6f} lasso={lasso[0]:.6f} "
         f"library_gaps=({ridge_gap:.3e},{lasso_gap:.3e}) route_gap={route_gap:.3e} "

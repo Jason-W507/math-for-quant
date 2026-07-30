@@ -8,13 +8,13 @@
     "misalignment_rejected": 1
   },
   "absolute_tolerance": 1e-12,
-  "provenance": "The two synthetic long-short period returns are hand-calculated as 0.035 and 0.030; costs follow from explicit turnover. The frozen WDI correlation is illustrative and is not the oracle.",
+  "provenance": "The two synthetic long-short period returns are hand-calculated as 0.035 and 0.030; costs follow from explicit turnover. A separate pure-Python oracle independently verifies the frozen WDI arithmetic without treating it as alpha evidence.",
   "published_markers": [
     "两期等权分组毛收益为 $0.035$ 与 $0.030$，期均值为 $0.0325$。",
     "扣除 $0.002$ 换手成本和 $0.0005$ 容量冲击后，净收益为 $0.0300$。"
   ],
   "fixture": {
     "path": "data/fixtures/multifactor-research.json",
-    "sha256": "6b73f163bf0b607c365839f91be86588ed9b82f4aaec36fbaa8af3ea7d844c6f"
+    "sha256": "c69f88379f7d23e8873005cea99946f2e0487a0c574d3035224b28836a42992d"
   }
 }

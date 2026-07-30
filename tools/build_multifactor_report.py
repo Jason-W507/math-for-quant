@@ -12,7 +12,11 @@ from math_for_quant.lower.multifactor_estimation import (
     predictive_fama_macbeth,
     ridge_closed_form,
 )
+from math_for_quant.lower.multifactor_library import cross_check_route_statistics
 from math_for_quant.lower.multifactor_research import (
+    PortfolioInputs,
+    PortfolioPolicy,
+    Weighting,
     build_group_portfolio_ledger,
     load_real_cross_section,
 )
@@ -44,17 +48,44 @@ def build_report() -> str:
         float(estimation["lasso_penalty"]),
         100_000,
     )
+    route_check = cross_check_route_statistics(
+        panel_design=np.asarray([[0.0], [1.0], [0.0], [1.0], [1.0], [2.0]]),
+        panel_target=np.asarray([1.0, 1.4, -2.0, -1.6, 0.9, 1.3]),
+        entities=np.asarray([0, 0, 1, 1, 2, 2]),
+        signal=np.asarray([-2.0, -1.0, 1.0, 2.0]),
+        size=np.asarray([-1.0, -1.0, 1.0, 1.0]),
+        industry=np.asarray([0.0, 1.0, 0.0, 1.0]),
+        future_returns=np.asarray([-0.03, -0.01, 0.02, 0.04]),
+        horizon_returns=np.asarray([
+            [-0.03, -0.01, 0.02, 0.04],
+            [-0.015, -0.004, 0.009, 0.02],
+        ]),
+        p_values=[0.001, 0.02, 0.3, 0.8],
+        alpha=0.05,
+    )
+    route_gap = max(
+        route_check.panel_slope_gap,
+        route_check.neutralization_gap,
+        route_check.ic_gap,
+        route_check.rank_ic_gap,
+        route_check.decay_gap,
+        float(route_check.bh_count_gap),
+    )
 
     research = json.loads((ROOT / "data/fixtures/multifactor-research.json").read_text(encoding="utf-8"))
     ledger = build_group_portfolio_ledger(
-        signals=np.asarray(research["signals"], dtype=float),
-        realized_returns=np.asarray(research["realized_returns"], dtype=float),
-        market_caps=np.asarray(research["market_caps"], dtype=float),
-        quantiles=int(research["quantiles"]),
-        weighting="equal",
-        holding_periods=int(research["holding_periods"]),
-        cost_per_unit_turnover=float(research["cost_per_unit_turnover"]),
-        capacity_impact=float(research["capacity_impact"]),
+        inputs=PortfolioInputs(
+            signals=np.asarray(research["signals"], dtype=float),
+            realized_returns=np.asarray(research["realized_returns"], dtype=float),
+            market_caps=np.asarray(research["market_caps"], dtype=float),
+        ),
+        policy=PortfolioPolicy(
+            quantiles=int(research["quantiles"]),
+            weighting=Weighting.EQUAL,
+            holding_periods=int(research["holding_periods"]),
+            cost_per_unit_turnover=float(research["cost_per_unit_turnover"]),
+            capacity_impact=float(research["capacity_impact"]),
+        ),
     )
     real = load_real_cross_section(ROOT / "data/real/multifactor-wdi-2013-2014.json")
     p_values = null_search_p_values(seed=11, observations=60, attempts=20)
@@ -69,7 +100,8 @@ def build_report() -> str:
         "## 估计与数值实现\n\n"
         f"- Ridge 透明系数：{ridge[0]:.6f}\n"
         f"- Lasso 透明系数：{lasso[0]:.6f}\n"
-        "- statsmodels/scikit-learn 对照覆盖横截面、面板、中性化、IC、Rank IC、衰减、BH 与正则化。\n\n"
+        f"- 全路线透明/成熟库最大差：{route_gap:.3e}\n"
+        "- statsmodels/SciPy/scikit-learn 对照覆盖横截面、面板、中性化、IC、Rank IC、衰减、BH 与正则化。\n\n"
         "## 选择与多重检验\n\n"
         f"- 固定 20 次零信号搜索：朴素显著 {naive}，BH 拒绝 {bh}。\n"
         "- BH 的 FDR 保证依赖独立或适当正依赖条件；任意相关搜索需更保守协议。\n\n"

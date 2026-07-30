@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "rows": 7,
+    "signal_year": 2013,
+    "outcome_year": 2014,
+    "correlation": -0.3366540584305577
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "A pure-Python mean, covariance and sum-of-squares calculation independently checks the frozen WDI snapshot without importing the production route implementation.",
+  "published_markers": [],
+  "fixture": {
+    "path": "data/real/multifactor-wdi-2013-2014.json",
+    "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b"
+  }
+}

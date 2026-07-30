@@ -8,7 +8,6 @@
 # %%
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import sys
 
@@ -16,33 +15,49 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from math_for_quant.lower.multifactor_research import (
+    PortfolioInputs,
+    PortfolioPolicy,
+    Weighting,
     build_group_portfolio_ledger,
     load_real_cross_section,
+)
+from math_for_quant.lower.multifactor import validate_time_boundary
+from math_for_quant.lower.notebook_evidence import (
+    assert_expected,
+    load_oracle_and_fixture,
 )
 
 
 def main(oracle_path: Path) -> int:
-    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
-    fixture = json.loads(Path(oracle["fixture"]["path"]).read_text(encoding="utf-8"))
-    ledger = build_group_portfolio_ledger(
+    oracle, fixture = load_oracle_and_fixture(oracle_path)
+    for signal_date, return_date in zip(
+        fixture["signal_dates"], fixture["return_dates"], strict=True
+    ):
+        validate_time_boundary(signal_date, return_date)
+    inputs = PortfolioInputs(
         signals=np.asarray(fixture["signals"], dtype=float),
         realized_returns=np.asarray(fixture["realized_returns"], dtype=float),
         market_caps=np.asarray(fixture["market_caps"], dtype=float),
+    )
+    ledger = build_group_portfolio_ledger(
+        inputs=inputs,
+        policy=PortfolioPolicy(
         quantiles=int(fixture["quantiles"]),
-        weighting="equal",
+        weighting=Weighting.EQUAL,
         holding_periods=int(fixture["holding_periods"]),
         cost_per_unit_turnover=float(fixture["cost_per_unit_turnover"]),
         capacity_impact=float(fixture["capacity_impact"]),
+        ),
     )
     capitalized = build_group_portfolio_ledger(
-        signals=np.asarray(fixture["signals"], dtype=float),
-        realized_returns=np.asarray(fixture["realized_returns"], dtype=float),
-        market_caps=np.asarray(fixture["market_caps"], dtype=float),
+        inputs=inputs,
+        policy=PortfolioPolicy(
         quantiles=int(fixture["quantiles"]),
-        weighting="capitalization",
+        weighting=Weighting.CAPITALIZATION,
         holding_periods=2,
         cost_per_unit_turnover=float(fixture["cost_per_unit_turnover"]),
         capacity_impact=float(fixture["capacity_impact"]),
+        ),
     )
     real = load_real_cross_section(Path("data/real/multifactor-wdi-2013-2014.json"))
 
@@ -55,14 +70,18 @@ def main(oracle_path: Path) -> int:
     misalignment_rejected = 0
     try:
         build_group_portfolio_ledger(
-            signals=np.asarray(fixture["signals"], dtype=float),
-            realized_returns=np.asarray(fixture["realized_returns"], dtype=float)[:, :-1],
-            market_caps=np.asarray(fixture["market_caps"], dtype=float),
-            quantiles=2,
-            weighting="equal",
-            holding_periods=1,
-            cost_per_unit_turnover=0.0,
-            capacity_impact=0.0,
+            inputs=PortfolioInputs(
+                signals=inputs.signals,
+                realized_returns=inputs.realized_returns[:, :-1],
+                market_caps=inputs.market_caps,
+            ),
+            policy=PortfolioPolicy(
+                quantiles=2,
+                weighting=Weighting.EQUAL,
+                holding_periods=1,
+                cost_per_unit_turnover=0.0,
+                capacity_impact=0.0,
+            ),
         )
     except ValueError:
         misalignment_rejected = 1
@@ -74,9 +93,7 @@ def main(oracle_path: Path) -> int:
         "real_correlation": real.correlation,
         "misalignment_rejected": misalignment_rejected,
     }
-    for key, expected in oracle["expected"].items():
-        if abs(float(observed[key]) - float(expected)) > float(oracle["absolute_tolerance"]):
-            raise SystemExit(f"{key} mismatch: observed={observed[key]} expected={expected}")
+    assert_expected(observed, oracle)
     print(
         f"research-oracle=passed gross={ledger.gross_return:.6f} net={ledger.net_return:.6f} "
         f"turnover={ledger.turnover:.6f} cap_weight_net={capitalized.net_return:.6f} "

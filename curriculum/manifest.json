@@ -450,7 +450,12 @@
           "real_data_snapshot": "data/real/multifactor-wdi-2013-2014.json",
           "license": "data/real/WORLD-BANK-CC-BY-4.0.md",
           "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b",
-          "time_protocol": "evidence/multifactor/real-data.json"
+          "time_protocol": "evidence/multifactor/real-data.json",
+          "real_data_oracle": {
+            "source": "evidence/multifactor/validate_real_data.py",
+            "oracle": "evidence/multifactor/real-data-oracle.json",
+            "command": ["{python}", "evidence/multifactor/validate_real_data.py", "evidence/multifactor/real-data-oracle.json"]
+          }
         },
         "dual_implementation": {
           "transparent": "src/math_for_quant/lower/multifactor_estimation.py",
@@ -494,7 +499,12 @@
           "real_data_snapshot": "data/real/multifactor-wdi-2013-2014.json",
           "license": "data/real/WORLD-BANK-CC-BY-4.0.md",
           "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b",
-          "time_protocol": "evidence/multifactor/real-data.json"
+          "time_protocol": "evidence/multifactor/real-data.json",
+          "real_data_oracle": {
+            "source": "evidence/multifactor/validate_real_data.py",
+            "oracle": "evidence/multifactor/real-data-oracle.json",
+            "command": ["{python}", "evidence/multifactor/validate_real_data.py", "evidence/multifactor/real-data-oracle.json"]
+          }
         },
         "dual_implementation": {
           "transparent": "src/math_for_quant/lower/multifactor_estimation.py",
@@ -538,7 +548,12 @@
           "real_data_snapshot": "data/real/multifactor-wdi-2013-2014.json",
           "license": "data/real/WORLD-BANK-CC-BY-4.0.md",
           "sha256": "9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b",
-          "time_protocol": "evidence/multifactor/real-data.json"
+          "time_protocol": "evidence/multifactor/real-data.json",
+          "real_data_oracle": {
+            "source": "evidence/multifactor/validate_real_data.py",
+            "oracle": "evidence/multifactor/real-data-oracle.json",
+            "command": ["{python}", "evidence/multifactor/validate_real_data.py", "evidence/multifactor/real-data-oracle.json"]
+          }
         },
         "dual_implementation": {
           "transparent": "src/math_for_quant/lower/multifactor_research.py",

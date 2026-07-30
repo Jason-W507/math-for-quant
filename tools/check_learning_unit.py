@@ -46,6 +46,8 @@ def validate_route_evidence(unit: dict[str, object]) -> str | None:
         data["real_data_snapshot"],
         data["license"],
         data["time_protocol"],
+        data["real_data_oracle"]["source"],
+        data["real_data_oracle"]["oracle"],
         implementation["transparent"],
         implementation["library"],
         evidence["teaching_notebook"],
@@ -60,6 +62,16 @@ def validate_route_evidence(unit: dict[str, object]) -> str | None:
     observed_hash = hashlib.sha256(snapshot.read_bytes()).hexdigest()
     if observed_hash != data["sha256"]:
         return f"{unit['id']}: real-data snapshot hash differs from manifest"
+    real_oracle = data["real_data_oracle"]
+    real_command = [
+        sys.executable if part == "{python}" else part
+        for part in real_oracle["command"]
+    ]
+    real_result = subprocess.run(
+        real_command, cwd=ROOT, text=True, capture_output=True, check=False
+    )
+    if real_result.returncode != 0:
+        return f"{unit['id']}: real-data oracle failed: {real_result.stderr.strip()}"
     command = [sys.executable if part == "{python}" else part for part in report["command"]]
     result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, check=False)
     if result.returncode != 0:

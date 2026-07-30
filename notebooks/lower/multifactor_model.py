@@ -9,7 +9,6 @@
 # %%
 from __future__ import annotations
 
-import json
 from pathlib import Path
 import sys
 
@@ -20,11 +19,19 @@ from math_for_quant.lower.multifactor_estimation import (
     classic_two_pass_fama_macbeth,
     predictive_fama_macbeth,
 )
+from math_for_quant.lower.multifactor import validate_time_boundary
+from math_for_quant.lower.notebook_evidence import (
+    assert_expected,
+    load_oracle_and_fixture,
+)
 
 
 def main(oracle_path: Path) -> int:
-    oracle = json.loads(oracle_path.read_text(encoding="utf-8"))
-    fixture = json.loads(Path(oracle["fixture"]["path"]).read_text(encoding="utf-8"))
+    oracle, fixture = load_oracle_and_fixture(oracle_path)
+    for signal_date, return_date in zip(
+        fixture["signal_dates"], fixture["return_dates"], strict=True
+    ):
+        validate_time_boundary(signal_date, return_date)
     signals = np.asarray(fixture["signals"], dtype=float)
     future = np.asarray(fixture["future_returns"], dtype=float)
     factors = np.asarray(fixture["factor_returns"], dtype=float)
@@ -40,8 +47,12 @@ def main(oracle_path: Path) -> int:
     plt.legend()
     plt.close()
 
-    # 故障注入：日期相等必须在研究协议层拒绝；此 notebook 只记录类别。
-    alignment_failure = "signal timestamp must precede outcome timestamp"
+    # 故障注入：日期相等必须由真实验证器拒绝。
+    alignment_rejected = 0
+    try:
+        validate_time_boundary("2025-03-31", "2025-03-31")
+    except ValueError:
+        alignment_rejected = 1
     # 敏感性：将第二期信号乘正数只改变系数尺度，不改变排序。
     scaled = predictive_fama_macbeth(
         np.asarray([signals[0], 2.0 * signals[1]]), future
@@ -51,15 +62,14 @@ def main(oracle_path: Path) -> int:
         "predictive_mean": predictive.mean_coefficient,
         "classic_risk_price": classic.risk_prices[0],
         "scaled_second_slope": scaled.coefficients[1],
+        "alignment_rejected": alignment_rejected,
     }
-    for key, value in expected.items():
-        if abs(float(observed[key]) - float(value)) > float(oracle["absolute_tolerance"]):
-            raise SystemExit(f"{key} mismatch: observed={observed[key]} expected={value}")
+    assert_expected(observed, oracle)
     print(
         f"model-oracle=passed predictive_mean={predictive.mean_coefficient:.6f} "
         f"classic_risk_price={classic.risk_prices[0]:.6f} "
         f"scaled_second_slope={scaled.coefficients[1]:.6f} "
-        f"failure={alignment_failure.replace(' ', '-') }"
+        f"alignment_rejected={alignment_rejected}"
     )
     return 0
 

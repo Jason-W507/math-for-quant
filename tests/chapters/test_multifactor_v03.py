@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import unittest
+from unittest import mock
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +15,9 @@ from math_for_quant.lower.multifactor_estimation import (
     ridge_closed_form,
 )
 from math_for_quant.lower.multifactor_research import (
+    PortfolioInputs,
+    PortfolioPolicy,
+    Weighting,
     build_group_portfolio_ledger,
     load_real_cross_section,
 )
@@ -21,6 +25,7 @@ from math_for_quant.lower.multifactor_library import (
     cross_check_estimators,
     cross_check_route_statistics,
 )
+from tools import validate_multifactor_route
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -97,14 +102,14 @@ class MultifactorV03Tests(unittest.TestCase):
         )
         caps = np.asarray([[1.0, 2.0, 3.0, 4.0], [1.0, 4.0, 2.0, 3.0]])
         ledger = build_group_portfolio_ledger(
-            signals=signals,
-            realized_returns=realized,
-            market_caps=caps,
-            quantiles=2,
-            weighting="equal",
-            holding_periods=1,
-            cost_per_unit_turnover=0.001,
-            capacity_impact=0.0005,
+            inputs=PortfolioInputs(signals, realized, caps),
+            policy=PortfolioPolicy(
+                quantiles=2,
+                weighting=Weighting.EQUAL,
+                holding_periods=1,
+                cost_per_unit_turnover=0.001,
+                capacity_impact=0.0005,
+            ),
         )
         self.assertEqual(ledger.weights.shape, signals.shape)
         self.assertAlmostEqual(ledger.gross_return, 0.0325)
@@ -153,6 +158,20 @@ class MultifactorV03Tests(unittest.TestCase):
         self.assertEqual(len(cross_section.countries), 7)
         self.assertLess(cross_section.signal_year, cross_section.outcome_year)
         self.assertTrue(np.isfinite(cross_section.correlation))
+
+    def test_public_route_command_builds_only_lower_and_shared_solutions(self) -> None:
+        completed = __import__("subprocess").CompletedProcess([], 0)
+        with mock.patch.object(
+            validate_multifactor_route.subprocess,
+            "run",
+            side_effect=[completed, completed],
+        ) as run:
+            self.assertEqual(validate_multifactor_route.main(), 0)
+        commands = [call.args[0] for call in run.call_args_list]
+        self.assertIn("--track", commands[0])
+        self.assertEqual(commands[0][-1], "multifactor")
+        self.assertEqual(commands[1][-2:], ["--volume", "lower"])
+        self.assertNotIn("upper", commands[1])
 
 
 if __name__ == "__main__":
