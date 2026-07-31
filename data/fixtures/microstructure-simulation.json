@@ -1,0 +1,6 @@
+{
+  "seed": 59,
+  "events": 500,
+  "base_intensity": 2.0,
+  "real_snapshot": "data/real/coinbase-btc-usd-trades-2026-07-31.json"
+}

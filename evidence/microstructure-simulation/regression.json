@@ -1,0 +1,1 @@
+{"absolute_tolerance": 1e-6, "expected": {"simulation_events": 500, "real_trades": 20, "real_first_trade_id": 1064791075, "real_last_trade_id": 1064791094}}

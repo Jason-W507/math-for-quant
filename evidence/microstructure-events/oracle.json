@@ -1,0 +1,19 @@
+{
+  "fixture": {"path": "data/fixtures/microstructure-events.json", "sha256": "7a414bb1d4b7652581d059b54a364dcd66612cb475ba77d79b4eeac644676624"},
+  "absolute_tolerance": 1e-8,
+  "provenance": "The Poisson intensity is event count divided by exposure, the queue probability is a finite Poisson tail, and the order-price coefficient is reconstructed by centered OLS.",
+  "regression": "evidence/microstructure-events/regression.json",
+  "expected": {
+    "poisson_intensity": 1.0,
+    "poisson_log_likelihood": -4.0,
+    "queue_fill_probability": 0.5768099188731566,
+    "joint_beta": 0.15,
+    "queue_ahead": 3,
+    "first_fill_quantity": 3,
+    "partial_fill_quantity": 1,
+    "unfilled": 0,
+    "real_event_duration": 8.335501,
+    "real_event_beta": -0.05658333333333333,
+    "event_library_gap": 0.0
+  }
+}

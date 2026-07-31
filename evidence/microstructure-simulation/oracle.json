@@ -1,0 +1,19 @@
+{
+  "fixture": {"path": "data/fixtures/microstructure-simulation.json", "sha256": "422d0485ea913c31c141ff00e501774b0ed5573b006a3c8252aa64b81bad4240"},
+  "absolute_tolerance": 1e-6,
+  "provenance": "Both controls consume one seeded event stream; the frozen Coinbase trade-id interval and maker-side semantics are independently auditable from the registered snapshot.",
+  "regression": "evidence/microstructure-simulation/regression.json",
+  "expected": {
+    "simulation_events": 500,
+    "baseline_pnl": 8.099339,
+    "control_pnl": -12.139339,
+    "ending_inventory": 18,
+    "real_trades": 20,
+    "real_first_trade_id": 1064791075,
+    "real_last_trade_id": 1064791094,
+    "real_duration_seconds": 8.335501,
+    "real_maker_sell_share": 0.75,
+    "real_order_price_beta": -0.05658333333333333,
+    "simulation_library_gap": 0.0
+  }
+}

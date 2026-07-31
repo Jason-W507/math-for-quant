@@ -26,7 +26,6 @@
         "data/fixtures/lower-ch02.json",
         "data/fixtures/lower-ch03.json",
         "data/fixtures/lower-ch04.json",
-        "data/fixtures/lower-ch06.json",
         "data/fixtures/multifactor-model.json",
         "data/fixtures/multifactor-estimation.json",
         "data/fixtures/multifactor-research.json",
@@ -41,7 +40,10 @@
         "data/fixtures/derivatives-hedging.json",
         "data/fixtures/portfolio-risk-estimation.json",
         "data/fixtures/portfolio-risk-optimization.json",
-        "data/fixtures/portfolio-risk-tail.json"
+        "data/fixtures/portfolio-risk-tail.json",
+        "data/fixtures/microstructure-events.json",
+        "data/fixtures/microstructure-control.json",
+        "data/fixtures/microstructure-simulation.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",
@@ -101,6 +103,20 @@
       "license_id": "Public-Domain",
       "license_file": "data/real/US-TREASURY-PUBLIC-DOMAIN.md",
       "required_marker": "public domain"
+    },
+    {
+      "id": "microstructure-coinbase-trades-snapshot",
+      "paths": ["data/real/coinbase-btc-usd-trades-2026-07-31.json"],
+      "kind": "frozen-public-data",
+      "source": "Coinbase Exchange REST API get product trades",
+      "version": "BTC-USD-trades-2026-07-31T02:12:42Z-02:12:50Z",
+      "schema": "trade_id:int, side:maker-side, size:BTC decimal string, price:USD decimal string, time:ISO timestamp",
+      "selection": "Twenty consecutive trades returned by the public BTC-USD endpoint",
+      "missing_values": "Publication fails if any required trade field is absent",
+      "transformations": "Rows are reordered by increasing trade id; numeric strings remain verbatim in the snapshot",
+      "license_id": "Coinbase-Market-Data-Terms",
+      "license_file": "data/real/COINBASE-MARKET-DATA-TERMS.md",
+      "required_marker": "Coinbase-Market-Data-Terms"
     }
   ]
 }

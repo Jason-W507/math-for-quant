@@ -3,7 +3,7 @@
 《量化研究数学》是一套面向具备经济学或金融学基础、已经会 Python 的读者的双册自学教程：
 
 - 上册《通用工具与研究证据》初稿已完成，包含 17 个学习单元、四级习题、可执行实验与独立 oracle；完整答案单独成册，便于先作答再核对；
-- 下册《方向模型与研究项目》已完成路线诊断与统一 Capstone 契约；v0.3 正把六条路线分别扩展为三个正式学习单元。多因子与计量、时间序列与统计套利、机器学习/深度学习与 NLP/LLM、衍生品定价与对冲四条路线已经完成三单元升级，其余路线仍在实施。
+- 下册《方向模型与研究项目》已完成路线诊断、统一 Capstone 契约，以及六条路线各三个正式学习单元的 v0.3 升级。
 
 ## 获取成品
 
@@ -65,6 +65,18 @@ uv run python tools/validate_ml_alpha_route.py
 
 ```powershell
 uv run python tools/validate_derivatives_route.py
+```
+
+组合风险路线贯通风险估计、稳健实施与尾部/压力风险：
+
+```powershell
+uv run python tools/validate_portfolio_risk_route.py
+```
+
+高频、微观结构与执行路线贯通事件/队列、执行/做市控制和共同随机数仿真：
+
+```powershell
+uv run python tools/validate_microstructure_route.py
 ```
 
 正式发布使用统一入口；它要求干净工作树，执行全部 Jupytext 源、构建三份 PDF、核对学习单元/Capstone/模板基线，并生成带来源、版本、校验值和许可证文件的发行清单。Notebook 压缩包同时携带代码与书稿许可文本：

@@ -716,27 +716,37 @@
       }
     },
     {
-      "id": "lower.ch06",
-      "title": "高频、微观结构与执行：从订单流到事件时间研究",
-      "volume": "lower",
-      "capstone": true,
-      "state": "accepted",
-      "published": true,
-      "prerequisites": ["upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11", "upper.ch12", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"],
-      "evidence": {
-        "notation_symbols": ["N_t", "\\lambda(t\\mid\\mathcal F_{t^-})", "V_t(x)"],
-        "glossary_terms": ["条件强度", "Hawkes 过程", "价格时间优先", "临时冲击", "实现差额"],
-        "notation_and_assumptions": "tex/lower/chapters/microstructure.tex",
-        "core_derivation": "tex/lower/chapters/microstructure.tex",
-        "independent_oracle": {
-          "source": "notebooks/lower/ch06_microstructure.py",
-          "oracle": "evidence/lower-ch06/oracle.json",
-          "command": ["{python}", "notebooks/lower/ch06_microstructure.py", "evidence/lower-ch06/oracle.json"]
-        },
-        "questions": "tex/lower/chapters/microstructure-questions.tex",
-        "hints": "tex/lower/chapters/microstructure-hints.tex",
-        "solutions": "tex/lower/chapters/microstructure-solutions.tex",
-        "capstone_connection": "tex/lower/chapters/microstructure.tex"
+      "id":"lower.microstructure.model","title":"事件与订单簿：从条件强度到队列成交","volume":"lower","track":"microstructure","track_stage":"model-math","state":"accepted","published":true,
+      "prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],
+      "evidence":{
+        "notation_symbols":["N_t","\\lambda(t\\mid\\mathcal F_{t^-})"],"glossary_terms":["条件强度","Hawkes 过程","价格时间优先"],
+        "notation_and_assumptions":"tex/lower/chapters/microstructure-events.tex","core_derivation":"tex/lower/chapters/microstructure-events.tex",
+        "independent_oracle":{"source":"notebooks/lower/microstructure_events.py","oracle":"evidence/microstructure-events/oracle.json","command":["{python}","notebooks/lower/microstructure_events.py","evidence/microstructure-events/oracle.json"]},
+        "questions":"tex/lower/chapters/microstructure-events-questions.tex","hints":"tex/lower/chapters/microstructure-events-hints.tex","solutions":"tex/lower/chapters/microstructure-events-solutions.tex","capstone_connection":"tex/lower/chapters/microstructure-events.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/microstructure-events.json","real_data_snapshot":"data/real/coinbase-btc-usd-trades-2026-07-31.json","license":"data/real/COINBASE-MARKET-DATA-TERMS.md","sha256":"5d1a8ff7cd388f794f9d6f9dc15b797ddc103b2d3e9b285d19ac2f27efa68904","time_protocol":"evidence/microstructure-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/microstructure-real/validate_real_data.py","oracle":"evidence/microstructure-real/real-data-oracle.json","command":["{python}","evidence/microstructure-real/validate_real_data.py","evidence/microstructure-real/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_events.py","library":"src/math_for_quant/lower/microstructure_events_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/microstructure_events.py","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id":"lower.microstructure.estimation","title":"执行与做市控制：从冲击账本到库存反馈","volume":"lower","track":"microstructure","track_stage":"estimation-numerics","state":"accepted","published":true,"prerequisites":["lower.microstructure.model","upper.ch13","upper.ch14","upper.ch15"],
+      "evidence":{
+        "notation_symbols":["V_t(x)"],"glossary_terms":["临时冲击","实现差额"],
+        "notation_and_assumptions":"tex/lower/chapters/microstructure-control.tex","core_derivation":"tex/lower/chapters/microstructure-control.tex",
+        "independent_oracle":{"source":"notebooks/lower/microstructure_control.py","oracle":"evidence/microstructure-control/oracle.json","command":["{python}","notebooks/lower/microstructure_control.py","evidence/microstructure-control/oracle.json"]},
+        "questions":"tex/lower/chapters/microstructure-control-questions.tex","hints":"tex/lower/chapters/microstructure-control-hints.tex","solutions":"tex/lower/chapters/microstructure-control-solutions.tex","capstone_connection":"tex/lower/chapters/microstructure-control.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/microstructure-control.json","real_data_snapshot":"data/real/coinbase-btc-usd-trades-2026-07-31.json","license":"data/real/COINBASE-MARKET-DATA-TERMS.md","sha256":"5d1a8ff7cd388f794f9d6f9dc15b797ddc103b2d3e9b285d19ac2f27efa68904","time_protocol":"evidence/microstructure-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/microstructure-real/validate_real_data.py","oracle":"evidence/microstructure-real/real-data-oracle.json","command":["{python}","evidence/microstructure-real/validate_real_data.py","evidence/microstructure-real/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_control.py","library":"src/math_for_quant/lower/microstructure_control_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/microstructure_control.py","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+      }
+    },
+    {
+      "id":"lower.microstructure.research","title":"事件时间仿真：从共同随机数到 Route Capstone","volume":"lower","track":"microstructure","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.microstructure.estimation"],
+      "evidence":{
+        "notation_symbols":["\\operatorname{PnL}_T"],"glossary_terms":["条件强度","实现差额"],
+        "notation_and_assumptions":"tex/lower/chapters/microstructure-simulation.tex","core_derivation":"tex/lower/chapters/microstructure-simulation.tex",
+        "independent_oracle":{"source":"notebooks/lower/microstructure_simulation.py","oracle":"evidence/microstructure-simulation/oracle.json","command":["{python}","notebooks/lower/microstructure_simulation.py","evidence/microstructure-simulation/oracle.json"]},
+        "questions":"tex/lower/chapters/microstructure-simulation-questions.tex","hints":"tex/lower/chapters/microstructure-simulation-hints.tex","solutions":"tex/lower/chapters/microstructure-simulation-solutions.tex","capstone_connection":"tex/lower/chapters/microstructure-simulation.tex",
+        "dual_track_data":{"oracle_fixture":"data/fixtures/microstructure-simulation.json","real_data_snapshot":"data/real/coinbase-btc-usd-trades-2026-07-31.json","license":"data/real/COINBASE-MARKET-DATA-TERMS.md","sha256":"5d1a8ff7cd388f794f9d6f9dc15b797ddc103b2d3e9b285d19ac2f27efa68904","time_protocol":"evidence/microstructure-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/microstructure-real/validate_real_data.py","oracle":"evidence/microstructure-real/real-data-oracle.json","command":["{python}","evidence/microstructure-real/validate_real_data.py","evidence/microstructure-real/real-data-oracle.json"]}},
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_simulation.py","library":"src/math_for_quant/lower/microstructure_simulation_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/microstructure_simulation.py","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     }
   ],

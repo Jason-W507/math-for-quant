@@ -126,7 +126,7 @@ class FullReleaseContractTests(unittest.TestCase):
         self.assertEqual(len(assets), sum(len(group["paths"]) for group in registry["assets"]))
         self.assertEqual(
             {asset.license_id for asset in assets},
-            {"CC0-1.0", "CC-BY-4.0", "Public-Domain"},
+            {"CC0-1.0", "CC-BY-4.0", "Public-Domain", "Coinbase-Market-Data-Terms"},
         )
         public_groups = [
             group for group in registry["assets"]
@@ -215,7 +215,9 @@ class FullReleaseContractTests(unittest.TestCase):
                 "lower.portfolio-risk.model",
                 "lower.portfolio-risk.estimation",
                 "lower.portfolio-risk.research",
-                "lower.ch06",
+                "lower.microstructure.model",
+                "lower.microstructure.estimation",
+                "lower.microstructure.research",
             ],
             "license_policy": "docs/release-license-policy.md",
             "template_provenance": "docs/template-provenance.json",

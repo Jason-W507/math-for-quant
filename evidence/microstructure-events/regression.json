@@ -1,0 +1,1 @@
+{"absolute_tolerance": 1e-8, "expected": {"poisson_intensity": 1.0, "joint_beta": 0.15, "queue_ahead": 3}}

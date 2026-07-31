@@ -1,0 +1,79 @@
+\chapter{事件与订单簿：从条件强度到队列成交}
+\label{ch:lower-microstructure-events}
+
+\begin{itemize}
+  \item \textbf{直接先修：}上册第 7--9、11、12、14--17 章；路线诊断见第 \ref{route:microstructure} 节。
+  \item \textbf{学习产出：}区分日历时间与事件时间，估计 Poisson/Hawkes 强度，建立订单方向--价格变化联合回归，并手工推进 FIFO 订单簿。
+  \item \textbf{研究边界：}公开逐笔成交不含逐档委托、撤单和队列位置；合成簿用于验证状态转移，不能冒充真实成交概率。
+\end{itemize}
+
+\section{事件时间不是把横轴换个名字}
+
+令 $N_t$ 表示截至 $t$ 的事件数，历史信息为 $\mathcal F_{t^-}$。条件强度定义为
+\[
+ \lambda(t\mid\mathcal F_{t^-})
+ =\lim_{h\downarrow0}\frac{\mathbb P(N_{t+h}-N_t=1\mid\mathcal F_{t^-})}{h}.
+\]
+它描述给定过去后下一瞬间的事件率，而不是“每秒平均几笔”的同义词。齐次 Poisson 过程要求独立平稳增量；等待时间 $\Delta_i$ 独立且服从参数 $\lambda$ 的指数分布。观察 $n$ 段等待时间、总暴露 $T=\sum_i\Delta_i$ 时，
+\[
+ \ell(\lambda)=n\log\lambda-\lambda T,
+ \qquad \widehat\lambda=n/T.
+\]
+冻结例中 $n=T=4$，所以 $\widehat\lambda=1$、最大对数似然为 $-4$。这既有手算 oracle，也由一维数值优化独立重建。
+
+盘中 U 形季节性会让常强度模型产生系统残差。可写成
+\[
+ \lambda(t\mid\mathcal F_{t^-})=s(t)\widetilde\lambda(t),
+\]
+其中 $s(t)>0$ 是预先估计并在样本外冻结的季节因子。若先用全日数据估计 $s(t)$ 再回测同日，会把未来活动率泄漏到早盘。
+
+\section{Hawkes 自激与稳定边界}
+
+指数核 Hawkes 过程写成
+\[
+ \lambda_t=\mu+\alpha\sum_{t_i<t}e^{-\beta(t-t_i)},
+ \qquad \mu>0,\ \alpha\ge0,\ \beta>0.
+\]
+每个事件瞬时增加强度 $\alpha$，影响以速度 $\beta$ 衰减。分枝比 $\alpha/\beta<1$ 是平稳版本的稳定条件；它不是“拟合得好”的经验阈值。区间 $[0,T]$ 的对数似然为
+\[
+ \ell=\sum_{t_i\le T}\log\lambda_{t_i}
+ -\mu T-\frac{\alpha}{\beta}\sum_{t_i\le T}\left(1-e^{-\beta(T-t_i)}\right).
+\]
+第一项奖励事件发生处的高条件强度，第二项是补偿子；漏掉补偿子会把强度无限推高。估计时还要报告窗口、初始历史、时间单位、参数约束和残差时间变换，而不能只给三个参数。
+
+\begin{diagnostic}
+Poisson、季节性 Poisson 与 Hawkes 是嵌套的研究假设。先检查季节性和时间尺度，再判断剩余聚集是否支持自激；不要用一个 Hawkes 名称同时解释开收盘季节性、新闻簇集和数据时间戳重复。
+\end{diagnostic}
+
+\section{订单流与价格变化必须在同一时间协议中}
+
+令 $q_i\in\{-1,+1\}$ 表示第 $i$ 笔主动方向，$\Delta m_i$ 是在冻结采样规则下的中价变化。最小联合模型为
+\[
+ \Delta m_i=a+bq_i+u_i,
+ \qquad \mathbb E(u_i\mid q_i)=0.
+\]
+系数 $b$ 是给定对齐协议下的条件均值差，不自动等于结构性永久冲击。冻结例的 OLS 斜率为 $0.15$，透明协方差公式与带截距最小二乘一致。
+
+真实轨使用 Coinbase BTC--USD 的 20 笔冻结成交。官方接口中的 \texttt{side} 是 maker side，因此 maker sell 对应主动买；若直接把 sell 编成 $-1$，系数符号会翻转。样本覆盖 8.335501 秒，只能检验字段、方向语义和计算路径，不能估计稳定冲击。
+
+\section{价格优先、时间优先与队列位置}
+
+限价簿状态由订单 $(\mathrm{id},\mathrm{side},p,q,\mathrm{seq})$ 组成。被动簿至少满足：订单编号唯一、活动数量为正、最高买价低于最低卖价；同一价格按序号 FIFO。对订单 $j$，前方数量为
+\[
+ A_j=\sum_{i:\,p_i=p_j,\,\mathrm{seq}_i<\mathrm{seq}_j}q_i.
+\]
+若对手方耗尽数量在期限 $h$ 内近似 $D_h\sim\mathrm{Poisson}(\nu h)$，自己的 $Q$ 手全部成交概率是
+\[
+ \mathbb P(D_h\ge A_j+Q).
+\]
+冻结例 $A_j=2,Q=1,\nu h=3$，概率为 $0.576810$。这是明确假设下的队列概率，不是由公开成交快照识别出的现实概率。
+
+执行一笔 4 手市价卖单时，合成簿先吃掉第一张 3 手买单，再使第二张 2 手买单部分成交 1 手；随后撤去剩余 1 手，下一笔市价卖单得到未成交 1 手。这个小账本同时覆盖撤单、部分成交、流动性不足和状态不变量。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/microstructure_events.py} 可重建强度、队列尾概率、联合回归与 FIFO 账本；打乱 trade id、无识别方向或交叉被动委托会被稳定拒绝。
+\end{implementationnote}
+
+本单元向 Route Capstone 交付事件方向、队列状态、成交规则和可审计的时间协议\cite{hawkes1971spectra,cont2001empirical}。
+
+\input{tex/lower/chapters/microstructure-events-questions}

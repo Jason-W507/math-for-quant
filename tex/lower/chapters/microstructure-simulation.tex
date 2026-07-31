@@ -1,0 +1,75 @@
+\chapter{事件时间仿真：从共同随机数到 Route Capstone}
+\label{ch:lower-microstructure-simulation}
+
+\begin{itemize}
+  \item \textbf{直接先修：}第 \ref{ch:lower-microstructure-events}、\ref{ch:lower-microstructure-control} 章及上册第 15--17 章。
+  \item \textbf{学习产出：}建立可重放事件仿真，用共同随机数比较控制器，联合报告收益、库存、成交与失败边界，并交付开放研究项目。
+  \item \textbf{研究边界：}仿真是条件于生成机制的反事实实验；真实成交快照只检查数据语义，不能验证合成簿的现实主义。
+\end{itemize}
+
+\section{先冻结生成机制，再比较策略}
+
+一个最小事件生成器需要明确：等待时间、订单方向、价格变化、委托大小和终止条件。例如
+\[
+ \Delta t_i\sim\operatorname{Exp}(\lambda),\quad
+ q_i\in\{-1,+1\},\quad
+ \Delta m_i=\beta q_i+\sigma\sqrt{\Delta t_i}\varepsilon_i.
+\]
+这些方程是数据生成假设，不是对现实的事实陈述。若要引入季节或 Hawkes 聚集，应逐层增加并分别做残差诊断；模型复杂度不能替代可识别性。
+
+比较静态报价与库存控制时，两者必须消费完全相同的 $(\Delta t_i,q_i,\varepsilon_i)$。本章把订单方向序列序列化后计算 SHA--256；两种规则的哈希必须相同。这个共同随机数设计消除大量路径噪声，使差异更接近控制规则本身。若分别设两个种子，即使平均 PnL 更高，也不能确认来自策略还是更幸运的订单流。
+
+冻结 500 事件实验得到静态规则 PnL $8.099339$、库存控制规则 PnL $-12.139339$、期末库存 18。控制规则在这条路径上更差并不是失败：教材 oracle 要求忠实重建生成机制与账本，而不是强迫“先进模型获胜”。
+
+\section{收益不是唯一统计量}
+
+把终点累计损益记为 $\operatorname{PnL}_T$。仿真报告至少包括
+\[
+ \text{PnL},\quad \max_t|q_t|,\quad q_T,\quad
+ \text{fill rate},\quad \text{turnover},\quad \text{shortfall},
+\]
+并给出路径数、随机种子、置信区间和压力条件。若只看平均 PnL，策略可以通过无限库存或未完成母单获得虚假优势。做市 PnL 还应拆成点差捕获、持仓重估、费用与冲击；执行策略则应以相同到达价和母单任务比较。
+
+动态规划策略与仿真统计承担不同证据：DP 在给定离散状态、转移与目标下给出最优控制；Monte Carlo 描述该控制在声明分布下的结果分布。DP 最优不意味着模型正确，仿真均值领先也不意味着总体或未来市场领先。
+
+\section{真实成交轨的适当角色}
+
+冻结 Coinbase 快照包含 20 笔 BTC--USD 成交，trade id 从 1064791075 到 1064791094，跨度 8.335501 秒。解析器检查编号严格递增、时间不倒退、数值有限，并按 maker side 解释方向。样本中 maker-sell 比例为 $0.75$，方向--价格变化斜率约 $-0.056583$。
+
+这条真实轨可以回答：字段语义是否正确、时间尺度是否合理、同一计算能否接收真实输入。它不能回答：自己的订单排在何处、撤单强度是多少、是否会成交、网络延迟多大。双轨数据的原则是：合成 fixture 提供独立真值，真实快照提供来源和适配压力；二者不能互相冒充。
+
+\section{错误研究包审计}
+
+考虑一个声称“库存控制提高 30\% 收益”的包。合格审计依次追问：
+\begin{enumerate}[leftmargin=*]
+  \item 两个控制器是否使用相同事件流和相同初始状态？
+  \item 成交模型是否依赖自己的报价、队列位置和延迟？
+  \item PnL 是否包含费用、冲击、未完成量和期末库存重估？
+  \item 参数是在训练窗选择，还是看完整结果后调优？
+  \item 是否报告分布、尾部、压力和失败路径，而非单个均值？
+  \item 真实数据是否含有支持结论所需的盘口字段？
+\end{enumerate}
+缺任一项都不必立即判定策略无效，但必须降低证据强度并给出修复实验。
+
+\section{开放 Route Capstone}
+
+项目目标是构建“队列--成交--库存--报价”闭环，而不是再罗列模型名称。交付物固定为：
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{研究问题：}例如库存控制在何种订单流聚集和延迟下改善尾部库存？
+  \item \textbf{数据协议：}事件字段、交易所/接收时间、乱序恢复、样本分割与许可证。
+  \item \textbf{独立基线：}手工小簿与确定性执行账本，先通过再运行仿真。
+  \item \textbf{模型：}条件强度、队列耗尽、冲击和报价状态方程及可识别边界。
+  \item \textbf{控制比较：}共同随机数、冻结调参预算、至少一个简单基线。
+  \item \textbf{摩擦：}费用、延迟、部分成交、撤单失败、未完成与容量。
+  \item \textbf{故障注入：}缺包、乱序、重复事件、盘口交叉、成交率骤降和价格跳跃。
+  \item \textbf{限制报告：}哪些参数来自真实数据，哪些仅为压力假设，结论适用到哪里。
+  \item \textbf{一键复现：}环境、种子、命令、报告哈希和逐字输出比较。
+\end{enumerate}
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/microstructure_simulation.py} 重建配对仿真与真实快照统计；运行 \path{tools/validate_microstructure_route.py} 验收三个单元并只构建下册和共享答案册。
+\end{implementationnote}
+
+路线完整报告由 \path{tools/build_microstructure_report.py} 逐字生成。它将手算 oracle、独立实现、真实数据轨、控制结果和限制放在同一证据边界内\cite{hasbrouck2007empirical}。
+
+\input{tex/lower/chapters/microstructure-simulation-questions}

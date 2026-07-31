@@ -1,0 +1,20 @@
+{
+  "fixture": {"path": "data/fixtures/microstructure-control.json", "sha256": "bc8fd8620d60766eec4bff0e1306b3650cb723169f6558d8c1611790627c0455"},
+  "absolute_tolerance": 1e-8,
+  "provenance": "Each fill is rounded from the declared completion rate; implementation shortfall is reconstructed trade by trade; the DP result is checked by complete enumeration.",
+  "regression": "evidence/microstructure-control/regression.json",
+  "expected": {
+    "execution_filled": 5,
+    "execution_remaining": 4,
+    "execution_shortfall": 3.2,
+    "optimal_schedule": "3-2-1",
+    "optimal_cost": 19.2,
+    "maker_inventory": 1,
+    "maker_next_bid": 99.4,
+    "maker_next_ask": 100.4,
+    "real_arrival_price": 64486.2,
+    "real_total_size": 0.15443687,
+    "real_max_trade_size": 0.1,
+    "control_library_gap": 0.0
+  }
+}

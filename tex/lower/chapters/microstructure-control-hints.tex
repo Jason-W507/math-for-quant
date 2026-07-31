@@ -1,0 +1,11 @@
+\chapter{执行与做市控制提示}
+\begin{enumerate}[leftmargin=*]
+  \item 临时项只乘本期量，永久项累积到后续价格。
+  \item 逐期写成交价，再乘成交数量。
+  \item 只有 $R=0$ 的终端状态可行。
+  \item 枚举 $0\ldots x_{\max}$ 的笛卡尔积并筛选总和。
+  \item 多头库存应让两边报价同时向下移动。
+  \item 第 $t$ 次报价只能使用第 $t$ 次成交前的状态。
+  \item IS 的基准、现金费用、剩余量和停止状态都不可缺。
+  \item 固定同一随机数流比较不同控制器。
+\end{enumerate}

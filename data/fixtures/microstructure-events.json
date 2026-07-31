@@ -1,0 +1,10 @@
+{
+  "interarrivals": [0.5, 1.0, 1.5, 1.0],
+  "queue_ahead": 2,
+  "own_quantity": 1,
+  "depletion_intensity": 3.0,
+  "horizon": 1.0,
+  "signs": [-1.0, -1.0, 1.0, 1.0],
+  "price_changes": [-0.2, -0.1, 0.1, 0.2],
+  "real_snapshot": "data/real/coinbase-btc-usd-trades-2026-07-31.json"
+}

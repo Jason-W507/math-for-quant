@@ -1,0 +1,12 @@
+{
+  "snapshot": {"path": "data/real/coinbase-btc-usd-trades-2026-07-31.json", "sha256": "5d1a8ff7cd388f794f9d6f9dc15b797ddc103b2d3e9b285d19ac2f27efa68904"},
+  "absolute_tolerance": 1e-8,
+  "expected": {
+    "trades": 20,
+    "first_trade_id": 1064791075,
+    "last_trade_id": 1064791094,
+    "duration_seconds": 8.335501,
+    "maker_sell_share": 0.75,
+    "order_price_beta": -0.05658333333333333
+  }
+}

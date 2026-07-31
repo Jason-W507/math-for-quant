@@ -1,0 +1,20 @@
+{
+  "schedule": [3, 3, 3],
+  "fill_rates": [1.0, 0.5, 0.0],
+  "initial_inventory": 9,
+  "arrival_price": 100.0,
+  "temporary_impact": 0.2,
+  "permanent_impact": 0.1,
+  "stop_after": 3,
+  "dp_inventory": 6,
+  "dp_steps": 3,
+  "dp_temporary_impact": 1.0,
+  "dp_permanent_impact": 0.2,
+  "dp_inventory_risk": 0.3,
+  "dp_maximum_slice": 3,
+  "midprices": [100.0, 100.0],
+  "fills": ["bid", "none"],
+  "half_spread": 0.5,
+  "inventory_skew": 0.1,
+  "real_snapshot": "data/real/coinbase-btc-usd-trades-2026-07-31.json"
+}
