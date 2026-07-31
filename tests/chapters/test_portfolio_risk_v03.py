@@ -192,6 +192,7 @@ class PortfolioRiskV03Tests(unittest.TestCase):
         ):
             source = estimation if key in estimation else optimization if key in optimization else tail
             self.assertLess(float(source[key]), 1e-8, key)
+        self.assertLess(float(estimation["bootstrap_library_interval_gap"]), 0.002)
 
     def test_real_data_track_is_consumed_by_portfolio_route(self) -> None:
         observed = run_portfolio_real_data(
@@ -203,6 +204,8 @@ class PortfolioRiskV03Tests(unittest.TestCase):
         self.assertAlmostEqual(
             observed["risk_parity_weight_1"] + observed["risk_parity_weight_2"], 1.0
         )
+        self.assertAlmostEqual(observed["cvar_weight_1"] + observed["cvar_weight_2"], 1.0)
+        self.assertIn(observed["tail_status"], {"warn", "pass"})
 
     def test_report_uses_observed_tail_contract_not_hardcoded_labels(self) -> None:
         import json
@@ -211,7 +214,10 @@ class PortfolioRiskV03Tests(unittest.TestCase):
         fixture = json.loads((ROOT / "data/fixtures/portfolio-risk-tail.json").read_text(encoding="utf-8"))
         fixture.update({"confidence": 0.90, "warning_tail_observations": 40, "loss_threshold": 5.0})
         tail = run_tail(fixture)
-        report = render_route_report(estimation, optimization, tail, {"rows": 40, "growth_rows": 39, "covariance_trace": 1.0, "risk_parity_weight_1": 0.4, "risk_parity_weight_2": 0.6})
+        real_data = run_portfolio_real_data(
+            ROOT / "data/real/stat-arb-us-macro-1999q4-2009q3.json"
+        )
+        report = render_route_report(estimation, optimization, tail, real_data)
         self.assertIn("90% VaR/ES", report)
         self.assertIn(f"状态 {tail['tail_status']}", report)
         self.assertIn("损失达到 5", report)

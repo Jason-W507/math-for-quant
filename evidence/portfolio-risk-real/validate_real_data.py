@@ -16,13 +16,22 @@ def main(oracle_path: Path) -> int:
     observed = run_portfolio_real_data(snapshot_path)
     tolerance = float(oracle["absolute_tolerance"])
     for key, expected in oracle["expected"].items():
+        if isinstance(expected, str):
+            if observed[key] != expected:
+                raise SystemExit(
+                    f"portfolio real-data {key} mismatch: observed={observed[key]} expected={expected}"
+                )
+            continue
         if abs(float(observed[key]) - float(expected)) > tolerance:
             raise SystemExit(
                 f"portfolio real-data {key} mismatch: observed={observed[key]} expected={expected}"
             )
     print(
         "portfolio-real-data=passed "
-        + " ".join(f"{key}={value:.8g}" for key, value in observed.items())
+        + " ".join(
+            f"{key}={value}" if isinstance(value, str) else f"{key}={value:.8g}"
+            for key, value in observed.items()
+        )
     )
     return 0
 

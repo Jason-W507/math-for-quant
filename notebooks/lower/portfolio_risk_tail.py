@@ -21,6 +21,7 @@ import numpy as np
 
 from math_for_quant.lower.notebook_evidence import assert_expected, load_oracle_and_fixture
 from math_for_quant.lower.portfolio_route import run_tail
+from math_for_quant.lower.portfolio_real_data import run_portfolio_real_data
 from math_for_quant.lower.portfolio_tail import empirical_tail_risk
 
 
@@ -35,6 +36,11 @@ def main(oracle_path: Path) -> int:
     sensitivity = run_tail(sensitivity_fixture)
     if np.isclose(sensitivity["value_at_risk"], observed["value_at_risk"]):
         raise SystemExit("confidence sensitivity did not change VaR")
+    real_data = run_portfolio_real_data(
+        Path("data/real/stat-arb-us-macro-1999q4-2009q3.json")
+    )
+    if real_data["tail_effective_observations"] < 5.0:
+        raise SystemExit("real-data tail gate unexpectedly lacks the declared minimum")
     try:
         empirical_tail_risk(np.arange(100.0), 0.99, minimum_tail_observations=20)
     except ValueError as error:
@@ -51,6 +57,7 @@ def main(oracle_path: Path) -> int:
             f"{key}={value}" if isinstance(value, str) else f"{key}={value:.6g}"
             for key, value in observed.items()
         )
+        + f" real_tail_status={real_data['tail_status']}"
     )
     return 0
 

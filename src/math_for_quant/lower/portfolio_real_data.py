@@ -6,9 +6,11 @@ from pathlib import Path
 import numpy as np
 
 from math_for_quant.lower.portfolio_estimation import risk_parity_weights
+from math_for_quant.lower.portfolio_optimization import cvar_optimize
+from math_for_quant.lower.portfolio_tail import empirical_tail_risk
 
 
-def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int]:
+def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int | str]:
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     rows = snapshot["rows"]
     periods = [str(row["period"]) for row in rows]
@@ -22,12 +24,29 @@ def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int]:
     growth = np.diff(np.log(levels), axis=0)
     covariance = np.cov(growth, rowvar=False, ddof=1)
     weights = risk_parity_weights(covariance)
+    cvar = cvar_optimize(growth, confidence=0.75, maximum_weight=0.8)
+    portfolio_losses = -(growth @ np.array([0.5, 0.5]))
+    tail = empirical_tail_risk(
+        portfolio_losses,
+        0.75,
+        minimum_tail_observations=5,
+        warning_tail_observations=10,
+    )
     return {
         "rows": len(rows),
         "growth_rows": growth.shape[0],
         "covariance_trace": float(np.trace(covariance)),
         "risk_parity_weight_1": float(weights[0]),
         "risk_parity_weight_2": float(weights[1]),
+        "cvar_confidence": 0.75,
+        "cvar_weight_1": float(cvar.weights[0]),
+        "cvar_weight_2": float(cvar.weights[1]),
+        "cvar_objective": float(cvar.objective),
+        "tail_confidence": 0.75,
+        "tail_effective_observations": float(tail.effective_tail_observations),
+        "tail_value_at_risk": float(tail.value_at_risk),
+        "tail_expected_shortfall": float(tail.expected_shortfall),
+        "tail_status": tail.status,
     }
 
 

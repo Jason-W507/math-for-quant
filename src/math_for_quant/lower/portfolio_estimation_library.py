@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 from scipy.optimize import minimize
+from scipy.stats import bootstrap
 from sklearn.covariance import ShrunkCovariance
 
 from math_for_quant.lower.portfolio_estimation import risk_contributions, validate_covariance
@@ -51,8 +52,30 @@ def library_portfolio_volatility(returns: np.ndarray, weights: np.ndarray) -> fl
     return float(np.sqrt(np.cov(portfolio, ddof=1)))
 
 
+def library_bootstrap_volatility_interval(
+    returns: np.ndarray,
+    weights: np.ndarray,
+    *,
+    samples: int,
+    seed: int,
+    confidence: float,
+) -> tuple[float, float]:
+    portfolio = np.asarray(returns, dtype=float) @ np.asarray(weights, dtype=float)
+    result = bootstrap(
+        (portfolio,),
+        lambda sample: float(np.std(sample, ddof=1)),
+        n_resamples=samples,
+        confidence_level=confidence,
+        method="percentile",
+        vectorized=False,
+        rng=np.random.default_rng(seed),
+    )
+    return float(result.confidence_interval.low), float(result.confidence_interval.high)
+
+
 __all__ = [
     "library_factor_covariance",
+    "library_bootstrap_volatility_interval",
     "library_portfolio_volatility",
     "library_risk_parity_weights",
     "library_shrink_covariance",

@@ -20,6 +20,7 @@ import numpy as np
 
 from math_for_quant.lower.notebook_evidence import assert_expected, load_oracle_and_fixture
 from math_for_quant.lower.portfolio_optimization import robust_cost_aware_rebalance
+from math_for_quant.lower.portfolio_real_data import run_portfolio_real_data
 from math_for_quant.lower.portfolio_route import run_optimization
 
 
@@ -32,6 +33,11 @@ def main(oracle_path: Path) -> int:
     sensitivity = run_optimization(sensitivity_fixture)
     if np.isclose(sensitivity["robust_score"], observed["robust_score"]):
         raise SystemExit("risk-aversion sensitivity did not change the robust objective")
+    real_data = run_portfolio_real_data(
+        Path("data/real/stat-arb-us-macro-1999q4-2009q3.json")
+    )
+    if not np.isclose(real_data["cvar_weight_1"] + real_data["cvar_weight_2"], 1.0):
+        raise SystemExit("real-data CVaR weights do not sum to one")
     try:
         robust_cost_aware_rebalance(
             np.array([0.08, 0.04]), np.eye(2), np.array([0.5, 0.5]), np.array([0.01, 0.01]),
@@ -46,7 +52,11 @@ def main(oracle_path: Path) -> int:
     plt.figure(figsize=(4, 2.5))
     plt.bar(["CVaR-1", "CVaR-2", "robust-1", "robust-2"], [observed["cvar_weight_1"], observed["cvar_weight_2"], observed["rebalance_weight_1"], observed["rebalance_weight_2"]])
     plt.close()
-    print("portfolio-risk-optimization=passed " + " ".join(f"{key}={value:.6g}" for key, value in observed.items()))
+    print(
+        "portfolio-risk-optimization=passed "
+        + " ".join(f"{key}={value:.6g}" for key, value in observed.items())
+        + f" real_cvar={real_data['cvar_objective']:.6g}"
+    )
     return 0
 
 
