@@ -83,6 +83,21 @@ def git_source_date_epoch() -> str | None:
     return result.stdout.strip() if result.returncode == 0 and result.stdout.strip() else None
 
 
+def overfull_records(log: str) -> list[tuple[float, str]]:
+    """Return overfull widths with nearby TeX source context."""
+    lines = log.splitlines()
+    pattern = re.compile(r"Overfull \\hbox \(([0-9.]+)pt too wide\)")
+    records: list[tuple[float, str]] = []
+    for index, line in enumerate(lines):
+        match = pattern.search(line)
+        if match is None:
+            continue
+        start = max(0, index - 3)
+        end = min(len(lines), index + 4)
+        records.append((float(match.group(1)), "\n".join(lines[start:end])))
+    return records
+
+
 def build_volume(volume: dict[str, str]) -> Path:
     identifier = volume["id"]
     source = Path(volume["source"])
@@ -150,17 +165,16 @@ def build_volume(volume: dict[str, str]) -> Path:
     failures = [marker for marker in FATAL_LOG_MARKERS if marker in log]
     if failures:
         raise RuntimeError(f"{identifier} log contains: {', '.join(failures)}")
-    overfull = [
-        float(value)
-        for value in re.findall(r"Overfull \\hbox \(([0-9.]+)pt too wide\)", log)
-    ]
-    severe = [value for value in overfull if value > MAX_OVERFULL_POINTS]
+    overfull = overfull_records(log)
+    severe = [record for record in overfull if record[0] > MAX_OVERFULL_POINTS]
     if severe:
+        for value, context in severe:
+            print(f"overfull-context ({value:.3f}pt):\n{context}", file=sys.stderr)
         raise RuntimeError(
             f"{identifier} log contains Overfull hbox above "
-            f"{MAX_OVERFULL_POINTS:.1f}pt: max={max(severe):.3f}pt"
+            f"{MAX_OVERFULL_POINTS:.1f}pt: max={max(value for value, _ in severe):.3f}pt"
         )
-    for value in overfull:
+    for value, _ in overfull:
         print(
             f"warning: {identifier} Overfull hbox {value:.3f}pt "
             f"(allowed <= {MAX_OVERFULL_POINTS:.1f}pt)",

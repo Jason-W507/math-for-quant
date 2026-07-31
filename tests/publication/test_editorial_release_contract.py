@@ -6,6 +6,7 @@ import json
 from unittest import mock
 
 import tools.render_shared_registries as registry_renderer
+import tools.build_books as book_builder
 from pathlib import Path
 
 
@@ -13,6 +14,19 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class EditorialReleaseContractTests(unittest.TestCase):
+    def test_overfull_diagnostics_preserve_source_context(self) -> None:
+        log = (
+            "(tex/solutions/ch01.tex\n"
+            "some preceding output\n"
+            "Overfull \\hbox (9.027pt too wide) in paragraph at lines 42--43\n"
+            "[]\\TU/FandolSong-Regular text\n"
+            ")\n"
+        )
+        records = book_builder.overfull_records(log)
+        self.assertEqual(records[0][0], 9.027)
+        self.assertIn("tex/solutions/ch01.tex", records[0][1])
+        self.assertIn("lines 42--43", records[0][1])
+
     def test_editorial_preamble_prevents_orphan_and_widow_lines(self) -> None:
         source = (ROOT / "tex/common/editorial-environments.tex").read_text(
             encoding="utf-8"
