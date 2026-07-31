@@ -167,6 +167,8 @@ class EditorialReleaseContractTests(unittest.TestCase):
         release_workflow = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
         self.assertIn("name: ${{ github.ref_name }} — 完整双册与共享答案", release_workflow)
         self.assertIn("body_path: docs/releases/${{ github.ref_name }}.md", release_workflow)
+        self.assertIn("Install MiKTeX with bounded retry", release_workflow)
+        self.assertIn("$attempt -le 3", release_workflow)
         self.assertTrue((ROOT / "docs/releases" / f"v{version}.md").is_file())
         build_driver = (ROOT / "tools/build_books.py").read_text(encoding="utf-8")
         self.assertIn("release date is unavailable", build_driver)

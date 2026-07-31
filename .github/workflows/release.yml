@@ -16,7 +16,19 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.13"
-      - run: choco install miktex --no-progress -y
+      - name: Install MiKTeX with bounded retry
+        shell: pwsh
+        run: |
+          for ($attempt = 1; $attempt -le 3; $attempt++) {
+            choco install miktex --no-progress -y
+            if ($LASTEXITCODE -eq 0) {
+              exit 0
+            }
+            if ($attempt -lt 3) {
+              Start-Sleep -Seconds (15 * $attempt)
+            }
+          }
+          exit $LASTEXITCODE
       - run: uv sync
       - run: uv run python tools/build_release.py --vendored-template-only
         env:
