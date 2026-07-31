@@ -13,13 +13,10 @@ from math_for_quant.lower.ml_alpha_text import compare_text_adaptation
 from math_for_quant.lower.ml_alpha_validation import cross_fitted_ridge_predictions, importance_jaccard, platt_calibrate, validate_model_selection, validate_preprocessing_cutoff, validate_target_alignment
 from math_for_quant.lower.ml_alpha_validation_library import library_cross_fitted_ridge_predictions, maximum_prediction_gap
 from math_for_quant.lower.notebook_evidence import expect_value_error
+from math_for_quant.reporting import stable_gap
 
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def stable_gap(value: float) -> float:
-    return 0.0 if abs(value) < 1e-10 else value
 
 
 def load(name: str) -> dict[str, object]:

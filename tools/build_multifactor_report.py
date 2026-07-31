@@ -23,6 +23,7 @@ from math_for_quant.lower.multifactor_research import (
     build_group_portfolio_ledger,
     load_real_cross_section,
 )
+from math_for_quant.reporting import stable_gap
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -99,8 +100,7 @@ def build_report() -> str:
         route_check.decay_gap,
         float(route_check.bh_count_gap),
     )
-    if route_gap < 1e-10:
-        route_gap = 0.0
+    route_gap = stable_gap(route_gap)
 
     research = json.loads((ROOT / "data/fixtures/multifactor-research.json").read_text(encoding="utf-8"))
     ledger = build_group_portfolio_ledger(

@@ -5,6 +5,8 @@ from typing import Any
 
 import numpy as np
 
+from math_for_quant.reporting import stable_gap
+
 from math_for_quant.lower.derivatives import (
     binomial_call,
     black_scholes_call,
@@ -337,10 +339,6 @@ def render_route_report(
     numerics: dict[str, float | int],
     hedging: dict[str, float | int],
 ) -> str:
-    def stable_gap(value: float | int) -> float:
-        observed = float(value)
-        return 0.0 if abs(observed) < 1e-10 else observed
-
     return f"""# 衍生品定价与对冲 v0.3 路线报告
 
 - 随机分析：嵌套分割二次变差由 {stochastic['qv_coarse']:.6f} 细化到 {stochastic['qv_fine']:.6f}；离散 Itô 恒等式误差 {stable_gap(stochastic['ito_identity_gap']):.3e}；终端奇点能量从 {stochastic['singular_coarse_energy']:.6f} 增至 {stochastic['singular_fine_energy']:.6f}，完整端点以稳定 Novikov 诊断拒绝；指数密度与 SciPy 正态密度比差 {stable_gap(stochastic['measure_change_library_gap']):.3e}。

@@ -11,13 +11,10 @@ from math_for_quant.lower.stat_arb_library import cross_check_long_run, fit_mark
 from math_for_quant.lower.stat_arb_models import engle_granger, fit_ecm, ou_diagnostics
 from math_for_quant.lower.stat_arb_research import ExecutionPolicy, build_forecast_ledger, validate_failure_state, validate_purged_walk_forward
 from math_for_quant.lower.stat_arb_execution_library import library_forecast_ledger
+from math_for_quant.reporting import stable_gap
 
 
 ROOT = Path(__file__).resolve().parents[1]
-
-
-def stable_gap(value: float) -> float:
-    return 0.0 if abs(value) < 1e-10 else value
 
 
 def rejects(callable_) -> int:

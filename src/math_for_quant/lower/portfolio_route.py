@@ -5,6 +5,8 @@ from typing import Any
 
 import numpy as np
 
+from math_for_quant.reporting import stable_gap
+
 from math_for_quant.lower.portfolio_estimation import (
     bootstrap_portfolio_volatility,
     factor_covariance,
@@ -246,10 +248,6 @@ def render_route_report(
     tail: dict[str, float | int | str],
     real_data: dict[str, float | int | str],
 ) -> str:
-    def stable_gap(value: float | int) -> float:
-        observed = float(value)
-        return 0.0 if abs(observed) < 1e-10 else observed
-
     if real_data["tail_status"] == "reject":
         real_tail = (
             f"等权损失的 {100.0 * float(real_data['tail_confidence']):.0f}% 尾部门禁仅有 "
