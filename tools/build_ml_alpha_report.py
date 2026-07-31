@@ -32,11 +32,21 @@ def build_report() -> str:
     if artifact.loss > 1e-3 or len(artifact.checkpoint_sha256) != 64:
         raise RuntimeError("MLP evidence did not satisfy the frozen loss/checkpoint policy")
     order = sequence_order_sensitivity(np.asarray(model["sequence"],dtype=np.float32),seed=int(model["sequence_seed"]))
+    if abs(order["mean_pool"]) > 1e-12:
+        raise RuntimeError("mean pooling unexpectedly retained sequence order")
+    order_aware = ("causal_conv", "rnn", "attention", "transformer")
+    if any(not np.isfinite(order[name]) or order[name] <= 0.1 for name in order_aware):
+        raise RuntimeError("an order-aware sequence path did not detect permutation")
     classical = cross_check_classical_models(np.asarray(model["classical_features"]),np.asarray(model["classical_target"]),np.asarray(model["classical_evaluation"]),boosting_rounds=int(model["boosting_rounds"]))
     linear_gap = stable_gap(classical.linear_max_gap)
     stump_gap = stable_gap(classical.stump_max_gap)
     boosting_gap = stable_gap(classical.boosting_max_gap)
     text = compare_text_adaptation(train_texts=model["train_texts"],train_labels=np.asarray(model["train_labels"]),inference_texts=model["inference_texts"],seed=int(model["text_seed"]),encoder_id=str(model["encoder_id"]),encoder_version=str(model["encoder_version"]),encoder_license=str(model["encoder_license"]))
+    text_parameter_ratio = text.lora_trainable_parameters / text.full_trainable_parameters
+    if not (0.0 < text_parameter_ratio < 1.0):
+        raise RuntimeError("LoRA parameter ratio must be strictly between zero and one")
+    if not np.all(np.isfinite(text.full_finetune_scores)) or not np.all(np.isfinite(text.lora_scores)):
+        raise RuntimeError("text adaptation produced non-finite scores")
 
     validation = load("ml-alpha-validation.json")
     folds=[(range(min(item["train"]),max(item["train"])+1),range(min(item["validation"]),max(item["validation"])+1)) for item in validation["crossfit_folds"]]
@@ -49,6 +59,10 @@ def build_report() -> str:
     fit_scores=np.asarray(validation["calibration_fit_scores"]); fit_labels=np.asarray(validation["calibration_fit_labels"])
     evaluation_scores=np.asarray(validation["calibration_evaluation_scores"]); evaluation_labels=np.asarray(validation["calibration_evaluation_labels"])
     raw=1/(1+np.exp(-evaluation_scores)); calibrated=platt_calibrate(fit_scores,fit_labels,evaluation_scores,fit_ends=int(validation["calibration_fit_ends"]),evaluation_starts=int(validation["calibration_evaluation_starts"]))
+    raw_brier = float(np.mean((raw-evaluation_labels)**2))
+    calibrated_brier = float(np.mean((calibrated-evaluation_labels)**2))
+    if not calibrated_brier < raw_brier:
+        raise RuntimeError("calibration did not improve the frozen evaluation Brier score")
     stability=importance_jaccard(np.asarray(validation["importance_train"]),np.asarray(validation["importance_test"]),top_k=int(validation["top_k"]))
     drift=abs(float(np.mean(validation["monitor_values"]))-float(np.mean(validation["reference_values"])))
     protocol_rejections = [
@@ -70,13 +84,13 @@ def build_report() -> str:
         "## 模型与表示\n\n"
         "- CPU PyTorch MLP 最终 MSE 不超过 0.001000；checkpoint 完整性已验证。\n"
         f"- 经典透明/成熟库最大差：linear={linear_gap:.3e}，stump={stump_gap:.3e}，boosting={boosting_gap:.3e}。\n"
-        f"- 时间置换差：mean={order['mean_pool']:.6f}，conv={order['causal_conv']:.6f}，RNN={order['rnn']:.6f}，attention={order['attention']:.6f}，transformer={order['transformer']:.6f}。\n"
-        f"- 文本编码器：{text.encoder_id}@{text.encoder_version}（{text.encoder_license}）；全量微调/LoRA 均值分数：{np.mean(text.full_finetune_scores):.6f}/{np.mean(text.lora_scores):.6f}；LoRA 可训练参数占比：{text.lora_trainable_parameters/text.full_trainable_parameters:.6f}。\n"
+        "- 时间置换门禁：均值池化对顺序不敏感；卷积、RNN、attention 与 transformer 四条顺序感知路径均检测到重排。\n"
+        f"- 文本编码器：{text.encoder_id}@{text.encoder_version}（{text.encoder_license}）；全量微调与 LoRA 均产生有限分数，且 LoRA 只训练严格更少的参数。\n"
         "- 算力边界：单批次 CPU 固定数据；不从零预训练基础模型，真实编码器需另绑模型卡、许可与 tokenizer。\n\n"
         "## 验证与监控\n\n"
         f"- cross-fitted 行数：{len(transparent_crossfit)}；NumPy/sklearn 最大差：{crossfit_gap:.3e}。\n"
-        f"- 后期评价集 Brier：校准前 {np.mean((raw-evaluation_labels)**2):.6f}，校准后 {np.mean((calibrated-evaluation_labels)**2):.6f}。\n"
-        f"- Top-2 重要性 Jaccard：{stability:.6f}；均值漂移：{drift:.6f}，触发停止自动上线。\n"
+        "- 后期评价集门禁：冻结校准器严格改善 Brier 分数。\n"
+        f"- Top-2 重要性重叠低于 0.5：{stability < 0.5}；均值漂移超过 0.5：{drift > 0.5}，触发停止自动上线。\n"
         f"- 未来预处理、目标错位、选择超预算、测试集再选择拒绝结果：{protocol_rejections}；purge 与 embargo 另由嵌套窗口契约拒绝。\n\n"
         "## 从分数到净收益\n\n"
         f"- 三种目标：MSE={cross_sectional_mse(research_scores[0],returns[0]):.6f}，ranking={pairwise_ranking_loss(research_scores[0],returns[0]):.6f}，return-weighted={return_weighted_loss(research_scores[0],returns[0]):.6f}。\n"

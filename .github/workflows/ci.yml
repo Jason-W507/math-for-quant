@@ -10,6 +10,7 @@ jobs:
     env:
       MFQ_SKIP_LATEX: "1"
     strategy:
+      fail-fast: false
       matrix:
         python: ["3.11", "3.12", "3.13"]
     steps:
