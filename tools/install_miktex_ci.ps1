@@ -17,4 +17,15 @@ if ($null -eq $latexmk) {
     throw "MiKTeX installation did not provide latexmk.exe"
 }
 $latexmk.DirectoryName | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+$mpm = Get-ChildItem -Path "$env:ProgramFiles\MiKTeX" -Filter mpm.exe -Recurse |
+    Select-Object -First 1
+if ($null -eq $mpm) {
+    throw "MiKTeX installation did not provide mpm.exe"
+}
+& $mpm.FullName --install=fandol
+if ($LASTEXITCODE -ne 0) {
+    exit $LASTEXITCODE
+}
+
 & $latexmk.FullName -version

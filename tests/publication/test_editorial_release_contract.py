@@ -178,6 +178,7 @@ class EditorialReleaseContractTests(unittest.TestCase):
         miktex_installer = (ROOT / "tools/install_miktex_ci.ps1").read_text(encoding="utf-8")
         self.assertIn("$attempt -le 3", miktex_installer)
         self.assertIn("$env:GITHUB_PATH", miktex_installer)
+        self.assertIn("--install=fandol", miktex_installer)
         self.assertTrue((ROOT / "docs/releases" / f"v{version}.md").is_file())
         build_driver = (ROOT / "tools/build_books.py").read_text(encoding="utf-8")
         self.assertIn("release date is unavailable", build_driver)
