@@ -13,6 +13,7 @@ jobs:
     runs-on: windows-latest
     env:
       PYTHONUTF8: "1"
+      MFQ_SKIP_LATEX: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
