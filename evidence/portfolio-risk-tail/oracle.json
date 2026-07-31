@@ -1,0 +1,19 @@
+{
+  "fixture": {"path": "data/fixtures/portfolio-risk-tail.json", "sha256": "2d3f5e994f2df28ac35c328d4dcdb4c4495613f848898a050f5047b191201aac"},
+  "absolute_tolerance": 1e-10,
+  "provenance": "The evenly spaced loss order statistics, 25-observation tail, linear/quadratic shock ledger and reverse-stress threshold are independently reconstructible; the bootstrap interval is held separately as a seeded regression.",
+  "regression": "evidence/portfolio-risk-tail/regression.json",
+  "expected": {
+    "value_at_risk": 7.498997995991983,
+    "expected_shortfall": 7.759519038076153,
+    "effective_tail_observations": 25.0,
+    "quantile_resolution": 0.020040080160320883,
+    "tail_status_warn": 1,
+    "tail_library_gap": 0.0,
+    "linear_unit_loss": 4.4,
+    "nonlinear_unit_loss": 4.016,
+    "reverse_stress_scale": 3.125,
+    "reverse_stress_loss": 10.0,
+    "reverse_stress_identity_gap": 0.0
+  }
+}

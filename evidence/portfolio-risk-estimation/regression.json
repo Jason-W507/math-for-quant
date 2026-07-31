@@ -1,0 +1,11 @@
+{
+  "absolute_tolerance": 1e-10,
+  "provenance": "Deterministic optimizer and bootstrap regression values for the declared data and seed; not called independent mathematical oracles.",
+  "expected": {
+    "risk_parity_library_gap": 5.841593209154894e-09,
+    "shrunk_minimum_eigenvalue": 3.5831559953249326e-05,
+    "bootstrap_volatility": 0.007950266463591347,
+    "bootstrap_lower": 0.005983577123002519,
+    "bootstrap_upper": 0.009303772921163375
+  }
+}

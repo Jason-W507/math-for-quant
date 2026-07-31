@@ -1,0 +1,74 @@
+\chapter{组合优化：从观点后验到稳健实施}
+\label{ch:lower-portfolio-optimization}
+
+\begin{itemize}
+  \item \textbf{直接先修：}第 \ref{ch:lower-portfolio-estimation} 章与上册第 13 章。
+  \item \textbf{学习产出：}推导 Black--Litterman 后验与 CVaR 线性规划，把收益不确定性、换手、成本和不可交易约束放进同一决策问题。
+  \item \textbf{研究边界：}优化器只在给定输入和可行域内最优；它不会修复错误观点、遗漏成本或不可成交权重。
+\end{itemize}
+
+\section{Black--Litterman：把观点和置信度显式化}
+
+设先验均值 $\pi$ 的不确定性为 $\tau\Sigma$，观点矩阵 $P$、观点收益 $q$、观点误差协方差 $\Omega$ 满足
+\[
+ P\mu=q+\eta,qquad \eta\sim N(0,\Omega).
+\]
+高斯更新给出
+\[
+ \mu_{\mathrm{BL}}=
+ \left[(\tau\Sigma)^{-1}+P^\top\Omega^{-1}P\right]^{-1}
+ \left[(\tau\Sigma)^{-1}\pi+P^\top\Omega^{-1}q\right].
+\]
+后验均值的不确定性为括号中精度矩阵的逆；若预测收益本身也随机，后验预测协方差还要加回 $\Sigma$\cite{black1992global}。
+
+冻结例的先验均值为 $(0.05,0.04)$，观点是第一资产相对第二资产超额 $0.03$，$\tau=0.05$，观点方差为 $0.0025$。后验均值为 $(0.05375,0.03)$。透明精度公式与独立 Woodbury 更新最大差 $2.8\times10^{-17}$。当 $\Omega$ 变小，观点权重上升；这表示模型更相信观点，不表示观点变得更真实。
+
+\section{CVaR 的线性规划形式}
+
+给定 $N$ 个情景收益 $r_s$，损失 $L_s(w)=-r_s^\top w$。Rockafellar--Uryasev 表示为
+\[
+ \operatorname{CVaR}_\alpha(w)=
+ \min_{z}\left[z+\frac{1}{(1-\alpha)N}
+ \sum_{s=1}^{N}(L_s(w)-z)_+\right].
+\]
+引入辅助变量 $u_s\ge0$ 得到线性规划
+\[
+ \min_{w,z,u}\quad z+\frac{1}{(1-\alpha)N}\sum_su_s,
+ \quad u_s\ge-r_s^\top w-z,quad
+ \mathbf1^\top w=1,quad 0\le w_i\le\bar w.
+\]
+这不是把样本 VaR 当作平滑目标，而是同时选择权重和尾部阈值\cite{rockafellar2000optimization}。
+
+冻结八情景、$\alpha=0.75$、单资产上限 $0.8$ 的 LP 得到 $(0.2,0.8)$，CVaR 为 $0.013$。独立 0.1 网格枚举重算每个候选的最坏两情景均值，得到相同权重和目标。若枚举忘记权重上限，会错误选择第二资产 0.9；这正说明可行域也是 oracle 的一部分。
+
+\section{把估计误差、成本和可交易性放在一起}
+
+稳健再平衡采用
+\[
+ \max_w\quad
+ \widehat\mu^\top w
+ -\rho\lVert U w\rVert_2
+ -\frac\gamma2w^\top\Sigma w
+ -c\lVert w-w^-\rVert_1,
+\]
+并约束满仓、长仓、最大权重和不可交易资产权重不变。$U$ 编码期望收益不确定性尺度，$\rho$ 是最坏情形惩罚。它与协方差 ridge 都能平滑权重，但经济对象不同：一个约束均值误差，一个稳定风险矩阵。
+
+冻结结果从 $(0.4,0.6)$ 调整为 $(0.8,0.2)$。双边换手为 $0.8$；十万元资本、每单位换手成本 $0.001$ 的现金成本为
+\[
+ 100000\times0.001\times0.8=80.
+\]
+比例成本进入收益口径目标，现金台账再乘资本。若机构采用单边换手，必须显式除以二；基点、百分数和小数的混用会造成百倍或万倍错误。
+
+\section{优化结果的验收顺序}
+
+每次求解都应依次检查：输入维度与有限性、协方差半正定、风险厌恶和资本为正、成本非负、网格可整除 1、权重和为 1、上下界满足、不可交易权重未动、目标由独立台账重算。不能先求解，再靠裁剪把非法权重变成“可交易组合”。
+
+连续 LP 与枚举 oracle 的职责不同。LP 提供通用求解；枚举只覆盖小问题，却能逐点复核约束和目标。Black--Litterman 也保留精度公式和 Woodbury 两条路径。成熟求解器成功状态只是开始，非最终证据。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/portfolio_risk_optimization.py} 可重建后验、CVaR LP 与成本台账；零风险厌恶、负成本、非正资本、非法网格或不可交易变仓均应拒绝。
+\end{implementationnote}
+
+本单元向 Route Capstone 交付观点后验、情景损失、活跃约束、换手、成本与可行性证据。
+
+\input{tex/lower/chapters/portfolio-risk-optimization-questions}

@@ -1,0 +1,8 @@
+{
+  "absolute_tolerance": 1e-10,
+  "provenance": "Seeded bootstrap interval for the declared loss grid; not called an independent oracle.",
+  "expected": {
+    "es_interval_lower": 7.627635270541081,
+    "es_interval_upper": 7.854909819639279
+  }
+}

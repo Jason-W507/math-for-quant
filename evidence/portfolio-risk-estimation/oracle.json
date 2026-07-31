@@ -1,0 +1,15 @@
+{
+  "fixture": {"path": "data/fixtures/portfolio-risk-estimation.json", "sha256": "f7ab60ae974ea8e08b32b390f97f5e2b1a1751d3fef7c9673d1b56d80555e7f2"},
+  "absolute_tolerance": 1e-8,
+  "provenance": "For diagonal covariance, inverse-volatility weights (6/13, 4/13, 3/13) equalize variance contributions exactly; fixed linear shrinkage and the factor trace are independently reconstructible from the fixture.",
+  "regression": "evidence/portfolio-risk-estimation/regression.json",
+  "expected": {
+    "risk_parity_weight_1": 0.46153846153846156,
+    "risk_parity_weight_2": 0.3076923076923077,
+    "risk_parity_weight_3": 0.23076923076923078,
+    "maximum_risk_budget_gap": 0.0,
+    "shrinkage_library_gap": 0.0,
+    "factor_trace": 0.1013,
+    "bootstrap_samples": 500
+  }
+}

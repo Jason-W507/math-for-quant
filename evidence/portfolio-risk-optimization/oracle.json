@@ -1,0 +1,20 @@
+{
+  "fixture": {"path": "data/fixtures/portfolio-risk-optimization.json", "sha256": "0a7d7f868c58df9e82d15e56705fa99db34f1b4d5d7993c0767afe7809de697d"},
+  "absolute_tolerance": 1e-10,
+  "provenance": "The one-view Black--Litterman posterior, two-asset CVaR scenario ledger, grid-enumerated constrained optimum, turnover and cash cost can all be reconstructed directly from the fixture.",
+  "expected": {
+    "posterior_mean_1": 0.05375,
+    "posterior_mean_2": 0.03,
+    "black_litterman_library_gap": 0.0,
+    "cvar_weight_1": 0.2,
+    "cvar_weight_2": 0.8,
+    "cvar_objective": 0.013,
+    "cvar_identity_gap": 0.0,
+    "cvar_enumeration_gap": 0.0,
+    "cvar_weight_gap": 0.0,
+    "rebalance_weight_1": 0.8,
+    "rebalance_weight_2": 0.2,
+    "turnover": 0.8,
+    "cash_cost": 80.0
+  }
+}

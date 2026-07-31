@@ -26,7 +26,6 @@
         "data/fixtures/lower-ch02.json",
         "data/fixtures/lower-ch03.json",
         "data/fixtures/lower-ch04.json",
-        "data/fixtures/lower-ch05.json",
         "data/fixtures/lower-ch06.json",
         "data/fixtures/multifactor-model.json",
         "data/fixtures/multifactor-estimation.json",
@@ -39,7 +38,10 @@
         "data/fixtures/ml-alpha-research.json",
         "data/fixtures/derivatives-stochastic.json",
         "data/fixtures/derivatives-numerics.json",
-        "data/fixtures/derivatives-hedging.json"
+        "data/fixtures/derivatives-hedging.json",
+        "data/fixtures/portfolio-risk-estimation.json",
+        "data/fixtures/portfolio-risk-optimization.json",
+        "data/fixtures/portfolio-risk-tail.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",

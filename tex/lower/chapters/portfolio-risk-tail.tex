@@ -1,0 +1,81 @@
+\chapter{尾部与压力风险：从有效样本到反向压力}
+\label{ch:lower-portfolio-tail}
+
+\begin{itemize}
+  \item \textbf{直接先修：}第 \ref{ch:lower-portfolio-optimization} 章。
+  \item \textbf{学习产出：}让 VaR/ES 携带样本充分性和区间，区分历史尾部、压力情景与反向压力，并实现非线性重估。
+  \item \textbf{研究边界：}尾部统计不保证制度稳定；给定压力没有概率含义，反向压力也不自动给出最可能失败路径。
+\end{itemize}
+
+\section{VaR 与 ES 必须携带估计口径}
+
+对损失 $L=-R_p$，左分位数定义为
+\[
+ \operatorname{VaR}_\alpha(L)=\inf\{\ell:\mathbb P(L\le\ell)\ge\alpha\},
+\]
+积分分位数 ES 为
+\[
+ \operatorname{ES}_\alpha(L)=\frac1{1-\alpha}
+ \int_\alpha^1\operatorname{VaR}_u(L)\,\mathrm du.
+\]
+离散样本在分位点可能有概率质量，因此软件默认的线性插值、高位次序统计量和左分位数会得到不同答案。研究协议必须冻结其中一种，并让手算与实现一致。
+
+VaR 一般不满足次可加性；ES 在常见可积条件下是相干风险度量，但更依赖尾部样本。输出一个浮点数不等于尾部被识别。有效尾部观察数为
+\[
+ n_{\mathrm{tail}}=n(1-\alpha).
+\]
+本路线规定三态门禁：低于 20 直接拒绝；20--30 之间允许计算但标记 \texttt{warn}；不少于 30 才标记 \texttt{pass}。500 个损失在 95\% 水平只有 25 个有效尾部观察，因此结果是 \texttt{warn}，不是“样本很多所以通过”。
+
+冻结等距损失的 VaR 为 $7.498998$，ES 为 $7.759519$；分位点相邻次序统计量给出的离散分辨率为 $0.020040$。500 次 IID bootstrap 得到
+\[
+ \operatorname{CI}_{95\%}(\operatorname{ES})=[7.627635,\,7.854910].
+\]
+独立 NumPy 历史尾部实现与积分质量算法一致；若尾部质量不是整数，后者会对边界观察按概率质量加权。
+
+\section{历史尾部、参数尾部和压力测试回答不同问题}
+
+历史法问“过去样本中尾部如何”；参数法问“若分布模型成立，尾部如何”；压力测试问“指定联合冲击下损失多少”。三者不能互相替代。轻尾正态可能漏掉跳跃、波动聚集和相关性上升；历史样本可能没有经历当前持仓结构；压力情景则没有自动的发生概率。
+
+压力情景应保存冲击来源、同时发生假设、持仓冻结时点、重估模型、流动性反馈和恢复动作。历史重演保留曾发生的联合冲击，假设情景改变利率、波动率、价差或相关性，反向压力则从资本或流动性阈值反推触发条件。
+
+\section{非线性头寸不能只乘 Delta}
+
+设每个风险因子的线性暴露为 $d_i$、二阶暴露为 $g_i$，冲击为 $x_i$，二阶损益近似
+\[
+ \Delta V(x)=d^\top x+\frac12\sum_i g_ix_i^2,
+ \qquad L(x)=-\Delta V(x).
+\]
+冻结方向 $x=(-0.10,0.04)$、$d=(60,40)$、$g=(80,-20)$。线性损失为 $4.4$，加入二阶项后为 $4.016$。这说明非线性重估不一定单调放大损失；Gamma 符号、交叉项、波动率曲面和路径依赖都会改变结果。
+
+完整重估应调用与估值一致的模型，而不是永远停在二阶近似。期权需要现货、波动率、时间和利率共同变化；债券需要曲线重构；信用与流动性头寸还需要违约、价差和成交假设。这里保留二阶模型作为可手算 oracle，而非生产估值声明。
+
+\section{反向压力寻找的是第一处阈值穿越}
+
+沿方向 $x$ 放大尺度 $s\ge0$，反向压力问题为
+\[
+ s^*=\inf\{s:L(sx)\ge C\},
+\]
+其中 $C$ 是资本或损失阈值。冻结阈值 $C=10$ 时，最小尺度为 $3.125$，非线性重估恰好回到损失 10。
+
+由于二阶项可能使 $L(sx)$ 先升后降，不能只检查最大尺度端点。本路线先扫描第一个穿越区间，再用 Brent 法求根。若整个允许尺度内未触发，应返回“阈值未达到”，不能伪造一个边界解。若方向本身事后选择，仍可能漏掉更危险的联合冲击。
+
+\section{Route Capstone：从估计到失败阈值}
+
+\begin{center}
+\begin{tikzpicture}[node distance=1.5cm,>=stealth,every node/.style={draw,rounded corners,align=center,minimum width=2.8cm,minimum height=.8cm}]
+\node (data) {数据与时间协议};
+\node (risk) [right of=data,xshift=2.1cm] {协方差与风险预算};
+\node (opt) [right of=risk,xshift=2.1cm] {后验、约束与成本};
+\node (tail) [below of=opt] {尾部与反向压力};
+\node (report) [left of=tail,xshift=-2.1cm] {可复现报告与限制};
+\draw[->] (data)--(risk); \draw[->] (risk)--(opt); \draw[->] (opt)--(tail); \draw[->] (tail)--(report); \draw[->] (report)--(data);
+\end{tikzpicture}
+\end{center}
+
+Capstone 必须交付：输入哈希与截至日、风险估计及 bootstrap、后验与观点置信度、CVaR 场景协议、活跃约束、换手与成本、尾部三态、非线性压力、反向阈值、故障注入和不可声称的生产结论。一键报告由 \path{tools/build_portfolio_risk_report.py} 重建并与冻结 Markdown 逐字比较。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/portfolio_risk_tail.py} 可重建尾部和压力证据；运行 \path{tools/validate_portfolio_risk_route.py} 只验收本路线并构建下册与共享答案册。
+\end{implementationnote}
+
+\input{tex/lower/chapters/portfolio-risk-tail-questions}

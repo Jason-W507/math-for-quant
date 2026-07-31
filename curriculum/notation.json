@@ -226,9 +226,9 @@
     {"symbol": "h(D)", "meaning": "数据或报告字节串 D 的密码学哈希摘要", "domain": "fixed-length digest", "first_unit": "upper.ch17"},
     {"symbol": "\\lambda(t\\mid\\mathcal F_{t^-})", "meaning": "给定事件发生前信息的条件事件强度", "domain": "nonnegative predictable process", "first_unit": "lower.ch06"},
     {"symbol": "V_t(x)", "meaning": "时点 t、剩余库存 x 下的最小未来执行目标", "domain": "extended nonnegative value function", "first_unit": "lower.ch06"},
-    {"symbol": "\\Sigma", "meaning": "资产收益向量的协方差矩阵", "domain": "symmetric positive semidefinite matrix", "first_unit": "lower.ch05"},
-    {"symbol": "\\operatorname{VaR}_\\alpha(L)", "meaning": "损失 L 在置信水平 alpha 下的分位数风险价值", "domain": "real loss threshold", "first_unit": "lower.ch05"},
-    {"symbol": "\\operatorname{ES}_\\alpha(L)", "meaning": "损失 L 超过 alpha 分位阈值后的尾部期望口径", "domain": "extended real when integrable", "first_unit": "lower.ch05"},
+    {"symbol": "\\Sigma", "meaning": "资产收益向量的协方差矩阵", "domain": "symmetric positive semidefinite matrix", "first_unit": "lower.portfolio-risk.model"},
+    {"symbol": "\\operatorname{VaR}_\\alpha(L)", "meaning": "损失 L 在置信水平 alpha 下的分位数风险价值", "domain": "real loss threshold", "first_unit": "lower.portfolio-risk.research"},
+    {"symbol": "\\operatorname{ES}_\\alpha(L)", "meaning": "损失 L 超过 alpha 分位阈值后的尾部期望口径", "domain": "extended real when integrable", "first_unit": "lower.portfolio-risk.research"},
     {
       "symbol": "M_X(t)",
       "meaning": "随机变量 X 在参数 t 处的矩母函数",

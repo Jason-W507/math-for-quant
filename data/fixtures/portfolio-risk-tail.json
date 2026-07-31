@@ -1,0 +1,15 @@
+{
+  "loss_start": -2.0,
+  "loss_end": 8.0,
+  "loss_count": 500,
+  "confidence": 0.95,
+  "minimum_tail_observations": 20,
+  "warning_tail_observations": 30,
+  "bootstrap_samples": 500,
+  "bootstrap_seed": 23,
+  "shock_direction": [-0.10, 0.04],
+  "linear_exposure": [60.0, 40.0],
+  "gamma_exposure": [80.0, -20.0],
+  "loss_threshold": 10.0,
+  "maximum_scale": 10.0
+}

@@ -1,0 +1,11 @@
+\chapter{组合优化提示}
+\begin{enumerate}[leftmargin=*]
+  \item $P$ 选择观点，$q$ 给观点数值，$\Omega$ 给观点误差，$\tau$ 缩放先验均值不确定性。
+  \item 把先验和似然的二次型合并并完成平方。
+  \item 用 $u_s\ge L_s-z$、$u_s\ge0$ 替代正部函数。
+  \item 保留每个情景损失和最坏尾部集合。
+  \item 上限进入 LP bounds，也进入枚举 oracle。
+  \item 检查满仓、不可交易性和 KKT 条件。
+  \item 三项分别约束均值误差、风险矩阵和实施摩擦。
+  \item 订单层需要目标、成交、剩余量和现金四张表。
+\end{enumerate}

@@ -30,16 +30,20 @@ def tex_text(value: str) -> str:
 def first_teaching(unit_id: str) -> str:
     if unit_id == "foundation.oracle-smoke":
         return "最小证据实验"
-    volume, chapter = unit_id.split(".ch", maxsplit=1)
-    volume_name = {"upper": "上册", "lower": "下册"}[volume]
-    return f"{volume_name}第 {int(chapter)} 章"
+    if ".ch" in unit_id:
+        volume, chapter = unit_id.split(".ch", maxsplit=1)
+        volume_name = {"upper": "上册", "lower": "下册"}[volume]
+        return f"{volume_name}第 {int(chapter)} 章"
+    manifest = json.loads(MANIFEST_SOURCE.read_text(encoding="utf-8"))
+    unit = next(item for item in manifest["units"] if item["id"] == unit_id)
+    volume_name = {"upper": "上册", "lower": "下册"}[unit["volume"]]
+    return f"{volume_name}“{tex_text(unit['title'])}”"
 
 
-def unit_order(unit_id: str) -> tuple[int, int]:
-    if unit_id == "foundation.oracle-smoke":
-        return (0, 0)
-    volume, chapter = unit_id.split(".ch", maxsplit=1)
-    return ({"upper": 1, "lower": 2}[volume], int(chapter))
+def unit_order(unit_id: str) -> int:
+    manifest = json.loads(MANIFEST_SOURCE.read_text(encoding="utf-8"))
+    order = {unit["id"]: index for index, unit in enumerate(manifest["units"])}
+    return order[unit_id]
 
 
 def render_notation() -> str:

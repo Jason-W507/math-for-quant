@@ -1,0 +1,19 @@
+{
+  "prior_mean": [0.05, 0.04],
+  "prior_covariance": [[0.04, 0.01], [0.01, 0.09]],
+  "views": [[1.0, -1.0]],
+  "view_returns": [0.03],
+  "view_covariance": [[0.0025]],
+  "tau": 0.05,
+  "scenario_returns": [[0.04, 0.01], [0.02, 0.00], [-0.03, 0.01], [-0.08, 0.02], [0.01, 0.03], [-0.01, -0.02], [0.05, -0.01], [-0.04, 0.00]],
+  "cvar_confidence": 0.75,
+  "maximum_weight": 0.8,
+  "current_weights": [0.4, 0.6],
+  "return_uncertainty": [0.02, 0.01],
+  "risk_aversion": 1.0,
+  "uncertainty_penalty": 0.5,
+  "cost_rate": 0.001,
+  "capital": 100000.0,
+  "tradable": [1, 1],
+  "grid_step": 0.1
+}

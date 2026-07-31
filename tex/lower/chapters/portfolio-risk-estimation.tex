@@ -1,0 +1,77 @@
+\chapter{风险估计：从协方差到风险预算}
+\label{ch:lower-portfolio-estimation}
+
+\begin{itemize}
+  \item \textbf{直接先修：}上册第 6、10、14、16、17 章；路线诊断见第 \ref{route:portfolio-risk} 节。
+  \item \textbf{学习产出：}从对齐收益构造协方差，解释收缩与因子模型，计算风险贡献和风险平价，并用 bootstrap 报告估计误差。
+  \item \textbf{研究边界：}风险矩阵是估计对象，不是静态真值；宏观公共快照只演示数据协议，不代表可交易资产收益。
+\end{itemize}
+
+\section{先冻结收益矩阵的含义}
+
+令 $R\in\mathbb R^{T\times n}$ 的第 $t$ 行是同一可用时点的资产收益，列顺序在研究期内固定。样本协方差为
+\[
+ \widehat\Sigma=\frac{1}{T-1}\sum_{t=1}^{T}(r_t-\bar r)(r_t-\bar r)^\top.
+\]
+该公式看似简单，却依赖收益口径、时区、公司行动、缺失值和资产池协议。成对删除会让不同矩阵元素来自不同日期集合，拼出的矩阵甚至可能不再半正定。课程实现先检查矩阵有限、对称且半正定，再允许它进入优化器。
+
+任意权重 $w$ 都满足
+\[
+ w^\top\Sigma w=\operatorname{Var}(w^\top r)\ge0,
+\]
+因此半正定不是数值偏好，而是协方差定义的必要条件。可逆也不等于可靠：若最小特征值很小，微小估计误差会被逆矩阵放大。报告至少应保存样本窗口、维度、最小特征值、条件数和缺失值策略。
+
+\section{收缩与因子风险模型}
+
+线性收缩写成
+\[
+ \widehat\Sigma_\lambda=(1-\lambda)\widehat\Sigma+\lambda T,
+ \qquad 0\le\lambda\le1.
+\]
+目标 $T$ 可以是对角矩阵、等相关矩阵或结构模型。收缩用偏差交换方差，目的在于改善样本外稳定性，而不是让历史拟合更漂亮。冻结实验以平均方差乘单位阵为目标，$\lambda=0.25$；透明公式与 sklearn \texttt{ShrunkCovariance} 完全一致，最小特征值为 $3.58\times10^{-5}$\cite{ledoit2004well}。
+
+因子模型把收益写成
+\[
+ r=Bf+\varepsilon,\qquad
+ \Sigma=B\Sigma_fB^\top+D,
+\]
+其中需要 $\operatorname{Cov}(f,\varepsilon)=0$，且 $D$ 的对角元素非负。它减少需要估计的自由参数，也引入因子遗漏、暴露漂移与特异风险相关性等错设。冻结三资产、两因子矩阵的迹为 $0.1013$；该值可从 $B,\Sigma_f,D$ 独立重建。
+
+\begin{diagnostic}
+协方差收缩和因子模型回答“如何约束估计误差”，并不回答“未来制度是否与估计窗口相同”。应把结构选择、强度选择和窗口选择写进样本外协议。
+\end{diagnostic}
+
+\section{边际风险、成分风险与风险平价}
+
+组合方差 $v(w)=w^\top\Sigma w$ 的梯度为 $2\Sigma w$。采用方差口径时，第 $i$ 个资产的成分贡献定义为
+\[
+ \mathrm{RC}_i=w_i(\Sigma w)_i,
+ \qquad \sum_i\mathrm{RC}_i=w^\top\Sigma w.
+\]
+若使用波动率口径，则还需除以 $\sqrt{w^\top\Sigma w}$；两种口径不能混写。等风险预算要求
+\[
+ \mathrm{RC}_1=\cdots=\mathrm{RC}_n.
+\]
+
+对角协方差的波动率为 $(0.2,0.3,0.4)$ 时，权重与逆波动率成正比，因此
+\[
+ w=\frac{(5,10/3,5/2)}{5+10/3+5/2}
+   =\left(\frac6{13},\frac4{13},\frac3{13}\right).
+\]
+三个方差贡献恰好相等。仓库的透明乘法迭代从正权重出发，独立 SLSQP 实现直接最小化贡献差；最大权重差约 $5.8\times10^{-9}$。双实现一致只验证计算，不证明风险预算目标符合投资者负债或收益目标。
+
+\section{估计误差必须进入报告}
+
+若把 $\widehat\Sigma$ 当作真值，最终权重会显得过度精确。冻结实验对收益行做 500 次 IID bootstrap，每次重算组合波动率；点估计 $0.007950$，90\% 区间为 $[0.005984,0.009304]$。区间宽度提醒读者：优化器小数点后六位不等于输入有六位信息。
+
+IID 重采样要求行之间可交换。波动聚集、重叠收益、共同宏观冲击或横截面分组会破坏该假设，此时应改用区块、簇或状态分层 bootstrap。重采样单位必须与依赖结构一致。
+
+真实轨只复用美国宏观公共快照，检查哈希、季度顺序和截至日期，再计算 GDP/消费输入关系。它演示 provenance 与时点协议；正文明确禁止把宏观水平序列冒充可交易资产收益或风险模型有效性证据。
+
+\begin{implementationnote}
+运行 \path{notebooks/lower/portfolio_risk_estimation.py} 可重建风险预算、收缩对照和 bootstrap 区间；非半正定矩阵会以稳定类别拒绝。
+\end{implementationnote}
+
+本单元向 Route Capstone 交付风险矩阵、风险预算、估计区间、失败诊断和数据时点协议。
+
+\input{tex/lower/chapters/portfolio-risk-estimation-questions}
