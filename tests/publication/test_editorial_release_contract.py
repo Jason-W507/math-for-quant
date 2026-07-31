@@ -134,6 +134,8 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn('selected_volume in item["parent_volumes"]', build_driver)
 
     def test_version_and_ci_are_shared_across_all_publications(self) -> None:
+        attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8")
+        self.assertIn("* text=auto eol=lf", attributes)
         for relative in ("tex/upper/main.tex", "tex/lower/main.tex", "tex/solutions-main.tex"):
             source = (ROOT / relative).read_text(encoding="utf-8")
             self.assertIn(r"\version{\MFQVersion}", source)
