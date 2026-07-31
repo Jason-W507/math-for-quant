@@ -101,8 +101,14 @@ def build_volume(volume: dict[str, str]) -> Path:
 
     wrapper = build_directory / f"{job_name}-wrapper.tex"
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+    cjk_font_option = (
+        "\\PassOptionsToPackage{fontset=fandol}{ctex}\n"
+        if environment.get("MFQ_MIKTEX_AUTO_INSTALL") == "1"
+        else ""
+    )
     wrapper.write_text(
-        f"\\def\\MFQReleaseDate{{{release_date(environment)}}}\n"
+        cjk_font_option
+        + f"\\def\\MFQReleaseDate{{{release_date(environment)}}}\n"
         f"\\def\\MFQVersion{{{version}}}\n"
         f"\\input{{{(ROOT / source).as_posix()}}}\n",
         encoding="utf-8",

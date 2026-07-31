@@ -69,6 +69,7 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn('"latexmk"', build_driver)
         self.assertIn("MFQ_MIKTEX_AUTO_INSTALL", build_driver)
         self.assertIn("--enable-installer", build_driver)
+        self.assertIn("fontset=fandol", build_driver)
         self.assertIn('"-xelatex"', build_driver)
         self.assertNotIn("for _ in range(2)", build_driver)
         self.assertIn('environment.setdefault("SOURCE_DATE_EPOCH"', build_driver)

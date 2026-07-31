@@ -99,6 +99,8 @@ def build_report() -> str:
         route_check.decay_gap,
         float(route_check.bh_count_gap),
     )
+    if route_gap < 1e-10:
+        route_gap = 0.0
 
     research = json.loads((ROOT / "data/fixtures/multifactor-research.json").read_text(encoding="utf-8"))
     ledger = build_group_portfolio_ledger(
