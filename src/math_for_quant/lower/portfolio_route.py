@@ -246,13 +246,24 @@ def render_route_report(
     tail: dict[str, float | int | str],
     real_data: dict[str, float | int | str],
 ) -> str:
+    if real_data["tail_status"] == "reject":
+        real_tail = (
+            f"等权损失的 {100.0 * float(real_data['tail_confidence']):.0f}% 尾部门禁仅有 "
+            f"{float(real_data['tail_effective_observations']):.2f} 个有效观察，状态 reject，"
+            "因此不发布 VaR/ES"
+        )
+    else:
+        real_tail = (
+            f"等权损失的 {100.0 * float(real_data['tail_confidence']):.0f}% 尾部门禁状态 "
+            f"{real_data['tail_status']}"
+        )
     return f"""# 组合与风险 v0.3 路线报告
 
 - 风险估计：风险平价权重 ({estimation['risk_parity_weight_1']:.6f}, {estimation['risk_parity_weight_2']:.6f}, {estimation['risk_parity_weight_3']:.6f})，最大风险预算差 {estimation['maximum_risk_budget_gap']:.3e}，独立 SLSQP 权重差 {estimation['risk_parity_library_gap']:.3e}；收缩矩阵最小特征值 {estimation['shrunk_minimum_eigenvalue']:.3e}，sklearn 差 {estimation['shrinkage_library_gap']:.3e}；因子矩阵迹 {estimation['factor_trace']:.6f}、独立差 {estimation['factor_library_gap']:.3e}；组合波动率 bootstrap {100.0 * estimation['bootstrap_confidence']:.0f}% 区间 [{estimation['bootstrap_lower']:.6f}, {estimation['bootstrap_upper']:.6f}]，SciPy 区间端点最大差 {estimation['bootstrap_library_interval_gap']:.3e}。
 - 优化实施：Black--Litterman 后验均值 ({optimization['posterior_mean_1']:.6f}, {optimization['posterior_mean_2']:.6f})、后验预测协方差最小特征值 {optimization['posterior_minimum_eigenvalue']:.6f}，Woodbury 对照差 {optimization['black_litterman_library_gap']:.3e}；CVaR LP 权重 ({optimization['cvar_weight_1']:.6f}, {optimization['cvar_weight_2']:.6f})、目标 {optimization['cvar_objective']:.6f}、枚举差 {optimization['cvar_enumeration_gap']:.3e}；稳健再平衡权重 ({optimization['rebalance_weight_1']:.6f}, {optimization['rebalance_weight_2']:.6f})，换手 {optimization['turnover']:.6f}，现金成本 {optimization['cash_cost']:.2f}，独立枚举差 {optimization['rebalance_library_gap']:.3e}。
 - 尾部风险：{100.0 * float(tail['confidence']):.0f}% VaR/ES={tail['value_at_risk']:.6f}/{tail['expected_shortfall']:.6f}，有效尾部观察 {tail['effective_tail_observations']:.1f}，状态 {tail['tail_status']}，分位离散误差 {tail['quantile_resolution']:.6f}，ES bootstrap {100.0 * float(tail['es_interval_confidence']):.0f}% 区间 [{tail['es_interval_lower']:.6f}, {tail['es_interval_upper']:.6f}]，独立历史实现差 {tail['tail_library_gap']:.3e}。
 - 压力测试：单位方向线性/非线性损失 {tail['linear_unit_loss']:.6f}/{tail['nonlinear_unit_loss']:.6f}，逐项独立差 {tail['nonlinear_library_gap']:.3e}；使损失达到 {float(tail['loss_threshold']):g} 的最小反向压力尺度 {tail['reverse_stress_scale']:.6f}，独立根差 {tail['reverse_stress_library_gap']:.3e}，重估恒等差 {tail['reverse_stress_identity_gap']:.3e}。
-- 真实数据轨：冻结宏观快照含 {real_data['rows']} 个水平观察和 {real_data['growth_rows']} 个增长率观察，增长率协方差迹为 {real_data['covariance_trace']:.6e}，两列风险平价权重 ({real_data['risk_parity_weight_1']:.6f}, {real_data['risk_parity_weight_2']:.6f})；{100.0 * real_data['cvar_confidence']:.0f}% CVaR 权重 ({real_data['cvar_weight_1']:.6f}, {real_data['cvar_weight_2']:.6f})、目标 {real_data['cvar_objective']:.6f}；等权损失的 {100.0 * real_data['tail_confidence']:.0f}% VaR/ES={real_data['tail_value_at_risk']:.6f}/{real_data['tail_expected_shortfall']:.6f}，有效尾部观察 {real_data['tail_effective_observations']:.2f}，状态 {real_data['tail_status']}。
+- 真实数据轨：冻结宏观快照含 {real_data['rows']} 个水平观察和 {real_data['growth_rows']} 个增长率观察，增长率协方差迹为 {real_data['covariance_trace']:.6e}，两列风险平价权重 ({real_data['risk_parity_weight_1']:.6f}, {real_data['risk_parity_weight_2']:.6f})；{100.0 * float(real_data['cvar_confidence']):.0f}% CVaR 权重 ({real_data['cvar_weight_1']:.6f}, {real_data['cvar_weight_2']:.6f})、目标 {real_data['cvar_objective']:.6f}；{real_tail}。
 - 限制：合成收益、两资产网格和二阶重估用于验证定义与协议；宏观真实快照只演示有来源的时间序列如何进入协方差、CVaR 与历史尾部计算，不代表可交易资产、尾部稳定性或盈利能力。
 """
 

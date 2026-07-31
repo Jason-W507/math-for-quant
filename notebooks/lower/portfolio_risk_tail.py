@@ -39,8 +39,8 @@ def main(oracle_path: Path) -> int:
     real_data = run_portfolio_real_data(
         Path("data/real/stat-arb-us-macro-1999q4-2009q3.json")
     )
-    if real_data["tail_effective_observations"] < 5.0:
-        raise SystemExit("real-data tail gate unexpectedly lacks the declared minimum")
+    if real_data["tail_status"] != "reject":
+        raise SystemExit("real-data tail gate must reject fewer than 20 effective observations")
     try:
         empirical_tail_risk(np.arange(100.0), 0.99, minimum_tail_observations=20)
     except ValueError as error:

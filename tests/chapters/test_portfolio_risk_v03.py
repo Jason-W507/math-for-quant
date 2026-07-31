@@ -205,7 +205,7 @@ class PortfolioRiskV03Tests(unittest.TestCase):
             observed["risk_parity_weight_1"] + observed["risk_parity_weight_2"], 1.0
         )
         self.assertAlmostEqual(observed["cvar_weight_1"] + observed["cvar_weight_2"], 1.0)
-        self.assertIn(observed["tail_status"], {"warn", "pass"})
+        self.assertEqual(observed["tail_status"], "reject")
 
     def test_report_uses_observed_tail_contract_not_hardcoded_labels(self) -> None:
         import json

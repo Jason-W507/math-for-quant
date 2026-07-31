@@ -26,12 +26,21 @@ def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int | str]
     weights = risk_parity_weights(covariance)
     cvar = cvar_optimize(growth, confidence=0.75, maximum_weight=0.8)
     portfolio_losses = -(growth @ np.array([0.5, 0.5]))
-    tail = empirical_tail_risk(
-        portfolio_losses,
-        0.75,
-        minimum_tail_observations=5,
-        warning_tail_observations=10,
-    )
+    tail_confidence = 0.75
+    effective_tail_observations = portfolio_losses.size * (1.0 - tail_confidence)
+    try:
+        empirical_tail_risk(
+            portfolio_losses,
+            tail_confidence,
+            minimum_tail_observations=20,
+            warning_tail_observations=30,
+        )
+    except ValueError as error:
+        if "effective tail observations" not in str(error):
+            raise
+        tail_status = "reject"
+    else:
+        tail_status = "pass"
     return {
         "rows": len(rows),
         "growth_rows": growth.shape[0],
@@ -42,11 +51,9 @@ def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int | str]
         "cvar_weight_1": float(cvar.weights[0]),
         "cvar_weight_2": float(cvar.weights[1]),
         "cvar_objective": float(cvar.objective),
-        "tail_confidence": 0.75,
-        "tail_effective_observations": float(tail.effective_tail_observations),
-        "tail_value_at_risk": float(tail.value_at_risk),
-        "tail_expected_shortfall": float(tail.expected_shortfall),
-        "tail_status": tail.status,
+        "tail_confidence": tail_confidence,
+        "tail_effective_observations": float(effective_tail_observations),
+        "tail_status": tail_status,
     }
 
 

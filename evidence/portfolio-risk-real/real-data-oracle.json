@@ -11,9 +11,7 @@
     "cvar_objective": 0.001212363855037633,
     "tail_confidence": 0.75,
     "tail_effective_observations": 9.75,
-    "tail_value_at_risk": -0.003206207556289087,
-    "tail_expected_shortfall": 0.0023175421280141376,
-    "tail_status": "warn"
+    "tail_status": "reject"
   },
   "absolute_tolerance": 1e-12,
   "provenance": "The frozen public-domain macro levels are converted to adjacent log growth before covariance and equal-risk calculations. The columns are not claimed to be tradable assets.",
