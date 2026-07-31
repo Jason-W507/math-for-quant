@@ -7,6 +7,7 @@ from unittest import mock
 
 import tools.render_shared_registries as registry_renderer
 import tools.build_books as book_builder
+import tools.check_pdf_visual_regression as visual_checker
 from pathlib import Path
 
 
@@ -26,6 +27,16 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertEqual(records[0][0], 9.027)
         self.assertIn("tex/solutions/ch01.tex", records[0][1])
         self.assertIn("lines 42--43", records[0][1])
+
+    def test_visual_distance_limit_can_be_scoped_to_one_page(self) -> None:
+        config = {"maximum_hamming_distance": 8}
+        self.assertEqual(visual_checker.distance_limit(config, {"id": "cover"}), 8)
+        self.assertEqual(
+            visual_checker.distance_limit(
+                config, {"id": "formula", "maximum_hamming_distance": 20}
+            ),
+            20,
+        )
 
     def test_editorial_preamble_prevents_orphan_and_widow_lines(self) -> None:
         source = (ROOT / "tex/common/editorial-environments.tex").read_text(

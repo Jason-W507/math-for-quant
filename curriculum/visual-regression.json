@@ -10,7 +10,11 @@
       "pages": [
         {"id": "cover", "page": 1},
         {"id": "course-map", "bookmark": "课程地图与最小证据实验"},
-        {"id": "formula", "bookmark": "6.4.3 SVD：秩、伪逆与最佳低秩近似"},
+        {
+          "id": "formula",
+          "bookmark": "6.4.3 SVD：秩、伪逆与最佳低秩近似",
+          "maximum_hamming_distance": 20
+        },
         {"id": "table-or-code", "bookmark": "15.9 Python 证据程序如何验收结论"},
         {"id": "concept-index", "bookmark": "D 主题索引"}
       ]

@@ -119,6 +119,24 @@ def hamming(left: str, right: str) -> int:
     return (int(left, 16) ^ int(right, 16)).bit_count()
 
 
+def distance_limit(
+    config: dict[str, object], selector: dict[str, object]
+) -> int:
+    return int(
+        selector.get(
+            "maximum_hamming_distance", config["maximum_hamming_distance"]
+        )
+    )
+
+
+def configured_limits(config: dict[str, object]) -> dict[str, int]:
+    return {
+        f"{publication['id']}:{selector['id']}": distance_limit(config, selector)
+        for publication in config["publications"]
+        for selector in publication["pages"]
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Record or check key-page PDF visual hashes.")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
@@ -146,14 +164,17 @@ def main() -> int:
     baseline = json.loads(args.baseline.read_text(encoding="utf-8"))["hashes"]
     if set(observed) != set(baseline):
         raise SystemExit("visual regression page inventory differs from baseline")
-    limit = int(config["maximum_hamming_distance"])
+    limits = configured_limits(config)
     failures = {
-        key: hamming(value, baseline[key])
+        key: {
+            "distance": hamming(value, baseline[key]),
+            "limit": limits[key],
+        }
         for key, value in observed.items()
-        if hamming(value, baseline[key]) > limit
+        if hamming(value, baseline[key]) > limits[key]
     }
     if failures:
-        raise SystemExit(f"visual regression exceeded distance {limit}: {failures}")
+        raise SystemExit(f"visual regression exceeded scoped distance: {failures}")
     print(f"visual-regression=passed pages={len(observed)}")
     return 0
 
