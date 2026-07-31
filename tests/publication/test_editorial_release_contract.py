@@ -88,6 +88,10 @@ class EditorialReleaseContractTests(unittest.TestCase):
             'run([sys.executable, "tools/build_books.py", "--volume", "all"])',
             release_driver,
         )
+        self.assertIn(
+            'run([sys.executable, "tools/check_learning_unit.py", "--manifest", "curriculum/manifest.json", "--track", "all"])',
+            release_driver,
+        )
 
     def test_complete_solutions_are_published_as_one_shared_supplement(self) -> None:
         upper_main = (ROOT / "tex" / "upper" / "main.tex").read_text(

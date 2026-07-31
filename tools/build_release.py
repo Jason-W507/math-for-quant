@@ -410,6 +410,7 @@ def main() -> int:
         build_notebooks(notebooks)
         run([sys.executable, "tools/build_books.py", "--volume", "all"])
         run([sys.executable, "tools/check_pdf_visual_regression.py"])
+        run([sys.executable, "tools/check_learning_unit.py", "--manifest", "curriculum/manifest.json", "--track", "all"])
         run([sys.executable, "tools/check_learning_unit.py", "--manifest", "curriculum/manifest.json", "--volume", "all"])
         if args.vendored_template_only:
             run([sys.executable, "tools/check_template_provenance.py", "--vendored-only"])
