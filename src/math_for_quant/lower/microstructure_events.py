@@ -15,13 +15,49 @@ def poisson_mle(interarrivals: list[float]) -> tuple[float, float]:
     return intensity, len(interarrivals) * math.log(intensity) - intensity * total
 
 
-def hawkes_log_likelihood(times: np.ndarray, baseline: float, alpha: float, beta: float) -> float:
+def seasonally_adjusted_poisson_mle(
+    interarrivals: list[float], multipliers: list[float]
+) -> tuple[float, np.ndarray]:
+    if len(interarrivals) != len(multipliers) or not interarrivals:
+        raise ValueError("seasonal observations must be nonempty and aligned")
+    waiting = np.asarray(interarrivals, dtype=float)
+    seasonal = np.asarray(multipliers, dtype=float)
+    if (
+        np.any(~np.isfinite(waiting))
+        or np.any(waiting <= 0.0)
+        or np.any(~np.isfinite(seasonal))
+        or np.any(seasonal <= 0.0)
+    ):
+        raise ValueError("seasonal waiting times and multipliers must be positive and finite")
+    exposure = seasonal * waiting
+    intensity = float(waiting.size / exposure.sum())
+    return intensity, intensity * exposure
+
+
+def hawkes_log_likelihood(
+    times: np.ndarray,
+    baseline: float,
+    alpha: float,
+    beta: float,
+    *,
+    horizon: float,
+    initial_excitation: float = 0.0,
+) -> float:
     times = np.asarray(times, dtype=float)
     if times.ndim != 1 or times.size == 0 or np.any(np.diff(times) <= 0.0):
         raise ValueError("Hawkes event times must be strictly increasing")
-    if baseline <= 0.0 or alpha < 0.0 or beta <= 0.0 or alpha / beta >= 1.0:
+    if not math.isfinite(horizon) or horizon < float(times[-1]) or horizon <= 0.0:
+        raise ValueError("Hawkes horizon must be finite and include every event")
+    if (
+        not all(math.isfinite(x) for x in (baseline, alpha, beta, initial_excitation))
+        or baseline <= 0.0
+        or alpha < 0.0
+        or beta <= 0.0
+        or alpha / beta >= 1.0
+        or initial_excitation < 0.0
+    ):
         raise ValueError("Hawkes parameters violate positivity or stability")
-    excitation = 0.0
+    excitation = float(initial_excitation)
     previous = 0.0
     log_terms = []
     for time in times:
@@ -29,8 +65,9 @@ def hawkes_log_likelihood(times: np.ndarray, baseline: float, alpha: float, beta
         log_terms.append(math.log(baseline + alpha * excitation))
         excitation += 1.0
         previous = float(time)
-    horizon = float(times[-1])
-    compensator = baseline * horizon + (alpha / beta) * float(
+    compensator = baseline * horizon + (alpha * initial_excitation / beta) * (
+        1.0 - math.exp(-beta * horizon)
+    ) + (alpha / beta) * float(
         np.sum(1.0 - np.exp(-beta * (horizon - times)))
     )
     return float(sum(log_terms) - compensator)
@@ -157,4 +194,5 @@ __all__ = [
     "joint_order_price_beta",
     "poisson_mle",
     "queue_fill_probability",
+    "seasonally_adjusted_poisson_mle",
 ]

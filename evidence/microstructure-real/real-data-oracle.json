@@ -1,12 +1,14 @@
 {
-  "snapshot": {"path": "data/real/coinbase-btc-usd-trades-2026-07-31.json", "sha256": "5d1a8ff7cd388f794f9d6f9dc15b797ddc103b2d3e9b285d19ac2f27efa68904"},
-  "absolute_tolerance": 1e-8,
+  "snapshot": {"path": "data/real/sec-order-placement-2014.json", "sha256": "969de25b64663bb4319d5c09d41228304ffeee9c37cd2a80af8d001a7235eb26"},
+  "absolute_tolerance": 1e-10,
   "expected": {
-    "trades": 20,
-    "first_trade_id": 1064791075,
-    "last_trade_id": 1064791094,
-    "duration_seconds": 8.335501,
-    "maker_sell_share": 0.75,
-    "order_price_beta": -0.05658333333333333
+    "categories": 5,
+    "event_share_sum": 1.0,
+    "weighted_cancel_to_trade": 55.3908,
+    "implied_execution_probability": 0.044469652945924136,
+    "inside_execution_probability": 0.17857142857142858,
+    "at_spread_execution_probability": 0.09259259259259259,
+    "within_50bp_execution_probability": 0.0125,
+    "maximum_cancel_to_trade": 117.0
   }
 }

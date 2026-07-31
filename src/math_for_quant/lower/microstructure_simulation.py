@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 import hashlib
 import json
 from pathlib import Path
 
 import numpy as np
-
-from math_for_quant.lower.microstructure_events import joint_order_price_beta
 
 
 @dataclass(frozen=True)
@@ -16,77 +13,101 @@ class PairedSimulationResult:
     events: int
     baseline_signs_hash: str
     control_signs_hash: str
+    baseline_fills_hash: str
+    control_fills_hash: str
+    fills: int
     baseline_pnl: float
     control_pnl: float
     ending_inventory: int
 
 
 def paired_event_simulation(
-    *, seed: int, events: int, base_intensity: float
+    *, seed: int, events: int, base_intensity: float, fill_probability: float = 1.0
 ) -> PairedSimulationResult:
     """Compare two quoting rules on one common-random-number event stream."""
-    if events <= 0 or base_intensity <= 0.0:
-        raise ValueError("events and base_intensity must be positive")
+    if events <= 0 or base_intensity <= 0.0 or not 0.0 <= fill_probability <= 1.0:
+        raise ValueError("events, intensity and fill probability are invalid")
     rng = np.random.default_rng(seed)
     interarrivals = rng.exponential(1.0 / base_intensity, events)
     signs = rng.choice(np.array([-1, 1], dtype=np.int8), size=events)
+    fills = rng.random(events) < fill_probability
     innovations = rng.normal(0.0, 0.02, events)
     mid_changes = 0.006 * signs + innovations * np.sqrt(interarrivals)
     digest = hashlib.sha256(signs.tobytes()).hexdigest()
+    fills_digest = hashlib.sha256(fills.tobytes()).hexdigest()
 
     half_spread = 0.01
-    baseline_pnl = float(events * half_spread + np.dot(signs, mid_changes))
-    inventory = 0
-    control_pnl = 0.0
-    for sign, change in zip(signs, mid_changes, strict=True):
-        # An aggressive buy lifts our ask (inventory falls), and conversely.
-        fill_inventory = -int(sign)
-        skew_penalty = 0.002 * abs(inventory)
-        control_pnl += half_spread - skew_penalty + fill_inventory * float(change)
-        inventory += fill_inventory
+    inventory_skew = 0.002
+    midprice = 100.0
+    baseline_inventory = 0
+    baseline_cash = 0.0
+    control_inventory = 0
+    control_cash = 0.0
+    for sign, change, filled in zip(signs, mid_changes, fills, strict=True):
+        if not filled:
+            midprice += float(change)
+            continue
+        fill_inventory = -int(sign)  # aggressive buy => maker sells one unit
+        baseline_quote = midprice + float(sign) * half_spread
+        control_reservation = midprice - inventory_skew * control_inventory
+        control_quote = control_reservation + float(sign) * half_spread
+        baseline_cash -= fill_inventory * baseline_quote
+        control_cash -= fill_inventory * control_quote
+        baseline_inventory += fill_inventory
+        control_inventory += fill_inventory
+        midprice += float(change)
+    baseline_pnl = baseline_cash + baseline_inventory * midprice
+    control_pnl = control_cash + control_inventory * midprice
     return PairedSimulationResult(
         events=events,
         baseline_signs_hash=digest,
         control_signs_hash=digest,
+        baseline_fills_hash=fills_digest,
+        control_fills_hash=fills_digest,
+        fills=int(fills.sum()),
         baseline_pnl=baseline_pnl,
         control_pnl=float(control_pnl),
-        ending_inventory=inventory,
+        ending_inventory=control_inventory,
     )
 
 
-def _parse_time(value: str) -> datetime:
-    return datetime.fromisoformat(value.replace("Z", "+00:00"))
-
-
-def analyze_coinbase_trades(path: Path) -> dict[str, float | int]:
+def analyze_sec_order_placement(path: Path) -> dict[str, float | int]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    rows = payload["trades"] if isinstance(payload, dict) else payload
-    if len(rows) < 2:
-        raise ValueError("at least two trades are required")
-    trade_ids = np.asarray([int(row["trade_id"]) for row in rows], dtype=np.int64)
-    times = [_parse_time(str(row["time"])) for row in rows]
-    if np.any(np.diff(trade_ids) <= 0):
-        raise ValueError("trade ids must be strictly increasing")
-    seconds = np.asarray([(time - times[0]).total_seconds() for time in times])
-    if np.any(np.diff(seconds) < 0):
-        raise ValueError("trade timestamps must be nondecreasing")
-    prices = np.asarray([float(row["price"]) for row in rows])
-    sizes = np.asarray([float(row["size"]) for row in rows])
-    # Coinbase reports maker side: maker sell means an aggressive buy (+1).
-    signs = np.asarray([1.0 if row["side"] == "sell" else -1.0 for row in rows])
-    changes = np.diff(prices)
-    beta = joint_order_price_beta(signs[1:], changes)
-    duration = float(seconds[-1])
+    rows = payload.get("rows") if isinstance(payload, dict) else None
+    if not isinstance(rows, list) or len(rows) < 2:
+        raise ValueError("SEC snapshot requires at least two placement categories")
+    categories = [str(row.get("category", "")) for row in rows]
+    required_categories = {
+        "inside_spread", "at_spread", "within_50bp_outside",
+        "more_than_50bp_outside", "locked_or_crossed",
+    }
+    if set(categories) != required_categories or len(categories) != len(required_categories):
+        raise ValueError("SEC placement categories must match the declared enumeration")
+    shares = np.asarray([float(row["event_share"]) for row in rows], dtype=float)
+    ratios = np.asarray([float(row["cancel_to_trade_ratio"]) for row in rows], dtype=float)
+    if (
+        np.any(~np.isfinite(shares))
+        or np.any(~np.isfinite(ratios))
+        or np.any(shares < 0.0)
+        or np.any(shares > 1.0)
+        or np.any(ratios < 0.0)
+        or not np.isclose(shares.sum(), 1.0, atol=1e-9)
+    ):
+        raise ValueError("SEC placement shares and ratios violate their declared domains")
+    execution_probabilities = 1.0 / (1.0 + ratios)
+    probability_by_category = dict(zip(categories, execution_probabilities, strict=True))
     return {
-        "trades": len(rows),
-        "first_trade_id": int(trade_ids[0]),
-        "last_trade_id": int(trade_ids[-1]),
-        "duration_seconds": duration,
-        "mean_interarrival_seconds": duration / (len(rows) - 1),
-        "maker_sell_share": float(np.mean(signs > 0)),
-        "total_size": float(sizes.sum()),
-        "order_price_beta": beta,
+        "categories": len(rows),
+        "event_share_sum": float(shares.sum()),
+        "weighted_cancel_to_trade": float(shares @ ratios),
+        "implied_execution_probability": float(shares @ execution_probabilities),
+        "inside_execution_probability": float(probability_by_category["inside_spread"]),
+        "at_spread_execution_probability": float(probability_by_category["at_spread"]),
+        "within_50bp_execution_probability": float(
+            probability_by_category["within_50bp_outside"]
+        ),
+        "maximum_cancel_to_trade": float(ratios.max()),
     }
 
 
-__all__ = ["PairedSimulationResult", "analyze_coinbase_trades", "paired_event_simulation"]
+__all__ = ["PairedSimulationResult", "analyze_sec_order_placement", "paired_event_simulation"]

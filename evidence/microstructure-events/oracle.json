@@ -1,7 +1,7 @@
 {
-  "fixture": {"path": "data/fixtures/microstructure-events.json", "sha256": "7a414bb1d4b7652581d059b54a364dcd66612cb475ba77d79b4eeac644676624"},
+  "fixture": {"path": "data/fixtures/microstructure-events.json", "sha256": "e5679fd06710f4b76b6df26da80fc069ec28d42a6dd382dacaf10710bc8c833f"},
   "absolute_tolerance": 1e-8,
-  "provenance": "The Poisson intensity is event count divided by exposure, the queue probability is a finite Poisson tail, and the order-price coefficient is reconstructed by centered OLS.",
+  "provenance": "Poisson, seasonal Poisson and explicit-window Hawkes quantities are reconstructed independently; the SEC public-domain placement summary calibrates a separate queue-pressure stress.",
   "regression": "evidence/microstructure-events/regression.json",
   "expected": {
     "poisson_intensity": 1.0,
@@ -12,8 +12,12 @@
     "first_fill_quantity": 3,
     "partial_fill_quantity": 1,
     "unfilled": 0,
-    "real_event_duration": 8.335501,
-    "real_event_beta": -0.05658333333333333,
-    "event_library_gap": 0.0
+    "hawkes_log_likelihood": -2.9403405029867584,
+    "hawkes_branching_ratio": 0.25,
+    "seasonal_intensity": 1.3333333333333333,
+    "seasonal_residual_mean": 1.0,
+    "real_implied_execution_probability": 0.044469652945924136,
+    "real_queue_fill_probability": 0.010540062622918024,
+    "event_library_gap": 2.220446049250313e-16
   }
 }

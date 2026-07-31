@@ -1,19 +1,18 @@
 {
-  "fixture": {"path": "data/fixtures/microstructure-simulation.json", "sha256": "422d0485ea913c31c141ff00e501774b0ed5573b006a3c8252aa64b81bad4240"},
+  "fixture": {"path": "data/fixtures/microstructure-simulation.json", "sha256": "5608e85da7ca0ccd92cf5157c0a1d297e0de55012810519a8dca03ad246db11d"},
   "absolute_tolerance": 1e-6,
-  "provenance": "Both controls consume one seeded event stream; the frozen Coinbase trade-id interval and maker-side semantics are independently auditable from the registered snapshot.",
+  "provenance": "Both quote rules consume one seeded event stream and one SEC-calibrated fill mask; cash plus terminal inventory mark-to-market is independently reconstructed.",
   "regression": "evidence/microstructure-simulation/regression.json",
   "expected": {
     "simulation_events": 500,
-    "baseline_pnl": 8.099339,
-    "control_pnl": -12.139339,
-    "ending_inventory": 18,
-    "real_trades": 20,
-    "real_first_trade_id": 1064791075,
-    "real_last_trade_id": 1064791094,
-    "real_duration_seconds": 8.335501,
-    "real_maker_sell_share": 0.75,
-    "real_order_price_beta": -0.05658333333333333,
-    "simulation_library_gap": 0.0
+    "simulation_fills": 21,
+    "baseline_pnl": -0.2802974617729035,
+    "control_pnl": -0.3002974617728995,
+    "ending_inventory": -1,
+    "simulation_library_gap": 1.4210854715202004e-13,
+    "real_categories": 5,
+    "real_weighted_cancel_to_trade": 55.3908,
+    "real_implied_execution_probability": 0.044469652945924136,
+    "real_maximum_cancel_to_trade": 117.0
   }
 }

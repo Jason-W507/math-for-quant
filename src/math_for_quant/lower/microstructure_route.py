@@ -12,17 +12,19 @@ from math_for_quant.lower.microstructure_control import (
     optimal_execution,
 )
 from math_for_quant.lower.microstructure_events import (
-    OrderBook,
+    OrderBook, hawkes_log_likelihood,
     joint_order_price_beta,
     poisson_mle,
     queue_fill_probability,
+    seasonally_adjusted_poisson_mle,
 )
 from math_for_quant.lower.microstructure_simulation import (
-    analyze_coinbase_trades,
+    analyze_sec_order_placement,
     paired_event_simulation,
 )
 from math_for_quant.lower.microstructure_events_library import (
-    library_joint_beta, library_poisson_mle, library_queue_fill_probability,
+    library_hawkes_log_likelihood, library_joint_beta, library_poisson_mle,
+    library_queue_fill_probability, library_seasonal_poisson_mle,
 )
 from math_for_quant.lower.microstructure_control_library import (
     closed_form_inventory_quotes, enumerate_execution,
@@ -42,6 +44,18 @@ def run_events(fixture: dict[str, Any]) -> dict[str, float | int]:
     beta = joint_order_price_beta(
         np.asarray(fixture["signs"], dtype=float), np.asarray(fixture["price_changes"], dtype=float)
     )
+    hawkes_times = np.asarray(fixture["hawkes_times"], dtype=float)
+    hawkes = hawkes_log_likelihood(
+        hawkes_times,
+        float(fixture["hawkes_baseline"]),
+        float(fixture["hawkes_alpha"]),
+        float(fixture["hawkes_beta"]),
+        horizon=float(fixture["hawkes_horizon"]),
+        initial_excitation=float(fixture["hawkes_initial_excitation"]),
+    )
+    seasonal_intensity, seasonal_residuals = seasonally_adjusted_poisson_mle(
+        fixture["seasonal_interarrivals"], fixture["seasonal_multipliers"]
+    )
     book = OrderBook()
     book.add("b1", "buy", 100.0, 3)
     book.add("b2", "buy", 100.0, 2)
@@ -49,7 +63,7 @@ def run_events(fixture: dict[str, Any]) -> dict[str, float | int]:
     fills, unfilled = book.market("sell", 4, allow_partial=True)
     book.assert_invariants()
 
-    real = analyze_coinbase_trades(ROOT / str(fixture["real_snapshot"]))
+    real = analyze_sec_order_placement(ROOT / str(fixture["real_snapshot"]))
     library_intensity = library_poisson_mle(fixture["interarrivals"])
     library_probability = library_queue_fill_probability(
         int(fixture["queue_ahead"]) + int(fixture["own_quantity"]),
@@ -58,22 +72,42 @@ def run_events(fixture: dict[str, Any]) -> dict[str, float | int]:
     library_beta = library_joint_beta(
         np.asarray(fixture["signs"], dtype=float), np.asarray(fixture["price_changes"], dtype=float)
     )
+    library_hawkes = library_hawkes_log_likelihood(
+        hawkes_times,
+        float(fixture["hawkes_baseline"]), float(fixture["hawkes_alpha"]),
+        float(fixture["hawkes_beta"]), float(fixture["hawkes_horizon"]),
+        float(fixture["hawkes_initial_excitation"]),
+    )
+    library_seasonal, library_residuals = library_seasonal_poisson_mle(
+        fixture["seasonal_interarrivals"], fixture["seasonal_multipliers"]
+    )
+    real_fill = queue_fill_probability(
+        queue_ahead=int(fixture["queue_ahead"]), own_quantity=int(fixture["own_quantity"]),
+        depletion_intensity=10.0 * float(real["implied_execution_probability"]),
+        horizon=float(fixture["horizon"]),
+    )
     return {
         "poisson_intensity": intensity, "poisson_log_likelihood": log_likelihood,
         "queue_fill_probability": fill_probability, "joint_beta": beta,
         "queue_ahead": queue_ahead, "first_fill_quantity": fills[0][1],
         "partial_fill_quantity": fills[1][1], "unfilled": unfilled,
-        "real_event_duration": real["duration_seconds"],
-        "real_event_beta": real["order_price_beta"],
+        "hawkes_log_likelihood": hawkes,
+        "hawkes_branching_ratio": float(fixture["hawkes_alpha"]) / float(fixture["hawkes_beta"]),
+        "seasonal_intensity": seasonal_intensity,
+        "seasonal_residual_mean": float(np.mean(seasonal_residuals)),
+        "real_implied_execution_probability": real["implied_execution_probability"],
+        "real_queue_fill_probability": real_fill,
         "event_library_gap": max(
-            abs(intensity - library_intensity), abs(fill_probability - library_probability), abs(beta - library_beta)
+            abs(intensity - library_intensity), abs(fill_probability - library_probability),
+            abs(beta - library_beta), abs(hawkes - library_hawkes),
+            abs(seasonal_intensity - library_seasonal),
+            float(np.max(np.abs(seasonal_residuals - library_residuals))),
         ),
     }
 
 
 def run_control(fixture: dict[str, Any]) -> dict[str, float | int | str]:
-    real_payload = json.loads((ROOT / str(fixture["real_snapshot"])).read_text(encoding="utf-8"))
-    real_rows = real_payload["trades"]
+    real = analyze_sec_order_placement(ROOT / str(fixture["real_snapshot"]))
     execution = execution_path(
         schedule=[int(x) for x in fixture["schedule"]],
         fill_rates=[float(x) for x in fixture["fill_rates"]],
@@ -90,6 +124,19 @@ def run_control(fixture: dict[str, Any]) -> dict[str, float | int | str]:
     maker = market_making_cycle(
         midprices=[float(x) for x in fixture["midprices"]], fills=list(fixture["fills"]), initial_inventory=0,
         half_spread=float(fixture["half_spread"]), inventory_skew=float(fixture["inventory_skew"]),
+    )
+    real_execution = execution_path(
+        schedule=[int(x) for x in fixture["schedule"]],
+        fill_rates=[
+            float(real["inside_execution_probability"]),
+            float(real["at_spread_execution_probability"]),
+            float(real["within_50bp_execution_probability"]),
+        ],
+        initial_inventory=int(fixture["initial_inventory"]),
+        arrival_price=float(fixture["arrival_price"]),
+        temporary_impact=float(fixture["temporary_impact"]),
+        permanent_impact=float(fixture["permanent_impact"]),
+        stop_after=int(fixture["stop_after"]),
     )
     enumerated_schedule, enumerated_cost = enumerate_execution(
         inventory=int(fixture["dp_inventory"]), steps=int(fixture["dp_steps"]),
@@ -110,9 +157,9 @@ def run_control(fixture: dict[str, Any]) -> dict[str, float | int | str]:
         "maker_inventory": maker.inventories[-1],
         "maker_next_bid": maker.bids[1],
         "maker_next_ask": maker.asks[1],
-        "real_arrival_price": float(real_rows[0]["price"]),
-        "real_total_size": sum(float(row["size"]) for row in real_rows),
-        "real_max_trade_size": max(float(row["size"]) for row in real_rows),
+        "real_execution_filled": sum(real_execution.filled),
+        "real_execution_remaining": real_execution.remaining,
+        "real_execution_shortfall": real_execution.implementation_shortfall,
         "control_library_gap": max(
             abs(cost - enumerated_cost),
             0.0 if schedule == enumerated_schedule else 1.0,
@@ -122,22 +169,28 @@ def run_control(fixture: dict[str, Any]) -> dict[str, float | int | str]:
 
 
 def run_simulation(fixture: dict[str, Any]) -> dict[str, float | int | str]:
+    real = analyze_sec_order_placement(ROOT / str(fixture["real_snapshot"]))
     simulation = paired_event_simulation(
         seed=int(fixture["seed"]), events=int(fixture["events"]),
         base_intensity=float(fixture["base_intensity"]),
+        fill_probability=float(real["implied_execution_probability"]),
     )
-    real = analyze_coinbase_trades(ROOT / str(fixture["real_snapshot"]))
     rng = np.random.default_rng(int(fixture["seed"]))
     interarrivals = rng.exponential(1.0 / float(fixture["base_intensity"]), int(fixture["events"]))
     signs = rng.choice(np.array([-1, 1], dtype=np.int8), size=int(fixture["events"]))
+    fills = rng.random(int(fixture["events"])) < float(real["implied_execution_probability"])
     innovations = rng.normal(0.0, 0.02, int(fixture["events"]))
     changes = 0.006 * signs + innovations * np.sqrt(interarrivals)
-    library_pnl = vectorized_static_pnl(signs, changes, 0.01)
+    library_pnl = vectorized_static_pnl(signs, changes, 0.01, fills)
     return {
-        "simulation_events": simulation.events, "baseline_pnl": simulation.baseline_pnl,
+        "simulation_events": simulation.events, "simulation_fills": simulation.fills,
+        "baseline_pnl": simulation.baseline_pnl,
         "control_pnl": simulation.control_pnl, "ending_inventory": simulation.ending_inventory,
         "simulation_library_gap": abs(simulation.baseline_pnl - library_pnl),
-        **{f"real_{key}": value for key, value in real.items()},
+        "real_categories": real["categories"],
+        "real_weighted_cancel_to_trade": real["weighted_cancel_to_trade"],
+        "real_implied_execution_probability": real["implied_execution_probability"],
+        "real_maximum_cancel_to_trade": real["maximum_cancel_to_trade"],
     }
 
 
@@ -157,12 +210,13 @@ def render_route_report(result: dict[str, float | int | str]) -> str:
     return f"""# 高频、微观结构与执行 v0.3 路线报告
 
 - 事件模型：四段等待时间的 Poisson MLE 为 {result['poisson_intensity']:.6f}，对数似然 {result['poisson_log_likelihood']:.6f}；排在 2 手之后、1 秒内由强度 3 的耗尽流完全成交概率为 {result['queue_fill_probability']:.6f}；订单方向与价格变化的手算 OLS 斜率为 {result['joint_beta']:.6f}，独立数值实现最大差 {result['event_library_gap']:.3e}。
+- 自激与季节性：显式观察窗上的 Hawkes 对数似然为 {result['hawkes_log_likelihood']:.6f}，分支比 {result['hawkes_branching_ratio']:.6f}；季节调整 Poisson 基准强度 {result['seasonal_intensity']:.6f}，变换后残差均值 {result['seasonal_residual_mean']:.6f}。稳定性、观察窗和季节暴露均进入可执行证据。
 - 订单簿：第二张买单前方数量 {result['queue_ahead']}；4 手市价卖单先成交 {result['first_fill_quantity']} 手，再部分成交 {result['partial_fill_quantity']} 手，未成交 {result['unfilled']}；价格优先、时间优先和非负数量不变量均通过。
 - 执行控制：计划 9 手实际成交 {result['execution_filled']}、剩余 {result['execution_remaining']}，含临时与永久冲击的 implementation shortfall 为 {result['execution_shortfall']:.6f}；动态规划最优日程 {result['optimal_schedule']}，目标 {result['optimal_cost']:.6f}，完整枚举与闭式报价最大差 {result['control_library_gap']:.3e}。
 - 做市反馈：首次 bid 成交后库存为 {result['maker_inventory']}，下一轮双边报价下移至 {result['maker_next_bid']:.6f}/{result['maker_next_ask']:.6f}，库存而非事后文字真正进入报价函数。
-- 配对仿真：{result['simulation_events']} 个事件共享同一随机订单方向；静态与库存控制规则 PnL 分别为 {result['baseline_pnl']:.6f}/{result['control_pnl']:.6f}，控制规则期末库存 {result['ending_inventory']}，向量化静态账本差 {result['simulation_library_gap']:.3e}。这是共同随机数比较，不是盈利证明。
-- 真实数据轨：冻结 Coinbase BTC-USD 快照覆盖 trade id {result['real_first_trade_id']}--{result['real_last_trade_id']}，共 {result['real_trades']} 笔、{result['real_duration_seconds']:.6f} 秒，maker-sell 比例 {result['real_maker_sell_share']:.6f}，订单方向--价格变化斜率 {result['real_order_price_beta']:.6f}。`side` 按官方文档解释为 maker side。
-- 限制：公开成交快照不含逐档深度、撤单、队列位置或延迟；合成订单簿、执行与做市实验只验证状态转移、成本恒等式和比较协议，不能外推成交质量或策略收益。
+- 配对仿真：{result['simulation_events']} 个事件共享同一随机订单方向和成交掩码，其中 {result['simulation_fills']} 个成交；静态与库存反馈报价的现金加期末库存盯市 PnL 分别为 {result['baseline_pnl']:.6f}/{result['control_pnl']:.6f}，控制规则期末库存 {result['ending_inventory']}，独立向量化账本差 {result['simulation_library_gap']:.3e}。这是共同随机数比较，不是盈利证明。
+- 真实数据轨：SEC 公共领域订单位置摘要含 {result['real_categories']} 个互斥类别，加权 cancel-to-trade 比率 {result['real_weighted_cancel_to_trade']:.6f}，隐含执行概率 {result['real_implied_execution_probability']:.6f}，最大类别比率 {result['real_maximum_cancel_to_trade']:.6f}。该概率实际驱动队列压力（完全成交概率 {result['real_queue_fill_probability']:.6f}）、执行路径（成交 {result['real_execution_filled']}、剩余 {result['real_execution_remaining']}、shortfall {result['real_execution_shortfall']:.6f}）和仿真成交掩码。
+- 限制：SEC 摘要是聚合的历史位置统计，不含逐档深度、订单方向、队列标识或延迟；由 cancel-to-trade 比率换算的执行概率只适合压力实验。合成订单簿、执行与做市实验只验证状态转移、成本恒等式和比较协议，不能外推成交质量或策略收益。
 """
 
 

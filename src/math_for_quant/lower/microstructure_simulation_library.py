@@ -3,12 +3,26 @@ from __future__ import annotations
 import numpy as np
 
 
-def vectorized_static_pnl(signs: np.ndarray, price_changes: np.ndarray, half_spread: float) -> float:
+def vectorized_static_pnl(
+    signs: np.ndarray,
+    price_changes: np.ndarray,
+    half_spread: float,
+    fills: np.ndarray | None = None,
+) -> float:
     signs = np.asarray(signs, dtype=float)
     changes = np.asarray(price_changes, dtype=float)
     if signs.shape != changes.shape:
         raise ValueError("simulation arrays must align")
-    return float(signs.size * half_spread + signs @ changes)
+    filled = np.ones(signs.shape, dtype=bool) if fills is None else np.asarray(fills, dtype=bool)
+    if filled.shape != signs.shape:
+        raise ValueError("fill mask must align with the event stream")
+    inventory_changes = np.where(filled, -signs, 0.0)
+    mid_before = 100.0 + np.concatenate(([0.0], np.cumsum(changes[:-1])))
+    quotes = mid_before + signs * half_spread
+    cash = float(np.sum(-inventory_changes * quotes))
+    inventory = float(np.sum(inventory_changes))
+    terminal_mid = 100.0 + float(np.sum(changes))
+    return cash + inventory * terminal_mid
 
 
 def library_duration_and_beta(

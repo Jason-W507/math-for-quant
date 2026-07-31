@@ -6,5 +6,13 @@
   "horizon": 1.0,
   "signs": [-1.0, -1.0, 1.0, 1.0],
   "price_changes": [-0.2, -0.1, 0.1, 0.2],
-  "real_snapshot": "data/real/coinbase-btc-usd-trades-2026-07-31.json"
+  "hawkes_times": [0.2, 0.7, 1.4, 2.0],
+  "hawkes_baseline": 0.8,
+  "hawkes_alpha": 0.3,
+  "hawkes_beta": 1.2,
+  "hawkes_horizon": 2.5,
+  "hawkes_initial_excitation": 0.1,
+  "seasonal_interarrivals": [0.5, 1.0, 0.5, 1.0],
+  "seasonal_multipliers": [1.0, 0.5, 2.0, 1.0],
+  "real_snapshot": "data/real/sec-order-placement-2014.json"
 }

@@ -16,17 +16,20 @@ from math_for_quant.lower.microstructure_control import (
 )
 from math_for_quant.lower.microstructure_events import (
     OrderBook,
+    hawkes_log_likelihood,
     joint_order_price_beta,
     poisson_mle,
     queue_fill_probability,
+    seasonally_adjusted_poisson_mle,
 )
 from math_for_quant.lower.microstructure_route import build_route_report
 from math_for_quant.lower.microstructure_simulation import (
-    analyze_coinbase_trades,
+    analyze_sec_order_placement,
     paired_event_simulation,
 )
 from math_for_quant.lower.microstructure_control_library import enumerate_execution
 from math_for_quant.lower.microstructure_events_library import (
+    library_hawkes_log_likelihood,
     library_joint_beta,
     library_poisson_mle,
     library_queue_fill_probability,
@@ -55,6 +58,24 @@ class MicrostructureV03Tests(unittest.TestCase):
             beta,
         )
 
+    def test_hawkes_and_seasonality_have_frozen_numerical_evidence(self) -> None:
+        times = np.array([0.2, 0.7, 1.4, 2.0])
+        value = hawkes_log_likelihood(
+            times, 0.8, 0.3, 1.2, horizon=2.5, initial_excitation=0.1
+        )
+        self.assertAlmostEqual(value, -2.9403405029867584)
+        self.assertAlmostEqual(
+            value,
+            library_hawkes_log_likelihood(times, 0.8, 0.3, 1.2, 2.5, 0.1),
+        )
+        intensity, residuals = seasonally_adjusted_poisson_mle(
+            [0.5, 1.0, 0.5, 1.0], [1.0, 0.5, 2.0, 1.0]
+        )
+        self.assertAlmostEqual(intensity, 4.0 / 3.0)
+        self.assertAlmostEqual(float(np.mean(residuals)), 1.0)
+        with self.assertRaisesRegex(ValueError, "horizon"):
+            hawkes_log_likelihood(times, 0.8, 0.3, 1.2, horizon=1.9)
+
     def test_fifo_queue_position_partial_fill_cancel_and_no_fill(self) -> None:
         book = OrderBook()
         book.add("b1", "buy", 100.0, 3)
@@ -77,6 +98,7 @@ class MicrostructureV03Tests(unittest.TestCase):
         )
         self.assertEqual(result.filled, [3, 2, 0])
         self.assertEqual(result.remaining, 4)
+        self.assertTrue(result.stopped)
         self.assertGreater(result.implementation_shortfall, 0.0)
         schedule, cost = optimal_execution(
             inventory=6, steps=3, temporary_impact=1.0, permanent_impact=0.2,
@@ -105,18 +127,23 @@ class MicrostructureV03Tests(unittest.TestCase):
         result = paired_event_simulation(seed=59, events=500, base_intensity=2.0)
         self.assertEqual(result.events, 500)
         self.assertEqual(result.baseline_signs_hash, result.control_signs_hash)
+        self.assertEqual(result.baseline_fills_hash, result.control_fills_hash)
         self.assertTrue(np.isfinite(result.baseline_pnl))
         self.assertTrue(np.isfinite(result.control_pnl))
+        self.assertNotEqual(result.baseline_pnl, result.control_pnl)
 
-    def test_real_trade_snapshot_is_consumed(self) -> None:
-        observed = analyze_coinbase_trades(
-            ROOT / "data/real/coinbase-btc-usd-trades-2026-07-31.json"
+    def test_public_domain_sec_snapshot_is_consumed(self) -> None:
+        observed = analyze_sec_order_placement(
+            ROOT / "data/real/sec-order-placement-2014.json"
         )
-        self.assertEqual(observed["trades"], 20)
-        self.assertEqual(observed["first_trade_id"], 1064791075)
-        self.assertEqual(observed["last_trade_id"], 1064791094)
-        self.assertGreater(observed["duration_seconds"], 0.0)
-        self.assertTrue(np.isfinite(observed["order_price_beta"]))
+        self.assertEqual(observed["categories"], 5)
+        self.assertAlmostEqual(observed["event_share_sum"], 1.0)
+        self.assertGreater(observed["weighted_cancel_to_trade"], 0.0)
+        self.assertTrue(0.0 < observed["implied_execution_probability"] < 1.0)
+        with self.assertRaisesRegex(ValueError, "declared domains"):
+            analyze_sec_order_placement(
+                ROOT / "tests/fixtures/sec-order-placement-invalid.json"
+            )
 
     def test_three_notebooks_and_exact_route_report(self) -> None:
         for name in ("events", "control", "simulation"):
@@ -128,9 +155,13 @@ class MicrostructureV03Tests(unittest.TestCase):
         expected = (ROOT / "reports/microstructure-v03-summary.md").read_text(encoding="utf-8")
         self.assertEqual(build_route_report(), expected)
 
-    def test_public_route_command_build_scope_is_explicit(self) -> None:
-        text = (ROOT / "tools/validate_microstructure_route.py").read_text(encoding="utf-8")
-        self.assertIn('validate_route("microstructure")', text)
+    def test_public_route_command_runs_end_to_end(self) -> None:
+        result = subprocess.run(
+            [sys.executable, "tools/validate_microstructure_route.py"],
+            cwd=ROOT, text=True, capture_output=True, check=False, timeout=180,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("microstructure-route=passed publications=lower+shared-solutions", result.stdout)
 
 
 if __name__ == "__main__":

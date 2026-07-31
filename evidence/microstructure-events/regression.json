@@ -1,1 +1,1 @@
-{"absolute_tolerance": 1e-8, "expected": {"poisson_intensity": 1.0, "joint_beta": 0.15, "queue_ahead": 3}}
+{"absolute_tolerance": 1e-8, "expected": {"poisson_intensity": 1.0, "joint_beta": 0.15, "queue_ahead": 3, "hawkes_log_likelihood": -2.9403405029867584, "seasonal_intensity": 1.3333333333333333}}

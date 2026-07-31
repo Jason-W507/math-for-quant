@@ -46,6 +46,8 @@ def execution_path(
         cumulative += filled
         remaining -= filled
         fills.append(filled)
+    if remaining > 0:
+        stopped = True
     return ExecutionResult(fills, remaining, float(shortfall), stopped)
 
 

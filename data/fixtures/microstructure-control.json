@@ -16,5 +16,5 @@
   "fills": ["bid", "none"],
   "half_spread": 0.5,
   "inventory_skew": 0.1,
-  "real_snapshot": "data/real/coinbase-btc-usd-trades-2026-07-31.json"
+  "real_snapshot": "data/real/sec-order-placement-2014.json"
 }

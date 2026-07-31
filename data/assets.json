@@ -105,18 +105,18 @@
       "required_marker": "public domain"
     },
     {
-      "id": "microstructure-coinbase-trades-snapshot",
-      "paths": ["data/real/coinbase-btc-usd-trades-2026-07-31.json"],
+      "id": "microstructure-sec-order-placement-snapshot",
+      "paths": ["data/real/sec-order-placement-2014.json"],
       "kind": "frozen-public-data",
-      "source": "Coinbase Exchange REST API get product trades",
-      "version": "BTC-USD-trades-2026-07-31T02:12:42Z-02:12:50Z",
-      "schema": "trade_id:int, side:maker-side, size:BTC decimal string, price:USD decimal string, time:ISO timestamp",
-      "selection": "Twenty consecutive trades returned by the public BTC-USD endpoint",
-      "missing_values": "Publication fails if any required trade field is absent",
-      "transformations": "Rows are reordered by increasing trade id; numeric strings remain verbatim in the snapshot",
-      "license_id": "Coinbase-Market-Data-Terms",
-      "license_file": "data/real/COINBASE-MARKET-DATA-TERMS.md",
-      "required_marker": "Coinbase-Market-Data-Terms"
+      "source": "U.S. SEC Equity Market Speed Relative to Order Placement",
+      "version": "official-page-reviewed-2021-03-25",
+      "schema": "category:string, event_share:[0,1], cancel_to_trade_ratio:nonnegative",
+      "selection": "All five mutually exclusive placement categories reported by the SEC",
+      "missing_values": "Publication fails if a category, share, or ratio is absent or nonfinite",
+      "transformations": "Published percentages divided by 100; ratios copied as reported",
+      "license_id": "Public-Domain",
+      "license_file": "data/real/SEC-MARKET-STRUCTURE-PUBLIC-DOMAIN.md",
+      "required_marker": "public domain"
     }
   ]
 }

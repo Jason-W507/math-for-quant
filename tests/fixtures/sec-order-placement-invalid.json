@@ -1,0 +1,9 @@
+{
+  "rows": [
+    {"category": "inside_spread", "event_share": 0.019, "cancel_to_trade_ratio": 1e309},
+    {"category": "at_spread", "event_share": 0.333, "cancel_to_trade_ratio": 9.8},
+    {"category": "within_50bp_outside", "event_share": 0.508, "cancel_to_trade_ratio": 79.0},
+    {"category": "more_than_50bp_outside", "event_share": 0.097, "cancel_to_trade_ratio": 117.0},
+    {"category": "locked_or_crossed", "event_share": 0.043, "cancel_to_trade_ratio": 13.0}
+  ]
+}

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 from pathlib import Path
 import sys
 
-from math_for_quant.lower.microstructure_simulation import analyze_coinbase_trades
+from math_for_quant.lower.microstructure_simulation import analyze_sec_order_placement
 
 
 def main(oracle_path: Path) -> int:
@@ -13,11 +14,13 @@ def main(oracle_path: Path) -> int:
     snapshot = Path(oracle["snapshot"]["path"])
     digest = hashlib.sha256(snapshot.read_bytes()).hexdigest()
     if digest != oracle["snapshot"]["sha256"]:
-        raise SystemExit("Coinbase snapshot hash mismatch")
-    observed = analyze_coinbase_trades(snapshot)
+        raise SystemExit("SEC snapshot hash mismatch")
+    observed = analyze_sec_order_placement(snapshot)
     tolerance = float(oracle["absolute_tolerance"])
     for key, expected in oracle["expected"].items():
-        if abs(float(observed[key]) - float(expected)) > tolerance:
+        actual = float(observed[key])
+        target = float(expected)
+        if not math.isfinite(actual) or not math.isfinite(target) or abs(actual - target) > tolerance:
             raise SystemExit(f"{key} mismatch")
     print("microstructure-real-data=passed")
     return 0

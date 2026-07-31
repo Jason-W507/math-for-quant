@@ -1,7 +1,7 @@
 {
-  "fixture": {"path": "data/fixtures/microstructure-control.json", "sha256": "bc8fd8620d60766eec4bff0e1306b3650cb723169f6558d8c1611790627c0455"},
+  "fixture": {"path": "data/fixtures/microstructure-control.json", "sha256": "fbcdd2e2895662a0e0c789d41852bbb2a57d578749abbef688b4d161c3ff0497"},
   "absolute_tolerance": 1e-8,
-  "provenance": "Each fill is rounded from the declared completion rate; implementation shortfall is reconstructed trade by trade; the DP result is checked by complete enumeration.",
+  "provenance": "Each synthetic fill is reconstructed trade by trade and the DP is checked by complete enumeration; SEC placement-specific execution probabilities drive a separate incomplete-execution path.",
   "regression": "evidence/microstructure-control/regression.json",
   "expected": {
     "execution_filled": 5,
@@ -12,9 +12,9 @@
     "maker_inventory": 1,
     "maker_next_bid": 99.4,
     "maker_next_ask": 100.4,
-    "real_arrival_price": 64486.2,
-    "real_total_size": 0.15443687,
-    "real_max_trade_size": 0.1,
+    "real_execution_filled": 1,
+    "real_execution_remaining": 8,
+    "real_execution_shortfall": 0.2,
     "control_library_gap": 0.0
   }
 }

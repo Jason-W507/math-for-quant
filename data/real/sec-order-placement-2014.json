@@ -1,0 +1,12 @@
+{
+  "source": "U.S. Securities and Exchange Commission, Equity Market Speed Relative to Order Placement",
+  "source_url": "https://www.sec.gov/about/equity-market-speed-relative-order-placement-2014-02-market-structure",
+  "metric_definition": "cancel-to-trade ratio is cancellations divided by trades for the placement category",
+  "rows": [
+    {"category": "inside_spread", "event_share": 0.019, "cancel_to_trade_ratio": 4.6},
+    {"category": "at_spread", "event_share": 0.333, "cancel_to_trade_ratio": 9.8},
+    {"category": "within_50bp_outside", "event_share": 0.508, "cancel_to_trade_ratio": 79.0},
+    {"category": "more_than_50bp_outside", "event_share": 0.097, "cancel_to_trade_ratio": 117.0},
+    {"category": "locked_or_crossed", "event_share": 0.043, "cancel_to_trade_ratio": 13.0}
+  ]
+}

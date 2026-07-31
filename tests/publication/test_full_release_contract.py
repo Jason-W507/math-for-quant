@@ -126,7 +126,7 @@ class FullReleaseContractTests(unittest.TestCase):
         self.assertEqual(len(assets), sum(len(group["paths"]) for group in registry["assets"]))
         self.assertEqual(
             {asset.license_id for asset in assets},
-            {"CC0-1.0", "CC-BY-4.0", "Public-Domain", "Coinbase-Market-Data-Terms"},
+            {"CC0-1.0", "CC-BY-4.0", "Public-Domain"},
         )
         public_groups = [
             group for group in registry["assets"]
