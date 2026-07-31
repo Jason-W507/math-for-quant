@@ -432,7 +432,8 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
         f"rank={least_rank}) "
         f"logsumexp=({naive_logsumexp:.0f},{stable_logsumexp:.6f}) "
         f"scaling=({unscaled_condition:.3e},{scaled_condition:.3e}) "
-        f"rank=({numerical_rank},{singular_values[0]:.3e},{singular_values[1]:.3e}) "
+        f"rank=({numerical_rank},largest~{float(expected_singular_values[0]):.3e},"
+        f"smallest<={float(oracle['numeric_absolute_tolerance']):.1e}) "
         f"tolerance=({int(small_close)},{int(large_close)},{int(bad_small)},{int(bad_large)})"
     )
     return 0

@@ -2498,7 +2498,7 @@ class ChaptersTests(LearningUnitCase):
             "stable-residual<=1.0e-12,rank=2) "
             "logsumexp=(inf,1000.693147) "
             "scaling=(1.000e+09,1.407e+01) "
-            "rank=(1,8.367e+00,7.320e-16) "
+            "rank=(1,largest~8.367e+00,smallest<=1.0e-12) "
             "tolerance=(1,1,1,0)\n",
         )
         self.assertEqual(result.stderr, "")
@@ -2694,7 +2694,7 @@ class ChaptersTests(LearningUnitCase):
             "stable-residual<=1.0e-12,rank=2) "
             "logsumexp=(inf,1000.693147) "
             "scaling=(1.000e+09,1.407e+01) "
-            "rank=(1,8.367e+00,7.320e-16) "
+            "rank=(1,largest~8.367e+00,smallest<=1.0e-12) "
             "tolerance=(1,1,1,0)\n"
             "learning-unit contract passed\n",
         )
