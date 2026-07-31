@@ -99,7 +99,10 @@ $\mathbb P(D=0)=1/2$，连续正态分布满足 $\mathbb P(Z=0)=0$；而且
  f_Y(y)=f_X(g^{-1}(y))
  \left|\frac{d}{dy}g^{-1}(y)\right|.
 \]
-若 $g$ 非单调，必须把所有原像分支相加。向量变换 $Y=g(X)$ 在一一可微情形使用 Jacobian 行列式：$f_Y(y)=f_X(g^{-1}(y))|\det Dg^{-1}(y)|$。
+若 $g$ 非单调，必须把所有原像分支相加。向量变换 $Y=g(X)$ 在一一可微情形使用 Jacobian 行列式：
+\[
+ f_Y(y)=f_X(g^{-1}(y))\left|\det Dg^{-1}(y)\right|.
+\]
 
 固定离散例取 $Y=X^2$。三个原值推到 $0,1,4$，质量分别为 $1/2,1/4,1/4$；$-1$ 与 $1$ 若同时出现，质量必须合并，不能把输出当成逐行不重复表。连续例若 $Z\sim\mathcal N(0,\sigma^2)$、$Y=e^Z$，则 $Y$ 为对数正态，正值域和右偏尾部都来自变换，不应再用对称正态误差解释。
 
@@ -125,13 +128,13 @@ $\mathbb P(D=0)=1/2$，连续正态分布满足 $\mathbb P(Z=0)=0$；而且
 
 \section{常用分布：先匹配机制，再估参数}
 
-\begin{description}[style=nextline,leftmargin=2em]
-  \item[{Bernoulli / Binomial}] 一次成功指标 $B\sim\mathrm{Bernoulli}(p)$ 有均值 $p$、方差 $p(1-p)$；固定次数、同成功率且独立时，成功总数才是 $\mathrm{Binomial}(n,p)$。
-  \item[{Poisson / Exponential}] 独立平稳增量的 Poisson 计数过程产生 $N_t\sim\mathrm{Poisson}(\lambda t)$，相邻到达时间为 $\mathrm{Exp}(\lambda)$；仅有“均值等于方差”不足以证明该机制。
-  \item[{Uniform / 正态分布}] $U(a,b)$ 表示区间内密度恒定；正态分布常作为许多小扰动之和的近似。正态假设包含对称、轻尾与所有矩存在，不能只靠直方图中央部分决定。
-  \item[{Lognormal}] 若 $Z\sim N(\mu,\sigma^2)$，则 $e^Z$ 为正且右偏；均值为 $e^{\mu+\sigma^2/2}$，方差为 $(e^{\sigma^2}-1)e^{2\mu+\sigma^2}$。
-  \item[{Student-$t$ / Pareto}] $t_\nu$ 的均值仅在 $\nu>1$ 时存在，方差仅在 $\nu>2$ 时存在；Pareto 尾指数 $\alpha$ 只保证 $p<\alpha$ 阶矩有限。尾参数决定哪些统计量有总体含义。
-\end{description}
+\begin{itemize}
+  \item \textbf{Bernoulli / Binomial.} 一次成功指标 $B\sim\mathrm{Bernoulli}(p)$ 有均值 $p$、方差 $p(1-p)$；固定次数、同成功率且独立时，成功总数才是 $\mathrm{Binomial}(n,p)$。
+  \item \textbf{Poisson / Exponential.} 独立平稳增量的 Poisson 计数过程产生 $N_t\sim\mathrm{Poisson}(\lambda t)$，相邻到达时间为 $\mathrm{Exp}(\lambda)$；仅有“均值等于方差”不足以证明该机制。
+  \item \textbf{Uniform / 正态分布.} $U(a,b)$ 表示区间内密度恒定；正态分布常作为许多小扰动之和的近似。正态假设包含对称、轻尾与所有矩存在，不能只靠直方图中央部分决定。
+  \item \textbf{Lognormal.} 若 $Z\sim N(\mu,\sigma^2)$，则 $e^Z$ 为正且右偏；均值为 $e^{\mu+\sigma^2/2}$，方差为 $(e^{\sigma^2}-1)e^{2\mu+\sigma^2}$。
+  \item \textbf{Student-$t$ / Pareto.} $t_\nu$ 的均值仅在 $\nu>1$ 时存在，方差仅在 $\nu>2$ 时存在；Pareto 尾指数 $\alpha$ 只保证 $p<\alpha$ 阶矩有限。尾参数决定哪些统计量有总体含义。
+\end{itemize}
 
 oracle 固定 $U(-1,3)$ 的均值 $1$、方差 $4/3$；$\mathrm{Exp}(2)$ 的均值 $1/2$、方差 $1/4$、生存概率 $\mathbb P(T>1)=e^{-2}$；$\mathrm{Lognormal}(0,0.5^2)$ 的均值为 $1.133148$、方差为 $0.364696$。
 
