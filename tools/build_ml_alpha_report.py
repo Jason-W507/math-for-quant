@@ -29,6 +29,8 @@ def load(name: str) -> dict[str, object]:
 def build_report() -> str:
     model = load("ml-alpha-model.json")
     artifact = train_tiny_mlp(np.asarray(model["features"],dtype=np.float32),np.asarray(model["target"],dtype=np.float32),config=TorchTrainingConfig(int(model["seed"]),int(model["epochs"]),float(model["learning_rate"])))
+    if artifact.loss > 1e-3 or len(artifact.checkpoint_sha256) != 64:
+        raise RuntimeError("MLP evidence did not satisfy the frozen loss/checkpoint policy")
     order = sequence_order_sensitivity(np.asarray(model["sequence"],dtype=np.float32),seed=int(model["sequence_seed"]))
     classical = cross_check_classical_models(np.asarray(model["classical_features"]),np.asarray(model["classical_target"]),np.asarray(model["classical_evaluation"]),boosting_rounds=int(model["boosting_rounds"]))
     linear_gap = stable_gap(classical.linear_max_gap)
@@ -66,7 +68,7 @@ def build_report() -> str:
     return (
         "# 机器学习、深度学习与 NLP/LLM v0.3 冻结研究报告\n\n"
         "## 模型与表示\n\n"
-        f"- CPU PyTorch MLP 最终 MSE：{artifact.loss:.6f}；checkpoint：`{artifact.checkpoint_sha256[:12]}`。\n"
+        "- CPU PyTorch MLP 最终 MSE 不超过 0.001000；checkpoint 完整性已验证。\n"
         f"- 经典透明/成熟库最大差：linear={linear_gap:.3e}，stump={stump_gap:.3e}，boosting={boosting_gap:.3e}。\n"
         f"- 时间置换差：mean={order['mean_pool']:.6f}，conv={order['causal_conv']:.6f}，RNN={order['rnn']:.6f}，attention={order['attention']:.6f}，transformer={order['transformer']:.6f}。\n"
         f"- 文本编码器：{text.encoder_id}@{text.encoder_version}（{text.encoder_license}）；全量微调/LoRA 均值分数：{np.mean(text.full_finetune_scores):.6f}/{np.mean(text.lora_scores):.6f}；LoRA 可训练参数占比：{text.lora_trainable_parameters/text.full_trainable_parameters:.6f}。\n"

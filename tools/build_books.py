@@ -135,7 +135,8 @@ def build_volume(volume: dict[str, str]) -> Path:
         command,
         cwd=ROOT,
         env=environment,
-        text=True,
+        encoding="utf-8",
+        errors="replace",
         capture_output=True,
         check=False,
     )

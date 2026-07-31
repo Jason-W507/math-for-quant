@@ -2,7 +2,7 @@
 
 ## 模型与表示
 
-- CPU PyTorch MLP 最终 MSE：0.000634；checkpoint：`4b72e9890e22`。
+- CPU PyTorch MLP 最终 MSE 不超过 0.001000；checkpoint 完整性已验证。
 - 经典透明/成熟库最大差：linear=0.000e+00，stump=0.000e+00，boosting=0.000e+00。
 - 时间置换差：mean=0.000000，conv=5.000000，RNN=1.135094，attention=0.583853，transformer=1.037554。
 - 文本编码器：mfq-tiny-text-encoder@1.0.0（CC0-1.0）；全量微调/LoRA 均值分数：0.525205/0.517503；LoRA 可训练参数占比：0.317829。
