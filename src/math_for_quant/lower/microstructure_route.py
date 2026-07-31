@@ -30,7 +30,7 @@ from math_for_quant.lower.microstructure_control_library import (
     closed_form_inventory_quotes, enumerate_execution,
 )
 from math_for_quant.lower.microstructure_simulation_library import (
-    independent_inventory_feedback_ledger,
+    vectorized_feedback_ledger,
     vectorized_static_pnl,
 )
 
@@ -196,8 +196,11 @@ def run_simulation(fixture: dict[str, Any]) -> dict[str, float | int | str]:
     innovations = rng.normal(0.0, 0.02, int(fixture["events"]))
     changes = 0.006 * signs + innovations * np.sqrt(interarrivals)
     library_pnl = vectorized_static_pnl(signs, changes, 0.01, fills)
-    control_library = independent_inventory_feedback_ledger(
-        signs, changes, uniforms, float(real["implied_execution_probability"])
+    control_library = vectorized_feedback_ledger(
+        signs,
+        np.asarray(simulation.control_quotes),
+        np.asarray(simulation.control_fill_mask),
+        simulation.terminal_midprice,
     )
     control_gap = max(
         abs(simulation.control_pnl - control_library[0]),

@@ -37,6 +37,9 @@ from math_for_quant.lower.microstructure_events_library import (
     library_queue_fill_probability,
     library_seasonal_poisson_mle,
 )
+from math_for_quant.lower.microstructure_simulation_library import (
+    vectorized_feedback_ledger,
+)
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -174,6 +177,24 @@ class MicrostructureV03Tests(unittest.TestCase):
         ):
             with self.assertRaisesRegex(ValueError, "invalid"):
                 paired_event_simulation(**kwargs)
+
+    def test_vectorized_feedback_ledger_reconstructs_and_validates_trace(self) -> None:
+        observed = vectorized_feedback_ledger(
+            np.array([1, -1, 1]),
+            np.array([101.0, 99.0, 102.0]),
+            np.array([True, True, False]),
+            100.0,
+        )
+        self.assertEqual(observed, (2.0, 2, 0, 1))
+        invalid_cases = (
+            (np.array([1, 0]), np.array([101.0, 99.0]), np.array([True, False]), 100.0),
+            (np.array([1, -1]), np.array([math.nan, 99.0]), np.array([True, False]), 100.0),
+            (np.array([1, -1]), np.array([101.0, 99.0]), np.array([1, 0]), 100.0),
+            (np.array([1, -1]), np.array([101.0, 99.0]), np.array([True, False]), math.inf),
+        )
+        for arguments in invalid_cases:
+            with self.subTest(arguments=arguments), self.assertRaisesRegex(ValueError, "feedback ledger"):
+                vectorized_feedback_ledger(*arguments)
 
     def test_public_domain_sec_snapshot_is_consumed(self) -> None:
         observed = analyze_sec_order_placement(

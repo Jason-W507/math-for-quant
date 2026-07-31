@@ -24,6 +24,9 @@ class PairedSimulationResult:
     control_ending_inventory: int
     baseline_max_abs_inventory: int
     control_max_abs_inventory: int
+    control_quotes: tuple[float, ...]
+    control_fill_mask: tuple[bool, ...]
+    terminal_midprice: float
 
 
 def paired_event_simulation(
@@ -59,11 +62,14 @@ def paired_event_simulation(
     control_fills = 0
     baseline_max_abs_inventory = 0
     control_max_abs_inventory = 0
+    control_quotes: list[float] = []
+    control_fill_mask: list[bool] = []
     for sign, change, uniform in zip(signs, mid_changes, fill_uniforms, strict=True):
         fill_inventory = -int(sign)  # aggressive buy => maker sells one unit
         baseline_quote = midprice + float(sign) * half_spread
         control_reservation = midprice - inventory_skew * control_inventory
         control_quote = control_reservation + float(sign) * half_spread
+        control_quotes.append(control_quote)
         # The same uniform drives both policies, but each quote determines its own
         # fill threshold. A more aggressive quote receives a higher probability.
         quote_advantage = -float(sign) * (control_quote - baseline_quote)
@@ -78,7 +84,9 @@ def paired_event_simulation(
             baseline_max_abs_inventory = max(
                 baseline_max_abs_inventory, abs(baseline_inventory)
             )
-        if uniform < control_probability:
+        control_filled = bool(uniform < control_probability)
+        control_fill_mask.append(control_filled)
+        if control_filled:
             control_cash -= fill_inventory * control_quote
             control_inventory += fill_inventory
             control_fills += 1
@@ -102,6 +110,9 @@ def paired_event_simulation(
         control_ending_inventory=control_inventory,
         baseline_max_abs_inventory=baseline_max_abs_inventory,
         control_max_abs_inventory=control_max_abs_inventory,
+        control_quotes=tuple(control_quotes),
+        control_fill_mask=tuple(control_fill_mask),
+        terminal_midprice=midprice,
     )
 
 

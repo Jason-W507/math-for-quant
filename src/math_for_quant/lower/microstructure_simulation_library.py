@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import numpy as np
 
 
@@ -37,44 +36,54 @@ def library_duration_and_beta(
     return float(seconds[-1] - seconds[0]), float(coefficient[1])
 
 
-def independent_inventory_feedback_ledger(
+def vectorized_feedback_ledger(
     signs: np.ndarray,
-    price_changes: np.ndarray,
-    uniforms: np.ndarray,
-    fill_probability: float,
-    *,
-    half_spread: float = 0.01,
-    inventory_skew: float = 0.002,
+    quotes: np.ndarray,
+    fill_mask: np.ndarray,
+    terminal_midprice: float,
 ) -> tuple[float, int, int, int]:
-    """Reconstruct the feedback policy with an independent state ledger."""
-    directions = np.asarray(signs, dtype=int)
-    changes = np.asarray(price_changes, dtype=float)
-    draws = np.asarray(uniforms, dtype=float)
-    if directions.shape != changes.shape or directions.shape != draws.shape:
-        raise ValueError("independent simulation arrays must align")
-    mid = 100.0
-    cash = 0.0
-    position = 0
-    fills = 0
-    maximum = 0
-    for direction, change, draw in zip(directions, changes, draws, strict=True):
-        static_quote = mid + int(direction) * half_spread
-        feedback_quote = mid - inventory_skew * position + int(direction) * half_spread
-        relative_aggressiveness = -int(direction) * (feedback_quote - static_quote)
-        multiplier = math.exp(float(np.clip(relative_aggressiveness / half_spread, -50.0, 50.0)))
-        threshold = min(1.0, max(0.0, fill_probability * multiplier))
-        if draw < threshold:
-            position_change = -int(direction)
-            cash -= position_change * feedback_quote
-            position += position_change
-            fills += 1
-            maximum = max(maximum, abs(position))
-        mid += float(change)
-    return cash + position * mid, fills, position, maximum
+    """Revalue an exported quote/fill trace without reimplementing the policy."""
+    raw_directions = np.asarray(signs)
+    prices = np.asarray(quotes, dtype=float)
+    raw_fills = np.asarray(fill_mask)
+    if (
+        raw_directions.ndim != 1
+        or prices.ndim != 1
+        or raw_fills.ndim != 1
+        or raw_directions.size == 0
+        or raw_directions.shape != prices.shape
+        or raw_directions.shape != raw_fills.shape
+    ):
+        raise ValueError("feedback ledger arrays must be nonempty, one-dimensional and aligned")
+    if (
+        not np.issubdtype(raw_directions.dtype, np.number)
+        or np.any(~np.isfinite(raw_directions.astype(float)))
+        or np.any(~np.isin(raw_directions, (-1, 1)))
+    ):
+        raise ValueError("feedback ledger directions must be finite and exactly -1 or 1")
+    if raw_fills.dtype != np.bool_:
+        raise ValueError("feedback ledger fill mask must contain booleans")
+    if (
+        np.any(~np.isfinite(prices))
+        or np.any(prices <= 0.0)
+        or not np.isfinite(terminal_midprice)
+        or terminal_midprice <= 0.0
+    ):
+        raise ValueError("feedback ledger prices must be finite and positive")
+
+    directions = raw_directions.astype(np.int8, copy=False)
+    inventory_changes = np.where(raw_fills, -directions, 0)
+    inventory_path = np.cumsum(inventory_changes, dtype=np.int64)
+    cash = -float(np.sum(inventory_changes * prices))
+    position = int(inventory_path[-1])
+    maximum = int(np.max(np.abs(inventory_path)))
+    fills = int(np.count_nonzero(raw_fills))
+    pnl = cash + position * float(terminal_midprice)
+    return pnl, fills, position, maximum
 
 
 __all__ = [
-    "independent_inventory_feedback_ledger",
     "library_duration_and_beta",
+    "vectorized_feedback_ledger",
     "vectorized_static_pnl",
 ]
