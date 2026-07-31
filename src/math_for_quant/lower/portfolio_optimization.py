@@ -50,7 +50,7 @@ def cvar_optimize(
     scenario_returns: np.ndarray, *, confidence: float, maximum_weight: float
 ) -> CvarResult:
     scenarios = np.asarray(scenario_returns, dtype=float)
-    if scenarios.ndim != 2 or scenarios.shape[0] < 2:
+    if scenarios.ndim != 2 or scenarios.shape[0] < 2 or not np.all(np.isfinite(scenarios)):
         raise ValueError("CVaR requires a scenario-by-asset matrix")
     if not 0.0 < confidence < 1.0 or not 0.0 < maximum_weight <= 1.0:
         raise ValueError("CVaR confidence and maximum weight are invalid")
@@ -112,6 +112,10 @@ def robust_cost_aware_rebalance(
     assets = covariance.shape[0]
     if any(value.shape != (assets,) for value in (expected_returns, current_weights, uncertainty, tradable)):
         raise ValueError("rebalance inputs must share the asset dimension")
+    if not all(np.all(np.isfinite(value)) for value in (expected_returns, current_weights, uncertainty)):
+        raise ValueError("rebalance numeric inputs must be finite")
+    if np.any((tradable != 0) & (tradable != 1)):
+        raise ValueError("tradable indicators must be zero or one")
     if not np.isclose(current_weights.sum(), 1.0) or np.any(current_weights < 0.0):
         raise ValueError("current weights must be nonnegative and sum to one")
     if risk_aversion <= 0.0:

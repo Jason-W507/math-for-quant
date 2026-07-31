@@ -13,6 +13,8 @@ from math_for_quant.lower.portfolio_estimation import (
     shrink_covariance,
 )
 from math_for_quant.lower.portfolio_estimation_library import (
+    library_factor_covariance,
+    library_portfolio_volatility,
     library_risk_parity_weights,
     library_shrink_covariance,
 )
@@ -22,6 +24,7 @@ from math_for_quant.lower.portfolio_optimization import (
     robust_cost_aware_rebalance,
 )
 from math_for_quant.lower.portfolio_optimization_library import (
+    enumerate_robust_rebalance,
     enumerate_two_asset_cvar,
     library_black_litterman_posterior,
 )
@@ -30,7 +33,11 @@ from math_for_quant.lower.portfolio_tail import (
     nonlinear_portfolio_loss,
     reverse_stress_scale,
 )
-from math_for_quant.lower.portfolio_tail_library import library_historical_var_es
+from math_for_quant.lower.portfolio_tail_library import (
+    library_historical_var_es,
+    library_nonlinear_loss,
+    library_reverse_stress_roots,
+)
 
 
 def run_estimation(fixture: dict[str, Any]) -> dict[str, float | int]:
@@ -45,6 +52,11 @@ def run_estimation(fixture: dict[str, Any]) -> dict[str, float | int]:
     shrunk = shrink_covariance(sample, target, intensity)
     library_shrunk = library_shrink_covariance(returns, intensity)
     modeled = factor_covariance(
+        np.asarray(fixture["factor_loadings"], dtype=float),
+        np.asarray(fixture["factor_covariance"], dtype=float),
+        np.asarray(fixture["idiosyncratic_variance"], dtype=float),
+    )
+    library_modeled = library_factor_covariance(
         np.asarray(fixture["factor_loadings"], dtype=float),
         np.asarray(fixture["factor_covariance"], dtype=float),
         np.asarray(fixture["idiosyncratic_variance"], dtype=float),
@@ -66,7 +78,14 @@ def run_estimation(fixture: dict[str, Any]) -> dict[str, float | int]:
         "shrinkage_library_gap": float(np.max(np.abs(shrunk - library_shrunk))),
         "shrunk_minimum_eigenvalue": float(np.linalg.eigvalsh(shrunk).min()),
         "factor_trace": float(np.trace(modeled)),
+        "factor_library_gap": float(np.max(np.abs(modeled - library_modeled))),
         "bootstrap_volatility": interval.point,
+        "bootstrap_library_point_gap": abs(
+            interval.point
+            - library_portfolio_volatility(
+                returns, np.asarray(fixture["bootstrap_weights"], dtype=float)
+            )
+        ),
         "bootstrap_lower": interval.lower,
         "bootstrap_upper": interval.upper,
         "bootstrap_samples": interval.samples,
@@ -110,6 +129,18 @@ def run_optimization(fixture: dict[str, Any]) -> dict[str, float | int]:
         tradable=np.asarray(fixture["tradable"], dtype=int),
         grid_step=float(fixture["grid_step"]),
     )
+    library_rebalance_weights, library_rebalance_score = enumerate_robust_rebalance(
+        posterior_mean,
+        posterior_covariance,
+        np.asarray(fixture["current_weights"], dtype=float),
+        np.asarray(fixture["return_uncertainty"], dtype=float),
+        risk_aversion=float(fixture["risk_aversion"]),
+        uncertainty_penalty=float(fixture["uncertainty_penalty"]),
+        cost_rate=float(fixture["cost_rate"]),
+        maximum_weight=float(fixture["maximum_weight"]),
+        tradable=np.asarray(fixture["tradable"], dtype=int),
+        grid_step=float(fixture["grid_step"]),
+    )
     return {
         "posterior_mean_1": posterior_mean[0],
         "posterior_mean_2": posterior_mean[1],
@@ -128,10 +159,16 @@ def run_optimization(fixture: dict[str, Any]) -> dict[str, float | int]:
         "turnover": rebalance.turnover,
         "cash_cost": rebalance.cash_cost,
         "robust_score": rebalance.robust_score,
+        "rebalance_library_gap": float(
+            max(
+                np.max(np.abs(rebalance.weights - library_rebalance_weights)),
+                abs(rebalance.robust_score - library_rebalance_score),
+            )
+        ),
     }
 
 
-def run_tail(fixture: dict[str, Any]) -> dict[str, float | int]:
+def run_tail(fixture: dict[str, Any]) -> dict[str, float | int | str]:
     losses = np.linspace(
         float(fixture["loss_start"]), float(fixture["loss_end"]), int(fixture["loss_count"])
     )
@@ -149,6 +186,7 @@ def run_tail(fixture: dict[str, Any]) -> dict[str, float | int]:
     linear = np.asarray(fixture["linear_exposure"], dtype=float)
     gamma = np.asarray(fixture["gamma_exposure"], dtype=float)
     unit_loss = nonlinear_portfolio_loss(direction, linear, gamma)
+    library_unit_loss = library_nonlinear_loss(direction, linear, gamma)
     linear_loss = float(-(linear @ direction))
     scale = reverse_stress_scale(
         direction,
@@ -158,18 +196,29 @@ def run_tail(fixture: dict[str, Any]) -> dict[str, float | int]:
         maximum_scale=float(fixture["maximum_scale"]),
     )
     reached = nonlinear_portfolio_loss(scale * direction, linear, gamma)
+    library_scale = library_reverse_stress_roots(
+        direction,
+        linear,
+        gamma,
+        threshold=float(fixture["loss_threshold"]),
+        maximum_scale=float(fixture["maximum_scale"]),
+    )
     return {
+        "confidence": confidence,
         "value_at_risk": tail.value_at_risk,
         "expected_shortfall": tail.expected_shortfall,
         "effective_tail_observations": tail.effective_tail_observations,
         "quantile_resolution": tail.quantile_resolution,
         "es_interval_lower": tail.es_interval[0],
         "es_interval_upper": tail.es_interval[1],
-        "tail_status_warn": int(tail.status == "warn"),
+        "tail_status": tail.status,
         "tail_library_gap": max(abs(tail.value_at_risk - library_var), abs(tail.expected_shortfall - library_es)),
         "linear_unit_loss": linear_loss,
         "nonlinear_unit_loss": unit_loss,
+        "nonlinear_library_gap": abs(unit_loss - library_unit_loss),
         "reverse_stress_scale": scale,
+        "reverse_stress_library_gap": abs(scale - library_scale),
+        "loss_threshold": float(fixture["loss_threshold"]),
         "reverse_stress_loss": reached,
         "reverse_stress_identity_gap": abs(reached - float(fixture["loss_threshold"])),
     }
@@ -178,15 +227,17 @@ def run_tail(fixture: dict[str, Any]) -> dict[str, float | int]:
 def render_route_report(
     estimation: dict[str, float | int],
     optimization: dict[str, float | int],
-    tail: dict[str, float | int],
+    tail: dict[str, float | int | str],
+    real_data: dict[str, float | int],
 ) -> str:
     return f"""# 组合与风险 v0.3 路线报告
 
-- 风险估计：风险平价权重 ({estimation['risk_parity_weight_1']:.6f}, {estimation['risk_parity_weight_2']:.6f}, {estimation['risk_parity_weight_3']:.6f})，最大风险预算差 {estimation['maximum_risk_budget_gap']:.3e}，独立 SLSQP 权重差 {estimation['risk_parity_library_gap']:.3e}；收缩矩阵最小特征值 {estimation['shrunk_minimum_eigenvalue']:.3e}，sklearn 差 {estimation['shrinkage_library_gap']:.3e}；组合波动率 bootstrap 90% 区间 [{estimation['bootstrap_lower']:.6f}, {estimation['bootstrap_upper']:.6f}]。
+- 风险估计：风险平价权重 ({estimation['risk_parity_weight_1']:.6f}, {estimation['risk_parity_weight_2']:.6f}, {estimation['risk_parity_weight_3']:.6f})，最大风险预算差 {estimation['maximum_risk_budget_gap']:.3e}，独立 SLSQP 权重差 {estimation['risk_parity_library_gap']:.3e}；收缩矩阵最小特征值 {estimation['shrunk_minimum_eigenvalue']:.3e}，sklearn 差 {estimation['shrinkage_library_gap']:.3e}；组合波动率 bootstrap 区间 [{estimation['bootstrap_lower']:.6f}, {estimation['bootstrap_upper']:.6f}]。
 - 优化实施：Black--Litterman 后验均值 ({optimization['posterior_mean_1']:.6f}, {optimization['posterior_mean_2']:.6f})，Woodbury 对照差 {optimization['black_litterman_library_gap']:.3e}；CVaR LP 权重 ({optimization['cvar_weight_1']:.6f}, {optimization['cvar_weight_2']:.6f})、目标 {optimization['cvar_objective']:.6f}、枚举差 {optimization['cvar_enumeration_gap']:.3e}；稳健再平衡权重 ({optimization['rebalance_weight_1']:.6f}, {optimization['rebalance_weight_2']:.6f})，换手 {optimization['turnover']:.6f}，现金成本 {optimization['cash_cost']:.2f}。
-- 尾部风险：95% VaR/ES={tail['value_at_risk']:.6f}/{tail['expected_shortfall']:.6f}，有效尾部观察 {tail['effective_tail_observations']:.1f}，状态 warn，分位离散误差 {tail['quantile_resolution']:.6f}，ES bootstrap 区间 [{tail['es_interval_lower']:.6f}, {tail['es_interval_upper']:.6f}]，独立历史实现差 {tail['tail_library_gap']:.3e}。
-- 压力测试：单位方向线性/非线性损失 {tail['linear_unit_loss']:.6f}/{tail['nonlinear_unit_loss']:.6f}；使损失达到 10 的最小反向压力尺度 {tail['reverse_stress_scale']:.6f}，重估恒等差 {tail['reverse_stress_identity_gap']:.3e}。
-- 限制：合成收益、两资产网格和二阶重估用于验证定义与协议；宏观真实快照只演示数据来源和协方差输入，不代表可交易资产、尾部稳定性或盈利能力。
+- 尾部风险：{100.0 * float(tail['confidence']):.0f}% VaR/ES={tail['value_at_risk']:.6f}/{tail['expected_shortfall']:.6f}，有效尾部观察 {tail['effective_tail_observations']:.1f}，状态 {tail['tail_status']}，分位离散误差 {tail['quantile_resolution']:.6f}，ES bootstrap 区间 [{tail['es_interval_lower']:.6f}, {tail['es_interval_upper']:.6f}]，独立历史实现差 {tail['tail_library_gap']:.3e}。
+- 压力测试：单位方向线性/非线性损失 {tail['linear_unit_loss']:.6f}/{tail['nonlinear_unit_loss']:.6f}；使损失达到 {float(tail['loss_threshold']):g} 的最小反向压力尺度 {tail['reverse_stress_scale']:.6f}，重估恒等差 {tail['reverse_stress_identity_gap']:.3e}。
+- 真实数据轨：冻结宏观快照含 {real_data['rows']} 个水平观察和 {real_data['growth_rows']} 个增长率观察，增长率协方差迹为 {real_data['covariance_trace']:.6e}，两列风险平价权重 ({real_data['risk_parity_weight_1']:.6f}, {real_data['risk_parity_weight_2']:.6f})。
+- 限制：合成收益、两资产网格和二阶重估用于验证定义与协议；宏观真实快照只演示有来源的时间序列如何进入协方差与风险预算计算，不代表可交易资产、尾部稳定性或盈利能力。
 """
 
 

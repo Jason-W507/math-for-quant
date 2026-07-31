@@ -11,7 +11,7 @@
 
 设先验均值 $\pi$ 的不确定性为 $\tau\Sigma$，观点矩阵 $P$、观点收益 $q$、观点误差协方差 $\Omega$ 满足
 \[
- P\mu=q+\eta,qquad \eta\sim N(0,\Omega).
+ P\mu=q+\eta,\qquad \eta\sim N(0,\Omega).
 \]
 高斯更新给出
 \[
@@ -34,8 +34,8 @@
 引入辅助变量 $u_s\ge0$ 得到线性规划
 \[
  \min_{w,z,u}\quad z+\frac{1}{(1-\alpha)N}\sum_su_s,
- \quad u_s\ge-r_s^\top w-z,quad
- \mathbf1^\top w=1,quad 0\le w_i\le\bar w.
+ \qquad u_s\ge-r_s^\top w-z,\quad
+ \mathbf1^\top w=1,\quad 0\le w_i\le\bar w.
 \]
 这不是把样本 VaR 当作平滑目标，而是同时选择权重和尾部阈值\cite{rockafellar2000optimization}。
 
@@ -63,7 +63,7 @@
 
 每次求解都应依次检查：输入维度与有限性、协方差半正定、风险厌恶和资本为正、成本非负、网格可整除 1、权重和为 1、上下界满足、不可交易权重未动、目标由独立台账重算。不能先求解，再靠裁剪把非法权重变成“可交易组合”。
 
-连续 LP 与枚举 oracle 的职责不同。LP 提供通用求解；枚举只覆盖小问题，却能逐点复核约束和目标。Black--Litterman 也保留精度公式和 Woodbury 两条路径。成熟求解器成功状态只是开始，非最终证据。
+连续 LP 与枚举 oracle 的职责不同。LP 提供通用求解；枚举只覆盖小问题，却能逐点复核约束和目标。稳健再平衡也由另一套整数网格枚举独立重建权重与目标；Black--Litterman 则保留精度公式和 Woodbury 两条路径。成熟求解器成功状态只是开始，非最终证据。
 
 \begin{implementationnote}
 运行 \path{notebooks/lower/portfolio_risk_optimization.py} 可重建后验、CVaR LP 与成本台账；零风险厌恶、负成本、非正资本、非法网格或不可交易变仓均应拒绝。

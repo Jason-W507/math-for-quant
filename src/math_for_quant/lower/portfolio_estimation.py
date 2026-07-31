@@ -50,23 +50,38 @@ def risk_contributions(weights: np.ndarray, covariance: np.ndarray) -> np.ndarra
 
 def risk_parity_weights(covariance: np.ndarray) -> np.ndarray:
     matrix = validate_covariance(covariance)
-    if np.any(np.diag(matrix) <= 0.0):
-        raise ValueError("risk parity requires positive marginal variances")
+    if float(np.linalg.eigvalsh(matrix).min()) <= 1e-12:
+        raise ValueError("risk parity requires a positive-definite covariance")
     assets = matrix.shape[0]
-
-    weights = 1.0 / np.sqrt(np.diag(matrix))
-    weights /= weights.sum()
-    for _ in range(10_000):
-        contributions = risk_contributions(weights, matrix)
-        if np.any(contributions <= 0.0):
-            raise ValueError("positive risk contributions are required by this iteration")
-        target = float(contributions.sum()) / assets
-        updated = weights * np.sqrt(target / contributions)
-        updated /= updated.sum()
-        if float(np.max(np.abs(updated - weights))) < 1e-13:
-            return updated
-        weights = updated
-    raise ValueError("risk parity iteration did not converge")
+    # Solve the strictly convex log-barrier problem
+    #   min_y 1/2 y' Sigma y - sum_i log(y_i).
+    # Its first-order condition gives y_i (Sigma y)_i = 1, including when
+    # off-diagonal covariances are negative. Normalizing y preserves equal
+    # relative variance contributions.
+    y = 1.0 / np.sqrt(np.diag(matrix))
+    for _ in range(200):
+        gradient = matrix @ y - 1.0 / y
+        if float(np.max(np.abs(gradient))) < 1e-12:
+            weights = y / y.sum()
+            return weights
+        hessian = matrix + np.diag(1.0 / (y * y))
+        step = np.linalg.solve(hessian, gradient)
+        objective = 0.5 * float(y @ matrix @ y) - float(np.log(y).sum())
+        scale = 1.0
+        while scale > 1e-14:
+            candidate = y - scale * step
+            if np.all(candidate > 0.0):
+                candidate_objective = (
+                    0.5 * float(candidate @ matrix @ candidate)
+                    - float(np.log(candidate).sum())
+                )
+                if candidate_objective <= objective - 1e-4 * scale * float(gradient @ step):
+                    y = candidate
+                    break
+            scale *= 0.5
+        else:
+            raise ValueError("risk parity Newton line search did not converge")
+    raise ValueError("risk parity Newton iteration did not converge")
 
 
 @dataclass(frozen=True)

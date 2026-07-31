@@ -8,7 +8,7 @@
     "expected_shortfall": 7.759519038076153,
     "effective_tail_observations": 25.0,
     "quantile_resolution": 0.020040080160320883,
-    "tail_status_warn": 1,
+    "tail_status": "warn",
     "tail_library_gap": 0.0,
     "linear_unit_loss": 4.4,
     "nonlinear_unit_loss": 4.016,

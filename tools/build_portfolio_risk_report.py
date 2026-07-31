@@ -9,6 +9,7 @@ from math_for_quant.lower.portfolio_route import (
     run_optimization,
     run_tail,
 )
+from math_for_quant.lower.portfolio_real_data import run_portfolio_real_data
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +26,7 @@ def build_report() -> str:
         run_estimation(load_fixture("portfolio-risk-estimation.json")),
         run_optimization(load_fixture("portfolio-risk-optimization.json")),
         run_tail(load_fixture("portfolio-risk-tail.json")),
+        run_portfolio_real_data(ROOT / "data" / "real" / "stat-arb-us-macro-1999q4-2009q3.json"),
     )
 
 

@@ -27,32 +27,27 @@ def tex_text(value: str) -> str:
     return "".join(replacements.get(character, character) for character in value)
 
 
-def first_teaching(unit_id: str) -> str:
+def first_teaching(unit_id: str, unit_metadata: dict[str, tuple[str, str]]) -> str:
     if unit_id == "foundation.oracle-smoke":
         return "最小证据实验"
     if ".ch" in unit_id:
         volume, chapter = unit_id.split(".ch", maxsplit=1)
         volume_name = {"upper": "上册", "lower": "下册"}[volume]
         return f"{volume_name}第 {int(chapter)} 章"
-    manifest = json.loads(MANIFEST_SOURCE.read_text(encoding="utf-8"))
-    unit = next(item for item in manifest["units"] if item["id"] == unit_id)
-    volume_name = {"upper": "上册", "lower": "下册"}[unit["volume"]]
-    return f"{volume_name}“{tex_text(unit['title'])}”"
+    volume, title = unit_metadata[unit_id]
+    volume_name = {"upper": "上册", "lower": "下册"}[volume]
+    return f"{volume_name}“{tex_text(title)}”"
 
 
-def unit_order(unit_id: str) -> int:
-    manifest = json.loads(MANIFEST_SOURCE.read_text(encoding="utf-8"))
-    order = {unit["id"]: index for index, unit in enumerate(manifest["units"])}
-    return order[unit_id]
-
-
-def render_notation() -> str:
+def render_notation(
+    unit_metadata: dict[str, tuple[str, str]], unit_order: dict[str, int]
+) -> str:
     registry = json.loads(NOTATION_SOURCE.read_text(encoding="utf-8"))
     rows = []
-    for entry in sorted(registry["symbols"], key=lambda item: unit_order(item["first_unit"])):
+    for entry in sorted(registry["symbols"], key=lambda item: unit_order[item["first_unit"]]):
         rows.append(
             f"${entry['symbol']}$ & {tex_text(entry['meaning'])} & "
-            f"{first_teaching(entry['first_unit'])} \\\\"
+            f"{first_teaching(entry['first_unit'], unit_metadata)} \\\\"
         )
     body = "\n".join(rows)
     return (
@@ -241,12 +236,19 @@ def main() -> int:
     args = parser.parse_args()
 
     manifest = json.loads(MANIFEST_SOURCE.read_text(encoding="utf-8"))
+    unit_metadata = {
+        str(unit["id"]): (str(unit["volume"]), str(unit["title"]))
+        for unit in manifest["units"]
+    }
+    unit_order = {
+        str(unit["id"]): index for index, unit in enumerate(manifest["units"])
+    }
     titles = {str(unit["id"]): str(unit["title"]) for unit in manifest["units"]}
     upper_units = [
         unit for unit in manifest["units"] if str(unit["id"]).startswith("upper.ch")
     ]
     expected = {
-        NOTATION_OUTPUT: render_notation(),
+        NOTATION_OUTPUT: render_notation(unit_metadata, unit_order),
         GLOSSARY_OUTPUT: render_glossary(),
         COURSE_MAP_OUTPUT: render_course_map(manifest),
         CONCEPT_INDEX_OUTPUT: render_concept_index(manifest),

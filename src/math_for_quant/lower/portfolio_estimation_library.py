@@ -36,4 +36,24 @@ def library_shrink_covariance(returns: np.ndarray, intensity: float) -> np.ndarr
     return np.asarray(ShrunkCovariance(shrinkage=intensity).fit(observations).covariance_)
 
 
-__all__ = ["library_risk_parity_weights", "library_shrink_covariance"]
+def library_factor_covariance(
+    loadings: np.ndarray, factor_covariance: np.ndarray, specific_variance: np.ndarray
+) -> np.ndarray:
+    loadings = np.asarray(loadings, dtype=float)
+    factors = np.asarray(factor_covariance, dtype=float)
+    specific = np.asarray(specific_variance, dtype=float)
+    systematic = np.einsum("ik,kl,jl->ij", loadings, factors, loadings)
+    return systematic + np.diag(specific)
+
+
+def library_portfolio_volatility(returns: np.ndarray, weights: np.ndarray) -> float:
+    portfolio = np.asarray(returns, dtype=float) @ np.asarray(weights, dtype=float)
+    return float(np.sqrt(np.cov(portfolio, ddof=1)))
+
+
+__all__ = [
+    "library_factor_covariance",
+    "library_portfolio_volatility",
+    "library_risk_parity_weights",
+    "library_shrink_covariance",
+]

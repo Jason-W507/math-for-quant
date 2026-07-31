@@ -1,0 +1,15 @@
+{
+  "expected": {
+    "rows": 40,
+    "growth_rows": 39,
+    "covariance_trace": 0.00007415213340406507,
+    "risk_parity_weight_1": 0.4341837363053994,
+    "risk_parity_weight_2": 0.5658162636946005
+  },
+  "absolute_tolerance": 1e-12,
+  "provenance": "The frozen public-domain macro levels are converted to adjacent log growth before covariance and equal-risk calculations. The columns are not claimed to be tradable assets.",
+  "fixture": {
+    "path": "data/real/stat-arb-us-macro-1999q4-2009q3.json",
+    "sha256": "fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1"
+  }
+}

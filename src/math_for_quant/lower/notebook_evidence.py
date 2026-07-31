@@ -14,11 +14,15 @@ def load_oracle_and_fixture(oracle_path: Path) -> tuple[dict[str, Any], dict[str
 
 
 def assert_expected(
-    observed: dict[str, float | int], oracle: dict[str, Any]
+    observed: dict[str, float | int | str], oracle: dict[str, Any]
 ) -> None:
     tolerance = float(oracle["absolute_tolerance"])
     for key, expected in oracle["expected"].items():
         value = observed[key]
+        if isinstance(expected, str):
+            if value != expected:
+                raise SystemExit(f"{key} mismatch: observed={value} expected={expected}")
+            continue
         if abs(float(value) - float(expected)) > tolerance:
             raise SystemExit(f"{key} mismatch: observed={value} expected={expected}")
 

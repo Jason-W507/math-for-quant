@@ -3,11 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import numpy as np
-from scipy.optimize import brentq
 
 
 def var_es_integral(losses: np.ndarray, confidence: float) -> tuple[float, float, float]:
     ordered = np.sort(np.asarray(losses, dtype=float))
+    if ordered.ndim != 1 or ordered.size == 0 or not np.all(np.isfinite(ordered)):
+        raise ValueError("VaR/ES requires finite one-dimensional losses")
+    if not 0.0 < confidence < 1.0:
+        raise ValueError("VaR/ES confidence must lie strictly between zero and one")
     index = int(np.ceil(confidence * ordered.size)) - 1
     value_at_risk = float(ordered[index])
     tail_mass = (1.0 - confidence) * ordered.size
@@ -95,22 +98,32 @@ def reverse_stress_scale(
     if loss_threshold <= 0.0 or maximum_scale <= 0.0:
         raise ValueError("reverse stress threshold and maximum scale must be positive")
 
-    def residual(scale: float) -> float:
-        return nonlinear_portfolio_loss(
-            scale * np.asarray(shock_direction, dtype=float), linear_exposure, gamma_exposure
-        ) - loss_threshold
-
-    grid = np.linspace(0.0, maximum_scale, 1001)
-    values = np.array([residual(float(scale)) for scale in grid])
-    crossings = np.flatnonzero(values >= 0.0)
-    if crossings.size == 0:
+    direction = np.asarray(shock_direction, dtype=float)
+    linear = np.asarray(linear_exposure, dtype=float)
+    gamma = np.asarray(gamma_exposure, dtype=float)
+    nonlinear_portfolio_loss(direction, linear, gamma)  # validate aligned vectors
+    first_order = float(linear @ direction)
+    second_order = 0.5 * float(gamma @ (direction * direction))
+    # L(s)-C = -second_order*s^2 - first_order*s - C.  Solving the
+    # directional quadratic exactly avoids missing a narrow excursion between
+    # arbitrary grid points.
+    if abs(second_order) <= 1e-15:
+        if first_order >= 0.0:
+            raise ValueError("loss threshold is not reached within the maximum stress scale")
+        roots = [-loss_threshold / first_order]
+    else:
+        discriminant = first_order * first_order - 4.0 * second_order * loss_threshold
+        if discriminant < 0.0:
+            raise ValueError("loss threshold is not reached within the maximum stress scale")
+        square_root = float(np.sqrt(max(discriminant, 0.0)))
+        roots = [
+            (-first_order - square_root) / (2.0 * second_order),
+            (-first_order + square_root) / (2.0 * second_order),
+        ]
+    feasible = sorted(root for root in roots if -1e-12 <= root <= maximum_scale + 1e-12)
+    if not feasible:
         raise ValueError("loss threshold is not reached within the maximum stress scale")
-    upper_index = int(crossings[0])
-    if upper_index == 0:
-        return 0.0
-    return float(
-        brentq(residual, float(grid[upper_index - 1]), float(grid[upper_index]), xtol=1e-12)
-    )
+    return float(max(0.0, feasible[0]))
 
 
 __all__ = [

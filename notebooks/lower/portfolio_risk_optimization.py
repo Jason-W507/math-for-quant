@@ -6,6 +6,9 @@
 #
 # **手算 oracle。** 两资产 CVaR LP 的最优权重为 `(0.2, 0.8)`，最坏四分之一的平均
 # 损失为 0.013；网格枚举必须重建同一答案。0.8 双边换手乘十万元与 10bp 等于 80。
+#
+# **假设。** 场景在决策时已冻结；权重非负且满仓；不可交易标记是硬约束；成本率按
+# 双边换手计提。Black--Litterman 观点只表达条件输入，不是真实收益标签。
 
 from __future__ import annotations
 
@@ -24,6 +27,11 @@ def main(oracle_path: Path) -> int:
     oracle, fixture = load_oracle_and_fixture(oracle_path)
     observed = run_optimization(fixture)
     assert_expected(observed, oracle)
+    sensitivity_fixture = dict(fixture)
+    sensitivity_fixture["risk_aversion"] = 3.0
+    sensitivity = run_optimization(sensitivity_fixture)
+    if np.isclose(sensitivity["robust_score"], observed["robust_score"]):
+        raise SystemExit("risk-aversion sensitivity did not change the robust objective")
     try:
         robust_cost_aware_rebalance(
             np.array([0.08, 0.04]), np.eye(2), np.array([0.5, 0.5]), np.array([0.01, 0.01]),
@@ -46,6 +54,9 @@ def main(oracle_path: Path) -> int:
 # **失败边界。** 后验不是“客观收益”，观点协方差编码置信度。CVaR 的场景矩阵必须
 # 冻结时间边界；不可交易资产是硬约束，不能用更高成本代替。任何解都要重算权重和、
 # 目标值、活跃边界、换手和现金成本。
+#
+# **敏感性实验。** 上面的可执行单元把风险厌恶从 1 提高到 3，并要求稳健目标变化。
+# 实务报告还应扫描观点置信度、最大权重、成本率和不可交易集合，而不是只展示一个解。
 
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/portfolio-risk-optimization/oracle.json")))
