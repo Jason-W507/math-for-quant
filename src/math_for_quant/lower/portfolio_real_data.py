@@ -10,6 +10,21 @@ from math_for_quant.lower.portfolio_optimization import cvar_optimize
 from math_for_quant.lower.portfolio_tail import empirical_tail_risk
 
 
+def real_tail_gate_status(losses: np.ndarray, confidence: float) -> str:
+    try:
+        result = empirical_tail_risk(
+            losses,
+            confidence,
+            minimum_tail_observations=20,
+            warning_tail_observations=30,
+        )
+    except ValueError as error:
+        if "effective tail observations" not in str(error):
+            raise
+        return "reject"
+    return result.status
+
+
 def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int | str]:
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     rows = snapshot["rows"]
@@ -28,19 +43,7 @@ def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int | str]
     portfolio_losses = -(growth @ np.array([0.5, 0.5]))
     tail_confidence = 0.75
     effective_tail_observations = portfolio_losses.size * (1.0 - tail_confidence)
-    try:
-        empirical_tail_risk(
-            portfolio_losses,
-            tail_confidence,
-            minimum_tail_observations=20,
-            warning_tail_observations=30,
-        )
-    except ValueError as error:
-        if "effective tail observations" not in str(error):
-            raise
-        tail_status = "reject"
-    else:
-        tail_status = "pass"
+    tail_status = real_tail_gate_status(portfolio_losses, tail_confidence)
     return {
         "rows": len(rows),
         "growth_rows": growth.shape[0],
@@ -57,4 +60,4 @@ def run_portfolio_real_data(snapshot_path: Path) -> dict[str, float | int | str]
     }
 
 
-__all__ = ["run_portfolio_real_data"]
+__all__ = ["real_tail_gate_status", "run_portfolio_real_data"]

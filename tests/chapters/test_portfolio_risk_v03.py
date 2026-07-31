@@ -20,7 +20,7 @@ from math_for_quant.lower.portfolio_optimization import (
     robust_cost_aware_rebalance,
 )
 from math_for_quant.lower.portfolio_optimization_library import enumerate_two_asset_cvar
-from math_for_quant.lower.portfolio_real_data import run_portfolio_real_data
+from math_for_quant.lower.portfolio_real_data import real_tail_gate_status, run_portfolio_real_data
 from math_for_quant.lower.portfolio_route import render_route_report, run_estimation, run_optimization, run_tail
 from math_for_quant.lower.portfolio_tail import (
     empirical_tail_risk,
@@ -206,6 +206,8 @@ class PortfolioRiskV03Tests(unittest.TestCase):
         )
         self.assertAlmostEqual(observed["cvar_weight_1"] + observed["cvar_weight_2"], 1.0)
         self.assertEqual(observed["tail_status"], "reject")
+        self.assertEqual(real_tail_gate_status(np.linspace(-1.0, 1.0, 100), 0.75), "warn")
+        self.assertEqual(real_tail_gate_status(np.linspace(-1.0, 1.0, 160), 0.75), "pass")
 
     def test_report_uses_observed_tail_contract_not_hardcoded_labels(self) -> None:
         import json
