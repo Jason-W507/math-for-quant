@@ -203,6 +203,7 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn("body_path: docs/releases/${{ github.ref_name }}.md", release_workflow)
         self.assertIn("Install MiKTeX with bounded retry", release_workflow)
         self.assertIn("tools/install_miktex_ci.ps1", release_workflow)
+        self.assertIn('PYTHONUTF8: "1"', release_workflow)
         miktex_installer = (ROOT / "tools/install_miktex_ci.ps1").read_text(encoding="utf-8")
         self.assertIn("$attempt -le 3", miktex_installer)
         self.assertIn("$env:GITHUB_PATH", miktex_installer)
