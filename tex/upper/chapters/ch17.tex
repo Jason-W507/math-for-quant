@@ -24,12 +24,12 @@
 \section{研究包的最小结构}
 
 本章包由四个权威输入组成：
-\begin{description}[leftmargin=8em,style=nextline]
-  \item[数据] \path{data/ch17/research_rows.csv}，三行合成测试数据；
-  \item[独立 oracle] \path{evidence/ch17/oracle.json}，声明校验值、时间与日历、统计阈值、成本和数值探针；
-  \item[限制报告] \path{evidence/ch17/limitations.md}，列出六项不能由结果支持的结论；
-  \item[审计程序] \path{notebooks/upper/ch17_research_audit.py}，Jupytext 文本源，可生成并执行 notebook。
-\end{description}
+\begin{itemize}
+  \item \textbf{数据.} \path{data/ch17/research_rows.csv}，三行合成测试数据；
+  \item \textbf{独立 oracle.} \path{evidence/ch17/oracle.json}，声明校验值、时间与日历、统计阈值、成本和数值探针；
+  \item \textbf{限制报告.} \path{evidence/ch17/limitations.md}，列出六项不能由结果支持的结论；
+  \item \textbf{审计程序.} \path{notebooks/upper/ch17_research_audit.py}，Jupytext 文本源，可生成并执行 notebook。
+\end{itemize}
 数据 README 记录字段、合成来源和 \texttt{CC0-1.0} 标识。oracle 还记录环境最低版本与唯一复现命令。生成的 \texttt{.ipynb} 与 PDF 都是出版产物，不是第二份手工维护来源。
 
 \begin{definition}[可复现研究包]

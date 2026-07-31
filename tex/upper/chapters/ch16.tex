@@ -35,12 +35,12 @@
 \section{时点数据：一行数据需要四个时间}
 
 设研究者在决策时刻 $t$ 可使用的信息集合为 $\mathcal I_t$。一个特征 $X$ 可进入该决策，必须能证明 $X\in\mathcal I_t$；“数据库里现在有这一列”不是证明。对每一行至少记录：
-\begin{description}[leftmargin=7em,style=nextline]
-  \item[事件时间 $t_e$] 经济事件实际发生的时间；
-  \item[可得时间 $t_a$] 市场参与者按指定数据源首次能够获得该值的时间；
-  \item[决策时间 $t_d$] 策略冻结特征并形成订单意图的时间；
-  \item[目标起点 $t_y$] 被预测收益开始累积的时间。
-\end{description}
+\begin{itemize}
+  \item \textbf{事件时间 $t_e$.} 经济事件实际发生的时间；
+  \item \textbf{可得时间 $t_a$.} 市场参与者按指定数据源首次能够获得该值的时间；
+  \item \textbf{决策时间 $t_d$.} 策略冻结特征并形成订单意图的时间；
+  \item \textbf{目标起点 $t_y$.} 被预测收益开始累积的时间。
+\end{itemize}
 本章案例把所有时间写成带偏移量的 ISO 8601 字符串，市场时区固定为 \texttt{Asia/Shanghai}（\texttt{+08:00}），并用版本为 \texttt{2024-07-v1} 的教学交易日历列出三个允许决策日。真实研究应使用可追溯的交易所日历快照，而不是把“周一至周五”当作交易日。无前视协议是两条不等式：
 \[
   t_e\le t_a\le t_d<t_y.
