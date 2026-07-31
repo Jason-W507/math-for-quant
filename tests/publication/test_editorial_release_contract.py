@@ -41,7 +41,8 @@ class EditorialReleaseContractTests(unittest.TestCase):
             self.assertIn(r"\cite{", chapter, f"chapter {number} has no references")
 
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("v0.3.0", readme)
+        declared_version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        self.assertIn(f"v{declared_version}", readme)
         self.assertIn("35 个正式学习单元", readme)
         self.assertIn("releases/latest", readme)
         self.assertNotIn("尚未开始正式章节写作", readme)
@@ -136,6 +137,11 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn("MFQVersion", build_driver)
         ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         self.assertIn("tools/build_books.py --volume all", ci)
+        self.assertIn('MFQ_SKIP_LATEX: "1"', ci)
+        self.assertIn(
+            "tools/check_learning_unit.py --manifest curriculum/manifest.json --volume all",
+            ci,
+        )
 
     def test_v03_metadata_and_lower_generated_navigation_are_release_ready(self) -> None:
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()

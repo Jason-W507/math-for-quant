@@ -7,6 +7,8 @@ on:
 jobs:
   python:
     runs-on: ubuntu-latest
+    env:
+      MFQ_SKIP_LATEX: "1"
     strategy:
       matrix:
         python: ["3.11", "3.12", "3.13"]
@@ -30,6 +32,7 @@ jobs:
       - run: uv sync
       - run: uv run python tools/build_books.py --volume all
       - run: uv run python tools/check_pdf_visual_regression.py
+      - run: uv run python tools/check_learning_unit.py --manifest curriculum/manifest.json --volume all
       - uses: actions/upload-artifact@v4
         with:
           name: math-for-quant-publications

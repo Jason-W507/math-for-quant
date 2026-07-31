@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 import subprocess
 import sys
 import unittest
@@ -219,6 +220,10 @@ class MicrostructureV03Tests(unittest.TestCase):
         expected = (ROOT / "reports/microstructure-v03-summary.md").read_text(encoding="utf-8")
         self.assertEqual(build_route_report(), expected)
 
+    @unittest.skipIf(
+        os.environ.get("MFQ_SKIP_LATEX") == "1",
+        "publication job owns the MiKTeX/latexmk end-to-end gate",
+    )
     def test_public_route_command_runs_end_to_end(self) -> None:
         result = subprocess.run(
             [sys.executable, "tools/validate_microstructure_route.py"],
