@@ -10,6 +10,7 @@
 # **双实现。** 透明逐路径账本与 SciPy `ndtr` 驱动的向量化实现必须逐路径一致。
 # **失败注入。** 负成本率必须以稳定诊断拒绝，不能作为“返佣”静默进入结果。
 
+# %%
 from __future__ import annotations
 
 import json
@@ -92,5 +93,6 @@ def main(oracle_path: Path) -> int:
 # **限制。** GBM、固定波动率和比例成本不含跳跃、波动率微笑、冲击或融资约束；
 # 固定 seed 只给可复现回归，研究结论还需跨 seed 或 bootstrap 区间。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/derivatives-hedging/oracle.json")))

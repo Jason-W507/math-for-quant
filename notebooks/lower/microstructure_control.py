@@ -7,6 +7,7 @@
 # **显式假设与单位。** 数量为手、价格为每手现金价格；临时冲击乘本期成交量，
 # 永久冲击乘此前累计成交量。期限耗尽且仍有剩余时，`stopped` 必须为真。
 
+# %%
 from pathlib import Path
 import sys
 
@@ -55,5 +56,6 @@ def main(oracle_path: Path) -> int:
 # 盘口恢复和机会成本估计。上面的非法完成率负例与冲击敏感性表均在 notebook
 # 执行时生成，而非只写在 Markdown 中。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/microstructure-control/oracle.json")))

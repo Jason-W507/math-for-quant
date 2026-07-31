@@ -95,7 +95,7 @@ def main(oracle_path: Path) -> int:
     }
     assert_expected(observed, oracle)
     print(
-        f"research-oracle=passed gross={ledger.gross_return:.6f} net={ledger.net_return:.6f} "
+        f"multifactor-research=passed gross={ledger.gross_return:.6f} net={ledger.net_return:.6f} "
         f"turnover={ledger.turnover:.6f} cap_weight_net={capitalized.net_return:.6f} "
         f"wdi_correlation={real.correlation:.6f} misalignment_rejected={misalignment_rejected}"
     )

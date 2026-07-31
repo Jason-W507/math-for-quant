@@ -20,6 +20,19 @@ from nbclient import NotebookClient
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def notebook_evidence_line(source: Path, output_text: str) -> str | None:
+    generic = "oracle=passed "
+    specific = source.stem.replace("_", "-") + "=passed"
+    return next(
+        (
+            line
+            for line in output_text.splitlines()
+            if line.startswith(generic) or line.startswith(specific)
+        ),
+        None,
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Generate a notebook from its canonical Jupytext source."
@@ -157,10 +170,7 @@ def main() -> int:
             for item in cell.get("outputs", [])
             if item.get("output_type") == "stream"
         )
-        oracle_line = next(
-            (line for line in output_text.splitlines() if line.startswith("oracle=passed ")),
-            None,
-        )
+        oracle_line = notebook_evidence_line(source, output_text)
         if oracle_line is None:
             print("executed notebook did not produce oracle evidence", file=sys.stderr)
             return 1

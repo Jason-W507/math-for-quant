@@ -12,6 +12,7 @@
 # 显式观察窗 `[0,2.5]` 上的 Hawkes 对数似然由递推和数值积分独立重建；
 # 季节调整等待时间的变换后残差均值必须为 1。
 
+# %%
 from pathlib import Path
 import sys
 import numpy as np
@@ -73,5 +74,6 @@ def main(oracle_path: Path) -> int:
 # 运行。聚合 cancel-to-trade 比率不是逐单队列位置；敏感性表把额外的事件率假设
 # 单独扫描，避免把无量纲概率偷偷当作每秒强度。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/microstructure-events/oracle.json")))

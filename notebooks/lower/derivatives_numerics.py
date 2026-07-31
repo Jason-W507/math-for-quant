@@ -13,6 +13,7 @@
 # **失败注入。** 非等距执行价必须比较相邻斜率；含分红或负利率时，原始固定执行价
 # 日历门禁必须拒绝，只有 forward/discount 归一化后的同 moneyness 网格才可比较。
 
+# %%
 from __future__ import annotations
 
 import json
@@ -66,5 +67,6 @@ def main(oracle_path: Path) -> int:
 # **限制。** 合成曲面由模型自身生成，只能验证恢复与约束；真实报价还需要 bid/ask、
 # 报价时间、远期和贴现曲线。固定网格的误差差值是诊断，不是严格误差上界。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/derivatives-numerics/oracle.json")))

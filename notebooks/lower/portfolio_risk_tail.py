@@ -10,6 +10,7 @@
 # **假设。** 损失已按同一估值时点和单位整理；历史尾部只描述该样本；Delta--Gamma
 # 是局部二阶近似；反向压力方向由研究者预先声明，不能由结果反推概率。
 
+# %%
 from __future__ import annotations
 
 import json
@@ -69,5 +70,6 @@ def main(oracle_path: Path) -> int:
 # **敏感性实验。** 上面的可执行单元把置信水平从 95\% 改为 90\%，同时重算有效尾部
 # 数、状态与 VaR。读者还应扫描压力方向、阈值和 Gamma，并检查第一处阈值穿越。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/portfolio-risk-tail/oracle.json")))

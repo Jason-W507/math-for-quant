@@ -10,6 +10,7 @@
 # **假设。** 行按同一观测时点对齐；合成收益用于算法核验；普通 bootstrap 暂按
 # 行 IID 重采样。若存在重叠收益或波动状态，必须更换重采样单位。
 
+# %%
 from __future__ import annotations
 
 import json
@@ -67,5 +68,6 @@ def main(oracle_path: Path) -> int:
 # **敏感性实验。** 上面的可执行单元把收缩强度从 0.25 改为 0.50，并要求最小特征值
 # 随之变化。读者还应比较 IID 与区块 bootstrap 的区间宽度，并记录重采样单位。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/portfolio-risk-estimation/oracle.json")))

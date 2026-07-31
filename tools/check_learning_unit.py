@@ -212,24 +212,27 @@ def main() -> int:
         return 0
 
     if args.track is not None:
-        track = next(
-            (item for item in manifest.get("tracks", []) if item.get("id") == args.track),
-            None,
+        tracks = list(manifest.get("tracks", []))
+        selected_tracks = (
+            tracks
+            if args.track == "all"
+            else [item for item in tracks if item.get("id") == args.track]
         )
-        if track is None:
+        if not selected_tracks:
             return fail(f"unknown track: {args.track}")
-        track_units, track_error = selected_track_units(track, accepted)
-        if track_error is not None:
-            return fail(track_error)
-        for unit in track_units:
-            route_error = validate_route_evidence(unit)
-            if route_error is not None:
-                return fail(route_error)
-            result = run_oracle(unit["evidence"], ROOT)
-            if result.returncode != 0:
-                return fail(f"{unit.get('id')}: oracle failed: {result.stderr.strip()}")
-        print(f"track={args.track} learning-units=3")
-        print("track contract passed")
+        for track in selected_tracks:
+            track_units, track_error = selected_track_units(track, accepted)
+            if track_error is not None:
+                return fail(track_error)
+            for unit in track_units:
+                route_error = validate_route_evidence(unit)
+                if route_error is not None:
+                    return fail(route_error)
+                result = run_oracle(unit["evidence"], ROOT)
+                if result.returncode != 0:
+                    return fail(f"{unit.get('id')}: oracle failed: {result.stderr.strip()}")
+            print(f"track={track['id']} learning-units=3")
+        print(f"track-contract=passed tracks={len(selected_tracks)}")
         return 0
 
     shared_error = validate_shared(manifest, units, ROOT)

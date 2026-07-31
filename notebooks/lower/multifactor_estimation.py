@@ -103,7 +103,7 @@ def main(oracle_path: Path) -> int:
     }
     assert_expected(observed, oracle)
     print(
-        f"estimation-oracle=passed ridge={ridge[0]:.6f} lasso={lasso[0]:.6f} "
+        f"multifactor-estimation=passed ridge={ridge[0]:.6f} lasso={lasso[0]:.6f} "
         f"library_gaps=({ridge_gap:.3e},{lasso_gap:.3e}) route_gap={route_gap:.3e} "
         f"zero_column_rejected={zero_column_rejected}"
     )

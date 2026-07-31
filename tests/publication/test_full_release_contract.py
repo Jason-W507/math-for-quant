@@ -20,6 +20,7 @@ from tools.build_release import (
     release_asset_records,
     release_tag_error,
 )
+from tools.build_notebook import notebook_evidence_line
 from tools.contract.schema import validate_document
 
 
@@ -27,6 +28,18 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class FullReleaseContractTests(unittest.TestCase):
+    def test_notebook_evidence_accepts_generic_or_source_specific_markers(self) -> None:
+        self.assertEqual(
+            notebook_evidence_line(Path("derivatives_hedging.py"), "derivatives-hedging=passed rmse=1\n"),
+            "derivatives-hedging=passed rmse=1",
+        )
+        self.assertEqual(
+            notebook_evidence_line(Path("upper_ch01.py"), "oracle=passed observed=1\n"),
+            "oracle=passed observed=1",
+        )
+        self.assertIsNone(
+            notebook_evidence_line(Path("derivatives_hedging.py"), "unrelated=passed\n")
+        )
     def test_release_cleanup_removes_the_legacy_upper_only_solutions_pdf(self) -> None:
         manifest = json.loads(
             (ROOT / "curriculum/manifest.json").read_text(encoding="utf-8")

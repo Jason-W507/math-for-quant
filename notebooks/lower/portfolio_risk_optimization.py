@@ -10,6 +10,7 @@
 # **假设。** 场景在决策时已冻结；权重非负且满仓；不可交易标记是硬约束；成本率按
 # 双边换手计提。Black--Litterman 观点只表达条件输入，不是真实收益标签。
 
+# %%
 from __future__ import annotations
 
 from pathlib import Path
@@ -68,5 +69,6 @@ def main(oracle_path: Path) -> int:
 # **敏感性实验。** 上面的可执行单元把风险厌恶从 1 提高到 3，并要求稳健目标变化。
 # 实务报告还应扫描观点置信度、最大权重、成本率和不可交易集合，而不是只展示一个解。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/portfolio-risk-optimization/oracle.json")))

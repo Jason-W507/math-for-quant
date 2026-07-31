@@ -8,6 +8,7 @@
 # **手算 oracle。** 离散平方恒等式精确成立；`mu - sigma*theta = r`。
 # **失败注入。** `theta_t=(T-t)^(-1/2)` 在完整端点的平方积分发散。
 
+# %%
 from __future__ import annotations
 
 import json
@@ -37,5 +38,6 @@ def main(oracle_path: Path) -> int:
 # %% [markdown]
 # **限制。** 单条模拟路径只演示分割细化，不证明依概率收敛；理论结论仍依赖定理条件。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/derivatives-stochastic/oracle.json")))

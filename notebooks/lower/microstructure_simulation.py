@@ -7,6 +7,7 @@
 # **显式假设与单位。** 两种策略共享到达间隔、方向、价格创新和成交均匀数，但报价
 # 各自决定成交阈值；现金与库存都以一手合约记账，终点用同一中价盯市。
 
+# %%
 from pathlib import Path
 import sys
 
@@ -56,5 +57,6 @@ def main(oracle_path: Path) -> int:
 # 摘要没有逐档深度、订单方向与延迟；仿真输出只说明给定机制下的差异。上面的
 # 非法概率负例和三档敏感性扫描会随 notebook 一起执行。
 
+# %%
 if __name__ == "__main__":
     raise SystemExit(main(Path(sys.argv[1]) if len(sys.argv) > 1 else Path("evidence/microstructure-simulation/oracle.json")))

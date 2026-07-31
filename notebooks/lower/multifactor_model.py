@@ -66,7 +66,7 @@ def main(oracle_path: Path) -> int:
     }
     assert_expected(observed, oracle)
     print(
-        f"model-oracle=passed predictive_mean={predictive.mean_coefficient:.6f} "
+        f"multifactor-model=passed predictive_mean={predictive.mean_coefficient:.6f} "
         f"classic_risk_price={classic.risk_prices[0]:.6f} "
         f"scaled_second_slope={scaled.coefficients[1]:.6f} "
         f"alignment_rejected={alignment_rejected}"

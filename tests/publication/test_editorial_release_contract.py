@@ -139,6 +139,10 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn("tools/build_books.py --volume all", ci)
         self.assertIn('MFQ_SKIP_LATEX: "1"', ci)
         self.assertIn(
+            "tools/check_learning_unit.py --manifest curriculum/manifest.json --track all",
+            ci,
+        )
+        self.assertIn(
             "tools/check_learning_unit.py --manifest curriculum/manifest.json --volume all",
             ci,
         )
