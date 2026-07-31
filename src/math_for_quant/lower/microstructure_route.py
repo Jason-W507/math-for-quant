@@ -29,7 +29,10 @@ from math_for_quant.lower.microstructure_events_library import (
 from math_for_quant.lower.microstructure_control_library import (
     closed_form_inventory_quotes, enumerate_execution,
 )
-from math_for_quant.lower.microstructure_simulation_library import vectorized_static_pnl
+from math_for_quant.lower.microstructure_simulation_library import (
+    independent_inventory_feedback_ledger,
+    vectorized_static_pnl,
+)
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -188,10 +191,20 @@ def run_simulation(fixture: dict[str, Any]) -> dict[str, float | int | str]:
     rng = np.random.default_rng(int(fixture["seed"]))
     interarrivals = rng.exponential(1.0 / float(fixture["base_intensity"]), int(fixture["events"]))
     signs = rng.choice(np.array([-1, 1], dtype=np.int8), size=int(fixture["events"]))
-    fills = rng.random(int(fixture["events"])) < float(real["implied_execution_probability"])
+    uniforms = rng.random(int(fixture["events"]))
+    fills = uniforms < float(real["implied_execution_probability"])
     innovations = rng.normal(0.0, 0.02, int(fixture["events"]))
     changes = 0.006 * signs + innovations * np.sqrt(interarrivals)
     library_pnl = vectorized_static_pnl(signs, changes, 0.01, fills)
+    control_library = independent_inventory_feedback_ledger(
+        signs, changes, uniforms, float(real["implied_execution_probability"])
+    )
+    control_gap = max(
+        abs(simulation.control_pnl - control_library[0]),
+        abs(simulation.control_fills - control_library[1]),
+        abs(simulation.control_ending_inventory - control_library[2]),
+        abs(simulation.control_max_abs_inventory - control_library[3]),
+    )
     return {
         "simulation_events": simulation.events,
         "baseline_fills": simulation.baseline_fills,
@@ -202,7 +215,9 @@ def run_simulation(fixture: dict[str, Any]) -> dict[str, float | int | str]:
         "control_ending_inventory": simulation.control_ending_inventory,
         "baseline_max_abs_inventory": simulation.baseline_max_abs_inventory,
         "control_max_abs_inventory": simulation.control_max_abs_inventory,
-        "simulation_library_gap": abs(simulation.baseline_pnl - library_pnl),
+        "simulation_library_gap": max(
+            abs(simulation.baseline_pnl - library_pnl), control_gap
+        ),
         "real_categories": real["categories"],
         "real_weighted_cancel_to_trade": real["weighted_cancel_to_trade"],
         "real_implied_execution_probability": real["implied_execution_probability"],
@@ -230,7 +245,7 @@ def render_route_report(result: dict[str, float | int | str]) -> str:
 - 订单簿：第二张买单前方数量 {result['queue_ahead']}；4 手市价卖单先成交 {result['first_fill_quantity']} 手，再部分成交 {result['partial_fill_quantity']} 手，未成交 {result['unfilled']}；价格优先、时间优先和非负数量不变量均通过。
 - 执行控制：计划 9 手实际成交 {result['execution_filled']}、剩余 {result['execution_remaining']}，含临时与永久冲击的 implementation shortfall 为 {result['execution_shortfall']:.6f}；动态规划最优日程 {result['optimal_schedule']}，目标 {result['optimal_cost']:.6f}，完整枚举与闭式报价最大差 {result['control_library_gap']:.3e}。
 - 做市反馈：首次 bid 成交后库存为 {result['maker_inventory']}，下一轮双边报价下移至 {result['maker_next_bid']:.6f}/{result['maker_next_ask']:.6f}，库存而非事后文字真正进入报价函数。
-- 配对仿真：{result['simulation_events']} 个事件共享同一随机订单方向和成交均匀数；静态/库存反馈报价分别成交 {result['baseline_fills']}/{result['control_fills']} 次，现金加期末库存盯市 PnL 为 {result['baseline_pnl']:.6f}/{result['control_pnl']:.6f}，期末库存 {result['baseline_ending_inventory']}/{result['control_ending_inventory']}，最大绝对库存 {result['baseline_max_abs_inventory']}/{result['control_max_abs_inventory']}，独立静态账本差 {result['simulation_library_gap']:.3e}。报价通过各自阈值改变成交，但两策略共享随机源；这是配对比较，不是盈利证明。
+- 配对仿真：{result['simulation_events']} 个事件共享同一随机订单方向和成交均匀数；静态/库存反馈报价分别成交 {result['baseline_fills']}/{result['control_fills']} 次，现金加期末库存盯市 PnL 为 {result['baseline_pnl']:.6f}/{result['control_pnl']:.6f}，期末库存 {result['baseline_ending_inventory']}/{result['control_ending_inventory']}，最大绝对库存 {result['baseline_max_abs_inventory']}/{result['control_max_abs_inventory']}，独立双账本最大差 {result['simulation_library_gap']:.3e}。报价通过各自阈值改变成交，但两策略共享随机源；这是配对比较，不是盈利证明。
 - 真实数据轨：SEC 公共领域订单位置摘要含 {result['real_categories']} 个互斥类别，加权 cancel-to-trade 比率 {result['real_weighted_cancel_to_trade']:.6f}，隐含执行概率 {result['real_implied_execution_probability']:.6f}，最大类别比率 {result['real_maximum_cancel_to_trade']:.6f}。另行声明的终止事件率压力为 {result['real_depletion_event_rate']:.6f} 次/秒；两者共同驱动队列压力（完全成交概率 {result['real_queue_fill_probability']:.6f}）、执行路径（成交 {result['real_execution_filled']}、剩余 {result['real_execution_remaining']}、shortfall {result['real_execution_shortfall']:.6f}）和仿真成交阈值。
 - 限制：SEC 摘要是聚合的历史位置统计，不含逐档深度、订单方向、队列标识或延迟；由 cancel-to-trade 比率换算的执行概率只适合压力实验。合成订单簿、执行与做市实验只验证状态转移、成本恒等式和比较协议，不能外推成交质量或策略收益。
 """

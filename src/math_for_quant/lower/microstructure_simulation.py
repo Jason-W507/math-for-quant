@@ -30,7 +30,14 @@ def paired_event_simulation(
     *, seed: int, events: int, base_intensity: float, fill_probability: float = 1.0
 ) -> PairedSimulationResult:
     """Compare two quoting rules on one common-random-number event stream."""
-    if events <= 0 or base_intensity <= 0.0 or not 0.0 <= fill_probability <= 1.0:
+    if (
+        not isinstance(events, int)
+        or events <= 0
+        or not math.isfinite(base_intensity)
+        or base_intensity <= 0.0
+        or not math.isfinite(fill_probability)
+        or not 0.0 <= fill_probability <= 1.0
+    ):
         raise ValueError("events, intensity and fill probability are invalid")
     rng = np.random.default_rng(seed)
     interarrivals = rng.exponential(1.0 / base_intensity, events)

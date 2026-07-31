@@ -1,7 +1,7 @@
 {
   "fixture": {"path": "data/fixtures/microstructure-simulation.json", "sha256": "5608e85da7ca0ccd92cf5157c0a1d297e0de55012810519a8dca03ad246db11d"},
   "absolute_tolerance": 1e-6,
-  "provenance": "Both quote rules consume one seeded event stream and one SEC-calibrated fill mask; cash plus terminal inventory mark-to-market is independently reconstructed.",
+  "provenance": "Both quote rules consume common random directions and uniforms; policy-specific quote thresholds determine fills, and cash plus terminal inventory mark-to-market is independently reconstructed.",
   "regression": "evidence/microstructure-simulation/regression.json",
   "expected": {
     "simulation_events": 500,

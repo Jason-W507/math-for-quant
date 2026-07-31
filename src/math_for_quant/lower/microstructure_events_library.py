@@ -12,9 +12,11 @@ def library_poisson_mle(interarrivals: list[float]) -> float:
     if observations.size == 0 or np.any(observations <= 0.0):
         raise ValueError("positive interarrivals are required")
 
-    score = lambda intensity: observations.size / intensity - observations.sum()
-    upper = max(1.0, 2.0 / float(observations.mean()))
-    return float(brentq(score, np.finfo(float).tiny, upper, xtol=1e-14))
+    total = float(observations.sum())
+    log_score = lambda log_intensity: observations.size - math.exp(log_intensity) * total
+    log_lower = math.log(np.nextafter(0.0, 1.0))
+    log_upper = math.log(max(1.0, 2.0 / float(observations.mean())))
+    return math.exp(brentq(log_score, log_lower, log_upper, xtol=1e-13))
 
 
 def library_seasonal_poisson_mle(
@@ -23,9 +25,11 @@ def library_seasonal_poisson_mle(
     waiting = np.asarray(interarrivals, dtype=float)
     seasonal = np.asarray(multipliers, dtype=float)
     exposure = waiting * seasonal
-    score = lambda intensity: waiting.size / intensity - exposure.sum()
-    upper = max(1.0, 2.0 * waiting.size / float(exposure.sum()))
-    estimate = float(brentq(score, np.finfo(float).tiny, upper, xtol=1e-14))
+    total_exposure = float(exposure.sum())
+    log_score = lambda log_intensity: waiting.size - math.exp(log_intensity) * total_exposure
+    log_lower = math.log(np.nextafter(0.0, 1.0))
+    log_upper = math.log(max(1.0, 2.0 * waiting.size / total_exposure))
+    estimate = math.exp(brentq(log_score, log_lower, log_upper, xtol=1e-13))
     return estimate, estimate * exposure
 
 

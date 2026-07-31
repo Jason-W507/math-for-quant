@@ -46,6 +46,8 @@ def hawkes_log_likelihood(
     times = np.asarray(times, dtype=float)
     if times.ndim != 1 or times.size == 0 or np.any(~np.isfinite(times)):
         raise ValueError("Hawkes event times must be finite")
+    if float(times[0]) < 0.0:
+        raise ValueError("Hawkes event times must lie inside the observation window")
     if np.any(np.diff(times) <= 0.0):
         raise ValueError("Hawkes event times must be strictly increasing")
     if not math.isfinite(horizon) or horizon < float(times[-1]) or horizon <= 0.0:

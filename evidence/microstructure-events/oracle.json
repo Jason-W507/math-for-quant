@@ -19,6 +19,6 @@
     "real_implied_execution_probability": 0.044469652945924136,
     "real_depletion_event_rate": 10.0,
     "real_queue_fill_probability": 0.010540062622918024,
-    "event_library_gap": 3.1086244689504383e-15
+    "event_library_gap": 1.1102230246251565e-16
   }
 }

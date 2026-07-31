@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import numpy as np
 
 
@@ -36,4 +37,44 @@ def library_duration_and_beta(
     return float(seconds[-1] - seconds[0]), float(coefficient[1])
 
 
-__all__ = ["library_duration_and_beta", "vectorized_static_pnl"]
+def independent_inventory_feedback_ledger(
+    signs: np.ndarray,
+    price_changes: np.ndarray,
+    uniforms: np.ndarray,
+    fill_probability: float,
+    *,
+    half_spread: float = 0.01,
+    inventory_skew: float = 0.002,
+) -> tuple[float, int, int, int]:
+    """Reconstruct the feedback policy with an independent state ledger."""
+    directions = np.asarray(signs, dtype=int)
+    changes = np.asarray(price_changes, dtype=float)
+    draws = np.asarray(uniforms, dtype=float)
+    if directions.shape != changes.shape or directions.shape != draws.shape:
+        raise ValueError("independent simulation arrays must align")
+    mid = 100.0
+    cash = 0.0
+    position = 0
+    fills = 0
+    maximum = 0
+    for direction, change, draw in zip(directions, changes, draws, strict=True):
+        static_quote = mid + int(direction) * half_spread
+        feedback_quote = mid - inventory_skew * position + int(direction) * half_spread
+        relative_aggressiveness = -int(direction) * (feedback_quote - static_quote)
+        multiplier = math.exp(float(np.clip(relative_aggressiveness / half_spread, -50.0, 50.0)))
+        threshold = min(1.0, max(0.0, fill_probability * multiplier))
+        if draw < threshold:
+            position_change = -int(direction)
+            cash -= position_change * feedback_quote
+            position += position_change
+            fills += 1
+            maximum = max(maximum, abs(position))
+        mid += float(change)
+    return cash + position * mid, fills, position, maximum
+
+
+__all__ = [
+    "independent_inventory_feedback_ledger",
+    "library_duration_and_beta",
+    "vectorized_static_pnl",
+]

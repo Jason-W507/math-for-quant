@@ -61,10 +61,13 @@ class MicrostructureV03Tests(unittest.TestCase):
             beta,
         )
         self.assertAlmostEqual(library_poisson_mle([0.001, 0.001]), 1000.0)
+        self.assertAlmostEqual(library_poisson_mle([1e308]), 1e-308)
         seasonal_rate, _ = library_seasonal_poisson_mle(
             [0.001, 0.001], [1.0, 1.0]
         )
         self.assertAlmostEqual(seasonal_rate, 1000.0)
+        seasonal_low, _ = library_seasonal_poisson_mle([1e308], [1.0])
+        self.assertAlmostEqual(seasonal_low, 1e-308)
 
     def test_hawkes_and_seasonality_have_frozen_numerical_evidence(self) -> None:
         times = np.array([0.2, 0.7, 1.4, 2.0])
@@ -86,6 +89,10 @@ class MicrostructureV03Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "finite"):
             hawkes_log_likelihood(
                 np.array([0.2, math.nan]), 0.8, 0.3, 1.2, horizon=2.5
+            )
+        with self.assertRaisesRegex(ValueError, "window"):
+            hawkes_log_likelihood(
+                np.array([-0.2, 0.7]), 0.8, 0.3, 1.2, horizon=1.0
             )
 
     def test_nonfinite_oracles_and_library_inputs_are_rejected(self) -> None:
@@ -160,6 +167,13 @@ class MicrostructureV03Tests(unittest.TestCase):
         self.assertNotEqual(
             result.baseline_ending_inventory, result.control_ending_inventory
         )
+        for kwargs in (
+            dict(seed=1, events=10, base_intensity=math.nan),
+            dict(seed=1, events=10, base_intensity=math.inf),
+            dict(seed=1, events=10.5, base_intensity=1.0),
+        ):
+            with self.assertRaisesRegex(ValueError, "invalid"):
+                paired_event_simulation(**kwargs)
 
     def test_public_domain_sec_snapshot_is_consumed(self) -> None:
         observed = analyze_sec_order_placement(
