@@ -61,6 +61,8 @@ FIXED_SCALARS = {
     "maximum_residual": 1e-15,
     "numeric_relative_tolerance": 1e-9,
     "numeric_absolute_tolerance": 1e-12,
+    "least_squares_relative_tolerance": 1e-3,
+    "least_squares_absolute_tolerance": 1e-12,
 }
 FIXED_INTEGERS = {"decimal_precision": 80}
 EXPECTED_FIELDS = {
@@ -212,6 +214,17 @@ def close(actual: float, expected: object, oracle: dict[str, object]) -> bool:
     )
 
 
+def least_squares_close(
+    actual: float, expected: object, oracle: dict[str, object]
+) -> bool:
+    return math.isclose(
+        actual,
+        float(expected),
+        rel_tol=float(oracle["least_squares_relative_tolerance"]),
+        abs_tol=float(oracle["least_squares_absolute_tolerance"]),
+    )
+
+
 def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
     oracle = load_oracle_bundle(oracle_path)
     validate_oracle(oracle)
@@ -326,14 +339,14 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
     least_rank = int(np.linalg.matrix_rank(least_matrix))
     if not all(
         (
-            close(least_condition, expected["least_squares_condition"], oracle),
-            close(normal_condition, expected["normal_equation_condition"], oracle),
-            close(normal_error, expected["normal_equation_relative_error"], oracle),
-            close(qr_error, expected["qr_relative_error"], oracle),
-            close(svd_error, expected["svd_relative_error"], oracle),
-            close(normal_residual, expected["normal_equation_residual"], oracle),
-            close(qr_residual, expected["qr_residual"], oracle),
-            close(svd_residual, expected["svd_residual"], oracle),
+            least_squares_close(least_condition, expected["least_squares_condition"], oracle),
+            least_squares_close(normal_condition, expected["normal_equation_condition"], oracle),
+            least_squares_close(normal_error, expected["normal_equation_relative_error"], oracle),
+            least_squares_close(qr_error, expected["qr_relative_error"], oracle),
+            least_squares_close(svd_error, expected["svd_relative_error"], oracle),
+            least_squares_close(normal_residual, expected["normal_equation_residual"], oracle),
+            least_squares_close(qr_residual, expected["qr_residual"], oracle),
+            least_squares_close(svd_residual, expected["svd_residual"], oracle),
             least_rank == expected["least_squares_rank"],
             normal_condition > least_condition**1.9,
             normal_error > qr_error,

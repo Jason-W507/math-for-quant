@@ -29,7 +29,9 @@ jobs:
       - uses: astral-sh/setup-uv@v6
         with:
           python-version: "3.13"
-      - run: choco install miktex --no-progress -y
+      - name: Install MiKTeX with bounded retry
+        shell: pwsh
+        run: tools/install_miktex_ci.ps1
       - run: uv sync
       - run: uv run python tools/build_books.py --volume all
       - run: uv run python tools/check_pdf_visual_regression.py

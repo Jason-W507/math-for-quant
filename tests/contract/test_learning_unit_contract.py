@@ -207,12 +207,15 @@ class ContractTests(LearningUnitCase):
         )
 
     def test_external_elegantbook_template_matches_the_recorded_baseline(self) -> None:
+        external_source = Path("D:/Latex/Templates/ElegantBook")
+        if not external_source.is_dir():
+            self.skipTest("external ElegantBook source is unavailable")
         result = subprocess.run(
             [
                 sys.executable,
                 str(ROOT / "tools" / "check_template_provenance.py"),
                 "--source",
-                "D:/Latex/Templates/ElegantBook",
+                str(external_source),
             ],
             cwd=ROOT,
             text=True,

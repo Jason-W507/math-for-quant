@@ -39,7 +39,7 @@ class ChapterOneModuleBoundaryTests(unittest.TestCase):
         assert spec and spec.loader
         spec.loader.exec_module(loaded)
         result = loaded.run_contract(fixture, oracle_path)
-        self.assertEqual(result.weighted_return, 0.013)
+        self.assertAlmostEqual(result.weighted_return, 0.013, places=15)
 
     def test_all_upper_notebooks_delegate_to_importable_chapter_modules(self) -> None:
         for notebook in sorted((ROOT / "notebooks" / "upper").glob("ch*.py")):

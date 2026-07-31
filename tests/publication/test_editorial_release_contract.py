@@ -143,6 +143,7 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn("MFQVersion", build_driver)
         ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         self.assertIn("tools/build_books.py --volume all", ci)
+        self.assertIn("tools/install_miktex_ci.ps1", ci)
         self.assertIn('MFQ_SKIP_LATEX: "1"', ci)
         self.assertIn(
             "tools/check_learning_unit.py --manifest curriculum/manifest.json --track all",
@@ -170,7 +171,10 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn("name: ${{ github.ref_name }} — 完整双册与共享答案", release_workflow)
         self.assertIn("body_path: docs/releases/${{ github.ref_name }}.md", release_workflow)
         self.assertIn("Install MiKTeX with bounded retry", release_workflow)
-        self.assertIn("$attempt -le 3", release_workflow)
+        self.assertIn("tools/install_miktex_ci.ps1", release_workflow)
+        miktex_installer = (ROOT / "tools/install_miktex_ci.ps1").read_text(encoding="utf-8")
+        self.assertIn("$attempt -le 3", miktex_installer)
+        self.assertIn("$env:GITHUB_PATH", miktex_installer)
         self.assertTrue((ROOT / "docs/releases" / f"v{version}.md").is_file())
         build_driver = (ROOT / "tools/build_books.py").read_text(encoding="utf-8")
         self.assertIn("release date is unavailable", build_driver)

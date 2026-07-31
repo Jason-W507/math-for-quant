@@ -18,17 +18,7 @@ jobs:
           python-version: "3.13"
       - name: Install MiKTeX with bounded retry
         shell: pwsh
-        run: |
-          for ($attempt = 1; $attempt -le 3; $attempt++) {
-            choco install miktex --no-progress -y
-            if ($LASTEXITCODE -eq 0) {
-              exit 0
-            }
-            if ($attempt -lt 3) {
-              Start-Sleep -Seconds (15 * $attempt)
-            }
-          }
-          exit $LASTEXITCODE
+        run: tools/install_miktex_ci.ps1
       - run: uv sync
       - run: uv run python tools/build_release.py --vendored-template-only
         env:

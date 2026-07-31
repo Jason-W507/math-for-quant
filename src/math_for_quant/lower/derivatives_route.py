@@ -337,12 +337,16 @@ def render_route_report(
     numerics: dict[str, float | int],
     hedging: dict[str, float | int],
 ) -> str:
+    def stable_gap(value: float | int) -> float:
+        observed = float(value)
+        return 0.0 if abs(observed) < 1e-10 else observed
+
     return f"""# 衍生品定价与对冲 v0.3 路线报告
 
-- 随机分析：嵌套分割二次变差由 {stochastic['qv_coarse']:.6f} 细化到 {stochastic['qv_fine']:.6f}；离散 Itô 恒等式误差 {stochastic['ito_identity_gap']:.3e}；终端奇点能量从 {stochastic['singular_coarse_energy']:.6f} 增至 {stochastic['singular_fine_energy']:.6f}，完整端点以稳定 Novikov 诊断拒绝；指数密度与 SciPy 正态密度比差 {stochastic['measure_change_library_gap']:.3e}。
+- 随机分析：嵌套分割二次变差由 {stochastic['qv_coarse']:.6f} 细化到 {stochastic['qv_fine']:.6f}；离散 Itô 恒等式误差 {stable_gap(stochastic['ito_identity_gap']):.3e}；终端奇点能量从 {stochastic['singular_coarse_energy']:.6f} 增至 {stochastic['singular_fine_energy']:.6f}，完整端点以稳定 Novikov 诊断拒绝；指数密度与 SciPy 正态密度比差 {stable_gap(stochastic['measure_change_library_gap']):.3e}。
 - 无套利：物理漂移经市场价格风险变换为 {stochastic['risk_neutral_drift']:.6f}；有限但很大的确定性能量仍通过 Novikov 指数矩检查，教材能量预算另行报告。
-- 定价：Black--Scholes 闭式 {numerics['closed_price']:.6f}；树 {numerics['tree_price']:.6f}（误差 {numerics['tree_error']:.6f}）；隐式 PDE {numerics['pde_price']:.6f}（总偏差 {numerics['pde_error']:.6f}，空间/时间/边界扰动 {numerics['pde_space_gap']:.6f}/{numerics['pde_time_gap']:.6f}/{numerics['pde_boundary_gap']:.3e}）；Monte Carlo {numerics['mc_price']:.6f}（标准误 {numerics['mc_standard_error']:.6f}，相对独立 SciPy 积分差 {numerics['mc_library_gap']:.6f}，即 {numerics['mc_library_gap'] / numerics['mc_standard_error']:.2f} 个标准误）；闭式/树/PDE 成熟库差分别为 {numerics['closed_library_gap']:.3e}/{numerics['tree_library_gap']:.3e}/{numerics['pde_library_gap']:.3e}，积分误差估计 {numerics['mc_quadrature_error']:.3e}。
-- 校准：先逐点反演 {int(numerics['point_iv_count'])} 个隐含波动率，再拟合参数化总方差系数 ({numerics['surface_a']:.6f}, {numerics['surface_b']:.6f}, {numerics['surface_c']:.6f})；最大价格误差 {numerics['surface_max_price_error']:.3e}，透明/成熟库系数差 {numerics['surface_library_gap']:.3e}；含分红的 forward/discount 归一化日历门禁通过。
+- 定价：Black--Scholes 闭式 {numerics['closed_price']:.6f}；树 {numerics['tree_price']:.6f}（误差 {numerics['tree_error']:.6f}）；隐式 PDE {numerics['pde_price']:.6f}（总偏差 {numerics['pde_error']:.6f}，空间/时间/边界扰动 {numerics['pde_space_gap']:.6f}/{numerics['pde_time_gap']:.6f}/{stable_gap(numerics['pde_boundary_gap']):.3e}）；Monte Carlo {numerics['mc_price']:.6f}（标准误 {numerics['mc_standard_error']:.6f}，相对独立 SciPy 积分差 {numerics['mc_library_gap']:.6f}，即 {numerics['mc_library_gap'] / numerics['mc_standard_error']:.2f} 个标准误）；闭式/树/PDE 成熟库差分别为 {stable_gap(numerics['closed_library_gap']):.3e}/{stable_gap(numerics['tree_library_gap']):.3e}/{stable_gap(numerics['pde_library_gap']):.3e}，积分误差估计 {stable_gap(numerics['mc_quadrature_error']):.3e}。
+- 校准：先逐点反演 {int(numerics['point_iv_count'])} 个隐含波动率，再拟合参数化总方差系数 ({numerics['surface_a']:.6f}, {numerics['surface_b']:.6f}, {numerics['surface_c']:.6f})；最大价格误差 {stable_gap(numerics['surface_max_price_error']):.3e}，透明/成熟库系数差 {stable_gap(numerics['surface_library_gap']):.3e}；含分红的 forward/discount 归一化日历门禁通过。
 - 对冲：{int(hedging['paths'])} 路径、{int(hedging['steps'])} 次离散步；无成本误差 bias/RMSE=({hedging['no_cost_bias']:.6f}, {hedging['no_cost_rmse']:.6f})，成本后=({hedging['after_cost_bias']:.6f}, {hedging['after_cost_rmse']:.6f})；成本后误差 5%/50%/95%=({hedging['error_q05']:.6f}, {hedging['error_q50']:.6f}, {hedging['error_q95']:.6f})；平均成本 {hedging['mean_cost']:.6f}，95% 成本 {hedging['cost_q95']:.6f}；Delta/Gamma/Vega 差分差从 {hedging['delta_coarse_gap']:.3e}/{hedging['gamma_coarse_gap']:.3e}/{hedging['vega_coarse_gap']:.3e} 收敛到 {hedging['delta_gap']:.3e}/{hedging['gamma_gap']:.3e}/{hedging['vega_gap']:.3e}；12/52 次调仓成本后 RMSE {hedging['coarse_after_cost_rmse']:.6f}/{hedging['fine_after_cost_rmse']:.6f}。
 - 限制：合成 GBM、常波动率、无跳跃和简化交易成本只支持方法验证；财政部收益率快照只演示贴现输入的来源、日期、许可与哈希，不是期权曲面或盈利证据。
 """
