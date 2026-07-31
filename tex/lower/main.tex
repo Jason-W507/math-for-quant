@@ -7,7 +7,7 @@
 \title{量化研究数学}
 \subtitle{下册：方向模型与研究项目}
 \author{Jason W.}
-\providecommand{\MFQReleaseDate}{2026-07-28}
+\providecommand{\MFQReleaseDate}{2026-07-31}
 \ifdefined\MFQVersion\else
   \PackageError{math-for-quant}{MFQVersion is undefined}{Build with tools/build_books.py so VERSION is injected.}
 \fi
@@ -29,9 +29,10 @@
 \input{tex/common/evidence-contract}
 
 \tableofcontents
-\mainmatter
 
-\part{路线选择与共同契约}
+\part*{路线选择与共同契约}
+\addcontentsline{toc}{part}{路线选择与共同契约}
+\setcounter{secnumdepth}{-1}
 
 \chapter{下册的共同研究门禁}
 
@@ -48,7 +49,8 @@
 \input{tex/lower/chapters/route-diagnostics}
 \input{tex/lower/templates/capstone-evidence}
 
-\setcounter{chapter}{0}
+\mainmatter
+\setcounter{secnumdepth}{2}
 \part{方向模型与研究项目}
 \input{tex/lower/chapters/multifactor-model}
 \input{tex/lower/chapters/multifactor-estimation}
@@ -95,6 +97,9 @@
 
 \chapter{共享术语表}
 \input{tex/common/glossary}
+
+\chapter{下册主题索引}
+\input{tex/generated/lower-concept-index}
 
 \chapter{参考文献}
 \printbibliography[heading=none]

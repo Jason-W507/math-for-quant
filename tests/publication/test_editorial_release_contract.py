@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import unittest
+import json
 from pathlib import Path
 
 
@@ -37,7 +38,8 @@ class EditorialReleaseContractTests(unittest.TestCase):
             self.assertIn(r"\cite{", chapter, f"chapter {number} has no references")
 
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        self.assertIn("初稿已完成", readme)
+        self.assertIn("v0.3.0", readme)
+        self.assertIn("35 个正式学习单元", readme)
         self.assertIn("releases/latest", readme)
         self.assertNotIn("尚未开始正式章节写作", readme)
 
@@ -131,6 +133,41 @@ class EditorialReleaseContractTests(unittest.TestCase):
         self.assertIn("MFQVersion", build_driver)
         ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         self.assertIn("tools/build_books.py --volume all", ci)
+
+    def test_v03_metadata_and_lower_generated_navigation_are_release_ready(self) -> None:
+        version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+        self.assertEqual(version, "0.3.0")
+        self.assertIn('version = "0.3.0"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        citation = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
+        self.assertIn("version: 0.3.0", citation)
+        self.assertIn("date-released: 2026-07-31", citation)
+        self.assertIn("## 0.3.0 - 2026-07-31", (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))
+
+        lower_main = (ROOT / "tex/lower/main.tex").read_text(encoding="utf-8")
+        self.assertNotIn(r"\setcounter{chapter}{0}", lower_main)
+        self.assertLess(
+            lower_main.index(r"\input{tex/lower/templates/capstone-evidence}"),
+            lower_main.index(r"\mainmatter"),
+        )
+        self.assertIn(r"\input{tex/generated/lower-concept-index}", lower_main)
+
+        manifest = json.loads((ROOT / "curriculum/manifest.json").read_text(encoding="utf-8"))
+        for unit in manifest["units"]:
+            if unit.get("volume") != "lower" or not unit.get("published"):
+                continue
+            chapter = (ROOT / unit["evidence"]["notation_and_assumptions"]).read_text(encoding="utf-8")
+            generated = unit["id"].replace(".", "-")
+            self.assertIn(
+                rf"\input{{tex/generated/prerequisites/{generated}}}", chapter
+            )
+
+        config = json.loads((ROOT / "curriculum/visual-regression.json").read_text(encoding="utf-8"))
+        selected = {
+            publication["id"]: {page["id"] for page in publication["pages"]}
+            for publication in config["publications"]
+        }
+        self.assertTrue({"formula", "table-or-code", "concept-index"} <= selected["lower"])
+        self.assertTrue({"upper-solutions", "lower-solutions", "final-answer"} <= selected["solutions"])
 
 
 if __name__ == "__main__":

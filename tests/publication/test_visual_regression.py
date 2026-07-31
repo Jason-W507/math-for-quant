@@ -60,6 +60,25 @@ class PdfVisualRegressionTests(unittest.TestCase):
                     },
                 )
 
+    def test_structure_gate_rejects_nonmonotone_bookmark_destinations(self) -> None:
+        pdf = ROOT / "build" / "test-visual" / "nonmonotone-toc.pdf"
+        pdf.parent.mkdir(parents=True, exist_ok=True)
+        with fitz.open() as document:
+            document.new_page()
+            document.new_page()
+            document.set_metadata({"title": "Expected", "author": "Author"})
+            document.set_toc([[1, "Later", 2], [1, "Earlier", 1]])
+            document.save(pdf)
+        with fitz.open(pdf) as document:
+            with self.assertRaisesRegex(ValueError, "bookmark destinations are not monotone"):
+                validate_pdf_structure(
+                    document,
+                    {
+                        "id": "sample",
+                        "metadata": {"title": "Expected", "author": "Author"},
+                    },
+                )
+
 
 if __name__ == "__main__":
     unittest.main()

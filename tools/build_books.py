@@ -66,7 +66,7 @@ def release_date(environment: dict[str, str]) -> str:
     )
     if result.returncode == 0 and result.stdout.strip():
         return result.stdout.strip()
-    return "2026-07-28"
+    return "2026-07-31"
 
 
 def git_source_date_epoch() -> str | None:

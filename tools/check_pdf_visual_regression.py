@@ -67,6 +67,11 @@ def validate_pdf_structure(
             )
     if not document.get_toc():
         raise ValueError(f"{publication['id']}: PDF has no bookmarks")
+    destinations = [page for _, _, page in document.get_toc()]
+    if destinations != sorted(destinations):
+        raise ValueError(
+            f"{publication['id']}: bookmark destinations are not monotone"
+        )
     fonts = {font for page in document for font in page.get_fonts(full=True)}
     embedded_buffers = [
         document.extract_font(font[0])[3]

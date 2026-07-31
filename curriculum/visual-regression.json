@@ -10,6 +10,8 @@
       "pages": [
         {"id": "cover", "page": 1},
         {"id": "course-map", "bookmark": "课程地图与最小证据实验"},
+        {"id": "formula", "bookmark": "6.4.3 SVD：秩、伪逆与最佳低秩近似"},
+        {"id": "table-or-code", "bookmark": "15.9 Python 证据程序如何验收结论"},
         {"id": "concept-index", "bookmark": "D 主题索引"}
       ]
     },
@@ -19,8 +21,12 @@
       "metadata": {"title": "量化研究数学：下册", "author": "Jason W."},
       "pages": [
         {"id": "cover", "page": 1},
-        {"id": "route-contract", "bookmark": "1.1 六条路线的共同结构"},
-        {"id": "references", "bookmark": "I 参考文献"}
+        {"id": "route-contract", "bookmark": "六条路线的共同结构"},
+        {"id": "route-map", "bookmark": "精确桥接地图"},
+        {"id": "formula", "bookmark": "10.4 Novikov 条件不是固定能量上限"},
+        {"id": "table-or-code", "bookmark": "17.2 随机完成率与停止规则"},
+        {"id": "concept-index", "bookmark": "U 下册主题索引"},
+        {"id": "references", "bookmark": "V 参考文献"}
       ]
     },
     {
@@ -30,7 +36,8 @@
       "pages": [
         {"id": "cover", "page": 1},
         {"id": "upper-solutions", "bookmark": "第一部分 上册答案"},
-        {"id": "lower-solutions", "bookmark": "第二部分 下册答案"}
+        {"id": "lower-solutions", "bookmark": "第二部分 下册答案"},
+        {"id": "final-answer", "bookmark": "第三十五章 事件时间仿真分层答案"}
       ]
     }
   ]

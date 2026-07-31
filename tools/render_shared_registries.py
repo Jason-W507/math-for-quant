@@ -14,6 +14,7 @@ GLOSSARY_OUTPUT = ROOT / "tex" / "common" / "glossary.tex"
 PREREQUISITE_OUTPUT = ROOT / "tex" / "generated" / "prerequisites"
 COURSE_MAP_OUTPUT = ROOT / "tex" / "generated" / "course-map.tex"
 CONCEPT_INDEX_OUTPUT = ROOT / "tex" / "generated" / "concept-index.tex"
+LOWER_CONCEPT_INDEX_OUTPUT = ROOT / "tex" / "generated" / "lower-concept-index.tex"
 LOWER_ROUTE_BRIDGES_OUTPUT = ROOT / "tex" / "generated" / "lower-route-bridges.tex"
 
 
@@ -85,18 +86,21 @@ def render_glossary() -> str:
     )
 
 
+def prerequisite_name(identifier: str, titles: dict[str, str]) -> str:
+    if ".ch" in identifier:
+        volume, chapter = identifier.split(".ch", maxsplit=1)
+        volume_name = {"upper": "上册", "lower": "下册"}[volume]
+        return f"{volume_name}第 {int(chapter)} 章《{tex_text(titles[identifier])}》"
+    volume = "上册" if identifier.startswith("upper.") else "下册"
+    return f"{volume}《{tex_text(titles[identifier])}》"
+
+
 def render_prerequisites(unit: dict[str, object], titles: dict[str, str]) -> str:
     prerequisites = [str(value) for value in unit.get("prerequisites", [])]
     if not prerequisites:
         description = "无；只需本书前言声明的读者基础。"
     else:
-        rendered = []
-        for identifier in prerequisites:
-            volume, chapter = identifier.split(".ch", maxsplit=1)
-            volume_name = {"upper": "上册", "lower": "下册"}[volume]
-            rendered.append(
-                f"{volume_name}第 {int(chapter)} 章《{tex_text(titles[identifier])}》"
-            )
+        rendered = [prerequisite_name(identifier, titles) for identifier in prerequisites]
         description = "、".join(rendered) + "。"
     return (
         "% Generated from curriculum/manifest.json; do not edit by hand.\n"
@@ -206,6 +210,34 @@ def render_concept_index(manifest: dict[str, object]) -> str:
     )
 
 
+def render_lower_concept_index(manifest: dict[str, object]) -> str:
+    locations: dict[str, list[str]] = {}
+    for unit in manifest["units"]:
+        if (
+            unit.get("internal", False)
+            or unit.get("volume") != "lower"
+            or not unit.get("published", False)
+        ):
+            continue
+        title = str(unit["title"])
+        for term in unit.get("evidence", {}).get("glossary_terms", []):
+            locations.setdefault(str(term), []).append(title)
+    rows = []
+    for term in sorted(locations, key=lambda value: value.casefold()):
+        units = "；".join(tex_text(title) for title in dict.fromkeys(locations[term]))
+        rows.append(f"{tex_text(term)} & {units} \\\\")
+    return (
+        "% Generated from curriculum/manifest.json; do not edit by hand.\n"
+        "\\begin{longtable}{p{0.30\\textwidth}p{0.60\\textwidth}}\n"
+        "\\toprule\n主题 & 正式教学单元 \\\\\n"
+        "\\midrule\n\\endfirsthead\n"
+        "\\toprule\n主题 & 正式教学单元 \\\\\n"
+        "\\midrule\n\\endhead\n"
+        + "\n".join(rows)
+        + "\n\\bottomrule\n\\end{longtable}\n"
+    )
+
+
 def render_lower_route_bridges(manifest: dict[str, object]) -> str:
     titles = {str(unit["id"]): str(unit["title"]) for unit in manifest["units"]}
     rows = []
@@ -252,6 +284,7 @@ def main() -> int:
         GLOSSARY_OUTPUT: render_glossary(),
         COURSE_MAP_OUTPUT: render_course_map(manifest),
         CONCEPT_INDEX_OUTPUT: render_concept_index(manifest),
+        LOWER_CONCEPT_INDEX_OUTPUT: render_lower_concept_index(manifest),
         LOWER_ROUTE_BRIDGES_OUTPUT: render_lower_route_bridges(manifest),
     }
     expected.update(
@@ -260,6 +293,14 @@ def main() -> int:
             / f"upper-ch{int(str(unit['id']).removeprefix('upper.ch')):02d}.tex":
             render_prerequisites(unit, titles)
             for unit in upper_units
+        }
+    )
+    expected.update(
+        {
+            PREREQUISITE_OUTPUT / f"{str(unit['id']).replace('.', '-')}.tex":
+            render_prerequisites(unit, titles)
+            for unit in manifest["units"]
+            if unit.get("volume") == "lower" and unit.get("published", False)
         }
     )
     if args.check:

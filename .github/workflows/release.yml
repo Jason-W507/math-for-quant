@@ -23,7 +23,8 @@ jobs:
           MFQ_RELEASE_TAG: ${{ github.ref_name }}
       - uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
+          name: v0.3.0 — 完整双册与共享答案
+          body_path: docs/releases/v0.3.0.md
           files: |
             output/pdf/math-for-quant-upper.pdf
             output/pdf/math-for-quant-solutions.pdf
