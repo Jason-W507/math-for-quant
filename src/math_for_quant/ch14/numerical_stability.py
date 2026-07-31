@@ -94,9 +94,17 @@ REQUIRED_FIELDS = {
     "provenance",
     "published_markers",
     "expected",
+    "least_squares_limits",
     *FIXED_ARRAYS.keys(),
     *FIXED_SCALARS.keys(),
     *FIXED_INTEGERS.keys(),
+}
+LEAST_SQUARES_LIMIT_FIELDS = {
+    "maximum_normal_equation_relative_error",
+    "maximum_stable_relative_error",
+    "maximum_qr_svd_error_gap",
+    "maximum_normal_equation_residual",
+    "maximum_stable_residual",
 }
 
 
@@ -134,6 +142,11 @@ def validate_oracle(oracle: dict[str, object]) -> None:
         raise SystemExit(
             "expected ledger missing required fields: " + ", ".join(missing_expected)
         )
+    limits = oracle["least_squares_limits"]
+    if not isinstance(limits, dict) or set(limits) != LEAST_SQUARES_LIMIT_FIELDS:
+        raise SystemExit("least-squares limits must declare the complete policy")
+    if any(float(limits[field]) < 0.0 for field in LEAST_SQUARES_LIMIT_FIELDS):
+        raise SystemExit("least-squares limits must be nonnegative")
     reject_nonfinite(oracle)
     if oracle["numpy_versions"] != list(FIXED_NUMPY_VERSIONS) or np.__version__ not in FIXED_NUMPY_VERSIONS:
         raise SystemExit(f"NumPy version must be one of {FIXED_NUMPY_VERSIONS}")
@@ -230,6 +243,8 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
     validate_oracle(oracle)
     expected = oracle["expected"]
     assert isinstance(expected, dict)
+    limits = oracle["least_squares_limits"]
+    assert isinstance(limits, dict)
     getcontext().prec = int(oracle["decimal_precision"])
 
     machine_epsilon = float(np.finfo(float).eps)
@@ -341,15 +356,18 @@ def main(oracle_path: Path = Path("evidence/ch14/oracle.json")) -> int:
         (
             least_squares_close(least_condition, expected["least_squares_condition"], oracle),
             least_squares_close(normal_condition, expected["normal_equation_condition"], oracle),
-            least_squares_close(normal_error, expected["normal_equation_relative_error"], oracle),
-            least_squares_close(qr_error, expected["qr_relative_error"], oracle),
-            least_squares_close(svd_error, expected["svd_relative_error"], oracle),
-            least_squares_close(normal_residual, expected["normal_equation_residual"], oracle),
-            least_squares_close(qr_residual, expected["qr_residual"], oracle),
-            least_squares_close(svd_residual, expected["svd_residual"], oracle),
+            0.0 < normal_error
+            <= float(limits["maximum_normal_equation_relative_error"]),
+            0.0 < qr_error <= float(limits["maximum_stable_relative_error"]),
+            0.0 < svd_error <= float(limits["maximum_stable_relative_error"]),
+            abs(qr_error - svd_error)
+            <= float(limits["maximum_qr_svd_error_gap"]),
+            normal_residual
+            <= float(limits["maximum_normal_equation_residual"]),
+            qr_residual <= float(limits["maximum_stable_residual"]),
+            svd_residual <= float(limits["maximum_stable_residual"]),
             least_rank == expected["least_squares_rank"],
             normal_condition > least_condition**1.9,
-            normal_error > qr_error,
         )
     ):
         raise SystemExit("least-squares ledger failed")

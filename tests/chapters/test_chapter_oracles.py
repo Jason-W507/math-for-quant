@@ -2552,22 +2552,22 @@ class ChaptersTests(LearningUnitCase):
             ),
             (
                 "ch14-false-least-squares.json",
-                lambda oracle: oracle["expected"].update(
-                    {"normal_equation_relative_error": 0.0}
+                lambda oracle: oracle["least_squares_limits"].update(
+                    {"maximum_normal_equation_relative_error": 0.0}
                 ),
                 "least-squares ledger failed",
             ),
             (
                 "ch14-false-qr-ledger.json",
-                lambda oracle: oracle["expected"].update(
-                    {"qr_relative_error": 0.0, "qr_residual": 0.1}
+                lambda oracle: oracle["least_squares_limits"].update(
+                    {"maximum_stable_relative_error": 0.0}
                 ),
                 "least-squares ledger failed",
             ),
             (
                 "ch14-false-svd-ledger.json",
-                lambda oracle: oracle["expected"].update(
-                    {"svd_relative_error": 0.0, "svd_residual": 0.1}
+                lambda oracle: oracle["least_squares_limits"].update(
+                    {"maximum_stable_residual": 0.0}
                 ),
                 "least-squares ledger failed",
             ),

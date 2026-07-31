@@ -108,11 +108,16 @@ def build_volume(volume: dict[str, str]) -> Path:
         encoding="utf-8",
         newline="\n",
     )
+    installer_option = (
+        "--enable-installer"
+        if environment.get("MFQ_MIKTEX_AUTO_INSTALL") == "1"
+        else "--disable-installer"
+    )
     command = [
         "latexmk",
         "-xelatex",
         "-bibtex",
-        "-xelatex=xelatex --disable-installer %O %S",
+        f"-xelatex=xelatex {installer_option} %O %S",
         "-interaction=nonstopmode",
         "-halt-on-error",
         "-file-line-error",

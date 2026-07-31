@@ -67,6 +67,8 @@ class EditorialReleaseContractTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn('"latexmk"', build_driver)
+        self.assertIn("MFQ_MIKTEX_AUTO_INSTALL", build_driver)
+        self.assertIn("--enable-installer", build_driver)
         self.assertIn('"-xelatex"', build_driver)
         self.assertNotIn("for _ in range(2)", build_driver)
         self.assertIn('environment.setdefault("SOURCE_DATE_EPOCH"', build_driver)
@@ -144,6 +146,7 @@ class EditorialReleaseContractTests(unittest.TestCase):
         ci = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
         self.assertIn("tools/build_books.py --volume all", ci)
         self.assertIn("tools/install_miktex_ci.ps1", ci)
+        self.assertIn('MFQ_MIKTEX_AUTO_INSTALL: "1"', ci)
         self.assertIn('MFQ_SKIP_LATEX: "1"', ci)
         self.assertIn(
             "tools/check_learning_unit.py --manifest curriculum/manifest.json --track all",
