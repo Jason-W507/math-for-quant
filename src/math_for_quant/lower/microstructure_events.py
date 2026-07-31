@@ -44,7 +44,9 @@ def hawkes_log_likelihood(
     initial_excitation: float = 0.0,
 ) -> float:
     times = np.asarray(times, dtype=float)
-    if times.ndim != 1 or times.size == 0 or np.any(np.diff(times) <= 0.0):
+    if times.ndim != 1 or times.size == 0 or np.any(~np.isfinite(times)):
+        raise ValueError("Hawkes event times must be finite")
+    if np.any(np.diff(times) <= 0.0):
         raise ValueError("Hawkes event times must be strictly increasing")
     if not math.isfinite(horizon) or horizon < float(times[-1]) or horizon <= 0.0:
         raise ValueError("Hawkes horizon must be finite and include every event")
@@ -85,7 +87,13 @@ def queue_fill_probability(
 def joint_order_price_beta(signs: np.ndarray, price_changes: np.ndarray) -> float:
     signs = np.asarray(signs, dtype=float)
     changes = np.asarray(price_changes, dtype=float)
-    if signs.ndim != 1 or signs.shape != changes.shape or signs.size < 2:
+    if (
+        signs.ndim != 1
+        or signs.shape != changes.shape
+        or signs.size < 2
+        or np.any(~np.isfinite(signs))
+        or np.any(~np.isfinite(changes))
+    ):
         raise ValueError("order signs and price changes must be aligned vectors")
     centered = signs - signs.mean()
     denominator = float(centered @ centered)

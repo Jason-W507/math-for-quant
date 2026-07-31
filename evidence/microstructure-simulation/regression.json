@@ -1,1 +1,1 @@
-{"absolute_tolerance": 1e-6, "expected": {"simulation_events": 500, "simulation_fills": 21, "real_categories": 5, "real_weighted_cancel_to_trade": 55.3908}}
+{"absolute_tolerance": 1e-6, "expected": {"simulation_events": 500, "baseline_fills": 21, "control_fills": 23, "baseline_ending_inventory": -1, "control_ending_inventory": 1, "real_categories": 5, "real_weighted_cancel_to_trade": 55.3908}}

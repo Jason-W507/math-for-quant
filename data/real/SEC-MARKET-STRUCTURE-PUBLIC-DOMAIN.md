@@ -7,6 +7,9 @@ ratios used here.
 
 - Source: https://www.sec.gov/about/equity-market-speed-relative-order-placement-2014-02-market-structure
 - Methodology: https://www.sec.gov/securities-topics/market-structure-analytics/market-activity-report-methodology
+- Retrieval date: 2026-07-31
+- Covered dates: 2013 Q4 (the analysis sample identified by the SEC page)
+- Snapshot SHA-256: `969de25b64663bb4319d5c09d41228304ffeee9c37cd2a80af8d001a7235eb26`
 - Public-domain label used by the SEC open-data catalog: http://www.usa.gov/publicdomain/label/1.0/
 - Registry marker: public domain
 - Transformation: percentages were divided by 100; ratios were copied as

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 from pathlib import Path
 from typing import Any
 from collections.abc import Callable
@@ -23,7 +24,13 @@ def assert_expected(
             if value != expected:
                 raise SystemExit(f"{key} mismatch: observed={value} expected={expected}")
             continue
-        if abs(float(value) - float(expected)) > tolerance:
+        observed_number = float(value)
+        expected_number = float(expected)
+        if not math.isfinite(observed_number) or not math.isfinite(expected_number):
+            raise SystemExit(
+                f"{key} nonfinite: observed={value} expected={expected}"
+            )
+        if abs(observed_number - expected_number) > tolerance:
             raise SystemExit(f"{key} mismatch: observed={value} expected={expected}")
 
 

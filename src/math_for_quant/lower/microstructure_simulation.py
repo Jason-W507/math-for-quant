@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -13,12 +14,16 @@ class PairedSimulationResult:
     events: int
     baseline_signs_hash: str
     control_signs_hash: str
-    baseline_fills_hash: str
-    control_fills_hash: str
-    fills: int
+    baseline_random_hash: str
+    control_random_hash: str
+    baseline_fills: int
+    control_fills: int
     baseline_pnl: float
     control_pnl: float
-    ending_inventory: int
+    baseline_ending_inventory: int
+    control_ending_inventory: int
+    baseline_max_abs_inventory: int
+    control_max_abs_inventory: int
 
 
 def paired_event_simulation(
@@ -30,11 +35,11 @@ def paired_event_simulation(
     rng = np.random.default_rng(seed)
     interarrivals = rng.exponential(1.0 / base_intensity, events)
     signs = rng.choice(np.array([-1, 1], dtype=np.int8), size=events)
-    fills = rng.random(events) < fill_probability
+    fill_uniforms = rng.random(events)
     innovations = rng.normal(0.0, 0.02, events)
     mid_changes = 0.006 * signs + innovations * np.sqrt(interarrivals)
     digest = hashlib.sha256(signs.tobytes()).hexdigest()
-    fills_digest = hashlib.sha256(fills.tobytes()).hexdigest()
+    random_digest = hashlib.sha256(fill_uniforms.tobytes()).hexdigest()
 
     half_spread = 0.01
     inventory_skew = 0.002
@@ -43,18 +48,36 @@ def paired_event_simulation(
     baseline_cash = 0.0
     control_inventory = 0
     control_cash = 0.0
-    for sign, change, filled in zip(signs, mid_changes, fills, strict=True):
-        if not filled:
-            midprice += float(change)
-            continue
+    baseline_fills = 0
+    control_fills = 0
+    baseline_max_abs_inventory = 0
+    control_max_abs_inventory = 0
+    for sign, change, uniform in zip(signs, mid_changes, fill_uniforms, strict=True):
         fill_inventory = -int(sign)  # aggressive buy => maker sells one unit
         baseline_quote = midprice + float(sign) * half_spread
         control_reservation = midprice - inventory_skew * control_inventory
         control_quote = control_reservation + float(sign) * half_spread
-        baseline_cash -= fill_inventory * baseline_quote
-        control_cash -= fill_inventory * control_quote
-        baseline_inventory += fill_inventory
-        control_inventory += fill_inventory
+        # The same uniform drives both policies, but each quote determines its own
+        # fill threshold. A more aggressive quote receives a higher probability.
+        quote_advantage = -float(sign) * (control_quote - baseline_quote)
+        log_multiplier = float(np.clip(quote_advantage / half_spread, -50.0, 50.0))
+        control_probability = float(
+            np.clip(fill_probability * math.exp(log_multiplier), 0.0, 1.0)
+        )
+        if uniform < fill_probability:
+            baseline_cash -= fill_inventory * baseline_quote
+            baseline_inventory += fill_inventory
+            baseline_fills += 1
+            baseline_max_abs_inventory = max(
+                baseline_max_abs_inventory, abs(baseline_inventory)
+            )
+        if uniform < control_probability:
+            control_cash -= fill_inventory * control_quote
+            control_inventory += fill_inventory
+            control_fills += 1
+            control_max_abs_inventory = max(
+                control_max_abs_inventory, abs(control_inventory)
+            )
         midprice += float(change)
     baseline_pnl = baseline_cash + baseline_inventory * midprice
     control_pnl = control_cash + control_inventory * midprice
@@ -62,12 +85,16 @@ def paired_event_simulation(
         events=events,
         baseline_signs_hash=digest,
         control_signs_hash=digest,
-        baseline_fills_hash=fills_digest,
-        control_fills_hash=fills_digest,
-        fills=int(fills.sum()),
+        baseline_random_hash=random_digest,
+        control_random_hash=random_digest,
+        baseline_fills=baseline_fills,
+        control_fills=control_fills,
         baseline_pnl=baseline_pnl,
         control_pnl=float(control_pnl),
-        ending_inventory=control_inventory,
+        baseline_ending_inventory=baseline_inventory,
+        control_ending_inventory=control_inventory,
+        baseline_max_abs_inventory=baseline_max_abs_inventory,
+        control_max_abs_inventory=control_max_abs_inventory,
     )
 
 

@@ -1,5 +1,5 @@
 {
-  "fixture": {"path": "data/fixtures/microstructure-events.json", "sha256": "e5679fd06710f4b76b6df26da80fc069ec28d42a6dd382dacaf10710bc8c833f"},
+  "fixture": {"path": "data/fixtures/microstructure-events.json", "sha256": "50ef32be9a136e2fe38c654046def8d36f17b2c19d4a81726f2a2f0cb29b5fc0"},
   "absolute_tolerance": 1e-8,
   "provenance": "Poisson, seasonal Poisson and explicit-window Hawkes quantities are reconstructed independently; the SEC public-domain placement summary calibrates a separate queue-pressure stress.",
   "regression": "evidence/microstructure-events/regression.json",
@@ -17,7 +17,8 @@
     "seasonal_intensity": 1.3333333333333333,
     "seasonal_residual_mean": 1.0,
     "real_implied_execution_probability": 0.044469652945924136,
+    "real_depletion_event_rate": 10.0,
     "real_queue_fill_probability": 0.010540062622918024,
-    "event_library_gap": 2.220446049250313e-16
+    "event_library_gap": 3.1086244689504383e-15
   }
 }

@@ -8,6 +8,23 @@ def enumerate_execution(
     *, inventory: int, steps: int, temporary_impact: float, permanent_impact: float,
     inventory_risk: float, maximum_slice: int,
 ) -> tuple[list[int], float]:
+    if (
+        not isinstance(inventory, int)
+        or not isinstance(steps, int)
+        or not isinstance(maximum_slice, int)
+        or inventory < 0
+        or steps <= 0
+        or maximum_slice <= 0
+        or inventory > steps * maximum_slice
+        or not all(
+            math.isfinite(value)
+            for value in (temporary_impact, permanent_impact, inventory_risk)
+        )
+        or temporary_impact <= 0.0
+        or permanent_impact < 0.0
+        or inventory_risk < 0.0
+    ):
+        raise ValueError("invalid enumerated execution inputs")
     best_path: tuple[int, ...] | None = None
     best_cost = math.inf
     for path in itertools.product(range(maximum_slice + 1), repeat=steps):

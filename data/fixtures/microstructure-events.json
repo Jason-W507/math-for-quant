@@ -14,5 +14,7 @@
   "hawkes_initial_excitation": 0.1,
   "seasonal_interarrivals": [0.5, 1.0, 0.5, 1.0],
   "seasonal_multipliers": [1.0, 0.5, 2.0, 1.0],
+  "real_depletion_event_rate": 10.0,
+  "real_depletion_event_rate_unit": "terminal_events_per_second",
   "real_snapshot": "data/real/sec-order-placement-2014.json"
 }

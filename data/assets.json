@@ -109,7 +109,7 @@
       "paths": ["data/real/sec-order-placement-2014.json"],
       "kind": "frozen-public-data",
       "source": "U.S. SEC Equity Market Speed Relative to Order Placement",
-      "version": "official-page-reviewed-2021-03-25",
+      "version": "2013-Q4-summary-retrieved-2026-07-31",
       "schema": "category:string, event_share:[0,1], cancel_to_trade_ratio:nonnegative",
       "selection": "All five mutually exclusive placement categories reported by the SEC",
       "missing_values": "Publication fails if a category, share, or ratio is absent or nonfinite",

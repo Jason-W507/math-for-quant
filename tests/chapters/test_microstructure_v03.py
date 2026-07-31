@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import subprocess
 import sys
 import unittest
@@ -23,6 +24,7 @@ from math_for_quant.lower.microstructure_events import (
     seasonally_adjusted_poisson_mle,
 )
 from math_for_quant.lower.microstructure_route import build_route_report
+from math_for_quant.lower.notebook_evidence import assert_expected
 from math_for_quant.lower.microstructure_simulation import (
     analyze_sec_order_placement,
     paired_event_simulation,
@@ -33,6 +35,7 @@ from math_for_quant.lower.microstructure_events_library import (
     library_joint_beta,
     library_poisson_mle,
     library_queue_fill_probability,
+    library_seasonal_poisson_mle,
 )
 
 
@@ -57,6 +60,11 @@ class MicrostructureV03Tests(unittest.TestCase):
             library_joint_beta(np.array([-1.0, -1.0, 1.0, 1.0]), np.array([-0.2, -0.1, 0.1, 0.2])),
             beta,
         )
+        self.assertAlmostEqual(library_poisson_mle([0.001, 0.001]), 1000.0)
+        seasonal_rate, _ = library_seasonal_poisson_mle(
+            [0.001, 0.001], [1.0, 1.0]
+        )
+        self.assertAlmostEqual(seasonal_rate, 1000.0)
 
     def test_hawkes_and_seasonality_have_frozen_numerical_evidence(self) -> None:
         times = np.array([0.2, 0.7, 1.4, 2.0])
@@ -75,6 +83,23 @@ class MicrostructureV03Tests(unittest.TestCase):
         self.assertAlmostEqual(float(np.mean(residuals)), 1.0)
         with self.assertRaisesRegex(ValueError, "horizon"):
             hawkes_log_likelihood(times, 0.8, 0.3, 1.2, horizon=1.9)
+        with self.assertRaisesRegex(ValueError, "finite"):
+            hawkes_log_likelihood(
+                np.array([0.2, math.nan]), 0.8, 0.3, 1.2, horizon=2.5
+            )
+
+    def test_nonfinite_oracles_and_library_inputs_are_rejected(self) -> None:
+        oracle = {"absolute_tolerance": 1e-8, "expected": {"x": 123.0}}
+        with self.assertRaisesRegex(SystemExit, "nonfinite"):
+            assert_expected({"x": math.nan}, oracle)
+        for kwargs in (
+            dict(inventory=1, steps=-1, temporary_impact=1.0, permanent_impact=0.0,
+                 inventory_risk=0.0, maximum_slice=1),
+            dict(inventory=1, steps=1, temporary_impact=math.nan, permanent_impact=0.0,
+                 inventory_risk=0.0, maximum_slice=1),
+        ):
+            with self.assertRaisesRegex(ValueError, "invalid"):
+                enumerate_execution(**kwargs)
 
     def test_fifo_queue_position_partial_fill_cancel_and_no_fill(self) -> None:
         book = OrderBook()
@@ -127,10 +152,14 @@ class MicrostructureV03Tests(unittest.TestCase):
         result = paired_event_simulation(seed=59, events=500, base_intensity=2.0)
         self.assertEqual(result.events, 500)
         self.assertEqual(result.baseline_signs_hash, result.control_signs_hash)
-        self.assertEqual(result.baseline_fills_hash, result.control_fills_hash)
+        self.assertEqual(result.baseline_random_hash, result.control_random_hash)
         self.assertTrue(np.isfinite(result.baseline_pnl))
         self.assertTrue(np.isfinite(result.control_pnl))
         self.assertNotEqual(result.baseline_pnl, result.control_pnl)
+        self.assertNotEqual(result.baseline_fills, result.control_fills)
+        self.assertNotEqual(
+            result.baseline_ending_inventory, result.control_ending_inventory
+        )
 
     def test_public_domain_sec_snapshot_is_consumed(self) -> None:
         observed = analyze_sec_order_placement(
