@@ -16,6 +16,10 @@ from math_for_quant.lower.stat_arb_execution_library import library_forecast_led
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def stable_gap(value: float) -> float:
+    return 0.0 if abs(value) < 1e-10 else value
+
+
 def rejects(callable_) -> int:
     try:
         callable_()
@@ -59,6 +63,16 @@ def build_report() -> str:
         initial=np.asarray(estimation["regime_initial"]),
     )
     fitted_regimes = fit_markov_switching(np.tile(observations, 6))
+    slope_gap = stable_gap(abs(library.transparent_slope - library.library_slope))
+    kalman_gap = stable_gap(
+        max(
+            np.max(np.abs(states.filtered - library_states.filtered)),
+            np.max(np.abs(states.smoothed - library_states.smoothed)),
+        )
+    )
+    probability_gap = stable_gap(
+        float(np.max(np.abs(fitted_regimes.filtered_probabilities.sum(axis=1) - 1.0)))
+    )
 
     research = json.loads((ROOT / "data/fixtures/stat-arb-research.json").read_text(encoding="utf-8"))
     ledger = build_forecast_ledger(
@@ -93,6 +107,12 @@ def build_report() -> str:
             float(research["cost_per_unit_turnover"]),
         ),
     )
+    execution_gap = stable_gap(
+        max(
+            np.max(np.abs(ledger.filled_positions - library_ledger.filled_positions)),
+            abs(ledger.net_return - library_ledger.net_return),
+        )
+    )
     negative_checks = {
         "purge": rejects(lambda: validate_purged_walk_forward(train_indices=range(0, 7), validation_indices=range(8, 10), trade_indices=range(12, 14), label_horizon=2, embargo=2)),
         "embargo": rejects(lambda: validate_purged_walk_forward(train_indices=range(0, 6), validation_indices=range(8, 10), trade_indices=range(11, 14), label_horizon=2, embargo=2)),
@@ -112,15 +132,15 @@ def build_report() -> str:
         f"- ECM 调整速度：{ecm.adjustment_speed:.6f}\n"
         f"- OU 半衰期：{ou.half_life:.6f}\n"
         f"- OU 从冻结起点命中均值的期望时间：{ou.expected_first_passage:.6f}\n"
-        f"- 公共快照透明/成熟库斜率差：{abs(library.transparent_slope-library.library_slope):.3e}\n"
+        f"- 公共快照透明/成熟库斜率差：{slope_gap:.3e}\n"
         f"- statsmodels Engle--Granger p 值：{library.engle_granger_p_value:.6f}；Johansen rank：{library.johansen_rank}\n\n"
         "## 状态推断\n\n"
         f"- 在线滤波末值：{states.filtered[-1]:.6f}\n"
         f"- 第二期平滑值：{states.smoothed[1]:.6f}\n"
         f"- 给定参数状态 1 末概率：{regimes[-1,1]:.6f}\n"
-        f"- 透明/成熟库 Kalman 最大差：{max(np.max(np.abs(states.filtered-library_states.filtered)),np.max(np.abs(states.smoothed-library_states.smoothed))):.3e}\n"
+        f"- 透明/成熟库 Kalman 最大差：{kalman_gap:.3e}\n"
         f"- 过程噪声敏感性（末期状态差）：{abs(high_noise.filtered[-1]-states.filtered[-1]):.6f}\n"
-        f"- 成熟库 Markov MLE 对数似然：{fitted_regimes.log_likelihood:.6f}；概率和最大偏差：{np.max(np.abs(fitted_regimes.filtered_probabilities.sum(axis=1)-1.0)):.3e}\n"
+        f"- 成熟库 Markov MLE 对数似然：{fitted_regimes.log_likelihood:.6f}；概率和最大偏差：{probability_gap:.3e}\n"
         "- 平滑使用未来信息，只能用于事后解释；交易决策使用在线滤波。\n\n"
         "## 从预测到净收益\n\n"
         f"- 目标仓位：{ledger.target_positions.tolist()}\n"
@@ -130,7 +150,7 @@ def build_report() -> str:
         f"- 成本：{ledger.cost:.6f}\n"
         f"- 净收益：{ledger.net_return:.6f}\n"
         f"- 单位成本加倍后的净收益下降：{ledger.net_return-high_cost.net_return:.6f}\n"
-        f"- 透明递推/SciPy 三角求解最大差：{max(np.max(np.abs(ledger.filled_positions-library_ledger.filled_positions)),abs(ledger.net_return-library_ledger.net_return)):.3e}\n"
+        f"- 透明递推/SciPy 三角求解最大差：{execution_gap:.3e}\n"
         f"- 可执行负例拒绝结果：{negative_checks}\n\n"
         "## 双轨数据与限制\n\n"
         "- 合成数据是唯一正确性 oracle。\n"
