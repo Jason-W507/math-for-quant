@@ -262,6 +262,20 @@ def render_lower_route_bridges(manifest: dict[str, object]) -> str:
     )
 
 
+def obsolete_prerequisite_files(expected: dict[Path, str]) -> list[Path]:
+    expected_paths = {
+        path.resolve()
+        for path in expected
+        if path.parent.resolve() == PREREQUISITE_OUTPUT.resolve()
+    }
+    observed = (
+        {path.resolve() for path in PREREQUISITE_OUTPUT.glob("*.tex")}
+        if PREREQUISITE_OUTPUT.is_dir()
+        else set()
+    )
+    return sorted(observed - expected_paths)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
@@ -309,11 +323,16 @@ def main() -> int:
             for path, content in expected.items()
             if not path.is_file() or path.read_text(encoding="utf-8") != content
         ]
-        if stale:
+        obsolete = obsolete_prerequisite_files(expected)
+        if stale or obsolete:
             for path in stale:
                 print(f"stale reader registry: {path.relative_to(ROOT).as_posix()}")
+            for path in obsolete:
+                print(f"obsolete reader registry: {path.relative_to(ROOT).as_posix()}")
             return 1
     else:
+        for path in obsolete_prerequisite_files(expected):
+            path.unlink()
         for path, content in expected.items():
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8", newline="\n")

@@ -3,6 +3,9 @@ from __future__ import annotations
 import re
 import unittest
 import json
+from unittest import mock
+
+import tools.render_shared_registries as registry_renderer
 from pathlib import Path
 
 
@@ -136,12 +139,24 @@ class EditorialReleaseContractTests(unittest.TestCase):
 
     def test_v03_metadata_and_lower_generated_navigation_are_release_ready(self) -> None:
         version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
-        self.assertEqual(version, "0.3.0")
-        self.assertIn('version = "0.3.0"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        self.assertRegex(version, r"^\d+\.\d+\.\d+$")
+        pyproject = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+        self.assertEqual(re.search(r'(?m)^version = "([^"]+)"$', pyproject).group(1), version)
         citation = (ROOT / "CITATION.cff").read_text(encoding="utf-8")
-        self.assertIn("version: 0.3.0", citation)
-        self.assertIn("date-released: 2026-07-31", citation)
-        self.assertIn("## 0.3.0 - 2026-07-31", (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"))
+        self.assertEqual(re.search(r"(?m)^version: (.+)$", citation).group(1), version)
+        release_date = re.search(r"(?m)^date-released: (.+)$", citation).group(1)
+        self.assertRegex(release_date, r"^\d{4}-\d{2}-\d{2}$")
+        self.assertIn(
+            f"## {version} - {release_date}",
+            (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"),
+        )
+        release_workflow = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
+        self.assertIn("name: ${{ github.ref_name }} — 完整双册与共享答案", release_workflow)
+        self.assertIn("body_path: docs/releases/${{ github.ref_name }}.md", release_workflow)
+        self.assertTrue((ROOT / "docs/releases" / f"v{version}.md").is_file())
+        build_driver = (ROOT / "tools/build_books.py").read_text(encoding="utf-8")
+        self.assertIn("release date is unavailable", build_driver)
+        self.assertNotIn(f'return "{release_date}"', build_driver)
 
         lower_main = (ROOT / "tex/lower/main.tex").read_text(encoding="utf-8")
         self.assertNotIn(r"\setcounter{chapter}{0}", lower_main)
@@ -168,6 +183,19 @@ class EditorialReleaseContractTests(unittest.TestCase):
         }
         self.assertTrue({"formula", "table-or-code", "concept-index"} <= selected["lower"])
         self.assertTrue({"upper-solutions", "lower-solutions", "final-answer"} <= selected["solutions"])
+
+    def test_generated_registry_inventory_rejects_obsolete_prerequisites(self) -> None:
+        generated = ROOT / "build/test-generated-prerequisites"
+        generated.mkdir(parents=True, exist_ok=True)
+        expected_path = generated / "expected.tex"
+        obsolete_path = generated / "obsolete.tex"
+        expected_path.write_text("expected\n", encoding="utf-8")
+        obsolete_path.write_text("obsolete\n", encoding="utf-8")
+        with mock.patch.object(registry_renderer, "PREREQUISITE_OUTPUT", generated):
+            observed = registry_renderer.obsolete_prerequisite_files(
+                {expected_path: "expected\n"}
+            )
+        self.assertEqual(observed, [obsolete_path.resolve()])
 
 
 if __name__ == "__main__":

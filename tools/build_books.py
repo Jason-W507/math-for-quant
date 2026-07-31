@@ -66,7 +66,10 @@ def release_date(environment: dict[str, str]) -> str:
     )
     if result.returncode == 0 and result.stdout.strip():
         return result.stdout.strip()
-    return "2026-07-31"
+    raise RuntimeError(
+        "release date is unavailable; set MFQ_RELEASE_DATE or SOURCE_DATE_EPOCH, "
+        "or build from a Git commit"
+    )
 
 
 def git_source_date_epoch() -> str | None:
