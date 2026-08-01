@@ -35,6 +35,10 @@
 \]
 证明不需要先猜公式。取使 $\lVert y-s\rVert$ 最小的 $s$。若存在 $z\in S$ 使 $z^T(y-s)\ne0$，沿 $z$ 方向微调便能继续减小距离，矛盾；故残差正交。若有两个分解，相减后同一向量同时属于 $S$ 与 $S^\perp$，只能为零，故唯一。
 
+\input{tex/figures/generated/upper-ch06-projection-svd.tex}
+
+
+
 令满列秩 $X\in\mathbb R^{n\times d}$，投影 $s=X\hat\beta$。残差 $r=y-X\hat\beta$ 与每一列正交，因而
 \[
   X^Tr=0
@@ -44,7 +48,6 @@
 \]
 $P_X$ 对称且幂等：$P_X^T=P_X$、$P_X^2=P_X$；它在列空间上是恒等映射，在正交补上为零。公式中的逆矩阵要求满列秩。秩亏时投影仍唯一，但系数未必唯一，应使用正交基或 Moore--Penrose 伪逆 $X^+$，写成 $P_X=XX^+$。
 
-\input{tex/upper/figures/projection-svd.tex}
 
 \section{最小二乘：同一结论的优化证明}
 

@@ -1,11 +1,9 @@
-\section{分层练习}
+\section{树模型综合练习}
 \begin{enumerate}[leftmargin=*]
-  \item \textbf{口述概念：}tensor 的 shape、dtype、device 和梯度状态分别约束什么？
-  \item \textbf{口述概念：}为什么树桩候选阈值必须先排序唯一特征值？
-  \item \textbf{笔试推导：}写出两层 MLP 的前向传播与平方损失梯度链。
-  \item \textbf{笔试推导：}解释没有位置编码的 self-attention 对时间置换为何不敏感。
-  \item \textbf{数值编程：}把序列反转，比较均值、因果卷积、RNN、Attention 与 Transformer 输出。
-  \item \textbf{数值编程：}保存并恢复 checkpoint，验证预测与哈希不漂移。
-  \item \textbf{研究判断：}审计一个把随机特征均值池化称作“深度序列模型”的错误研究包。
-  \item \textbf{研究判断：}比较全量微调、只训任务头和 LoRA/adapter 的证据边界。
+  \item \textbf{口述概念：}为什么树模型是量化表格数据的主力基线？它相对线性模型和神经网络分别获得与失去什么？
+  \item \textbf{口述概念：}CART、随机森林、gradient boosting 与 XGBoost 的随机化或优化对象有何不同？
+  \item \textbf{笔试推导：}对样本 $x=(-2,-1,1,3)$、$y=(-4,-2,1,5)$，计算三个 CART 候选阈值的平方误差并选最优分裂。
+  \item \textbf{笔试推导：}由 XGBoost 的二阶近似推导叶权重 $w_j^*=-G_j/(H_j+\lambda)$。
+  \item \textbf{数值编程：}在同一 walk-forward 切分上比较单树、随机森林、gradient boosting 和 MLP，保存训练时间、验证损失、净收益与换手。
+  \item \textbf{研究判断：}审计一个随机切分资产--日期行、再报告高 AUC 的树模型研究包。
 \end{enumerate}

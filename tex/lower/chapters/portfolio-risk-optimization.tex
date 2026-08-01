@@ -1,13 +1,12 @@
-\chapter{组合优化：从观点后验到稳健实施}
+\section{观点后验、尾部目标与稳健实施}
 \label{ch:lower-portfolio-optimization}
 
-\begin{itemize}
-  \input{tex/generated/prerequisites/lower-portfolio-risk-estimation}
-  \item \textbf{学习产出：}推导 Black--Litterman 后验与 CVaR 线性规划，把收益不确定性、换手、成本和不可交易约束放进同一决策问题。
-  \item \textbf{研究边界：}优化器只在给定输入和可行域内最优；它不会修复错误观点、遗漏成本或不可成交权重。
-\end{itemize}
 
-\section{Black--Litterman：把观点和置信度显式化}
+\MFQLead{Black--Litterman：把观点和置信度显式化}
+
+\input{tex/figures/generated/lower-pf-frontier.tex}
+
+
 
 设先验均值 $\pi$ 的不确定性为 $\tau\Sigma$，观点矩阵 $P$、观点收益 $q$、观点误差协方差 $\Omega$ 满足
 \[
@@ -23,7 +22,7 @@
 
 冻结例的先验均值为 $(0.05,0.04)$，观点是第一资产相对第二资产超额 $0.03$，$\tau=0.05$，观点方差为 $0.0025$。后验均值为 $(0.05375,0.03)$。透明精度公式与独立 Woodbury 更新最大差 $2.8\times10^{-17}$。当 $\Omega$ 变小，观点权重上升；这表示模型更相信观点，不表示观点变得更真实。
 
-\section{CVaR 的线性规划形式}
+\MFQLead{CVaR 的线性规划形式}
 
 给定 $N$ 个情景收益 $r_s$，损失 $L_s(w)=-r_s^\top w$。Rockafellar--Uryasev 表示为
 \[
@@ -43,7 +42,7 @@
 
 真实数据轨把冻结宏观快照的 39 个相邻增长率向量作为情景输入同一 LP；在 75\% 水平和 0.8 权重上限下，得到权重 $(0.2,0.8)$ 与 CVaR $0.001212$。这证明真实快照确实进入优化问题，但 GDP 与消费增长并非可交易资产，结果只验收数据适配、时间边界和约束台账。
 
-\section{把估计误差、成本和可交易性放在一起}
+\MFQLead{把估计误差、成本和可交易性放在一起}
 
 稳健再平衡采用
 \[
@@ -61,7 +60,7 @@
 \]
 比例成本进入收益口径目标，现金台账再乘资本。若机构采用单边换手，必须显式除以二；基点、百分数和小数的混用会造成百倍或万倍错误。
 
-\section{优化结果的验收顺序}
+\MFQLead{优化结果的验收顺序}
 
 每次求解都应依次检查：输入维度与有限性、协方差半正定、风险厌恶和资本为正、成本非负、网格可整除 1、权重和为 1、上下界满足、不可交易权重未动、目标由独立台账重算。不能先求解，再靠裁剪把非法权重变成“可交易组合”。
 
@@ -73,4 +72,43 @@
 
 本单元向 Route Capstone 交付观点后验、情景损失、活跃约束、换手、成本与可行性证据。
 
-\input{tex/lower/chapters/portfolio-risk-optimization-questions}
+\MFQLead{均值--方差优化与输入放大}
+
+无约束均值--方差解为
+\[
+w^*=\frac1\gamma\Sigma^{-1}\mu.
+\]
+它清楚展示了两个放大器：均值估计误差直接进入权重，协方差小特征值又通过逆矩阵放大。实际系统必须使用权重界、暴露约束、均值收缩和交易成本，而不是把解析解当推荐组合。
+
+若目标是相对基准 $b$ 的主动组合，使用主动权重 $a=w-b$ 和跟踪误差 $a^{\mathsf T}\Sigma a$。行业中性、beta 中性和换手上限都可写成线性/凸约束。不可交易资产的旧仓位要固定，而不是在求解后裁成零。
+
+\MFQLead{Black--Litterman 的信息含义}
+
+均衡先验 $\pi=\delta\Sigma w_{mkt}$ 与观点 $P\mu=q$、观点误差 $\Omega$ 合并。后验均值可写为
+\[
+\mu_{BL}=\left[(\tau\Sigma)^{-1}+P^{\mathsf T}\Omega^{-1}P\right]^{-1}
+\left[(\tau\Sigma)^{-1}\pi+P^{\mathsf T}\Omega^{-1}q\right].
+\]
+$\Omega$ 小表示高置信度，观点更强；$\tau$ 与 $\Omega$ 的相对尺度共同决定收缩。观点矩阵每行必须解释为绝对或相对观点，单位与资产顺序不可错。
+
+\MFQLead{CVaR 线性规划的辅助变量}
+
+对场景损失 $\ell_s(w)$，置信度 $\alpha$ 的 CVaR 可由
+\[
+\min_{w,\zeta,u_s}\quad
+\zeta+\frac1{(1-\alpha)S}\sum_su_s,
+\]
+\[
+u_s\ge \ell_s(w)-\zeta,quad u_s\ge0
+\]
+表示。$\zeta$ 近似 VaR，$u_s$ 记录超额损失。情景数不足时 LP 仍会给出精确解，但尾部估计没有统计支撑；优化成功不能替代有效尾部样本门禁。
+
+\MFQLead{稳健优化与分布不确定性}
+
+若均值属于椭球不确定集，最坏情形均值会产生额外范数惩罚；协方差不确定可用情景集合或分布鲁棒方法。稳健半径越大，组合越保守。半径应由估计误差或验证协议决定，不能为获得目标仓位反推。
+
+优化报告应包含 shadow price 或活跃约束：它们说明性能被哪个限制约束。若小幅改变上限就导致完全不同组合，说明解位于尖锐边界，应做参数和输入扰动。
+
+\begin{diagnostic}
+求解器返回 optimal 只表示数值模型被解出。若预期收益来自未来修订、成本单位错误或场景不代表尾部，最优解仍是错误问题的精确答案。
+\end{diagnostic}

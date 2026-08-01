@@ -23,14 +23,6 @@
 \begin{enumerate}[leftmargin=*]
   \item 独立账本为 $\hat\beta=(7/6,1/2)^T$、$r=(-1/6,1/3,-1/6)^T$，残差平方和为 $1/6$。程序分别计算正规方程解、QR 回代 $R\beta=Q^Ty$、\texttt{np.linalg.lstsq} 与 $X^+y$，四者相对同一手算向量的最大分量误差必须小于 $10^{-12}$；这不表示四种算法对病态矩阵同样可靠。测试还要求 $X^Tr$、$Q^TQ-I$、$QR-X$、$P^2-P$ 与 $P-P^T$ 足够小，且重构误差小于 $10^{-12}$。
   \item $X=\sum_i\sigma_iu_iv_i^T$。保留第一项得到 $X_1$；Eckart--Young 给出 $\lVert X-X_1\rVert_2=\sigma_2=0.915272\ldots$。测试期望来自解析奇异值 $\sqrt{4-\sqrt{10}}$；若实现错误地保留较小奇异值，误差会变为 $\sigma_1$，因此会失败。
-  \item 对坐标扰动，绝对分量放大倍数为 $1000001$，相对范数放大约为 $1.0000005$，说明它没有对齐最坏方向。令 $b=\sigma_1u_1$、$\delta b=\eta\sigma_1u_2$，则 $x=v_1$、$\delta x=\eta(\sigma_1/\sigma_2)v_2$，相对放大正是 $\kappa_2(A)\approx4.0\times10^6$。公开 CLI 会拒绝 NaN、改变后的固定矩阵、宽容差和错误条件数标签。
-\end{enumerate}
-
-\section*{研究判断}
-\begin{enumerate}[leftmargin=*]
-  \item 先核对对称化、单位、缺失值、样本窗口和权重；再画谱并检查小特征值对应的因子组合，判断是否重复暴露或样本不足；比较 SVD/QR/Cholesky 的残差与后向误差。轻微负值若只是舍入，应与矩阵尺度相容；若随窗口稳定出现，则是估计或模型问题。任何截断都要记录阈值与风险解释变化。
-  \item 预测稳定但参数翻倍通常意味着沿近零奇异方向重新分配系数。报告奇异值谱、系数在右奇异基下的分量、窗口扰动和预测差异；用 QR/SVD 排除算法问题。若业务需要解释单因子系数，模型当前不可辨识；若只需预测，也仍要评估样本外和约束敏感性。
-  \item 先说明 ridge 目标 $\lVert y-X\beta\rVert^2+\lambda\lVert\beta\rVert^2$ 与单位；用标准化前后、多个 $\lambda$、时间滚动和独立验证比较预测、系数、换手与风险暴露。检查惩罚是否错误作用于截距或不同单位变量。只有偏差--方差及经济目标的样本外证据改善时才接受，不能以条件数变小作为唯一理由。
 \end{enumerate}
 
 \section*{恢复路径}
@@ -41,3 +33,7 @@ uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch06
 \end{lstlisting}
 若失败，按“形状/有限值 $\rightarrow$ 固定输入 $\rightarrow$ 解析账本 $\rightarrow$ 分解不变量 $\rightarrow$ 扰动方向”的顺序恢复。不要用当前库输出改写 expected，也不要通过放宽容差把模型问题伪装成浮点误差。
+% MFQ source replacements removed=4 unit=UpperChSix
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperChSixSolutions

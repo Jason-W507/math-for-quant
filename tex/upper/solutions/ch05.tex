@@ -33,8 +33,6 @@
 \section*{研究判断}
 \begin{enumerate}[leftmargin=*]
   \item 先固定最小标量目标、参数点和 dtype；列出每个中间量形状及 Jacobian 约定；手算闭式结果。再比较自动微分与手推，检查 detach、原地修改、广播、转置和不可微算子；最后扫描中心差分步长并比较左右差商。每次只改变一个因素，保留退出状态与完整输出，不通过随意转置或放宽容差隐藏错误。
-  \item 先写损失是 $\sum_i\ell_i$ 还是 $n^{-1}\sum_i\ell_i$，手算两者梯度相差 $n$。然后用单样本和重复样本测试观察缩放是否线性；检查广播是否把 $(n,1)$ 与 $(n,)$ 扩成 $(n,n)$；最后核对研究定义究竟要求总成本还是平均风险。单位分析可进一步发现收益、基点和金额混用。
-  \item 第一层用有限差分/自动微分确认 $\nabla L=\Sigma w-\lambda\mu$，这是导数正确性。第二层检查 $\Sigma$ 的特征值、条件数和扰动放大，使用分解或正则化处理病态性。第三层审查期望收益估计误差、样本外稳定性、预算/杠杆/换手约束和交易成本；闭式解极端即使数学和数值都正确，也可能没有研究可用性。
 \end{enumerate}
 
 \section*{恢复路径}
@@ -44,3 +42,7 @@ uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch05
 \end{lstlisting}
 再复制 `evidence/ch05/oracle.json` 到临时文件逐项注入坏值，从公开 CLI 记录稳定诊断。若自动微分、差分和手推不一致，先回到固定非对称二次型与形状账本；只有该闭式案例一致后，才把复杂模型逐层接回。
+% MFQ source replacements removed=2 unit=UpperChFive
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperChFiveSolutions

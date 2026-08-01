@@ -422,6 +422,31 @@
       }
     },
     {
+      "id": "lower.brainteasers",
+      "title": "Brainteaser：把陌生题压缩成可证明结构",
+      "volume": "lower",
+      "capstone": false,
+      "state": "accepted",
+      "published": true,
+      "prerequisites": ["upper.ch01", "upper.ch07", "upper.ch08"],
+      "evidence": {
+        "notation_symbols": ["(\\Omega,\\mathcal F,\\mathbb P)"],
+        "glossary_terms": ["不变量"],
+        "notation_and_assumptions": "tex/lower/chapters/brainteasers.tex",
+        "core_derivation": "tex/lower/chapters/brainteasers.tex",
+        "independent_oracle": {
+          "source": "notebooks/lower/brainteasers.py",
+          "oracle": "evidence/brainteasers/oracle.json",
+          "command": ["{python}", "notebooks/lower/brainteasers.py", "evidence/brainteasers/oracle.json"]
+        },
+        "questions": "tex/lower/chapters/brainteasers.tex",
+        "hints": "tex/lower/chapters/brainteasers-hints.tex",
+        "solutions": "tex/lower/chapters/brainteasers-solutions.tex",
+        "capstone_connection": "tex/lower/chapters/brainteasers.tex",
+        "shared_solutions": "tex/solutions-main.tex"
+      }
+    },
+    {
       "id": "lower.multifactor.model",
       "title": "多因子模型：预测回归与风险价格",
       "volume": "lower",
@@ -614,7 +639,7 @@
       }
     },
     {
-      "id":"lower.ml-alpha.model","title":"模型与表示：从基线到 PyTorch、Transformer 与文本适配","volume":"lower","track":"ml-alpha","track_stage":"model-math","state":"accepted","published":true,
+      "id":"lower.ml-alpha.model","title":"表格统计学习：从决策树到梯度提升","volume":"lower","track":"ml-alpha","track_stage":"model-math","state":"accepted","published":true,
       "prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],
       "evidence":{
         "notation_symbols":["h(D)"],"glossary_terms":["数据泄漏","样本外"],
@@ -777,7 +802,7 @@
   "tracks": [
     {"id":"multifactor","title":"多因子与计量","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.multifactor.model","lower.multifactor.estimation","lower.multifactor.research"]},
     {"id":"stat-arb","title":"时间序列与统计套利","bridge_prerequisites":["upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.stat-arb.model","lower.stat-arb.estimation","lower.stat-arb.research"]},
-    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.ml-alpha.model","lower.ml-alpha.validation","lower.ml-alpha.research"]},
+    {"id":"ml-alpha","title":"机器学习与 AI Alpha","bridge_prerequisites":["upper.ch05","upper.ch06","upper.ch09","upper.ch10","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.ml-alpha.model","lower.ml-alpha.validation","lower.ml-alpha.research"],"reader_chapters":["tex/lower/chapters/ml-alpha-model.tex","tex/lower/chapters/ml-alpha-deep.tex","tex/lower/chapters/ml-alpha-sequence.tex","tex/lower/chapters/ml-alpha-frontiers.tex","tex/lower/chapters/ml-alpha-validation.tex","tex/lower/chapters/ml-alpha-research.tex"]},
     {"id":"derivatives","title":"衍生品定价与对冲","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch13","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.derivatives.stochastic","lower.derivatives.numerics","lower.derivatives.hedging"]},
     {"id":"portfolio-risk","title":"组合与风险","bridge_prerequisites":["upper.ch06","upper.ch10","upper.ch13","upper.ch14","upper.ch16","upper.ch17"],"planned_units":["lower.portfolio-risk.model","lower.portfolio-risk.estimation","lower.portfolio-risk.research"]},
     {"id":"microstructure","title":"高频、微观结构与执行","bridge_prerequisites":["upper.ch07","upper.ch08","upper.ch09","upper.ch11","upper.ch12","upper.ch14","upper.ch15","upper.ch16","upper.ch17"],"planned_units":["lower.microstructure.model","lower.microstructure.estimation","lower.microstructure.research"]}

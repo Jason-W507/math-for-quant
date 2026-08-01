@@ -143,6 +143,11 @@ v=\frac{\omega}{1-\alpha-\beta}.
 \]
 取与全部噪声独立的高斯先验 $x_0\sim\mathcal N(0,1)$，即 $(x_{0\mid0},P_{0\mid0})=(0,1)$；令 $Q=0.25,R=1$，依次观测 $1,-0.5,0.25$，三次滤波均值依次为 $0.555556$、$0.084615$ 与 $0.152494$，末次增益为 $0.410431$。这些数可用分数逐步手算，程序不得把滤波输出再当成自己的 oracle。
 
+\input{tex/figures/generated/upper-ch12-state-space.tex}
+
+
+
+
 每步预测条件于过去数据，所以 $\nu_t\mid\mathcal F_{t-1}\sim\mathcal N(0,S_t)$，其中 $S_t=P_{t\mid t-1}+R$。逐期条件密度相乘、取对数后得到高斯创新似然
 \[
 \ell=-\frac12\sum_t\{\log(2\pi)+\log S_t+\nu_t^2/S_t\}.

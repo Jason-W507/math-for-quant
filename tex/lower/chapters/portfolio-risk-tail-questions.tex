@@ -1,4 +1,4 @@
-\section{分层练习}
+\MFQLead{尾部、压力测试与模型风险题组}
 \begin{enumerate}[leftmargin=*]
   \item \textbf{口述概念：}VaR、ES、历史压力和反向压力分别回答什么问题？
   \item \textbf{笔试推导：}解释积分分位数 ES 如何处理分位点概率质量。
@@ -7,10 +7,9 @@
   \item \textbf{数值编程：}加入交叉 Gamma 或期权全重估，比较线性与非线性损失。
   \item \textbf{错误研究包审计：}审查只报告四个损失样本 99\% ES 的报告。
   \item \textbf{研究判断：}为什么反向压力阈值不等于危机发生概率？
-  \item \textbf{开放 Capstone：}提交含估计、优化、成本、尾部、反向压力和限制声明的一键研究包。
 \end{enumerate}
 
-\subsection*{错误研究包审计清单}
+\MFQLead{错误研究包审计清单}
 
 对第 6 题不要只写“样本太少”。把结论拆成可复核的证据：
 
@@ -30,3 +29,7 @@
 \end{center}
 
 开放 Capstone 的提交物应包含一条可复现命令、独立手算或库实现对照、失败注入、完整限制声明，以及从原始输入到最终报告的文件清单。审计者必须能够区分“计算成功”“统计证据足够”和“研究结论可行动”这三个不同状态。
+% MFQ source replacements removed=1 unit=PortfolioTail
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedPortfolioTailQuestions

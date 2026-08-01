@@ -1,0 +1,2512 @@
+{
+  "schema_version": 1,
+  "source": {
+    "title": "A Practical Guide to Quantitative Finance Interviews",
+    "author": "Xinfeng Zhou",
+    "edition": "2008",
+    "catalog_scope": "all named contents entries; every frozen entry enters the coverage denominator"
+  },
+  "scoring_rule": {
+    "axes": [
+      "qr_relevance",
+      "interview_frequency",
+      "transferability",
+      "curriculum_fit"
+    ],
+    "scale": "0-3",
+    "high_priority": "kind == problem and total >= 9 and qr_relevance > 0",
+    "target_coverage": 0.5,
+    "publication_floor": 0.5
+  },
+  "summary": {
+    "catalogued": 146,
+    "high_priority": 60,
+    "mapped_high_priority": 53,
+    "mapped_entries": 73,
+    "coverage": 0.5
+  },
+  "problems": [
+    {
+      "id": "GB-2-01",
+      "source_chapter": 2,
+      "source_section": "2.1",
+      "toc_page": 3,
+      "kind": "problem",
+      "original_title": "Screwy pirates",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-02",
+      "source_chapter": 2,
+      "source_section": "2.1",
+      "toc_page": 3,
+      "kind": "problem",
+      "original_title": "Tiger and sheep",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-03",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "River crossing",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-04",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Birthday problem",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-05",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Card game",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-06",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Burning ropes",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-07",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Defective ball",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-08",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Trailing zeros",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-09",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Horse race",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-10",
+      "source_chapter": 2,
+      "source_section": "2.2",
+      "toc_page": 5,
+      "kind": "problem",
+      "original_title": "Infinite sequence",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-11",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Box packing",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-12",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Calendar cubes",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-13",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Door to offer",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-14",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Message delivery",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-15",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Last ball",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-16",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Light switches",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-17",
+      "source_chapter": 2,
+      "source_section": "2.3",
+      "toc_page": 10,
+      "kind": "problem",
+      "original_title": "Quant salary",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-18",
+      "source_chapter": 2,
+      "source_section": "2.4",
+      "toc_page": 15,
+      "kind": "problem",
+      "original_title": "Coin piles",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-19",
+      "source_chapter": 2,
+      "source_section": "2.4",
+      "toc_page": 15,
+      "kind": "problem",
+      "original_title": "Mislabeled bags",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-20",
+      "source_chapter": 2,
+      "source_section": "2.4",
+      "toc_page": 15,
+      "kind": "problem",
+      "original_title": "Wise men",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-21",
+      "source_chapter": 2,
+      "source_section": "2.5",
+      "toc_page": 17,
+      "kind": "problem",
+      "original_title": "Clock pieces",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-22",
+      "source_chapter": 2,
+      "source_section": "2.5",
+      "toc_page": 17,
+      "kind": "problem",
+      "original_title": "Missing integers",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-23",
+      "source_chapter": 2,
+      "source_section": "2.5",
+      "toc_page": 17,
+      "kind": "problem",
+      "original_title": "Counterfeit coins I",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-24",
+      "source_chapter": 2,
+      "source_section": "2.6",
+      "toc_page": 20,
+      "kind": "problem",
+      "original_title": "Matching socks",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-25",
+      "source_chapter": 2,
+      "source_section": "2.6",
+      "toc_page": 20,
+      "kind": "problem",
+      "original_title": "Handshakes",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-26",
+      "source_chapter": 2,
+      "source_section": "2.6",
+      "toc_page": 20,
+      "kind": "problem",
+      "original_title": "Have we met before?",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-27",
+      "source_chapter": 2,
+      "source_section": "2.6",
+      "toc_page": 20,
+      "kind": "problem",
+      "original_title": "Ants on a square",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-28",
+      "source_chapter": 2,
+      "source_section": "2.6",
+      "toc_page": 20,
+      "kind": "problem",
+      "original_title": "Counterfeit coins II",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-29",
+      "source_chapter": 2,
+      "source_section": "2.7",
+      "toc_page": 23,
+      "kind": "problem",
+      "original_title": "Prisoner problem",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-30",
+      "source_chapter": 2,
+      "source_section": "2.7",
+      "toc_page": 23,
+      "kind": "problem",
+      "original_title": "Division by 9",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-31",
+      "source_chapter": 2,
+      "source_section": "2.7",
+      "toc_page": 23,
+      "kind": "problem",
+      "original_title": "Chameleon colors",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-32",
+      "source_chapter": 2,
+      "source_section": "2.8",
+      "toc_page": 27,
+      "kind": "problem",
+      "original_title": "Coin split problem",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-33",
+      "source_chapter": 2,
+      "source_section": "2.8",
+      "toc_page": 27,
+      "kind": "problem",
+      "original_title": "Chocolate bar problem",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-34",
+      "source_chapter": 2,
+      "source_section": "2.8",
+      "toc_page": 27,
+      "kind": "problem",
+      "original_title": "Race track",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-35",
+      "source_chapter": 2,
+      "source_section": "2.9",
+      "toc_page": 31,
+      "kind": "problem",
+      "original_title": "Irrational number",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-2-36",
+      "source_chapter": 2,
+      "source_section": "2.9",
+      "toc_page": 31,
+      "kind": "problem",
+      "original_title": "Rainbow hats",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 10,
+      "high_priority": true,
+      "home_unit": "lower.brainteasers"
+    },
+    {
+      "id": "GB-3-01",
+      "source_chapter": 3,
+      "source_section": "3.1",
+      "toc_page": 33,
+      "kind": "topic",
+      "original_title": "Basics of derivatives",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-02",
+      "source_chapter": 3,
+      "source_section": "3.1",
+      "toc_page": 33,
+      "kind": "topic",
+      "original_title": "Maximum and minimum",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch05"
+    },
+    {
+      "id": "GB-3-03",
+      "source_chapter": 3,
+      "source_section": "3.1",
+      "toc_page": 33,
+      "kind": "topic",
+      "original_title": "L'Hospital's rule",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-04",
+      "source_chapter": 3,
+      "source_section": "3.2",
+      "toc_page": 36,
+      "kind": "topic",
+      "original_title": "Basics of integration",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-05",
+      "source_chapter": 3,
+      "source_section": "3.2",
+      "toc_page": 36,
+      "kind": "topic",
+      "original_title": "Applications of integration",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-06",
+      "source_chapter": 3,
+      "source_section": "3.2",
+      "toc_page": 36,
+      "kind": "topic",
+      "original_title": "Expected value using integration",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-07",
+      "source_chapter": 3,
+      "source_section": "3.3",
+      "toc_page": 40,
+      "kind": "topic",
+      "original_title": "Partial derivatives and multiple integrals",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-08",
+      "source_chapter": 3,
+      "source_section": "3.4",
+      "toc_page": 41,
+      "kind": "topic",
+      "original_title": "Taylor series",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch05"
+    },
+    {
+      "id": "GB-3-09",
+      "source_chapter": 3,
+      "source_section": "3.4",
+      "toc_page": 41,
+      "kind": "topic",
+      "original_title": "Newton's method",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch14"
+    },
+    {
+      "id": "GB-3-10",
+      "source_chapter": 3,
+      "source_section": "3.4",
+      "toc_page": 41,
+      "kind": "topic",
+      "original_title": "Lagrange multipliers",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch13"
+    },
+    {
+      "id": "GB-3-11",
+      "source_chapter": 3,
+      "source_section": "3.5",
+      "toc_page": 46,
+      "kind": "topic",
+      "original_title": "Separable ODE",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-12",
+      "source_chapter": 3,
+      "source_section": "3.5",
+      "toc_page": 46,
+      "kind": "topic",
+      "original_title": "First-order linear ODE",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-13",
+      "source_chapter": 3,
+      "source_section": "3.5",
+      "toc_page": 46,
+      "kind": "topic",
+      "original_title": "Homogeneous linear ODE",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-14",
+      "source_chapter": 3,
+      "source_section": "3.5",
+      "toc_page": 46,
+      "kind": "topic",
+      "original_title": "Nonhomogeneous linear ODE",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-15",
+      "source_chapter": 3,
+      "source_section": "3.6",
+      "toc_page": 50,
+      "kind": "topic",
+      "original_title": "Vectors",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-3-16",
+      "source_chapter": 3,
+      "source_section": "3.6",
+      "toc_page": 50,
+      "kind": "topic",
+      "original_title": "QR decomposition",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch06"
+    },
+    {
+      "id": "GB-3-17",
+      "source_chapter": 3,
+      "source_section": "3.6",
+      "toc_page": 50,
+      "kind": "topic",
+      "original_title": "Determinant, eigenvalue and eigenvector",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch06"
+    },
+    {
+      "id": "GB-3-18",
+      "source_chapter": 3,
+      "source_section": "3.6",
+      "toc_page": 50,
+      "kind": "topic",
+      "original_title": "Positive semidefinite and positive definite matrices",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch06"
+    },
+    {
+      "id": "GB-3-19",
+      "source_chapter": 3,
+      "source_section": "3.6",
+      "toc_page": 50,
+      "kind": "topic",
+      "original_title": "LU decomposition and Cholesky decomposition",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 11,
+      "high_priority": false,
+      "home_unit": "upper.ch06"
+    },
+    {
+      "id": "GB-4-01",
+      "source_chapter": 4,
+      "source_section": "4.1",
+      "toc_page": 59,
+      "kind": "problem",
+      "original_title": "Coin toss game I",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-02",
+      "source_chapter": 4,
+      "source_section": "4.1",
+      "toc_page": 59,
+      "kind": "problem",
+      "original_title": "Card game I",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-03",
+      "source_chapter": 4,
+      "source_section": "4.1",
+      "toc_page": 59,
+      "kind": "problem",
+      "original_title": "Drunk passenger",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-04",
+      "source_chapter": 4,
+      "source_section": "4.1",
+      "toc_page": 59,
+      "kind": "problem",
+      "original_title": "N points on a circle",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-05",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Poker hands",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-06",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Hopping rabbit",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-07",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Screwy pirates II",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-08",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Chess tournament",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-09",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Application letters",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-10",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Birthday problem II",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-11",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "100th digit",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-12",
+      "source_chapter": 4,
+      "source_section": "4.2",
+      "toc_page": 64,
+      "kind": "problem",
+      "original_title": "Cubic integer",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-13",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Boys and girls",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-14",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "All-girl world?",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-15",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Unfair coin",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch08"
+    },
+    {
+      "id": "GB-4-16",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Fair coin from an unfair coin",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch08"
+    },
+    {
+      "id": "GB-4-17",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Dart game",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-18",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Birthday line",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-19",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Dice order",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-20",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Monty Hall",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch08"
+    },
+    {
+      "id": "GB-4-21",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Amoeba population",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-22",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Candies in a jar",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-23",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Coin toss game II",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-24",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Russian roulette",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch08"
+    },
+    {
+      "id": "GB-4-25",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Aces",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch08"
+    },
+    {
+      "id": "GB-4-26",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Gambler's ruin",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-27",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Basketball scores",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-28",
+      "source_chapter": 4,
+      "source_section": "4.3",
+      "toc_page": 72,
+      "kind": "problem",
+      "original_title": "Cars on road",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch08"
+    },
+    {
+      "id": "GB-4-29",
+      "source_chapter": 4,
+      "source_section": "4.4",
+      "toc_page": 86,
+      "kind": "problem",
+      "original_title": "Meeting probability",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-30",
+      "source_chapter": 4,
+      "source_section": "4.4",
+      "toc_page": 86,
+      "kind": "problem",
+      "original_title": "Probability of triangle",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-31",
+      "source_chapter": 4,
+      "source_section": "4.4",
+      "toc_page": 86,
+      "kind": "problem",
+      "original_title": "Poisson process property",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-32",
+      "source_chapter": 4,
+      "source_section": "4.4",
+      "toc_page": 86,
+      "kind": "problem",
+      "original_title": "Normal moments",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch09"
+    },
+    {
+      "id": "GB-4-33",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Connecting noodles",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-34",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Optimal hedge ratio",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-35",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Dice game",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-36",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Card game II",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-4-37",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Sum of random variables",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-38",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Coupon collection",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-39",
+      "source_chapter": 4,
+      "source_section": "4.5",
+      "toc_page": 92,
+      "kind": "problem",
+      "original_title": "Joint default",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch07"
+    },
+    {
+      "id": "GB-4-40",
+      "source_chapter": 4,
+      "source_section": "4.6",
+      "toc_page": 99,
+      "kind": "problem",
+      "original_title": "Expected maximum and minimum",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch09"
+    },
+    {
+      "id": "GB-4-41",
+      "source_chapter": 4,
+      "source_section": "4.6",
+      "toc_page": 99,
+      "kind": "problem",
+      "original_title": "Correlation maximum and minimum",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch09"
+    },
+    {
+      "id": "GB-4-42",
+      "source_chapter": 4,
+      "source_section": "4.6",
+      "toc_page": 99,
+      "kind": "problem",
+      "original_title": "Random ants",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-01",
+      "source_chapter": 5,
+      "source_section": "5.1",
+      "toc_page": 105,
+      "kind": "problem",
+      "original_title": "Gambler's ruin II",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch11"
+    },
+    {
+      "id": "GB-5-02",
+      "source_chapter": 5,
+      "source_section": "5.1",
+      "toc_page": 105,
+      "kind": "problem",
+      "original_title": "Dice question",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-03",
+      "source_chapter": 5,
+      "source_section": "5.1",
+      "toc_page": 105,
+      "kind": "problem",
+      "original_title": "Coin triplets",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch11"
+    },
+    {
+      "id": "GB-5-04",
+      "source_chapter": 5,
+      "source_section": "5.1",
+      "toc_page": 105,
+      "kind": "problem",
+      "original_title": "Color balls",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-05",
+      "source_chapter": 5,
+      "source_section": "5.2",
+      "toc_page": 115,
+      "kind": "problem",
+      "original_title": "Drunk man",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch11"
+    },
+    {
+      "id": "GB-5-06",
+      "source_chapter": 5,
+      "source_section": "5.2",
+      "toc_page": 115,
+      "kind": "problem",
+      "original_title": "Dice game II",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-07",
+      "source_chapter": 5,
+      "source_section": "5.2",
+      "toc_page": 115,
+      "kind": "problem",
+      "original_title": "Ticket line",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": true,
+      "home_unit": "upper.ch11"
+    },
+    {
+      "id": "GB-5-08",
+      "source_chapter": 5,
+      "source_section": "5.2",
+      "toc_page": 115,
+      "kind": "problem",
+      "original_title": "Coin sequence",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-09",
+      "source_chapter": 5,
+      "source_section": "5.3",
+      "toc_page": 121,
+      "kind": "topic",
+      "original_title": "Dynamic programming algorithm",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-10",
+      "source_chapter": 5,
+      "source_section": "5.3",
+      "toc_page": 121,
+      "kind": "problem",
+      "original_title": "Dice game III",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-11",
+      "source_chapter": 5,
+      "source_section": "5.3",
+      "toc_page": 121,
+      "kind": "problem",
+      "original_title": "World series",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": "upper.ch11"
+    },
+    {
+      "id": "GB-5-12",
+      "source_chapter": 5,
+      "source_section": "5.3",
+      "toc_page": 121,
+      "kind": "problem",
+      "original_title": "Dynamic dice game",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-13",
+      "source_chapter": 5,
+      "source_section": "5.3",
+      "toc_page": 121,
+      "kind": "problem",
+      "original_title": "Dynamic card game",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-14",
+      "source_chapter": 5,
+      "source_section": "5.4",
+      "toc_page": 129,
+      "kind": "topic",
+      "original_title": "Brownian motion",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-5-15",
+      "source_chapter": 5,
+      "source_section": "5.4",
+      "toc_page": 129,
+      "kind": "topic",
+      "original_title": "Stopping and first passage",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": "lower.derivatives-stochastic"
+    },
+    {
+      "id": "GB-5-16",
+      "source_chapter": 5,
+      "source_section": "5.4",
+      "toc_page": 129,
+      "kind": "topic",
+      "original_title": "Ito's lemma",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-01",
+      "source_chapter": 6,
+      "source_section": "6.1",
+      "toc_page": 137,
+      "kind": "topic",
+      "original_title": "Option price directions",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-02",
+      "source_chapter": 6,
+      "source_section": "6.1",
+      "toc_page": 137,
+      "kind": "topic",
+      "original_title": "Put-call parity",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": "lower.derivatives-numerics"
+    },
+    {
+      "id": "GB-6-03",
+      "source_chapter": 6,
+      "source_section": "6.1",
+      "toc_page": 137,
+      "kind": "topic",
+      "original_title": "American versus European options",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-04",
+      "source_chapter": 6,
+      "source_section": "6.1",
+      "toc_page": 137,
+      "kind": "topic",
+      "original_title": "Black-Scholes-Merton PDE",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-05",
+      "source_chapter": 6,
+      "source_section": "6.1",
+      "toc_page": 137,
+      "kind": "topic",
+      "original_title": "Black-Scholes-Merton formula",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-06",
+      "source_chapter": 6,
+      "source_section": "6.2",
+      "toc_page": 149,
+      "kind": "topic",
+      "original_title": "Delta",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-07",
+      "source_chapter": 6,
+      "source_section": "6.2",
+      "toc_page": 149,
+      "kind": "topic",
+      "original_title": "Gamma",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-08",
+      "source_chapter": 6,
+      "source_section": "6.2",
+      "toc_page": 149,
+      "kind": "topic",
+      "original_title": "Theta",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-09",
+      "source_chapter": 6,
+      "source_section": "6.2",
+      "toc_page": 149,
+      "kind": "topic",
+      "original_title": "Vega",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-10",
+      "source_chapter": 6,
+      "source_section": "6.3",
+      "toc_page": 158,
+      "kind": "topic",
+      "original_title": "Bull spread",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-11",
+      "source_chapter": 6,
+      "source_section": "6.3",
+      "toc_page": 158,
+      "kind": "topic",
+      "original_title": "Straddle",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-12",
+      "source_chapter": 6,
+      "source_section": "6.3",
+      "toc_page": 158,
+      "kind": "topic",
+      "original_title": "Binary option",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-13",
+      "source_chapter": 6,
+      "source_section": "6.3",
+      "toc_page": 158,
+      "kind": "topic",
+      "original_title": "Exchange option",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-14",
+      "source_chapter": 6,
+      "source_section": "6.4",
+      "toc_page": 163,
+      "kind": "topic",
+      "original_title": "Portfolio optimization",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": "lower.portfolio-risk-optimization"
+    },
+    {
+      "id": "GB-6-15",
+      "source_chapter": 6,
+      "source_section": "6.4",
+      "toc_page": 163,
+      "kind": "topic",
+      "original_title": "Value at Risk",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": "lower.portfolio-risk-tail"
+    },
+    {
+      "id": "GB-6-16",
+      "source_chapter": 6,
+      "source_section": "6.4",
+      "toc_page": 163,
+      "kind": "topic",
+      "original_title": "Duration and convexity",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-17",
+      "source_chapter": 6,
+      "source_section": "6.4",
+      "toc_page": 163,
+      "kind": "topic",
+      "original_title": "Forwards and futures",
+      "scores": {
+        "qr_relevance": 3,
+        "interview_frequency": 3,
+        "transferability": 3,
+        "curriculum_fit": 3
+      },
+      "total": 12,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-6-18",
+      "source_chapter": 6,
+      "source_section": "6.4",
+      "toc_page": 163,
+      "kind": "topic",
+      "original_title": "Interest-rate models",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-01",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Number swap",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-02",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Unique elements",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-03",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Horner algorithm",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 9,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-04",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Moving average",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-05",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Sorting",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-06",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Random permutation",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-07",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Search",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-08",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Fibonacci",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-09",
+      "source_chapter": 7,
+      "source_section": "7.1",
+      "toc_page": 171,
+      "kind": "problem",
+      "original_title": "Maximum contiguous subarray",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 9,
+      "high_priority": true,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-10",
+      "source_chapter": 7,
+      "source_section": "7.2",
+      "toc_page": 182,
+      "kind": "problem",
+      "original_title": "Power of two",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-11",
+      "source_chapter": 7,
+      "source_section": "7.2",
+      "toc_page": 182,
+      "kind": "problem",
+      "original_title": "Multiplication by seven",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-12",
+      "source_chapter": 7,
+      "source_section": "7.2",
+      "toc_page": 182,
+      "kind": "problem",
+      "original_title": "Probability simulation",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-13",
+      "source_chapter": 7,
+      "source_section": "7.2",
+      "toc_page": 182,
+      "kind": "problem",
+      "original_title": "Poisonous wine",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 1,
+        "transferability": 2,
+        "curriculum_fit": 1
+      },
+      "total": 6,
+      "high_priority": false,
+      "home_unit": null
+    },
+    {
+      "id": "GB-7-14",
+      "source_chapter": 7,
+      "source_section": "7.3",
+      "toc_page": 184,
+      "kind": "problem",
+      "original_title": "Monte Carlo",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 9,
+      "high_priority": true,
+      "home_unit": "upper.ch14"
+    },
+    {
+      "id": "GB-7-15",
+      "source_chapter": 7,
+      "source_section": "7.3",
+      "toc_page": 184,
+      "kind": "problem",
+      "original_title": "Finite difference",
+      "scores": {
+        "qr_relevance": 2,
+        "interview_frequency": 2,
+        "transferability": 3,
+        "curriculum_fit": 2
+      },
+      "total": 9,
+      "high_priority": true,
+      "home_unit": "upper.ch14"
+    }
+  ]
+}

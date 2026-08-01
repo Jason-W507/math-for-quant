@@ -53,6 +53,11 @@ binary64 把有限数编码为符号、11 位指数和 52 位显式尾数；正�
 \]
 稳定改写与高精度值均为 $5.000\times10^{-9}$。这里精确问题并不病态，失败来自先舍入再相减。
 
+\input{tex/figures/generated/upper-ch14-cancellation.tex}
+
+
+
+
 同一原则产生一组常用稳定原语：小 $z$ 时用 \texttt{log1p(z)} 代替 $\log(1+z)$，用 \texttt{expm1(z)} 代替 $e^z-1$；用 \texttt{hypot(x,y)} 避免先平方导致的上溢/下溢。对 $a_i$ 计算
 \[
   \log\sum_i e^{a_i}=m+\log\sum_i e^{a_i-m},\qquad m=\max_i a_i,

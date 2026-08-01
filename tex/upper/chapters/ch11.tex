@@ -15,9 +15,12 @@
 \]
 称为有限维分布；固定 $\omega$ 后，$t\mapsto X_t(\omega)$ 是样本路径。有限维分布族若满足相容性，Kolmogorov 扩张定理可构造过程的概率律，但它并不自动给出连续路径。两个过程可以同分布却不是同一版本；若每个固定 $t$ 都几乎处处相等，称为版本，若整条路径除零测集外处处相等，才称不可区分。连续修改、右连续和 càdlàg 都是需要另证的路径正则性。
 
+\input{tex/figures/generated/upper-ch11-filtration-timeline.tex}
+
+
+
 滤过 $(\mathcal F_t)_{t\ge0}$ 满足 $\mathcal F_s\subseteq\mathcal F_t$（$s\le t$），表示信息增长。自然滤过是 $\sigma(X_s:s\le t)$；实际定理常再完备化并取右连续修改。$X_t$ 对 $\mathcal F_t$ 可测称为适应。交易指令若必须在 $t$ 前确定，常需要可预测性而不只是适应性。随机时刻 $\tau$ 若 $\{\tau\le t\}\in\mathcal F_t$，才是停止时刻；“全样本最优离场点”通常不是。
 
-\input{tex/upper/figures/filtration-timeline.tex}
 
 \begin{example}[信息层次]
 同一条价格序列既可被当作有限维向量做协方差估计，也可被当作路径讨论最大回撤。前者不能替代后者。若用收盘后才知道的日最高价决定盘中下单，变量虽属于终端 $\mathcal F_T$，却不属于当时的信息集。

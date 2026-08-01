@@ -43,5 +43,8 @@
 \begin{enumerate}[leftmargin=*]
   \item 20 日重叠收益共享 19 日信息，不能把日数当独立样本量。应明确持有期为抽样单位，报告自相关与重叠结构；以非重叠子样本作基线，再比较 HAC、移动块/平稳块重采样及块长敏感性。若制度变化明显，还要分段或滚动验证，而非只改标准误。
   \item $p=0.01,n=10$ 时零成功概率为 $0.904382$，正态对称区间 $[-0.05167,0.07167]$ 越过参数空间，说明渐近形状尚未控制有限样本离散性。应报告精确二项区间或适合稀有事件的模型，并做覆盖率模拟、校准图和不同基准率压力测试。
-  \item 先滚动检查位置、尺度、尾指数、自相关和状态占比。若各制度均有不同均值，整体稳定可能只是混合权重暂时稳定；若一阶矩不存在，样本均值本身不是合适目标。可报告截尾/Huber 中心、分位数、median-of-means 与块方法，并明确各估计对象、矩条件和稳定区间。
 \end{enumerate}
+% MFQ source replacements removed=1 unit=UpperChNine
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperChNineSolutions

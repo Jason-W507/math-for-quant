@@ -1,13 +1,8 @@
-\chapter{尾部与压力风险：从有效样本到反向压力}
+\section{尾部、压力测试与模型风险治理}
 \label{ch:lower-portfolio-tail}
 
-\begin{itemize}
-  \input{tex/generated/prerequisites/lower-portfolio-risk-research}
-  \item \textbf{学习产出：}让 VaR/ES 携带样本充分性和区间，区分历史尾部、压力情景与反向压力，并实现非线性重估。
-  \item \textbf{研究边界：}尾部统计不保证制度稳定；给定压力没有概率含义，反向压力也不自动给出最可能失败路径。
-\end{itemize}
 
-\section{VaR 与 ES 必须携带估计口径}
+\MFQLead{VaR 与 ES 必须携带估计口径}
 
 对损失 $L=-R_p$，左分位数定义为
 \[
@@ -19,6 +14,10 @@
  \int_\alpha^1\operatorname{VaR}_u(L)\,\mathrm du.
 \]
 离散样本在分位点可能有概率质量，因此软件默认的线性插值、高位次序统计量和左分位数会得到不同答案。研究协议必须冻结其中一种，并让手算与实现一致。
+
+\input{tex/figures/generated/lower-pf-tail.tex}
+
+
 
 VaR 一般不满足次可加性；ES 在常见可积条件下是相干风险度量，但更依赖尾部样本。关于市场、信用与操作风险中的标准定义、估计与回测框架，可参见 McNeil、Frey 与 Embrechts\cite{mcneil2015quantitative}。输出一个浮点数不等于尾部被识别。有效尾部观察数为
 \[
@@ -34,13 +33,13 @@ VaR 一般不满足次可加性；ES 在常见可积条件下是相干风险度�
 
 真实数据轨将两列宏观增长率等权合成为演示损失，在 75\% 水平只有 $9.75$ 个有效尾部观察。它低于全路线统一的 20 个下限，因此状态为 \texttt{reject}，报告不发布 VaR/ES。真实数据不会因为获取成本更高就获得更宽松的统计门禁；该快照只能证明时间协议被执行，不能外推为可交易组合风险。
 
-\section{历史尾部、参数尾部和压力测试回答不同问题}
+\MFQLead{历史尾部、参数尾部和压力测试回答不同问题}
 
 历史法问“过去样本中尾部如何”；参数法问“若分布模型成立，尾部如何”；压力测试问“指定联合冲击下损失多少”。三者不能互相替代。轻尾正态可能漏掉跳跃、波动聚集和相关性上升；历史样本可能没有经历当前持仓结构；压力情景则没有自动的发生概率。
 
 压力情景应保存冲击来源、同时发生假设、持仓冻结时点、重估模型、流动性反馈和恢复动作。历史重演保留曾发生的联合冲击，假设情景改变利率、波动率、价差或相关性，反向压力则从资本或流动性阈值反推触发条件。
 
-\section{非线性头寸不能只乘 Delta}
+\MFQLead{非线性头寸不能只乘 Delta}
 
 设每个风险因子的线性暴露为 $d_i$、二阶暴露为 $g_i$，冲击为 $x_i$，二阶损益近似
 \[
@@ -51,7 +50,7 @@ VaR 一般不满足次可加性；ES 在常见可积条件下是相干风险度�
 
 完整重估应调用与估值一致的模型，而不是永远停在二阶近似。期权需要现货、波动率、时间和利率共同变化；债券需要曲线重构；信用与流动性头寸还需要违约、价差和成交假设。这里保留二阶模型作为可手算 oracle，而非生产估值声明。
 
-\section{反向压力寻找的是第一处阈值穿越}
+\MFQLead{反向压力寻找的是第一处阈值穿越}
 
 沿方向 $x$ 放大尺度 $s\ge0$，反向压力问题为
 \[
@@ -61,23 +60,57 @@ VaR 一般不满足次可加性；ES 在常见可积条件下是相干风险度�
 
 由于二阶项可能使 $L(sx)$ 先升后降，不能只检查最大尺度端点，也不能用粗网格猜第一个穿越。沿固定方向时 $L(sx)-C$ 是标量二次多项式，本路线解析求出全部实根，筛选允许区间内最小的非负根；独立实现再用多项式根例程复核。若整个允许尺度内未触发，应返回“阈值未达到”，不能伪造一个边界解。若方向本身事后选择，仍可能漏掉更危险的联合冲击。
 
-\section{Route Capstone：从估计到失败阈值}
+\MFQLead{Route Capstone：从估计到失败阈值}
 
-\begin{center}
-\begin{tikzpicture}[node distance=1.5cm,>=stealth,every node/.style={draw,rounded corners,align=center,minimum width=2.8cm,minimum height=.8cm}]
-\node (data) {数据与时间协议};
-\node (risk) [right of=data,xshift=2.1cm] {协方差与风险预算};
-\node (opt) [right of=risk,xshift=2.1cm] {后验、约束与成本};
-\node (tail) [below of=opt] {尾部与反向压力};
-\node (report) [left of=tail,xshift=-2.1cm] {可复现报告与限制};
-\draw[->] (data)--(risk); \draw[->] (risk)--(opt); \draw[->] (opt)--(tail); \draw[->] (tail)--(report); \draw[->] (report)--(data);
-\end{tikzpicture}
-\end{center}
 
 Capstone 必须交付：输入哈希与截至日、风险估计及 bootstrap、后验与观点置信度、CVaR 场景协议、活跃约束、换手与成本、尾部三态、非线性压力、反向阈值、故障注入和不可声称的生产结论。一键报告由 \path{tools/build_portfolio_risk_report.py} 重建并与冻结 Markdown 逐字比较。
+
+\input{tex/figures/generated/lower-pf-capstone-loop.tex}
+
+
 
 \begin{implementationnote}
 运行 \path{notebooks/lower/portfolio_risk_tail.py} 可重建尾部和压力证据；运行 \path{tools/validate_portfolio_risk_route.py} 只验收本路线并构建下册与共享答案册。
 \end{implementationnote}
 
+\MFQLead{VaR、ES 与一致风险度量}
+
+损失 $L$ 的 VaR 是分位数，$\operatorname{VaR}_\alpha(L)=F_L^{-1}(\alpha)$；连续分布下
+\[
+\operatorname{ES}_\alpha(L)=
+\mathbb E[L\mid L\ge\operatorname{VaR}_\alpha(L)].
+\]
+VaR 不一定次可加，ES 在适当条件下是 coherent risk measure。两者都依赖持有期、置信度、损益口径和估计窗口；“95\% VaR=1 百万”没有这些字段就不完整。
+
+历史法保留经验非正态性但假设历史情景可代表未来；参数法平滑但依赖分布；Monte Carlo 可重估非线性头寸但依赖模型。应把方法差异当模型风险，而不是只选择最大或最小结果。
+
+\MFQLead{有效尾部样本与不确定性}
+
+$n$ 个样本、置信度 $\alpha$ 的期望尾部观察数为 $n(1-\alpha)$。若 250 日数据计算 99\% ES，只有约 2.5 个尾部观察，数字主要由极少数天决定。系统应拒绝、降级或同时报告 bootstrap 区间和“演示”状态。
+
+块 bootstrap 保留波动聚集；极值理论用高阈值以上超额拟合广义 Pareto，但阈值选择带来偏差--方差权衡。EVT 不是凭空增加尾部数据，参数稳定图和阈值敏感性必须展示。
+
+\MFQLead{非线性重估与 Greeks 近似}
+
+含期权组合在冲击 $\Delta S$ 下的一阶/二阶近似为
+\[
+\Delta V\approx\Delta\,\Delta S+
+\frac12\Gamma(\Delta S)^2+\mathrm{Vega}\,\Delta\sigma+cdots.
+\]
+大冲击、障碍和临近到期时应全重估。不同资产和波动曲面的联合冲击要保持内部一致，不能每个风险因子独立取最坏再相加冒充可实现情景。
+
+\MFQLead{历史、假设与反向压力测试}
+
+历史压力重放真实联合路径，但过去危机未必覆盖当前持仓；假设压力从经济叙事构造利率、信用、股票、汇率和流动性联合冲击；反向压力寻找使资本或损失阈值首次被突破的最小情景。
+
+反向压力是优化问题，结果可能利用不现实的风险因子组合。需要加入方向、幅度、相关和市场可行性约束，并由业务解释。输出不仅是“需要多大冲击”，还要指出薄弱头寸、传导机制和可执行缓释措施。
+
+\MFQLead{回测与模型风险治理}
+
+VaR backtesting 统计超损次数及其聚集，ES 评价更困难。超损过多说明风险低估，过少也可能是模型过度保守或业务变化。交通灯只是诊断，不能替代对数据、头寸映射和定价模型的审计。
+
+模型版本变更需保留平行运行、影响分析和旧版本结果。压力情景和尾部阈值不能因近期没有超损就不断放松；治理规则应独立于当期盈亏。
+
+\input{tex/lower/chapters/portfolio-risk-estimation-questions}
+\input{tex/lower/chapters/portfolio-risk-optimization-questions}
 \input{tex/lower/chapters/portfolio-risk-tail-questions}

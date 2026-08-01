@@ -1,11 +1,9 @@
-\chapter{ML 模型与表示提示}
+\chapter{表格统计学习提示}
 \begin{enumerate}[leftmargin=*]
-  \item shape 是语义轴，dtype/device 决定算子，梯度状态决定是否进入反向图。
-  \item 相邻输入行不等于相邻特征值。
-  \item 依次写仿射、激活、仿射和链式法则。
-  \item 关注 $QK^{\mathsf T}$ 在同步置换下的变化。
-  \item 均值应为零差，四种顺序模型应为正差。
-  \item 同时冻结配置与参数字节。
-  \item 查找是否有位置、因果 mask 和置换负例。
-  \item 比较可训练参数、任务数据与基础表示是否更新。
+  \item 从非线性、交互、缺失处理和样本效率回答，同时强调树不学习序列表示。
+  \item CART 贪心分裂；森林 bootstrap 加特征随机化；boosting 拟合负梯度；XGBoost 使用二阶近似与结构正则。
+  \item 候选为 $-1.5,0,2$，分别计算左右均值与 SSE。
+  \item 对单个叶的 $G_jw+\frac12(H_j+\lambda)w^2$ 求导。
+  \item 所有模型共用外层测试和仓位映射，不能各挑最佳窗口。
+  \item 查同一资产相邻日期和重叠标签是否跨越切分。
 \end{enumerate}

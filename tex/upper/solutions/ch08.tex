@@ -32,8 +32,6 @@
 \section*{研究判断}
 \begin{enumerate}[leftmargin=*]
   \item 先分别估计行业内关系，再分解混合协方差中的行业权重、行业均值和组内项；对行业权重做固定或标准化重加权，并在时间外样本复验。若关系只来自行业构成变化，应报告为共同暴露/组成效应，而非信号预测力。
-  \item 成交由报价激进度和市场状态共同影响，是两者的碰撞点；只看成交样本可能制造负相关。保留所有报价与未成交状态，建立成交概率模型，检查重叠支持，并比较全样本、分层、逆概率加权和敏感性界限；若识别条件不足就明确限制。
-  \item 定义 $\mathcal F_t$ 只含决策时刻已知字段；为特征同时记录事件发生、首次可知和修订时间。收盘后修订值不能进入当日决策信息，需使用 point-in-time 快照或至少滞后一日。审计应注入时间错位负例，并把数据发布日期规则写进 Capstone 证据。
 \end{enumerate}
 
 \section*{恢复路径}
@@ -44,3 +42,7 @@ uv run python tools/check_learning_unit.py \
   --manifest curriculum/manifest.json --unit upper.ch08
 \end{lstlisting}
 若失败，按“有限值与概率归一 $\rightarrow$ 分割是否嵌套 $\rightarrow$ 定义积分与正交性 $\rightarrow$ 方差分解 $\rightarrow$ 核/Bayes $\rightarrow$ 共同原因与碰撞点”的顺序恢复。不要把 observed 写回 expected，也不要把零测点版本当作模型外推规则。
+% MFQ source replacements removed=2 unit=UpperChEight
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperChEightSolutions

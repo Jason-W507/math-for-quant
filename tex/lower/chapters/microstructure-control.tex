@@ -1,13 +1,8 @@
-\chapter[执行与做市控制：从冲击账本到库存反馈]{执行与做市控制：\\从冲击账本到库存反馈}
+\section{执行、做市与库存控制}
 \label{ch:lower-microstructure-control}
 
-\begin{itemize}
-  \input{tex/generated/prerequisites/lower-microstructure-estimation}
-  \item \textbf{学习产出：}分解临时与永久冲击，计算实施差额，在随机完成和停止约束下求执行日程，并让库存进入下一轮双边报价。
-  \item \textbf{研究边界：}冲击系数和成交率是待估对象；本章 DP 与报价器用于验证控制闭环，不代表生产最优策略。
-\end{itemize}
 
-\section{先定义实施差额的基准}
+\MFQLead{先定义实施差额的基准}
 
 对买入母单，决策时到达价为 $S_0$，第 $k$ 期实际成交 $x_k$、成交价 $P_k$，实现差额为
 \[
@@ -23,7 +18,7 @@
 
 冻结计划 $(3,3,3)$ 在完成率 $(1,0.5,0)$ 下实际成交 $(3,2,0)$。以 $S_0=100,\eta=0.2,\gamma=0.1$ 计算，partial-fill IS 为 $3.2$，剩余 4 手必须保留在状态中。
 
-\section{随机完成率与停止规则}
+\MFQLead{随机完成率与停止规则}
 
 设计划量 $u_k$，随机完成率 $F_k\in[0,1]$，实际成交为
 \[
@@ -39,7 +34,7 @@
 \]
 终端只允许 $R=0$。冻结六手、三期问题的最优日程是 $(3,2,1)$，目标 $19.2$；完整枚举所有可行路径得到相同答案。DP 证明的是离散目标的最优性，不证明冲击参数、二次风险或硬完成约束适合现实委托。
 
-\section{库存必须进入报价，而非只进入报告}
+\MFQLead{库存必须进入报价，而非只进入报告}
 
 令中价 $m_t$、半点差 $h$、库存 $q_t$、库存偏移系数 $\kappa$。最小双边报价为
 \[
@@ -48,24 +43,14 @@
 \]
 若 bid 成交，$q_{t+1}=q_t+1$、现金减少 $b_t$；若 ask 成交，库存减一、现金增加 $a_t$。下一轮必须用 $q_{t+1}$ 计算报价。冻结例从零库存开始，首轮 bid 成交后库存为 1，下一轮报价从 $99.5/100.5$ 下移为 $99.4/100.4$。双边同时下移，使买入变得不积极、卖出更容易，才形成真正反馈。
 
-\begin{center}
-\begin{tikzpicture}[node distance=14mm,>=latex, every node/.style={draw,rounded corners,align=center,inner sep=4pt}]
-\node (event) {事件流与盘口};
-\node (quote) [right=of event] {库存 $q_t$\\生成 $b_t,a_t$};
-\node (fill) [right=of quote] {成交/未成交};
-\node (state) [below=of fill] {更新现金、库存\\剩余母单};
-\node (stop) [left=of state] {风险与停止规则};
-\draw[->] (event)--(quote);
-\draw[->] (quote)--(fill);
-\draw[->] (fill)--(state);
-\draw[->] (state)--(stop);
-\draw[->] (stop)--(quote);
-\end{tikzpicture}
-\end{center}
+\input{tex/figures/generated/lower-ms-feedback.tex}
+
+
+
 
 这个闭环把“模型预测—控制—成交—状态—下一次控制”连起来。若只先生成整天报价、再事后计算库存，便存在前视错误。实际做市还需要不确定成交强度、选择性成交、价格跳跃、库存边界、撤单延迟和自成交防护；本章只冻结最小状态机。
 
-\section{控制比较需要独立 oracle}
+\MFQLead{控制比较需要独立 oracle}
 
 透明 DP 用递归和缓存搜索状态；独立实现完整枚举三期切片。报价公式也由闭式实现逐项比较。双实现的目的不是追求两份相似代码，而是让索引、终端条件和符号错误难以共同通过。
 
@@ -77,4 +62,47 @@
 
 本单元向 Route Capstone 交付执行目标、停止协议、状态转移和库存反馈图\cite{avellaneda2008high}。
 
-\input{tex/lower/chapters/microstructure-control-questions}
+\MFQLead{Implementation shortfall 的完整分解}
+
+买入母单的 arrival price 为 $S_0$，实际成交 $q_k$、价格 $P_k$，未完成量 $Q-\sum q_k$ 按终点价格 $S_T$ 估值，则
+\[
+\mathrm{IS}=\sum_kq_k(P_k-S_0)
++\left(Q-\sum_kq_k\right)(S_T-S_0)+\text{fees}.
+\]
+它可拆成 delay、交易冲击、机会成本和费用。只对已成交部分计算会奖励“不成交”；只与 VWAP 比较则把市场走势和自身执行混在一起。
+
+\MFQLead{Almgren--Chriss 的风险--冲击折中}
+
+离散执行把库存 $x_k$ 从 $X$ 降到 0，交易量 $n_k=x_{k-1}-x_k$。典型目标为期望成本加方差惩罚：
+\[
+\min_{n_1,\ldots,n_K}
+\mathbb E[C]+\lambda\operatorname{Var}(C),
+\qquad \sum_kn_k=X.
+\]
+临时冲击影响本次成交，永久冲击改变后续基准。$\lambda=0$ 更愿意等待低冲击，$\lambda$ 大则加快执行以降低价格风险。参数应从订单级数据估计并做容量压力，不能从公开日频量价唯一识别。
+
+\input{tex/figures/generated/lower-ms-control.tex}
+
+
+
+参与率、最小成交单位、最大切片和收盘前强制完成使问题成为约束动态规划。未完成状态必须在终端施加机会成本或硬约束，否则最优策略可能选择永不交易。
+
+\MFQLead{做市的库存控制}
+
+简化 Avellaneda--Stoikov 中，库存 $q$ 改变保留价格
+\[
+r_t=S_t-q\gamma\sigma^2(T-t).
+\]
+多头库存使报价中心下移，鼓励卖出；风险厌恶、波动和剩余时间放大调整。最优价差还取决于订单到达对距离的敏感度。模型假设连续 Brownian 中价和指数到达，真实跳跃、队列与延迟都可能破坏闭式。
+
+报价状态机还要处理库存上限、单边停报、撤单确认、自成交防护和 stale quote。控制动作必须在收到事件后生成，并等待交易所确认；本地认为已撤单不代表市场上已撤。
+
+\MFQLead{部分可观测与鲁棒控制}
+
+真实状态包含不可见的短期 alpha、对手意图和未来流动性，执行问题更接近 POMDP。滤波器提供 belief state，控制器基于 belief 行动。若状态估计和控制用同一未来数据平滑，会产生前视。
+
+模型参数不确定时可做情景 DP、分布鲁棒或保守策略。最简单的鲁棒基线是限制参与率、库存和单步动作，并在成交率低于阈值时切换预定义应急日程。复杂 RL 只有在能恢复小型 DP oracle 后才值得使用。
+
+\begin{diagnostic}
+控制器的目标函数必须包含未完成、库存和成本。若奖励只含已实现价差，代理可以通过不成交或积累巨大库存获得虚假高分。
+\end{diagnostic}

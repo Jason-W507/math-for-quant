@@ -30,5 +30,8 @@ w^*=\frac{\Sigma^{-1}\mathbf1}{\mathbf1^T\Sigma^{-1}\mathbf1}.
 \begin{enumerate}[leftmargin=*,start=10]
 \item 先统一收益、风险、成本的时间与金额单位，再检查协方差谱、条件数和输入估计区间；随后重算活跃约束、KKT 残差和扰动权重。集中可能来自真实约束，也可能来自近奇异矩阵、噪声均值或过松容差。
 \item 固定费用和最小手数使可行组合的凸组合未必可行，整数持仓直接产生离散集合；KKT 点不再是全局充分证书，投影梯度也不能处理离散搜索。应使用混合整数方法、松弛上下界或明确启发式及其最优性缺口。
-\item 证据包应含数据与估计窗口、变量单位、目标和全部约束、凸性依据、可行性检查、求解器版本与容差、原始/对偶/KKT 证书、输入扰动和活跃集变化、样本外换手与实现成本，以及不可行、无界、超时和尺度失败的处理规则。
 \end{enumerate}
+% MFQ source replacements removed=1 unit=UpperThirteen
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperThirteenSolutions

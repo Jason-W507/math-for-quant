@@ -1,0 +1,17 @@
+\chapter{现代与前沿人工智能分层答案}
+\begin{enumerate}[leftmargin=*]
+  \item shape 绑定 batch/time/feature 语义；dtype 与 device 限定数值和算子；\texttt{requires\_grad} 决定 autograd 是否追踪。
+  \item CNN 共享局部核，RNN 用递归状态压缩前缀，attention 对可见 token 内容寻址，Transformer 叠加多头注意力、前馈、残差和归一化；四者都必须显式限制未来。
+  \item GNN 增加随时间变化的节点、边和消息传递；DRL 增加动作影响的状态转移、奖励和长期价值，不能再只评价静态预测误差。
+  \item $h=\phi(W_1x+b_1)$、$\hat y=W_2h+b_2$；梯度从损失经 $W_2$ 与 $\phi'$ 回到 $W_1$。残差 $h+F(h)$ 使梯度含恒等项 1，降低深层连乘完全消失的风险。
+  \item 按当前减前一期得到 $(2,-1,3)$。若对称 padding 的卷积在 $t$ 使用 $x_{t+1}$，历史预测已读取未来。
+  \item 同步置换 token 会同步置换 $Q,K,V$，注意力输出只重排；$\operatorname{softmax}(0,1)=(1/(1+e),e/(1+e))$。位置编码或因果结构才赋予先后。
+  \item GCN 用归一化邻接聚合 $H'=\sigma(\tilde D^{-1/2}\tilde A\tilde D^{-1/2}HW)$；全图含未来边即泄漏。Bellman 方程连接当前奖励和下一状态价值；若模拟器不让动作改变成交或价格，环境反事实失真。
+  \item 均值池化对反转为零差；因果 CNN、RNN、带位置和 mask 的 attention/Transformer 应有正差。Padding mask 屏蔽不存在 token，causal mask 屏蔽未来 token。
+  \item 保存模型/优化器状态、随机种子、特征 schema、预处理和版本；恢复后逐项预测一致。交换特征顺序应由 schema 哈希或显式列名检查拒绝。
+  \item 每个决策日只使用此前已生效的边构图。静态全图若包含后续供应链公告，预测差异本身就是泄漏证据，不是性能提升。
+  \item 时间均值先删除顺序；没有位置、因果 mask、可训练序列层和置换负例时，只能称随机表示基线。
+  \item 全量微调表达力和成本最高，任务头最稳但表示固定，LoRA 只学习低秩更新。三者都要绑定基础权重、tokenizer、语料截止和 prompt；权重可能记住历史事件后续信息。
+  \item 建立两期、有限库存和已知冲击成本的小 MDP，用穷举或动态规划得最优动作，再检查 RL。固定价格回放没有动作反事实，无法评价另一订单对成交和价格的影响。
+  \item 合格项目应包含合法数据截止、简单基线、外层样本外、独立局部 oracle、预测到仓位、成本与容量、失败注入和限制；模型名称不是验收项。
+\end{enumerate}

@@ -26,5 +26,8 @@
 \begin{enumerate}[leftmargin=*,start=10]
   \item 先按日内时段估计 $\lambda(t)$，检查计数均值/方差、等待时间指数性和增量自相关。季节性解释后若仍聚集，比较非齐次 Poisson、Cox/Hawkes 或状态模型的滚动样本外似然与残差；同时报告数据时间戳和合并事件规则。
   \item 滚动估计同一状态定义下的转移矩阵并检验稳定性；再把库存、波动、成交量或制度变量加入状态，检查给定扩充状态后的历史是否仍有预测力。若仍有，Markov 状态摘要不充分；若结构完整但矩阵漂移，则需时变转移或再训练协议。
-  \item 明确 Brownian 连续路径、正态增量和连续时钟假设；量化跳跃风险、厚尾、离散监控误差、停牌/隔夜时间、参数漂移、流动性与执行误差。用跳扩散或经验压力场景做对照，不能把解析可解性当作现实正确性。
 \end{enumerate}
+% MFQ source replacements removed=1 unit=UpperChEleven
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperChElevenSolutions

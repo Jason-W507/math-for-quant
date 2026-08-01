@@ -25,6 +25,8 @@
 \section*{研究判断}
 \begin{enumerate}[nosep,leftmargin=*,start=10]
 \item 冻结协方差估计，报告特征谱、有效秩、条件数和单位；比较缩放、收缩、截断与约束后权重，并对窗口和相关项做扰动。只有样本外风险与换手也稳定，才能把集中权重解释为经济信号。
-\item 若合同只要求业务量级一致，可用有来源的 rtol/atol 并记录归约配置；若结果参与哈希、监管复算或回归快照，则固定分块树或使用可复现累加。不能让测试容差替代协议选择。
-\item 将求解器成功解释为“达到内部停止条件”，明确结论对窗口不稳；追加 QR/SVD 或稳定分解、输入缩放、谱与扰动审计。正则化或收缩必须声明目标已改变，并重新做样本外检验与限制报告。
 \end{enumerate}
+% MFQ source replacements removed=2 unit=UpperFourteen
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperFourteenSolutions

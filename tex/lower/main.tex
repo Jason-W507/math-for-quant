@@ -1,8 +1,9 @@
 \documentclass[lang=cn,11pt,scheme=chinese]{elegantbook}
 \usepackage{longtable}
-\usepackage{tikz}
+\usepackage{graphicx}
 \addbibresource{tex/common/references.bib}
 \input{tex/common/editorial-environments}
+\input{tex/common/visual-system}
 
 \title{量化研究数学}
 \subtitle{下册：方向模型与研究项目}
@@ -16,7 +17,8 @@
 \hypersetup{pdftitle={量化研究数学：下册},pdfauthor={Jason W.},pdfsubject={方向模型与研究项目}}
 \extrainfo{按方向选择路线，用证据约束模型。}
 \cover{assets/cover.jpg}
-\setcounter{tocdepth}{2}
+% 目录只显示“章—节”两级；更细的行文提示不进入目录。
+\setcounter{tocdepth}{1}
 
 \begin{document}
 
@@ -40,7 +42,7 @@
 
 \section{六条路线的共同结构}
 
-每条路线都按四段推进：路线诊断、精确桥接、三个方向模块、Route Capstone。三个方向模块依次处理模型与推导，估计、校准与数值实现，以及样本外、摩擦和失败边界。这个结构避免六条路线退化为六本互不相干的模型目录。
+每条路线都从诊断和精确桥接开始，以 Route Capstone 收束；中间章节按知识依赖展开，不规定统一章数或页数。所有路线都必须覆盖模型与推导、估计与数值实现、样本外、摩擦和失败边界，但不再把这三个层次机械等同于三章。
 
 \begin{note}
 每条路线的 Capstone 是学习证据，不代表生产部署、实盘业绩或团队经验。
@@ -50,7 +52,9 @@
 \input{tex/lower/templates/capstone-evidence}
 
 \mainmatter
-\setcounter{secnumdepth}{2}
+\setcounter{secnumdepth}{1}
+\part{通用笔面试训练}
+\input{tex/lower/chapters/brainteasers}
 \part{方向模型与研究项目}
 \input{tex/lower/chapters/multifactor-model}
 \input{tex/lower/chapters/multifactor-estimation}
@@ -59,6 +63,9 @@
 \input{tex/lower/chapters/stat-arb-estimation}
 \input{tex/lower/chapters/stat-arb-research}
 \input{tex/lower/chapters/ml-alpha-model}
+\input{tex/lower/chapters/ml-alpha-deep}
+\input{tex/lower/chapters/ml-alpha-sequence}
+\input{tex/lower/chapters/ml-alpha-frontiers}
 \input{tex/lower/chapters/ml-alpha-validation}
 \input{tex/lower/chapters/ml-alpha-research}
 \input{tex/lower/chapters/derivatives-stochastic}
@@ -73,6 +80,7 @@
 
 \appendix
 
+\input{tex/lower/chapters/brainteasers-hints}
 \input{tex/lower/chapters/multifactor-model-hints}
 \input{tex/lower/chapters/multifactor-estimation-hints}
 \input{tex/lower/chapters/multifactor-research-hints}
@@ -80,6 +88,7 @@
 \input{tex/lower/chapters/stat-arb-estimation-hints}
 \input{tex/lower/chapters/stat-arb-research-hints}
 \input{tex/lower/chapters/ml-alpha-model-hints}
+\input{tex/lower/chapters/ml-alpha-modern-hints}
 \input{tex/lower/chapters/ml-alpha-validation-hints}
 \input{tex/lower/chapters/ml-alpha-research-hints}
 \input{tex/lower/chapters/derivatives-stochastic-hints}
@@ -100,6 +109,9 @@
 
 \chapter{下册主题索引}
 \input{tex/generated/lower-concept-index}
+
+\chapter{绿皮书来源映射与覆盖摘要}
+\input{tex/generated/interview-problem-coverage}
 
 \chapter{参考文献}
 \printbibliography[heading=none]

@@ -1,10 +1,10 @@
-\chapter{定价与校准：从闭式、树和 PDE 到参数化曲面}
+\chapter{定价、校准与对冲：从数值方法到误差分布}
 \label{ch:lower-derivatives-numerics}
 
 \begin{itemize}
   \input{tex/generated/prerequisites/lower-derivatives-numerics}
-  \item 学习产出：分别衡量树、PDE、Monte Carlo 的误差，并区分逐点隐波反演和参数化曲面校准。
-  \item 研究边界：数值一致不证明模型正确；报价时点、远期、贴现和 bid/ask 仍需独立协议。
+  \item 学习产出：衡量树、PDE、Monte Carlo 与曲面校准的误差，构造自融资离散对冲台账，并以多路径分布评价对冲失效。
+  \item 研究边界：数值一致不证明模型正确；报价时点、远期、贴现、bid/ask、交易成本与曲面动态都需要独立协议。
 \end{itemize}
 
 \section{同一价格，不同误差来源}
@@ -15,6 +15,11 @@
  d_{1,2}=\frac{\log(S_0/K)+(r\pm\sigma^2/2)T}{\sigma\sqrt T}.
 \]
 在 $S_0=K=100,r=2\%,\sigma=20\%,T=1$ 下，解析值是 $8.916037$。它是当前模型中的参考值，不是真实市场的“正确价格”。
+
+\input{tex/figures/generated/lower-dv-methods.tex}
+
+
+
 
 为了避免“多实现一致”掩盖共同错误，先写出每条路径独立的验收对象：
 \begin{center}
@@ -67,6 +72,11 @@ CRR 树取 $u=e^{\sigma\sqrt{\Delta t}},d=u^{-1}$ 和
 \]
 这是一维根求解。每个节点各自找到一个 $\sigma_j$，目标损失接近零是必然结果，不能称为“曲面模型校准”。根必须被静态套利上下界 bracket；Vega 太小时还应报告病态性。
 
+\input{tex/figures/generated/lower-dv-vol-surface.tex}
+
+
+
+
 二分法的优点是只依赖单调性和 bracket；Newton 法利用 Vega 收敛更快，但在深度实值、深度虚值或短期限节点可能跳出合法区间。可靠实现可先用套利界拒绝不可能报价，再用带 bracket 的方法求根，同时保存价格残差和 Vega。bid/ask 区间内存在许多可接受隐波时，返回过多小数位只会制造虚假精度。
 
 第二阶段才拟合参数化总方差。冻结教学模型令 $k=\log(K/F_T)$，
@@ -77,7 +87,7 @@ CRR 树取 $u=e^{\sigma\sqrt{\Delta t}},d=u^{-1}$ 和
 
 校准的识别对象是共享参数，不是节点隐波列表。必须报告设计矩阵条件数、参数约束、权重来源和留出节点重定价；否则参数可能在样本内重定价良好，却对缺失期限剧烈外推。权重若取 inverse bid/ask variance，应在报价冻结前声明，不能看到残差后再降低异常节点权重。
 
-\section{非等距凸性与期限条件}
+\MFQLead{非等距凸性与期限条件}
 
 看涨价格随执行价递减。非等距网格的凸性应比较斜率
 \[
@@ -93,7 +103,7 @@ CRR 树取 $u=e^{\sigma\sqrt{\Delta t}},d=u^{-1}$ 和
 $k=K/F_T$ 上比较 $C/(D_TF_T)$。冻结实验取非零股息率 $q=3\%$，由每个节点携带
 \texttt{forward} 与 \texttt{discount\_factor}；网格不完整或原始固定执行价模式与假设冲突时均拒绝。这样“通过日历门禁”同时携带远期、贴现和 moneyness 口径。
 
-\section{双轨数据：贴现输入不是期权曲面}
+\MFQLead{双轨数据：贴现输入不是期权曲面}
 
 合成节点负责正确性 oracle。真实轨只冻结美国财政部 2024-12-02 的 3 个月、6 个月和 1 年期国债收益率，并保存官方 URL、观察日、访问日、许可说明和 SHA-256。它只演示如何把决策日前的公开利率转换为贴现因子；国债 par yield 也不等于期权定价所需的完整零息曲线。该快照不能验证隐波、校准或交易收益。
 
@@ -105,4 +115,57 @@ $k=K/F_T$ 上比较 $C/(D_TF_T)$。冻结实验取非零股息率 $q=3\%$，由�
 
 本单元向 Route Capstone 与下一章交付：价格、Delta、曲面参数、误差预算与市场输入协议。
 
-\input{tex/lower/chapters/derivatives-numerics-questions}
+\section{Black--Scholes PDE 从自融资组合得到}
+
+期权 $V(t,S)$ 的 Itô 展开为
+\[
+dV=\left(V_t+\mu SV_S+\frac12\sigma^2S^2V_{SS}\right)dt
++\sigma SV_SdW.
+\]
+持有一份期权并做空 $\Delta=V_S$ 股股票消掉随机项。无套利要求无风险组合赚取 $r$，得到
+\[
+V_t+\frac12\sigma^2S^2V_{SS}+rSV_S-rV=0.
+\]
+物理漂移 $\mu$ 消失是复制结果；边界和终端条件仍由合约决定。含连续股息率 $q$ 时 $rS$ 换成 $(r-q)S$。
+
+\MFQLead{树模型：风险中性概率与收敛}
+
+CRR 树取 $u=e^{\sigma\sqrt{\Delta t}}$、$d=1/u$，风险中性概率
+\[
+p=\frac{e^{(r-q)\Delta t}-d}{u-d}.
+\]
+必须有 $0<p<1$，否则步长或参数不满足局部无套利。终端 payoff 向后贴现；美式期权每个节点再与立即执行价值取最大。
+
+树价随步数可能奇偶振荡，不能只比较相邻一次。应记录多个网格、与闭式或高精度基准的误差以及运行时间。离散股息和障碍会改变树结构，不应偷偷套用无股息闭式。
+
+\section{有限差分：一致性、稳定性与边界}
+
+把 PDE 离散为显式、隐式或 Crank--Nicolson 格式。显式法便于理解但受稳定步长约束；隐式法每步解三对角系统，稳定性更好；Crank--Nicolson 二阶时间精度但不光滑 payoff 附近可能振荡，可先做 Rannacher 平滑。
+
+\input{tex/figures/generated/lower-dv-pde.tex}
+
+
+
+
+误差预算至少分为空间截断、时间截断、$S_{\max}$ 边界和线性求解误差。只把网格加密一次不能识别哪一项主导。对无套利价格还应检查非负、随 $S$ 单调、对 $K$ 凸等离散性质。
+
+\MFQLead{Monte Carlo 与方差缩减}
+
+风险中性模拟估计
+\[
+V_0=e^{-rT}\mathbb E^Q[g(S_T)],\qquad
+\hat V_N=e^{-rT}\frac1N\sum_{n=1}^Ng(S_T^{(n)}).
+\]
+标准误按 $N^{-1/2}$ 收敛。反变量、控制变量、分层、准 Monte Carlo 和条件期望可降低方差。对欧式看涨，$S_T$ 是自然控制变量，其期望已知为 $S_0e^{(r-q)T}$。
+
+随机种子只保证可复现，不保证准确。应报告置信区间、不同种子、路径数收敛和独立解析/数值基准。路径依赖 payoff 还要区分时间离散偏差与采样方差。
+
+\MFQLead{隐含波动率与曲面参数化}
+
+单点隐波求解 $C_{BS}(\sigma)=C_{mkt}$。看涨 Vega 为正保证可行区间内单调，但报价若低于内在价值或高于现货贴现上界就无解。二分稳健，Newton 快但需要良好初值和 Vega 不太小。
+
+逐点反演只是把价格换成波动率坐标，不是曲面校准。参数曲面应联合拟合多个执行价与期限，并加静态无套利约束。目标函数需说明按价格、隐波还是 bid/ask 加权；深度虚值期权用价格误差和隐波误差会产生完全不同权重。
+
+\begin{diagnostic}
+校准误差接近零可能只是每个报价都有一个自由参数。模型风险要看参数稳定、插值外推、无套利和对未参与校准报价的表现，而不是训练目标是否为零。
+\end{diagnostic}

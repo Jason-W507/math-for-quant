@@ -18,13 +18,10 @@
 \begin{enumerate}[nosep,leftmargin=*]
   \item 复现固定最小二乘账本，分别用正规方程、QR、\texttt{lstsq} 与伪逆求解；比较残差正交和重构误差。
   \item 用 SVD 构造最佳秩一近似，核验二范数误差等于第二奇异值；再故意打乱奇异值顺序，证明测试能失败。
-  \item 对 $A_\varepsilon$ 比较任意坐标扰动与最坏奇异方向扰动；注入非有限值、非固定矩阵和宽容差，记录稳定诊断。
 \end{enumerate}
 
-\subsection*{研究判断}
-\begin{enumerate}[nosep,leftmargin=*]
-  \item 因子协方差矩阵出现极小或轻微负特征值。如何区分数据、模型与数值算法问题？
-  \item 回归系数在样本窗口轻微变化后翻倍，但预测几乎不变。如何定位并报告？
-  \item 研究员建议“统一加 ridge 就稳定了”。你需要哪些证据，才能决定接受、改造或拒绝？
-\end{enumerate}
 \endgroup
+% MFQ source replacements removed=4 unit=UpperChSix
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedUpperChSixQuestions

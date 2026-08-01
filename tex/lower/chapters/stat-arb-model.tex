@@ -1,10 +1,10 @@
-\chapter{动态与长期关系：从单位根到 OU}
+\chapter{时间序列、协整与状态估计：从单位根到 OU}
 \label{ch:lower-stat-arb-model}
 
 \begin{itemize}
   \input{tex/generated/prerequisites/lower-stat-arb-model}
-  \item 学习产出：能把单位根诊断、Engle--Granger、Johansen、ECM 与 OU 半衰期串成一条有条件的推断链。
-  \item 研究边界：合成路径是数学 oracle；宏观公开快照只验证外部数据管线，不代表可交易配对。
+  \item 学习产出：把单位根、协整、OU、状态空间、regime filtering 与变点检测串成可估计模型，并将预测接入仓位、成交、成本和失效监控。
+  \item 研究边界：合成路径是数学 oracle；公开快照只验证数据协议，任何统计套利结论都必须经过候选选择、多重检验和 walk-forward 台账。
 \end{itemize}
 
 \section{先区分平稳、单位根与共同趋势}
@@ -27,6 +27,11 @@ AR(1) 模型 $X_t=\phi X_{t-1}+\varepsilon_t$ 在 $|\phi|<1$ 且创新满足适�
 y_t=1.5+2x_t+0.55^t,
 \]
 透明 OLS 恢复斜率约 $1.9912$，残差 DF 统计量约 $-8.3135$。斜率没有精确等于 2，是有限样本中确定性残差与趋势相关造成的可解释偏差。
+
+\input{tex/figures/generated/lower-sa-cointegration.tex}
+
+
+
 
 长期偏离进入误差修正模型：
 \[
@@ -62,11 +67,16 @@ dZ_t=\kappa(\mu-Z_t)dt+\sigma dW_t
 \]
 实现从离散创新方差映射 $\sigma$，并数值积分该式；起点、边界或扩散率改变时必须重算，不能用半衰期替代。
 
+\input{tex/figures/generated/lower-sa-ou.tex}
+
+
+
+
 \begin{note}[Python 边界]
 \texttt{adfuller}、\texttt{coint} 与 \texttt{coint\_johansen} 的默认确定性项、自动滞后和临界值并不相同。调用函数前先把统计问题写成完整规格，再在报告中保存库版本与参数。
 \end{note}
 
-\section{双轨数据与可执行实验}
+\MFQLead{双轨数据与可执行实验}
 
 \begin{itemize}
   \item 合成正确性 oracle：\path{data/fixtures/stat-arb-model.json}；
@@ -84,4 +94,42 @@ uv run python notebooks/lower/stat_arb_model.py \
 
 本单元向 Route Capstone 交付冻结的长期关系、单位根规格、ECM 参数与 OU 时间尺度；交易规则尚不在本章作出。
 
-\input{tex/lower/chapters/stat-arb-model-questions}
+\MFQLead{单位根检验的原假设与检验力}
+
+ADF 回归在差分方程中检验水平项系数，原假设是单位根；KPSS 的原假设则是平稳。二者结论可以组合成“平稳”“单位根”或“证据不足”。短样本、接近单位根和结构突变会显著降低检验力，不能把 $p>0.05$ 翻译成“证明存在单位根”。
+
+确定性项必须事前决定。对带趋势序列漏掉趋势会错误拒绝或接受；滞后阶数过低残差相关，过高又损失自由度。价格通常先看对数水平与差分，利差和估值比率则要依据经济含义选择变换。
+
+\section{ARMA、VAR 与 GARCH 的职责}
+
+ARMA 描述条件均值的线性动态，VAR 处理多变量相互滞后，GARCH 描述条件方差：
+\[
+r_t=\mu_t+\varepsilon_t,\qquad
+\varepsilon_t=\sigma_tz_t,qquad
+\sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2+\beta\sigma_{t-1}^2.
+\]
+$\alpha+\beta$ 接近 1 表示波动冲击衰减慢；它不是价格均值回归速度。把 GARCH 波动预测直接当方向信号会混淆条件均值与条件方差。
+
+残差诊断至少包括自相关、平方残差自相关、尾部分布和参数稳定。模型阶数可用训练期信息准则筛选，再用滚动样本外验证；不能在全样本 ACF 图上挑阶数后仍称测试独立。
+
+\MFQLead{协整向量的经济解释与不稳定性}
+
+两个 $I(1)$ 序列若存在 $\beta$ 使 $z_t=y_t-\beta x_t$ 平稳，则共享随机趋势。$\beta$ 的尺度要固定，例如把 $y$ 系数规范为 1。纯统计搜索会从大量资产中找到偶然平稳组合，因此候选形成机制和多重检验必须记录。
+
+滚动 $\hat\beta_t$ 变化意味着对冲比率变化，也可能说明关系失效。若每期重新估计并立刻用新 beta 重写过去价差，历史信号会被回看修订；研究账本要保存当时版本的 beta 和价差。
+
+\MFQLead{OU 半衰期的推导与限制}
+
+连续 OU
+\[
+dZ_t=\kappa(\mu-Z_t)dt+\sigma dW_t
+\]
+在间隔 $\Delta$ 下满足
+\[
+Z_{t+\Delta}=\mu+e^{-\kappa\Delta}(Z_t-\mu)+\eta_t.
+\]
+因此离散 AR 系数 $\phi=e^{-\kappa\Delta}$，半衰期
+\[
+h_{1/2}=\frac{\log2}{\kappa}=-\frac{\Delta\log2}{\log\phi}.
+\]
+只有 $0<\phi<1$ 时才有正的均值回归半衰期；$\phi\le0$ 表示振荡，$\phi\ge1$ 不均值回归。半衰期是模型参数，不是保证持仓在该时间盈利。

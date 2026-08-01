@@ -1,0 +1,18 @@
+% Unified visual language for both volumes.
+\definecolor{MFQBlue}{HTML}{2B6CB0}
+\definecolor{MFQGreen}{HTML}{2F855A}
+\definecolor{MFQOrange}{HTML}{C05621}
+\definecolor{MFQGray}{HTML}{718096}
+\definecolor{MFQLightBlue}{HTML}{EBF8FF}
+\definecolor{MFQLightGreen}{HTML}{F0FFF4}
+\definecolor{MFQLightOrange}{HTML}{FFFAF0}
+\definecolor{MFQLightGray}{HTML}{F7FAFC}
+
+\newcommand{\MFQFigure}[4][0.94\linewidth]{%
+  \begin{figure}[htbp]
+    \centering
+    \includegraphics[width=#1]{#2}
+    \caption{#3\protect\newline{\footnotesize\color{MFQGray}图源：\texttt{#4}}}
+    \label{fig:#4}
+  \end{figure}%
+}

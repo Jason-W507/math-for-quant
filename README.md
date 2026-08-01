@@ -3,8 +3,8 @@
 《量化研究数学》是一套面向具备经济学或金融学基础、已经会 Python 的读者的双册自学教程：
 
 - 上册《通用工具与研究证据》包含 17 个学习单元、四级习题、可执行实验与独立 oracle；
-- 下册《方向模型与研究项目》包含路线诊断、统一 Capstone 契约，以及六条路线各三个正式学习单元；
-- v0.3.0 将上下册 35 个正式学习单元的完整答案统一收录在共享答案册中。
+- 下册《方向模型与研究项目》把路线诊断与 Capstone 契约合入共同导论，并按知识耦合度组织为 9 个方向章节；机器学习与 AI 形成“树模型—现代与前沿 AI—研究设计”三章主线，其余路线不再机械拆成多个短章；
+- v0.4.0 系统重写下册方向章节，补充全书可视化体系，并将《量化绿皮书》来源映射题扩展到冻结总题量的 50%。
 
 ## 获取成品
 
@@ -36,6 +36,10 @@ uv run python tools/check_learning_unit.py `
 
 ## 构建受影响的册
 
+图形采用独立图源与缓存矢量资产。修改图形规格后运行
+`uv run python tools/build_figures.py`；普通书稿构建不会重跑绘图或数值实验。完整约定见
+[`docs/figures.md`](docs/figures.md)。
+
 本机使用 MiKTeX/XeLaTeX。上册改动只构建上册：
 
 ```powershell
@@ -44,7 +48,7 @@ uv run python tools/build_books.py --volume upper
 
 下册改动改用 `--volume lower`；只有共享源或正式全书发布才使用 `--volume all`。原模板目录保持不变，项目内模板来源见 `docs/template-provenance.md`。
 
-多因子路线的公共验收命令会先验证三个学习单元，再且只重建下册与共享答案册：
+多因子路线的公共验收命令会验证本路线登记的学习单元，并且只重建下册与共享答案册：
 
 ```powershell
 uv run python tools/validate_multifactor_route.py
@@ -56,7 +60,7 @@ uv run python tools/validate_multifactor_route.py
 uv run python tools/validate_stat_arb_route.py
 ```
 
-机器学习路线从 CPU PyTorch、序列顺序负例和文本适配出发，贯通嵌套时序验证、漂移监控以及分数到成本后净收益：
+机器学习路线从树模型出发，依次覆盖深度学习与 CNN、RNN/Transformer/LLM、GNN/DRL 与多模态前沿，再贯通嵌套时序验证、漂移监控以及分数到成本后净收益：
 
 ```powershell
 uv run python tools/validate_ml_alpha_route.py

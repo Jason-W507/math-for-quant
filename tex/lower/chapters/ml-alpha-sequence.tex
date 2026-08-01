@@ -1,0 +1,116 @@
+\section{序列模型与大语言模型：从 RNN 到 LLM}
+\label{ch:lower-ml-sequence}
+
+
+金融信息按时间到达，但“使用序列模型”并不自动保证时间合法。本章从递归状态开始，推导 Attention 与 Transformer，再讨论文本预训练、LLM 适配和量化研究中的证据边界。
+
+\MFQLead{RNN：用状态压缩历史}
+
+最简单的循环网络为
+\[
+h_t=\phi(W_xx_t+W_hh_{t-1}+b),\qquad
+\hat y_t=W_oh_t+c.
+\]
+$h_t$ 是对 $x_{1:t}$ 的有限维摘要。通过时间反向传播会反复乘以 $W_h$ 和激活导数；谱半径与激活饱和共同造成梯度消失或爆炸。梯度裁剪只限制数值爆炸，不解决长期信息已被压缩的问题。
+
+LSTM 用遗忘门、输入门和输出门控制记忆：
+\[
+f_t=\sigma(W_f[x_t,h_{t-1}]+b_f),\quad
+i_t=\sigma(W_i[x_t,h_{t-1}]+b_i),
+\]
+\[
+c_t=f_t\odot c_{t-1}+i_t\odot\tilde c_t,
+\qquad h_t=o_t\odot\tanh(c_t).
+\]
+当 $f_t$ 接近 1 时，记忆梯度可沿 $c_t$ 较稳定传播。GRU 合并部分门，参数更少。两者仍需处理 padding、变长序列和隐状态跨资产串线：不同证券的 hidden state 不得因批处理顺序意外相连。
+
+\MFQLead{Attention：内容寻址而非免费记忆}
+
+给定 $Q=XW_Q$、$K=XW_K$、$V=XW_V$，缩放点积注意力为
+\[
+A=\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt{d_k}}+M\right),
+\qquad H=AV.
+\]
+$1/\sqrt{d_k}$ 防止维度增大时点积方差过大、softmax 过度饱和。因果 mask 令 $M_{ts}=-\infty$（当 $s>t$），padding mask 则屏蔽不存在的 token；两者目的不同，不能共用一个布尔数组后不再检查。
+
+\input{tex/figures/generated/lower-ml-attention.tex}
+
+
+
+多头注意力让不同子空间学习不同关系，但头数增加不保证可解释性。注意力权重描述模型内部加权，不等同于特征的因果贡献或忠实解释。
+
+\MFQLead{三 token 手算}
+
+若单头、$d_k=1$，查询 $q_2=1$，键为 $(0,1,2)$，在因果位置 $t=2$ 只能看到前两个 token，则权重为
+\[
+\operatorname{softmax}(0,1)=
+\left(\frac1{1+e},\frac e{1+e}\right).
+\]
+第三个 token 即使键更大也必须被 mask 成零权重。这个简单例子应成为实现因果 mask 的单元 oracle。
+
+\MFQLead{位置、时间间隔与金融日历}
+
+没有位置编码的 self-attention 对输入置换近似等变。绝对位置 embedding 区分第几个 token，相对位置编码表达间隔，旋转位置编码把相对位置信息嵌入点积。金融数据还需要真实时间差：两个相邻事件可能相隔 10 微秒或一夜。可以加入 $\Delta t$、交易阶段、隔夜标志和日历 embedding，但这些特征必须在事件发生时已知。
+
+长序列的标准 Attention 计算和内存复杂度为 $O(T^2)$。稀疏/局部注意力、状态空间模型或分块缓存可以降低成本，但改变了可见历史和归纳偏置。模型延迟是交易约束，不只是工程优化指标。
+
+\MFQLead{Transformer 块与训练稳定性}
+
+Transformer 块由多头注意力、前馈网络、残差和归一化组成\cite{vaswani2017attention}：
+\[
+U=X+\operatorname{MHA}(\operatorname{LN}(X)),\qquad
+Y=U+\operatorname{FFN}(\operatorname{LN}(U)).
+\]
+前馈层逐位置应用两层 MLP，通常先扩维再压回。Pre-LN 在深层训练中常比 Post-LN 稳定。训练仍需学习率 warmup、梯度裁剪、混合精度和 checkpoint；这些是数值协议，不应与研究有效性混为一谈。
+
+\input{tex/figures/generated/lower-ml-transformer.tex}
+
+
+
+编码器适合对一段已完整可见的历史做表示；自回归解码器用因果 mask 预测下一个 token；encoder--decoder 适合条件生成。用未来完整窗口做“编码器输入”再预测窗口中间标签是典型泄漏。
+
+\MFQLead{从语言模型目标到 LLM}
+
+自回归语言模型最大化
+\[
+\sum_{t=1}^T\log p_\theta(w_t\mid w_{<t}),
+\]
+masked language model 则重建被遮蔽 token。Tokenizer 把文本映射为 subword ID；更换 tokenizer 会改变序列长度、未知词和数值表示，因此它是 checkpoint 契约的一部分。
+
+预训练让模型获得通用语言表示，但不会自动获得“当时可用的信息”。用于历史回测时必须记录：模型训练数据截止、权重发布日期、新闻首次发布时间、所用文本版本和决策时点。现代模型可能在预训练语料中见过历史事件的后续总结，因此即使输入文本来自过去，也可能发生参数记忆污染。
+
+\MFQLead{微调、指令学习与参数高效适配}
+
+全量微调更新全部参数，成本高且易在小样本上遗忘。冻结编码器只训练任务头是最稳基线。LoRA 将权重更新限制为低秩矩阵
+\[
+W'=W+BA,qquad A\in\mathbb R^{r\times d_{\rm in}},
+\quad B\in\mathbb R^{d_{\rm out}\times r},\quad r\ll d,
+\]
+显著减少可训练参数\cite{hu2022lora}。Adapter、prefix tuning 和 prompt tuning 是其他参数高效路径。参数少不意味着选择偏差少：秩、目标层、学习率和 prompt 模板仍需在训练/验证协议中冻结。
+
+指令微调和偏好对齐改变模型回答方式，不保证事实正确。量化文本任务应优先使用结构化输出 schema、引用原文片段和拒答条件。把模型生成的情绪标签直接当真值，会把提示词偏差和幻觉写进因子。
+
+\MFQLead{检索增强、工具使用与结构化抽取}
+
+RAG 把检索文档 $D$ 作为条件：$p(y\mid x,D)$。历史研究必须使用按决策时点构建的版本化索引；今天的知识库检索 2018 年问题会泄漏后续文档。向量库还要保存 embedding 模型、切块规则、索引时间和过滤条件。
+
+\input{tex/figures/generated/lower-ml-llm-pipeline.tex}
+
+
+
+工具调用适合把计算交给确定性程序，例如财务比率、日期解析和单位换算。LLM 负责选择工具与组织解释，数值 oracle 由代码给出。研究包应保存 prompt、工具输入输出、模型版本、温度、重试和人工覆盖记录。
+
+\MFQLead{LLM 的评价不能只看一个准确率}
+
+分类/抽取任务报告精确率、召回率、校准和按时间切分的错误；生成任务评价事实一致性、引用覆盖、结构合法率和拒答质量。对最终交易决策，还要经过
+\[
+\text{文本}\to\text{结构化信号}\to\text{目标仓位}
+\to\text{成交}\to\text{净收益}.
+\]
+任何只展示几条“看起来不错”的回答都不是样本外证据。
+
+\begin{diagnostic}
+LLM 最大的量化研究风险往往不是一次明显幻觉，而是不可见的时间污染：模型权重、检索索引或文本修订包含决策日之后的信息。没有版本化语料就只能做当前时点的方法演示，不能做历史收益声明。
+\end{diagnostic}
+
+本章建立了从 RNN 到 LLM 的完整对象链。下一章讨论不规则关系结构、序贯决策和仍在快速发展的前沿方向。

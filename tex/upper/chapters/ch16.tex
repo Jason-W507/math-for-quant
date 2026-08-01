@@ -69,6 +69,10 @@
 样本外（out of sample）区间是从未参与模型拟合、特征选择、超参数选择、停止规则或研究叙事选择的数据。只要看过该区间并据此修改研究，它就不再是最终样本外。
 \end{definition}
 
+\input{tex/figures/generated/upper-ch16-purge-embargo.tex}
+
+
+
 最简单的时间切分为训练集、验证集和一次性测试集：训练集估计参数，验证集选择模型，最终测试集只在研究冻结后打开一次。金融分布会变化，因此开发阶段更常使用滚动向前验证（walk-forward validation）：在每个时点只用过去窗口拟合，再预测紧随其后的未来窗口。每一折都保持时间方向，但所有折仍属于模型开发证据；不能把反复优化后的平均得分当作未见过的最终测试。
 
 \subsection{重叠标签、purge 与 embargo}
@@ -80,7 +84,6 @@
   \item 若超参数也被选择，在外层评估、内层选择，避免同一折同时承担选择与最终评分。
 \end{itemize}
 
-\input{tex/upper/figures/purge-embargo.tex}
 
 \begin{heuristic}
 purge 长度与 embargo 长度不是通用常数，它们应由标签跨度、特征记忆和研究机制决定。机械地套一个百分比并不能证明独立性；这里给出的是研究设计启发，不是保证样本独立的定理。

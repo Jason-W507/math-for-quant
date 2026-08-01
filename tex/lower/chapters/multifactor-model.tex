@@ -1,10 +1,10 @@
-\chapter{多因子模型：预测回归与风险价格}
+\chapter{多因子模型与稳健估计：从预测回归到风险价格}
 \label{ch:lower-multifactor-model}
 
 \begin{itemize}
   \input{tex/generated/prerequisites/lower-multifactor-model}
-  \item 学习产出：能从估计对象、数据轴和识别假设区分预测型 Fama--MacBeth 与经典两遍资产定价回归。
-  \item 研究边界：本章的精确线性面板是计算 oracle，不是市场规律、因果证据或实盘 alpha。
+  \item 学习产出：区分预测型 Fama--MacBeth 与经典两遍资产定价回归，完成正则化与面板推断，并把信号映射为扣除摩擦后的组合收益。
+  \item 研究边界：精确线性面板只承担计算 oracle；因子发现、参数稳定、组合实施和样本外有效性必须分别提供证据。
 \end{itemize}
 
 \section{先画清三根轴}
@@ -14,6 +14,11 @@
 r_{i,t+1}=a_t+x_{i,t}^{\mathsf T}b_t+u_{i,t+1}.
 \]
 这里的 $b_t$ 是当期横截面预测系数。它不自动是结构性风险价格，也不等于因果处理效应。若把财报修订值、未来指数成分或 $t+1$ 的标准化参数回填到 $t$，线性代数仍可正确运行，但研究问题已经失效。
+
+\input{tex/figures/generated/lower-mf-three-axes.tex}
+
+
+
 
 对单一中心化信号，含截距 OLS 斜率为
 \[
@@ -49,13 +54,18 @@ r_{i,t}=\alpha_i+\beta_i^{\mathsf T}f_t+\varepsilon_{i,t}.
 \]
 $\lambda$ 才是该模型中的因子风险价格。本章精确面板设 $\beta=(0.5,1,1.5)$、资产 alpha 为 $0.004$，因子收益均值为 $0.006$；两遍回归恢复相同 beta，并得到 $\hat\lambda=0.006$。这与前一节的预测斜率 $0.025$ 是不同估计对象，数值相等也不能互换含义。
 
+\input{tex/figures/generated/lower-mf-fmb-two-pass.tex}
+
+
+
+
 第二遍使用第一遍估计的 $\hat\beta_i$，因此解释变量含估计误差。Shanken 型修正讨论这类生成回归量对风险价格推断的影响；常见标量诊断包含
 \[
 \sqrt{1+\lambda^{\mathsf T}\Sigma_f^{-1}\lambda}.
 \]
 它依赖具体模型、同方差/条件分布、因子可交易性和样本设定，不能把这个乘数机械套在所有预测回归标准误上\cite{shanken1992beta}。
 
-\section{相关、秩相关与中性化}
+\MFQLead{相关、秩相关与中性化}
 
 Pearson IC 保留线性距离，Rank IC 只保留次序并需要声明并列秩规则。中性化则把信号投影到暴露矩阵 $Z_t$ 的正交补：
 \[
@@ -64,7 +74,10 @@ x_t^\perp=x_t-Z_t(Z_t^{\mathsf T}Z_t)^{-1}Z_t^{\mathsf T}x_t,
 \]
 实现应使用 QR、SVD 或最小二乘而非显式求逆，并在秩亏或条件数过高时拒绝。中性化不是免费的“清洁”：若规模同时承载预测信息，残差化会连同风险暴露一起删除。
 
-\section{多重检验的保证边界}
+\input{tex/figures/generated/lower-mf-ic-decay.tex}
+
+
+\MFQLead{多重检验的保证边界}
 
 每尝试一个特征、窗口、预处理、持有期或资产池，就消耗一次研究选择权。Benjamini--Hochberg（BH）把排序后的 $p_{(j)}$ 与 $j\alpha/m$ 比较，在独立或适当正依赖条件下控制 FDR\cite{benjamini1995controlling}。任意相关、层级搜索或根据结果重定义检验族时，不能只报告“BH 已通过”；应保存完整尝试账本，并考虑更保守校正、重采样或独立最终测试。
 
@@ -74,8 +87,37 @@ x_t^\perp=x_t-Z_t(Z_t^{\mathsf T}Z_t)^{-1}Z_t^{\mathsf T}x_t,
 运行 \path{notebooks/lower/multifactor_model.py}。图中分别显示预测斜率序列与经典风险价格；日期相等的故障注入必须以稳定类别拒绝。
 \end{implementationnote}
 
-\section{连接到路线 Capstone}
+\MFQLead{连接到路线 Capstone}
 
 Capstone 的模型卡必须先声明属于“特征预测”还是“beta 定价”，列出时间轴、资产轴、因子轴、参数单位和识别限制。只有模型对象冻结后，下一章的正则化与库实现才有可比较的目标。
 
-\input{tex/lower/chapters/multifactor-model-questions}
+\section{因子从哪里来：经济假设、变换与可得性}
+
+因子可以来自会计比率、价格成交、分析师预期、宏观状态或机器学习表示。每个因子都要写成带时间的函数
+\[
+x_{i,t}=g(\mathcal I_{i,t}),
+\]
+其中 $\mathcal I_{i,t}$ 只包含决策时已公开且可获得的数据。财报期末不是可得日；复权价格、指数成分和退市样本也必须使用 point-in-time 版本。
+
+Winsorize、标准化和行业中性化通常逐期横截面执行。若用全历史均值标准化，未来分布会进入过去。极端值处理阈值应在训练期冻结，并保留原始值、处理值和拒绝原因，以便区分数据错误与真实尾部。
+
+\MFQLead{预测型 Fama--MacBeth 的标准误}
+
+每期得到斜率 $\hat\gamma_t$ 后，平均溢价为 $\bar\gamma=T^{-1}\sum_t\hat\gamma_t$。独立同分布近似下
+\[
+\widehat{\operatorname{se}}(\bar\gamma)=
+\sqrt{\frac{1}{T(T-1)}\sum_{t=1}^T(\hat\gamma_t-\bar\gamma)^2}.
+\]
+若 $\hat\gamma_t$ 序列相关，应使用 HAC；持有期重叠时带宽至少覆盖重叠长度。横截面资产很多并不能替代时间期数，显著性主要由有效 $T$ 决定。
+
+经典两遍回归还存在生成回归量误差：第一步估计的 beta 不是已知常数，第二步风险价格标准误若忽略它会偏小。Shanken 型修正依赖更强的资产定价假设；教材中必须先区分预测任务和风险价格检验，再决定是否适用。
+
+\MFQLead{一个中性化与 IC 的小例子}
+
+四只股票原始信号为 $x=(-2,-1,1,2)$，规模暴露为 $z=(-1,-1,1,1)$。对含截距和 $z$ 的设计矩阵做最小二乘后，若 $x$ 几乎完全由规模解释，残差信号接近零；此时中性化后的 IC 不应被强行计算成稳定数字。它告诉研究者：所谓 Alpha 可能就是规模暴露。
+
+相反，若残差为 $(-0.5,0.5,-0.5,0.5)$，未来收益为 $(-1,1,-2,2)$，Pearson IC 为正，Rank IC 还取决于并列秩规则。报告必须并列原始 IC、中性化 IC、暴露变化和信号方差，避免只展示更好看的一个。
+
+\begin{diagnostic}
+因子定义、股票池和中性化顺序共同决定结果。先按未来存活股票筛池、再回填历史因子，会产生幸存者偏差；先用未来行业分类中性化，则会产生分类回看偏差。
+\end{diagnostic}

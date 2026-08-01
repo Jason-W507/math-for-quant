@@ -1,61 +1,183 @@
-\chapter{模型与表示：从基线到 PyTorch、Transformer 与文本适配}
+\chapter{表格统计学习：从决策树到梯度提升}
 \label{ch:lower-ml-model}
 
 \begin{itemize}
   \input{tex/generated/prerequisites/lower-ml-alpha-model}
-  \item 学习产出：能从 NumPy 基线迁移到可复现的 PyTorch 训练，并证明序列模型确实保留顺序。
-  \item 研究边界：本章的小模型用于暴露训练与信息协议，不声称达到生产模型容量。
+  \item 学习产出：能从 CART 的分裂目标推导随机森林与梯度提升树，独立解释 XGBoost 的二阶目标，并为横截面表格数据建立无泄漏基线。
+  \item 研究边界：本章不重复 Ridge/Lasso；它们已在上册和多因子路线讲授。这里聚焦量化表格数据最常用的树模型族。
 \end{itemize}
 
-\section{先冻结简单基线}
+\section{为什么先学树，而不是先上神经网络}
 
-回归树桩在候选阈值 $c$ 上最小化两侧平方误差。候选集合必须来自排序后的唯一特征值中点；若直接使用输入相邻项，中点集合会依赖行顺序。透明实现先计算
+大多数日频和低频 Alpha 数据最终表现为一张表：行是“资产--决策时点”，列是估值、质量、动量、风险、行业和宏观特征，标签是未来一段持有期收益或相对收益。特征尺度不一、缺失普遍、非线性和交互显著，而样本的有效独立数量又远小于行数。树模型不要求特征标准化，能表示阈值和交互，在中等样本表格任务上通常是必须击败的主力基线，而不只是深度学习前的热身\cite{gu2020mlassetpricing}。
+
+设训练样本为 $\{(x_i,y_i)\}_{i=1}^n$，$x_i\in\mathbb R^p$。树把特征空间递归划分成互不相交的叶节点 $R_1,\ldots,R_M$，回归预测为
 \[
-\mathcal C=\left\{\frac{x_{(j)}+x_{(j+1)}}2:x_{(j)}<x_{(j+1)}\right\},
+\hat f(x)=\sum_{m=1}^M c_m\mathbf 1\{x\in R_m\},
+\qquad
+c_m=\frac{1}{|R_m|}\sum_{i:x_i\in R_m}y_i.
 \]
-再逐个比较。线性基线先以含截距的 NumPy 最小二乘拟合，再与 \texttt{LinearRegression} 对拍。树桩对照使用 \texttt{DecisionTree}\allowbreak\texttt{Regressor}，并单独固定 \texttt{max\_depth=1}；两轮残差 boosting 与 \texttt{GradientBoosting}\allowbreak\texttt{Regressor} 对拍。三组冻结预测差均为 0。这里的“双实现”只验证声明的截距、平方损失、学习率与树深，不代表不同库默认值天然等价。
+它不是“自动发现经济规律”的机器，而是一组数据驱动的分段常数规则。研究者仍要决定标签、时间切分、样本权重、可交易集合和成本口径。
 
-线性、树和 boosting 不是被深度模型淘汰的装饰品。它们提供训练时间、解释难度和样本外损失的下界；复杂模型若不能在冻结验证协议下改善决策结果，应保留基线。资产定价中的系统比较也表明，模型灵活性必须与正则化和严格样本外评价一起解释\cite{gu2020mlassetpricing}。
+\section{CART：一次分裂究竟优化什么}
 
-\section{PyTorch：从张量到 checkpoint}
+对节点 $R$，候选分裂 $(j,s)$ 把样本分成
+\[
+R_L(j,s)=\{x\in R:x_j\le s\},\qquad
+R_R(j,s)=\{x\in R:x_j>s\}.
+\]
+平方损失回归树选择
+\[
+(j^*,s^*)=\arg\min_{j,s}
+\left[
+\sum_{i:x_i\in R_L}(y_i-\bar y_L)^2+
+\sum_{i:x_i\in R_R}(y_i-\bar y_R)^2
+\right].
+\]
+候选阈值必须来自排序后相邻唯一值的中点。若直接按原始行顺序取中点，模型会随文件行顺序变化；这不是随机性，而是实现错误。
 
-张量同时携带数值、形状、dtype 和 device。训练循环的最小闭环分为三步：
-\begin{enumerate}
-  \item \texttt{Dataset} 保存样本语义，\texttt{DataLoader} 决定批次与顺序；
-  \item 前向传播产生损失，\texttt{autograd} 计算梯度，优化器更新参数；
-  \item 在评估模式与无梯度上下文中冻结推理。
-\end{enumerate}
-代码还固定随机种子、CPU device、epoch 数与学习率，把模型状态、优化器状态、配置和输入维度真正序列化为 checkpoint，再从该文件恢复模型并逐项核对预测；参数字节 $D$ 的指纹记为 $h(D)$\cite{paszke2019pytorch}。
+\input{tex/figures/generated/lower-ml-tree-split.tex}
 
-对四个样本训练两层 MLP，最终 MSE 约为 $6.34\times10^{-4}$。这个数不是模型质量结论；真正的证据是同一配置两次运行得到完全相同预测和指纹。若更换 GPU、算子或框架版本，必须重新声明可复现级别，而非默认逐位一致。
+
+
+
+\MFQLead{一个可手算的分裂}
+
+四只股票的动量为 $(-2,-1,1,3)$，未来超额收益为 $(-4,-2,1,5)$。候选阈值是 $-1.5,0,2$。以 $s=0$ 分裂时，左右均值分别为 $-3$ 与 $3$，残差平方和为
+\[
+(-4+3)^2+(-2+3)^2+(1-3)^2+(5-3)^2=10.
+\]
+不分裂时总体均值为 0，残差平方和为 $46$，因此该分裂带来 $36$ 的误差下降。读者应对另外两个阈值完成同样计算，而不是只相信库返回的 \texttt{feature\_importances\_}。
+
+分类树常用 Gini 不纯度
+\[
+G(R)=1-\sum_{k=1}^K p_{k,R}^2
+\]
+或交叉熵。类别标签如果来自未来收益分位数，分位点只能在训练窗口估计；用全样本分位点会把未来分布信息泄漏回训练期。
+
+\MFQLead{树为什么容易过拟合}
+
+完全生长的树可以把每个样本隔离成单独叶节点，训练误差趋近于零。控制复杂度的主要旋钮是最大深度、叶节点最小样本、最小分裂收益和代价复杂度剪枝：
+\[
+C_\alpha(T)=\sum_{m=1}^{|T|}\sum_{i:x_i\in R_m}(y_i-c_m)^2+\alpha|T|.
+\]
+$\alpha$ 越大，叶节点越少。超参数必须在内层时序验证中选择，不能在最终测试期上挑“看起来最稳”的深度。
+
+缺失值处理也属于模型定义。可选择训练期中位数填充并添加缺失指示、学习默认分支，或使用原生缺失处理；三者隐含的经济假设不同。行业等类别变量若使用目标编码，编码统计量必须 out-of-fold 计算。高基数证券代码通常不应直接成为特征，否则模型可能记住个体而非学习可迁移关系。
+
+叶节点最小样本数应按“有效独立样本”理解，而不是机械使用面板行数。若同一资产连续 20 天标签高度重叠，200 行未必提供 200 份独立证据。可以同时限制叶内日期数、资产数和行业覆盖，并在验证报告中保存叶节点的时间跨度；只由某一年或某一行业支撑的叶规则不具有可迁移性。
+
+样本权重会改变树真正优化的总体。等行权重让历史更长、交易日更多的资产贡献更大；按日期归一化后，每个时点总权重相同；再按横截面市值或流动性加权则改变投资目标。设 $w_{i,t}\ge0$，加权叶预测为
+\[
+c_m=\frac{\sum_{(i,t)\in R_m}w_{i,t}y_{i,t}}
+{\sum_{(i,t)\in R_m}w_{i,t}}.
+\]
+报告必须写出权重的经济含义，并检查权重是否使用决策后信息。未来成交额不能作为历史训练行的流动性权重。
 
 \begin{diagnostic}
-只保存 \texttt{state\_dict} 不够：还要保存 tokenizer、特征顺序、预处理参数、随机种子、优化器状态、代码版本和数据截止。checkpoint 是推理契约，不只是权重文件。
+随机切分表格行几乎总会夸大金融树模型的表现。同一资产相邻日期高度相关，标签持有期还可能重叠。切分单位必须是决策时间，并根据标签跨度设置 purge 和 embargo。
 \end{diagnostic}
 
-\section{因果卷积、RNN、Attention 与 Transformer}
+\section{Bagging 与随机森林：用随机化降低方差}
 
-序列输入为 $X\in\mathbb R^{B\times T\times F}$。因果卷积的 $t$ 时点只读取 $\{X_s:s\le t\}$；RNN 递推 $h_t=\phi(W_xX_t+W_hh_{t-1})$；self-attention 通过
+Bagging 从训练集有放回抽取 $B$ 个 bootstrap 样本，拟合 $B$ 棵树后平均：
 \[
-\operatorname{softmax}\!\left(\frac{QK^{\mathsf T}}{\sqrt d}+M\right)V
+\hat f_{\mathrm{bag}}(x)=\frac1B\sum_{b=1}^B\hat f^{(b)}(x).
 \]
-聚合位置，其中因果 mask $M$ 屏蔽未来。Transformer 再叠加前馈、残差与归一化\cite{vaswani2017attention}。没有位置编码的 attention 对置换近似等变，不能自动识别先后。
+若单树方差为 $\sigma^2$、两树相关系数近似为 $\rho$，平均预测方差约为
+\[
+\rho\sigma^2+\frac{1-\rho}{B}\sigma^2.
+\]
+增加树数只能压低第二项，不能消除高度相关树共享的第一项。随机森林在每个节点只考察随机抽取的 $m_{\mathrm{try}}$ 个特征，以牺牲单树强度换取更低相关性\cite{breiman2001random}。
 
-冻结负例把 $[1,2,4,8]$ 反转。时间均值差为 0，而因果卷积、RNN、带位置与因果 mask 的 Attention/Transformer 输出均发生变化。这个实验不证明模型预测有效，只证明实现没有把顺序悄悄压成均值。padding mask、缺失 mask 与因果 mask 必须分别记录。
+\input{tex/figures/generated/lower-ml-random-forest.tex}
 
-\section{NLP/LLM：任务边界先于模型规模}
 
-文本链从 tokenizer 和 embedding 开始，再进入预训练编码器、任务头与决策映射。冻结实验先在无标签文本上做词袋重构预训练，再保存版本为 \texttt{mfq-tiny-text-encoder@1.0.0}、许可为 CC0-1.0 的本地编码器。零样本使用事前词义规则，少样本使用预训练表示原型；全量微调更新 embedding、投影与任务头；LoRA 路径冻结 embedding 和投影基座，只学习投影的低秩更新与任务头\cite{hu2022lora}。它是真实执行的微型预训练/适配链，但不具备基础模型的语料、容量或迁移结论。
 
-真实预训练编码器必须绑定模型卡、许可、权重版本和 tokenizer。新闻或公告还要同时保存首次发布时间、抓取时间与修订时间；决策日后的修订不能回填历史。LLM 生成的标签需保留 prompt、采样参数、原文证据和人工抽查，零/少样本结果不能免除时间审计。
+
+未被某棵树 bootstrap 抽中的样本是该树的 out-of-bag 样本，可形成 OOB 误差。但金融面板中的 OOB 并不天然满足时间顺序：未来行可能进入 bootstrap 后预测过去行。因此 OOB 适合检查实现和相对复杂度，不替代按时间滚动的样本外评价。
+
+常见重要性有两种。基于不纯度下降的 MDI 偏爱可分裂点多的连续或高基数特征；置换重要性在评价集打乱一列并观察损失上升，但相关特征会互相替代。任何“重要因子”结论都应同时报告窗口稳定性、相关特征组和置换方案。
+
+随机森林的主要超参数有不同职责：树数控制 Monte Carlo 近似误差，$m_{\rm try}$ 调节树间相关，最大深度和叶样本数控制单树容量，行采样率改变偏差--方差与时间覆盖。树数增加后验证损失趋稳，只说明集成平均收敛；若所有树共享同一段制度和同一组泄漏特征，再多树也不会提高研究有效性。
+
+对于类别不平衡事件，可用类别权重或重采样，但二者会改变训练分布。若目标是未来违约概率，重采样后的原始分类概率通常需要再校准；若目标只是横截面排序，则应报告排序和分组收益，而不是把未校准概率解释为真实频率。训练目标、输出含义和最终决策必须一致。
+
+\section{Gradient Boosting：逐步拟合负梯度}
+
+Boosting 构造加法模型
+\[
+F_M(x)=F_0(x)+\sum_{m=1}^M\eta\,h_m(x),
+\]
+其中第 $m$ 轮对当前预测的负梯度
+\[
+r_{im}=-\left.\frac{\partial L(y_i,F(x_i))}{\partial F(x_i)}\right|_{F=F_{m-1}}
+\]
+拟合一棵浅树。平方损失下 $r_{im}=y_i-F_{m-1}(x_i)$，所以它就是逐轮拟合残差。学习率 $\eta$、树数 $M$、深度和子采样率共同决定有效容量；“更多树”并不等于更多独立信息\cite{friedman2001greedy}。
+
+\input{tex/figures/generated/lower-ml-boosting.tex}
+
+
+
+
+以初始预测 $F_0=0$、标签 $(2,-1)$ 为例，第一棵树若恰好拟合残差，$\eta=0.1$ 后预测变成 $(0.2,-0.1)$，新残差为 $(1.8,-0.9)$。小学习率让函数空间优化更平滑，但需要更多轮；早停必须只观察验证窗口。
+
+\MFQLead{XGBoost、LightGBM 与 CatBoost 的核心差异}
+
+XGBoost 对第 $t$ 棵树使用二阶近似\cite{chen2016xgboost}：
+\[
+\mathcal L^{(t)}\approx
+\sum_i\left[g_i f_t(x_i)+\frac12h_i f_t(x_i)^2\right]
++\gamma T+\frac\lambda2\sum_{j=1}^T w_j^2.
+\]
+固定树结构后，叶 $j$ 的样本集合为 $I_j$，最优叶权重与结构得分为
+\[
+w_j^*=-\frac{G_j}{H_j+\lambda},\qquad
+\operatorname{score}(j)=-\frac12\frac{G_j^2}{H_j+\lambda}+\gamma,
+\]
+其中 $G_j=\sum_{i\in I_j}g_i$、$H_j=\sum_{i\in I_j}h_i$。分裂收益是父节点得分与两个子节点得分之差。由此可以看出 $\lambda$ 收缩叶权重，$\gamma$ 惩罚新增叶，而不是神秘的“防过拟合按钮”。
+
+LightGBM 用直方图、叶优先生长和特征打包提高大样本效率；叶优先生长可能产生很深的局部分支，必须配合叶样本与深度限制。CatBoost 的 ordered target statistics 与 ordered boosting 主要处理类别变量目标泄漏和预测偏移。选择库时先看数据结构和时间协议，再看排行榜速度。
+
+树提升可以替换平方损失。Huber 损失在小残差区间为二次、大残差区间为线性，减少极端收益对梯度的支配；分位数损失
+\[
+L_\tau(y,f)=
+\begin{cases}
+\tau(y-f),&y\ge f,\\
+(1-\tau)(f-y),&y<f
+\end{cases}
+\]
+可估计条件分位数并形成不对称风险预测。选择损失前应先说明决策：预测中位数、尾部还是均值。对重尾收益盲用 MSE，往往使少数极端日决定分裂结构。
+
+Boosting 的过拟合诊断应保存每轮训练与验证损失。若训练损失继续下降而验证损失在第 $m^*$ 轮后上升，早停模型必须固定为 $m^*$，不能在最终测试期重新选择。不同时间窗口得到的最佳轮数差异很大时，应该报告制度不稳定，而不是取全样本最优轮数掩盖差异。
+
+横截面 Alpha 还常用排序目标。pairwise loss 把同一时点资产对 $(i,j)$ 的次序写成
+\[
+\log\!\left(1+exp[-\operatorname{sign}(y_i-y_j)(f_i-f_j)]\right).
+\]
+它更贴近排序，但资产对数量为 $O(n_t^2)$，需要采样；若跨日期构造配对，模型会混淆市场水平与横截面次序。排序损失也不包含换手、风险和成交，因此只能作为组合链路的一环。
+
+\section{量化表格模型的完整基线表}
+
+一个可信实验至少同时报告：
+\begin{enumerate}
+  \item 常数、线性或行业中性线性基线；
+  \item 单树、随机森林、梯度提升树三档容量；
+  \item 训练期、验证期、最终测试期及标签跨度；
+  \item MSE/排序相关之外的分组收益、换手、成本和容量；
+  \item 不同年份、行业、市值组的稳定性；
+  \item 重要性稳定性和删除特征组后的消融；
+  \item 随机种子、库版本、特征列表与缺失处理。
+\end{enumerate}
+
+树模型输出的是条件预测或排序分数，不是仓位。把分数映射为目标权重、成交和净收益的链条留到本路线最后一章；在此之前，任何“树模型赚了多少”都缺少决策定义。
+
+建议把实验组织成一张冻结比较表：行是线性、单树、随机森林、XGBoost/LightGBM/CatBoost，列是训练成本、验证损失、Rank IC、分组收益、换手、成本后收益、最差年份和特征稳定性。任何模型升级都必须在同一数据截止、标签、切分和组合规则下比较。若复杂模型只改善训练指标或只在一个窗口占优，结论应是“尚无增量证据”。
+
+一个有用的故障注入是把某个特征整体向后移动一期：合法模型表现应下降；若表现不变，特征可能无效；若反而上升，应检查时间戳和标签方向。另一个故障注入是随机打乱同一日期内标签，模型的横截面能力应消失。负例比单次成功运行更能证明研究管线没有静默错位。
 
 \begin{implementationnote}
-\begin{lstlisting}[language=bash]
-uv run python notebooks/lower/ml_alpha_model.py \
-  evidence/ml-alpha-model/oracle.json
-\end{lstlisting}
+现有 notebook 保留透明回归树桩、两轮残差 boosting 与成熟库对拍。完整练习应在同一时间切分下加入随机森林和梯度提升，并保存每轮验证损失，而不是只保存最终模型对象。
 \end{implementationnote}
-
-本单元向 Route Capstone 交付：基线表、PyTorch checkpoint、顺序负例、文本适配协议和算力/随机性限制。
 
 \input{tex/lower/chapters/ml-alpha-model-questions}

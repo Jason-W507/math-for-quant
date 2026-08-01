@@ -1,0 +1,11 @@
+{
+  "provenance": "hand-derived parity invariant and sum/square-sum ledger",
+  "fixture": {
+    "path": "data/fixtures/brainteasers.json",
+    "sha256": "4a8bdb8e733262279c9f80146f41e8d5908048ae58f7f58d78f3daec609a5c31"
+  },
+  "expected": [8, 15],
+  "expected_reachable": true,
+  "published_markers": ["reachable=1", "missing=8,15"],
+  "absolute_tolerance": 0
+}

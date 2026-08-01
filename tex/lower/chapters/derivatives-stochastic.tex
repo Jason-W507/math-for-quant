@@ -7,7 +7,10 @@
   \item 研究边界：数学上的充分条件、教材风险限额与经验稳定性检查是三种不同强度的命题。
 \end{itemize}
 
-\input{tex/lower/figures/derivatives-route}
+\input{tex/figures/generated/lower-dv-route.tex}
+
+
+
 
 \section{同一条路径上的嵌套分割}
 
@@ -16,6 +19,11 @@
   \sum_i (W_{t_{i+1}}-W_{t_i})^2\xrightarrow{P}T.
 \]
 这里是\textbf{依概率收敛}；单条有限路径越来越接近 $T$ 只是数值现象，不能替代定理。实验从同一组 4096 个最细增量出发，把相邻增量按 64、16、4、1 个聚合后再平方，避免不同网格其实来自不同随机路径。冻结路径的粗、细值为 $1.164390$ 与 $1.012519$。
+
+\input{tex/figures/generated/lower-dv-qv.tex}
+
+
+
 
 离散恒等式
 \[
@@ -66,6 +74,11 @@ Itô 等距
 \]
 PDE、复制和风险中性期望是同一模型的三种表达，而不是三份彼此独立的市场事实\cite{black1973pricing,merton1973rational,shreve2004stochastic}。
 
+\input{tex/figures/generated/lower-dv-replication.tex}
+
+
+
+
 更具体地，定义随机指数
 \[
  Z_T=\exp\left(-\int_0^T\theta_t\,\mathrm dW_t
@@ -85,7 +98,7 @@ PDE、复制和风险中性期望是同一模型的三种表达，而不是三�
 
 “存在等价鞅测度”与“市场完备”也要分开。无套利对应等价局部鞅测度的存在；唯一性与每个或有要求可复制相关。在一般连续时间市场里还需技术条件，不能只从一条 SDE 和一个密度公式宣布基本定理全部成立。
 
-\section{Novikov 条件不是固定能量上限}
+\MFQLead{Novikov 条件不是固定能量上限}
 
 令 $\theta_t$ 为市场价格风险。密度随机指数成为真鞅的一个常用充分条件是
 \[
@@ -114,5 +127,87 @@ $2.2\times10^{-16}$。这只核对符号与数值实现，不替代 Novikov、�
 \end{implementationnote}
 
 本单元向 Route Capstone 与下一章交付：风险中性动力学、PDE、贴现期望及全部成立条件。
+
+\MFQLead{滤过、适应性与可交易策略}
+
+滤过 $(\mathcal F_t)$ 表示截至 $t$ 的信息增长。价格 $S_t$ 应为适应过程，持仓 $\Delta_t$ 必须可预测：在 $(t,t+dt]$ 的收益发生前确定。若离散回测用区间终点价格计算同一区间 Delta，就是连续时间符号下的未来函数。
+
+简单可预测过程 $H_t=\sum_k H_k\mathbf1_{(t_k,t_{k+1}]}(t)$ 的 Itô 积分定义为
+\[
+\int_0^T H_t\,dW_t=
+\sum_k H_k(W_{t_{k+1}}-W_{t_k}),
+\]
+其中 $H_k$ 对 $\mathcal F_{t_k}$ 可测。Itô 等距
+\[
+\mathbb E\left[\left(\int_0^T H_t\,dW_t\right)^2\right]
+=\mathbb E\int_0^T H_t^2\,dt
+\]
+把随机积分的二阶矩化为普通积分，并支撑从简单过程到平方可积过程的完备化。
+
+Itô 积分在适当可积条件下是鞅，因此
+\[
+\mathbb E\!\left[\int_s^t H_u\,dW_u\mid\mathcal F_s\right]=0.
+\]
+这不是说每条路径的积分为零，而是给定当前信息后的条件均值为零。若被积过程偷看 $W_t-W_s$ 再决定 $H_s$，可预测性被破坏，条件均值结论也随之失效。连续时间金融中的“自融资策略不能使用未来价格”正是这一条件的经济版本。
+
+停止时间 $\tau$ 满足事件 $\{\tau\le t\}\in\mathcal F_t$。首次触及止损线是停止时间，完整样本中收益最低的日期却不是在线可识别停止时间。可选停止定理还需要有界性、一致可积等条件；仅凭“鞅在停止时仍公平”一句话，不能为无限加仓或翻倍策略背书。
+
+\MFQLead{Itô 公式的多维版本}
+
+若 $X_t\in\mathbb R^d$ 满足 $dX_t=b_tdt+\sigma_tdW_t$，$f(t,x)$ 足够光滑，则
+\[
+df=\left(f_t+\nabla f^{\mathsf T}b+
+\frac12\operatorname{tr}(\sigma\sigma^{\mathsf T}\nabla^2f)\right)dt
++\nabla f^{\mathsf T}\sigma\,dW_t.
+\]
+二阶项来自二次变差，不是普通链式法则中的“小量忽略”。对 $f(S)=\log S$ 应用后，GBM 的对数漂移从 $\mu$ 变为 $\mu-\sigma^2/2$。
+
+多资产期权还包含交叉变差 $dS_i,dS_j=\rho_{ij}\sigma_i\sigma_jS_iS_jdt$，PDE 中出现混合二阶导数。相关矩阵必须半正定；逐对指定相关而不检查整体矩阵可能导致不存在联合 Brownian 运动。
+
+对向量过程，协方差矩阵是瞬时二次协变差密度：
+\[
+d[X^i,X^j]_t=(\sigma_t\sigma_t^{\mathsf T})_{ij}\,dt.
+\]
+它决定 Itô 公式中的 Hessian 项。若用历史相关直接填入定价模型，还必须检查时间尺度、测度和状态依赖；历史 $\mathbb P$ 下的相关估计不自动等于风险中性 $\mathbb Q$ 下的联合动态。
+
+\MFQLead{无套利基本定理的层次}
+
+一时期有限状态模型中，“无套利”等价于存在严格正状态价格；连续半鞅模型需要更精细的 NFLVR 条件。等价鞅测度存在对应无套利，唯一性对应市场完备。Black--Scholes 的单 Brownian、单风险资产模型完备；加入随机波动率、跳跃或不可交易风险源后通常不完备，衍生品价格不再只由无套利唯一决定。
+
+复制策略给出的是模型内部价格。真实市场的离散交易、成本、跳跃和约束破坏连续复制；风险中性测度也不是“投资者真的风险中性”，而是把可交易风险溢价吸收到测度中以便定价。
+
+市场完备时，鞅表示定理使每个平方可积或有要求都能写成常数加对 Brownian 运动的随机积分，于是对应可交易资产的动态策略可以复制它。若风险源多于独立可交易资产，表示中的某些方向无法对冲，等价鞅测度通常不唯一。此时无套利只给出价格区间或需要额外偏好、效用及校准准则。
+
+更换 numeraire 可以简化不同产品的定价。若 $N_t>0$ 是 numeraire，在对应测度 $\mathbb Q^N$ 下，可交易资产的相对价格 $S_t/N_t$ 是鞅：
+\[
+\frac{V_t}{N_t}=\mathbb E^{\mathbb Q^N}\!\left[
+\frac{V_T}{N_T}\middle|\mathcal F_t\right].
+\]
+货币市场账户对应风险中性测度，零息债券对应远期测度。测度名称只有连同 numeraire、期限和可交易集合一起写出才完整。
+
+\section{Girsanov 变换的符号检查}
+
+若密度过程
+\[
+Z_T=\exp\left(-\int_0^T\theta_t\,dW_t
+-\frac12\int_0^T\theta_t^2dt\right)
+\]
+是真鞅，则在新测度下 $W_t^Q=W_t+\int_0^t\theta_sds$ 为 Brownian。代回
+$dS/S=\mu dt+\sigma dW$ 得
+\[
+\frac{dS}{S}=(\mu-\sigma\theta)dt+\sigma dW^Q.
+\]
+令 $\theta=(\mu-r)/\sigma$ 才得到风险中性漂移 $r$。最稳的符号检查是把 $dW=dW^Q-\theta dt$ 明确代回，而不是背密度指数的正负号。
+
+\input{tex/figures/generated/lower-dv-measure.tex}
+
+
+
+
+\begin{diagnostic}
+风险中性定价仍需说明 numeraire、可交易资产、股息和利率。更换 numeraire 会更换测度；“所有贴现价格都是鞅”只对相应 numeraire 和可交易资产成立。
+\end{diagnostic}
+
+从研究角度，连续时间模型至少要留下四层记录：原始测度下的状态过程、密度或市场价格风险、numeraire 与新测度、最终可交易复制或定价公式。若只保存最终 Black--Scholes 数字，无法判断错误来自 SDE、测度变换、贴现还是 payoff。下一章的数值方法正是在这四层条件已经冻结后，才讨论离散误差和校准误差。
 
 \input{tex/lower/chapters/derivatives-stochastic-questions}

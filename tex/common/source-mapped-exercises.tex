@@ -1,0 +1,208 @@
+% Source-mapped interview replacements.  The questions are independent Chinese
+% adaptations; only the short source titles are retained for auditability.
+\providecommand{\MFQInterviewFollowup}[1]{\par\noindent\textbf{面试官追问：}#1}
+
+\providecommand{\MFQMappedUpperChFiveQuestions}{
+\subsection*{笔试推导（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{一阶条件与边界比较}{GB-3-02 Maximum and minimum}给定 $f(x)=x^4-4x^2+cx$，写出随参数 $c$ 变化的驻点判定流程；说明只解 $f'(x)=0$ 为什么不足以确定全局最小值。
+\end{enumerate}
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{12 分钟}{中}{Taylor 余项与误差控制}{GB-3-08 Taylor series}在 $x=0$ 展开 $\log(1+x)$ 到三阶，用余项给出 $|x|\le0.2$ 的统一误差界；据此审计“在所有收益率上都可安全替代对数收益”的报告。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperChFiveHints}{\par\textbf{来源映射题提示：}先比较全部驻点、边界与无穷远行为；Taylor 题用四阶导数在区间上的上界控制 Lagrange 余项。}
+\providecommand{\MFQMappedUpperChFiveSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-3-02。}$f'(x)=4x^3-8x+c$ 只给候选点；还需用 $f''(x)=12x^2-8$ 分类，并比较所有局部极小值。因首项系数为正，$f(x)\to\infty$，故全局最小一定在驻点中；若定义域有边界还要加入端点。参数追问应讨论三次方程重根处的分岔，而不能只给数值根。
+\item \textbf{GB-3-08。}$\log(1+x)=x-x^2/2+x^3/3+R_4$，且 $f^{(4)}(u)=-6/(1+u)^4$。在 $|x|\le0.2$ 上 $|R_4|\le |x|^4/[4(0.8)^4]$。下一项为负，因此正 $x$ 附近三阶截断高估对数收益；负 $x$ 时应直接依余项而不是机械套交错级数。
+\end{enumerate}\MFQInterviewFollowup{GB-3-02：定义域变成紧集时还要加哪些候选点？GB-3-08：如何用同一余项界选取收益率阈值？}}
+
+\providecommand{\MFQMappedUpperChSixQuestions}{
+\subsection*{笔试推导（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{QR 与最小二乘}{GB-3-16 QR decomposition}对满列秩 $X=QR$，从残差正交性推导 $R\hat\beta=Q^Ty$，并解释为何不必形成 $X^TX$。
+\end{enumerate}
+\subsection*{口述概念（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{口述概念}{10 分钟}{中}{谱与经济方向}{GB-3-17 Determinant, eigenvalue and eigenvector}解释协方差矩阵的特征向量、特征值和行列式分别表达什么；零行列式为什么不等于“所有风险都为零”？
+\end{enumerate}
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{10 分钟}{中}{半正定与模型边界}{GB-3-18 Positive semidefinite and positive definite matrices}证明 $B^TB$ 半正定，再审计“将任意估计矩阵换成 $B^TB$ 就保留了原风险模型”的报告。
+\end{enumerate}
+\subsection*{数值编程（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{LU/Cholesky 分解与失败诊断}{GB-3-19 LU decomposition and Cholesky decomposition}对比 LU 与 Cholesky 的前提和计算结构；实现带对角门禁的 Cholesky，并用一个对称但不正定矩阵证明失败是模型证据而非“库坏了”。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperChSixHints}{\par\textbf{来源映射题提示：}利用 $Q^TQ=I$；谱题区分零方向与全部方向；$x^TB^TBx=\|Bx\|^2$；Cholesky 的根号参数必须为正。}
+\providecommand{\MFQMappedUpperChSixSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-3-16。}$\|y-QR\beta\|^2=\|Q^Ty-R\beta\|^2+\|(I-QQ^T)y\|^2$，故最小化第一项得到 $R\hat\beta=Q^Ty$。形成正规方程会把奇异值平方，使条件数平方。
+\item \textbf{GB-3-17。}特征向量是风险二次型的正交主方向，特征值是这些方向的方差；行列式是特征值乘积，反映总体积尺度。行列式为零只说明至少一个线性组合方差为零，其他方向仍可有正风险。
+\item \textbf{GB-3-18。}$x^TB^TBx=\|Bx\|_2^2\ge0$，所以半正定。其正定当且仅当 $Bx=0$ 只有零解，即 $B$ 满列秩。
+\item \textbf{GB-3-19。}LU 面向一般方阵且通常需选主元；Cholesky 利用对称正定结构，将 $A$ 写成 $LL^T$。逐列更新时若 $a_{jj}-\sum_{k<j}l_{jk}^2\le0$，则正定假设失败。用 $\left(\begin{smallmatrix}1&2\\2&1\end{smallmatrix}\right)$ 时第二个枢轴为 $1-4<0$；应报告负特征方向和输入来源，不能加任意 jitter 后假装原矩阵有效。
+\end{enumerate}\MFQInterviewFollowup{GB-3-16：列近似相关时 QR 为什么比正规方程稳定？GB-3-17 与 GB-3-18：零特征值对风险模型意味什么？GB-3-19：何时允许收缩而不是盲目加 jitter？}}
+
+\providecommand{\MFQMappedUpperChSevenQuestions}{
+\subsection*{笔试推导（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{笔试推导}{10 分钟}{中}{置换对称}{GB-4-03 Drunk passenger}第一位旅客随机占一个座位，后续旅客若自己的座位被占就随机选空座。证明最后一位坐到自己座位的概率，并指出递推中的最小状态。
+\item \MFQInterviewMeta{笔试推导}{10 分钟}{中}{停止时与对称随机游走}{GB-4-01 Coin toss game I}公平硬币重复抛掷，正面累计领先反面两次时停止。写出吸收随机游走模型，并求从零开始先到 $+2$ 而非 $-2$ 的概率。
+\item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{组合计数}{GB-4-05 Poker hands}从标准扑克牌抽五张，推导恰为两对的概率；分母、点数组合、两对花色和第五张牌必须分别计数。
+\item \MFQInterviewMeta{笔试推导}{10 分钟}{中}{卷积与独立性}{GB-4-37 Sum of random variables}独立 $X,Y\sim U(0,1)$，推导 $S=X+Y$ 的分段密度，并指出若只知道边际分布而不知道联合分布，为何答案不唯一。
+\end{enumerate}
+\subsection*{数值编程（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{指示变量与期望}{GB-4-38 Coupon collection}从 $m$ 种等概率标签中独立抽取，推导集齐全部标签的期望抽数，并写程序对比精确值与 Monte Carlo 结果。
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{碰撞概率与数值稳定}{GB-4-10 Birthday problem II}推导 $n$ 人生日至少一次重复的精确概率，并实现对数域计算；比较常用指数近似在 $n=23,50,100$ 时的误差。
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{Poisson 独立增量}{GB-4-31 Poisson process property}模拟强度 $\lambda$ 的 Poisson 过程，验证不相交区间计数近似独立且均值等于区间长度乘 $\lambda$；说明有限模拟不能证明独立性。
+\end{enumerate}
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{10 分钟}{中}{几何概率与分布假设}{GB-4-29 Meeting probability}两人在一小时内独立均匀到达、各等待十二分钟时计算相遇概率；再审计直接将该结果用于日内非均匀订单到达的报告。
+\item \MFQInterviewMeta{研究判断}{12 分钟}{难}{相关违约与尾部依赖}{GB-4-39 Joint default}两个主体一年违约概率均为 $p$，相关系数给定。判断这些信息是否足以唯一确定联合违约概率；写出 Bernoulli 情形的可行界，并说明相关系数为何不能替代 copula 或条件违约模型。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperChSevenHints}{\par\textbf{来源映射题提示：}旅客过程只追踪两个关键座位；随机游走利用反射对称；扑克牌按点数与花色分层计数；卷积看单位正方形截线长度；生日题使用对数乘积；Poisson 题区分理论性质与模拟证据；联合违约先写 Fr\'echet 界。}
+\providecommand{\MFQMappedUpperChSevenSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-4-03。}中间被迫选择时，尚未解决的关键座位只有第一人和最后一人；先选到前者则链终止且最后一人成功，先选到后者则失败。两者在对称候选中等可能，故概率 $1/2$。逐位枚举不是必要状态。
+\item \textbf{GB-4-01。}状态是领先数 $D_n\in\{-2,-1,0,1,2\}$，边界 $\pm2$ 吸收。令 $h(d)$ 为先到 $+2$ 的概率，则 $h(d)=[h(d-1)+h(d+1)]/2$、$h(-2)=0,h(2)=1$，线性解给 $h(0)=1/2$。若硬币有偏，差分方程的系数必须改变。
+\item \textbf{GB-4-05。}总手数 $\binom{52}{5}$。选两种对子点数 $\binom{13}{2}$，各选两张花色 $\binom42^2$，第五张从剩余十一种点数与四种花色选 $11\cdot4$，故概率为 $\binom{13}{2}\binom42^2(44)/\binom{52}{5}$。第五张不能与对子同点，否则牌型改变。
+\item \textbf{GB-4-37。}$f_S(s)=\int f_X(x)f_Y(s-x)\,dx$，积分区间长度在 $0\le s\le1$ 为 $s$，在 $1<s\le2$ 为 $2-s$，其余为零。卷积使用独立性；相同均匀边际可以通过不同 copula 产生不同和分布。
+\item \textbf{GB-4-29。}令到达时刻缩放到 $[0,1]^2$，等待十二分钟即 $0.2$。不相遇区域是对角线两侧两个边长 $0.8$ 的直角三角形，总面积 $0.8^2$，故相遇概率 $1-0.64=0.36$。
+\item \textbf{GB-4-38。}已有 $k$ 种时，新标签概率为 $(m-k)/m$，等待期望 $m/(m-k)$。总期望为 $m\sum_{j=1}^m1/j=mH_m\sim m\log m+\gamma m$。线性期望不要求各阶段等待独立。
+\item \textbf{GB-4-10。}无重复概率为 $\prod_{k=0}^{n-1}(365-k)/365$，故重复概率为一减该乘积；实现时计算 $\sum_k\log(1-k/365)$ 再取指数。近似 $1-\exp[-n(n-1)/(730)]$ 忽略高阶碰撞项，$n$ 增大时必须报告误差。
+\item \textbf{GB-4-31。}定义要求 $N(t)-N(s)\sim\mathrm{Poisson}(\lambda(t-s))$，且不相交区间增量独立。模拟可比较样本均值、方差和交叉协方差是否接近理论值，但“协方差接近零”不证明独立，且罕见尾部需要更大样本。
+\item \textbf{GB-4-39。}联合概率 $q=P(D_1=D_2=1)$ 满足 $\max(0,2p-1)\le q\le p$；Bernoulli 相关系数若精确给定且两边际相同，可由 $q=p^2+\rho p(1-p)$ 恢复，但还必须落在可行界内。真实信用组合还需期限结构、共同因子和尾部依赖，单一相关系数不能跨状态外推。
+\end{enumerate}\MFQInterviewFollowup{GB-4-01：有偏硬币时命中概率如何变化？GB-4-03：首位旅客按非均匀分布选座时结论如何改？GB-4-05：允许 joker 后计数如何重做？GB-4-10：闰日和非均匀出生率会破坏哪一步？GB-4-29：到达分布非均匀时如何积分？GB-4-31：非齐次强度怎样改变增量分布？GB-4-37：怎样用特征函数复核卷积？GB-4-38：非等概标签的瓶颈是什么？GB-4-39：怎样用单因子模型产生尾部相关？}}
+
+\providecommand{\MFQMappedUpperChEightQuestions}{
+\subsection*{口述概念（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{口述概念}{8 分钟}{中}{随机化提纯}{GB-4-16 Fair coin from an unfair coin}一枚硬币正面概率未知但每次独立且不变。构造无偏比特并计算每个输出比特的期望抛掷次数。
+\item \MFQInterviewMeta{口述概念}{8 分钟}{中}{可辨识性与似然}{GB-4-15 Unfair coin}只观察一枚硬币的有限次结果，解释为什么不能“证明”它公平；写出估计正面概率的似然、置信区间与顺序检验所需的停止规则。
+\end{enumerate}
+\subsection*{笔试推导（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{笔试推导}{10 分钟}{中}{条件概率与无放回抽样}{GB-4-25 Aces}从洗匀牌堆依次翻牌，已知前两张至少有一张 A，求两张都是 A 的概率；分别比较“至少一张”与“指定第一张是 A”的条件事件。
+\end{enumerate}
+\subsection*{数值编程（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{Poisson 流量与暴露时间}{GB-4-28 Cars on road}假设车辆按强度 $\lambda$ 的 Poisson 过程到达长度为 $L$ 的路段、速度固定为 $v$。推导任意时刻路段车辆数分布并模拟核验；再指出拥堵使速度依赖密度时为何模型失效。
+\end{enumerate}
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{8 分钟}{中}{条件概率与信息更新}{GB-4-20 Monty Hall}主持人知道奖品位置且总会打开一扇空门时证明换门胜率；再审计“主持人随机开门也可直接套用 $2/3$”的结论。
+\item \MFQInterviewMeta{研究判断}{10 分钟}{中}{条件生存与协议差异}{GB-4-24 Russian roulette}左轮有六个弹膛和相邻两发子弹。已知第一次扣动为空，比较“直接再扣”与“重新随机旋转后再扣”的风险；明确枪膛是否顺序前进这一机制条件。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperChEightHints}{\par\textbf{来源映射题提示：}无偏提纯只接受 HT/TH；有限样本不能证明点假设；A 题先写清条件事件；路段车辆数利用到达率乘暴露时间；Monty Hall 与轮盘题都要把主持或机械协议写进似然。}
+\providecommand{\MFQMappedUpperChEightSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-4-16。}成对抛掷，HT 输出 1、TH 输出 0，HH/TT 丢弃。两种接受序列概率同为 $p(1-p)$，故无偏；每对接受概率 $2p(1-p)$，期望对数为其倒数，期望抛数 $1/[p(1-p)]$。独立且固定 $p$ 是必要条件。
+\item \textbf{GB-4-15。}若观察 $h$ 次正面、$t$ 次反面，似然为 $L(p)=p^h(1-p)^t$，极大似然估计 $\hat p=h/(h+t)$。任何有限序列在所有 $0<p<1$ 下都有正概率，故不能逻辑证明 $p=1/2$；只能给区间或在预先规定的显著性与停止规则下检验。边看边停会改变错误率。
+\item \textbf{GB-4-25。}两张无序抽样中，条件事件“至少一张 A”有 $\binom{52}{2}-\binom{48}{2}=198$ 种，二者均 A 有 $\binom42=6$ 种，故概率 $6/198=1/33$。若指定第一张是 A，则第二张为 A 的概率为 $3/51=1/17$；两个条件事件不能混用。
+\item \textbf{GB-4-28。}\par 一辆车停留时间为 $L/v$。稳态下，路段车辆数等于过去 $L/v$ 时间内的到达数，故服从 $\mathrm{Poisson}(\lambda L/v)$。模拟应从稳态开始或丢弃预热期。若速度随密度变化，停留时间与车辆数相互依赖，简单的无限服务器结论失效。
+\item \textbf{GB-4-20。}初选中奖概率 $1/3$，未选两门合计 $2/3$；知情主持人必排除其中空门，所以换到剩余门继承 $2/3$。若主持人随机开门且可能揭奖，观察到空门的似然随奖品位置不同，必须用 Bayes 公式重新条件化。
+\item \textbf{GB-4-24。}两发相邻时共有四个空膛位置。已知当前为空后，这四种位置等可能，其中只有一个位置的下一膛是子弹，故直接再扣风险为 $1/4$；重新均匀旋转后风险回到 $2/6=1/3$，所以不旋转更安全。若弹膛不是确定前进一步或初始旋转不均匀，需重写条件样本空间。
+\end{enumerate}\MFQInterviewFollowup{GB-4-15：序贯检验如何控制可选停止？GB-4-16：偏置 $p$ 随时间漂移会破坏哪一步？GB-4-20：主持人策略未知时需要估计什么似然？GB-4-24：三发相邻时结论如何变化？GB-4-25：若抽样信息来自“随机告诉你一张 A”会怎样？GB-4-28：随机速度如何改变占用分布？}}
+
+\providecommand{\MFQMappedUpperChNineQuestions}{
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{12 分钟}{中}{次序统计量与假设边界}{GB-4-40 Expected maximum and minimum}若 $X_1,\ldots,X_n$ 独立均匀于 $[0,1]$，推导最大值与最小值的分布和期望；再说明样本非独立时为何不能直接复用。
+\item \MFQInterviewMeta{笔试推导}{10 分钟}{中}{正态矩与递推}{GB-4-32 Normal moments}对 $Z\sim N(0,1)$，用分部积分证明 $E[Z^{2k}]=(2k-1)E[Z^{2k-2}]$，并解释奇数阶矩为何为零。
+\item \MFQInterviewMeta{研究判断}{12 分钟}{难}{相关界与可达性}{GB-4-41 Correlation maximum and minimum}给定随机变量 $X$ 的边际分布，讨论 $\mathrm{Corr}(X,g(X))$ 的上下界；说明 Cauchy--Schwarz 的 $[-1,1]$ 只是普适界，何时才能取到等号。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperChNineHints}{\par\textbf{来源映射题提示：}$P(M\le x)=x^n$；正态矩把 $z\phi(z)$ 写成 $-\phi'(z)$；相关取等要求中心化变量几乎处处线性相关。}
+\providecommand{\MFQMappedUpperChNineSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-4-40。}$F_M(x)=x^n$，故密度 $nx^{n-1}$、$E[M]=n/(n+1)$。$P(m>x)=(1-x)^n$，所以 $E[m]=\int_0^1(1-x)^n dx=1/(n+1)$。仿射变换给 $a+(b-a)$ 乘相应结果；独立同分布是推导前提。
+\item \textbf{GB-4-32。}标准正态密度满足 $\phi'(z)=-z\phi(z)$。分部积分得 $E[Z^{2k}]=(2k-1)E[Z^{2k-2}]$，从 $E[1]=1$ 递推为 $(2k-1)!!$；奇次幂乘偶密度是奇函数，积分为零。非中心正态应先标准化或用矩母函数。
+\item \textbf{GB-4-41。}Cauchy--Schwarz 给 $|\mathrm{Corr}(X,g(X))|\le1$；等号当且仅当 $g(X)-Eg(X)=a(X-EX)$ 几乎处处。若 $g$ 被限制为非线性、单调或离散决策类，可达界通常更窄，必须在允许函数类与边际分布下重新优化，不能把普适界当成可实现值。
+\end{enumerate}\MFQInterviewFollowup{GB-4-32：如何由矩母函数复核偶数矩？GB-4-40：样本有厚尾时，极值渐近要改用哪类条件？GB-4-41：限制 $g$ 为指标函数后如何求最优阈值？}}
+
+\providecommand{\MFQMappedUpperChElevenQuestions}{
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{15 分钟}{难}{模式等待与 Markov 状态}{GB-5-03 Coin triplets}反复抛公平硬币，比较模式 HHT 与 HTH 的首次出现等待时间；构造前缀状态，并审计“长度相同所以等待时间相同”的结论。
+\item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{吸收概率与差分方程}{GB-5-01 Gambler's ruin II}资本在 $0$ 与 $N$ 之间作步长 $\pm1$ 的随机游走，向上概率为 $p$。推导从 $i$ 出发先到 $N$ 的概率，并单独处理 $p=1/2$。
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{首达时间与状态截断}{GB-5-05 Drunk man}随机游走者从整数点 $i$ 出发，在 $0,N$ 吸收。建立期望吸收时间的线性方程并用三对角求解器计算；与 Monte Carlo 比较时报告置信误差。
+\item \MFQInterviewMeta{研究判断}{12 分钟}{中}{排队状态与独立假设}{GB-5-07 Ticket line}售票队列中到达与服务均被建模为 Poisson/指数。写出出生--死亡状态，并说明只匹配均值为何不足以支持等待时间结论。
+\item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{动态规划与系列赛}{GB-5-11 World series}两队进行先赢四场的系列赛，每场 A 胜率固定为 $p$ 且独立。写出从比分 $(a,b)$ 出发 A 最终夺冠的递推和边界，并给出 $p=1/2$ 时开赛前概率。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperChElevenHints}{\par\textbf{来源映射题提示：}模式状态取仍可延伸目标的最长后缀；破产概率解二阶差分；吸收时间右端多一个常数项；排队先核验 Markov/无记忆假设；系列赛以当前胜场为状态。}
+\providecommand{\MFQMappedUpperChElevenSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-5-03。}对每个模式建立前缀自动机，状态为已匹配长度 $0,1,2,3$，吸收态为 3；对 $i<3$ 写 $E_i=1+(E_{T(i,H)}+E_{T(i,T)})/2$。求解得到 HHT 的期望等待 $8$，HTH 的期望等待 $10$。差异来自 HTH 失败后保留的前缀结构，不能用“长度都是三”断言相同。
+\item \textbf{GB-5-01。}令 $h_i=P_i(\tau_N<\tau_0)$，则 $h_i=ph_{i+1}+(1-p)h_{i-1}$，$h_0=0,h_N=1$。若 $p\ne1/2$，$h_i=[1-((1-p)/p)^i]/[1-((1-p)/p)^N]$；公平时取极限得 $i/N$。边界和步长改变时不能套用闭式。
+\item \textbf{GB-5-05。}期望吸收时间满足 $e_i=1+pe_{i+1}+(1-p)e_{i-1}$、$e_0=e_N=0$，形成三对角线性系统。公平时闭式为 $e_i=i(N-i)$。模拟均值应附标准误或区间；厚尾的停止时间会使有限样本收敛看起来很慢。
+\item \textbf{GB-5-07。}状态可取系统人数 $n$，转移率为 $n\to n+1$ 的 $\lambda$ 与 $n\to n-1$ 的 $\mu$（$n>0$）。稳态要求 $\rho=\lambda/\mu<1$。若到达有聚集、服务时长非指数或服务能力随时段变化，均值相同也会产生不同等待尾部。
+\item \textbf{GB-5-11。}令 $V(a,b)$ 为 A 夺冠概率，边界 $V(4,b)=1,V(a,4)=0$，递推 $V(a,b)=pV(a+1,b)+(1-p)V(a,b+1)$。$p=1/2$ 且开赛前双方对称，故 $V(0,0)=1/2$。若胜率随主客场或比分变化，状态必须扩充。
+\end{enumerate}\MFQInterviewFollowup{GB-5-01：加入每步不同赌注后状态如何改变？GB-5-03：如何由前缀自动机直接生成转移矩阵并比较模式竞赛胜率？GB-5-05：如何避免无限循环模拟拖垮测试？GB-5-07：怎样从数据检验指数服务假设？GB-5-11：七局赛改成动态胜率时如何后向计算？}}
+
+\providecommand{\MFQMappedUpperThirteenQuestions}{
+\subsection*{研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{12 分钟}{中}{约束与乘子解释}{GB-3-10 Lagrange multipliers}最小化 $w^T\Sigma w$，约束 $\mathbf1^Tw=1$ 与 $\mu^Tw=r_0$。写出 KKT 线性系统，并审计“求解器成功即表示乘子和经济约束都可识别”的结论。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperThirteenHints}{\par\textbf{来源映射题提示：}把两个等式约束矩阵记为 $A^Tw=b$，联立 $2\Sigma w+A\lambda=0$。}
+\providecommand{\MFQMappedUpperThirteenSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-3-10。}KKT 系统为 $\left(\begin{smallmatrix}2\Sigma&A\\A^T&0\end{smallmatrix}\right)(w,\lambda)^T=(0,b)^T$，其中 $A=[\mathbf1,\mu]$、$b=(1,r_0)^T$。若 $A$ 列相关或与 $\Sigma$ 的零空间形成退化，约束资格或严格凸性失效；程序返回一个解不证明经济约束可识别。
+\end{enumerate}\MFQInterviewFollowup{GB-3-10：加入不等式限制后哪些 KKT 条件需要新增？}}
+
+\providecommand{\MFQMappedUpperFourteenQuestions}{
+\subsection*{数值编程与研究判断（来源映射替换）}
+\begin{enumerate}[nosep,leftmargin=*]
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{Newton 收敛域}{GB-3-09 Newton's method}用 Newton 法求 $x^3-2x-2=0$，记录不同初值的迭代；给出停止准则，并构造一个进入循环或远离根的初值。
+\item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{有限差分误差}{GB-7-15 Finite difference}从 Taylor 展开推导中心差分的一阶导数公式与 $O(h^2)$ 截断误差，再解释 $h$ 过小时舍入误差为何上升。
+\item \MFQInterviewMeta{数值编程}{15 分钟}{中}{Monte Carlo 误差预算}{GB-7-14 Monte Carlo}用 Monte Carlo 估计 $E[e^Z]$（$Z\sim N(0,1)$），给出独立理论值、标准误和置信区间；再用 antithetic variates 比较方差而不是只比较单次误差。
+\end{enumerate}}
+\providecommand{\MFQMappedUpperFourteenHints}{\par\textbf{来源映射题提示：}Newton 需同时检查残差与步长；中心差分把两侧 Taylor 展开相减；Monte Carlo 先用矩母函数给独立 oracle，再比较配对样本的方差。}
+\providecommand{\MFQMappedUpperFourteenSolutions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{GB-3-09。}$x_{k+1}=x_k-(x_k^3-2x_k-2)/(3x_k^2-2)$。停止应同时要求 $|f(x_k)|$ 和相对步长足够小，并设最大迭代；导数接近零或初值落在非吸引区域时可能跳远/循环。面试追问不应以某个库的 success 标志替代理论收敛域。
+\item \textbf{GB-7-15。}两式相减得 $[f(x+h)-f(x-h)]/(2h)=f'(x)+h^2f^{(3)}(\xi)/6$。截断误差随 $h^2$ 降低，但两近数相减的浮点绝对误差约为 $\epsilon|f|$，除以 $h$ 后放大为 $O(\epsilon/h)$，因此存在最优中间尺度。
+\item \textbf{GB-7-14。}正态矩母函数给 $E[e^Z]=e^{1/2}$，且 $\mathrm{Var}(e^Z)=e^2-e$。独立样本均值的标准误为样本标准差除以 $\sqrt n$。反变量配对使用 $[e^Z+e^{-Z}]/2$；应在相同随机预算下比较配对估计量的样本方差和区间宽度，而不是挑一次更接近真值的结果。
+\end{enumerate}\MFQInterviewFollowup{GB-3-09：如何用阻尼或信赖域避免跳远？GB-7-14：控制变量与重要性抽样分别需要什么额外结构？GB-7-15：如何从截断与舍入两项估计最佳 $h$？}}
+
+\providecommand{\MFQMappedDerivativesStochasticQuestions}{
+\section*{研究判断（来源映射替换）}
+\begin{enumerate}[leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{15 分钟}{难}{停止时与反射原理}{GB-5-15 Stopping and first passage}对标准 Brownian 运动推导首次越过 $a>0$ 在 $T$ 前发生的概率，并审计直接将无界停止时代入鞅等式的证明。
+\end{enumerate}}
+\providecommand{\MFQMappedDerivativesStochasticHints}{\par\textbf{来源映射题提示：}用反射原理把越界后终点低于 $a$ 的路径映到终点高于 $a$。}
+\providecommand{\MFQMappedDerivativesStochasticSolutions}{\section*{来源映射替换题}\begin{enumerate}[leftmargin=*]\item \textbf{GB-5-15。}反射原理给 $P(\tau_a\le T)=2P(W_T\ge a)=2[1-\Phi(a/\sqrt T)]$。若改用可选停止证明，必须先对停止时截断并验证一致可积或相应有界条件；直接把无界停止时代入鞅等式是常见错误。\end{enumerate}\MFQInterviewFollowup{GB-5-15：若边界改为随时间变化的 $a(t)$，反射证明的哪一步不再直接成立？}}
+
+\providecommand{\MFQMappedDerivativesNumericsQuestions}{
+\section*{研究判断（来源映射替换）}
+\begin{enumerate}[leftmargin=*]
+\item \MFQInterviewMeta{研究判断}{10 分钟}{中}{无套利复制}{GB-6-02 Put-call parity}在含连续股息率 $q$ 的市场推导欧式看涨--看跌平价，并审计一个忽略 bid/ask、融资、借券与结算时点便声称可套利的报告。
+\end{enumerate}}
+\providecommand{\MFQMappedDerivativesNumericsHints}{\par\textbf{来源映射题提示：}比较 $C+Ke^{-rT}$ 与 $P+S_0e^{-qT}$ 的终值。}
+\providecommand{\MFQMappedDerivativesNumericsSolutions}{\section*{来源映射替换题}\begin{enumerate}[leftmargin=*]\item \textbf{GB-6-02。}两组合到期均为 $\max(S_T,K)$，故 $C-P=S_0e^{-qT}-Ke^{-rT}$。若左侧过高则卖出昂贵组合、买入便宜组合；真实可执行性还受 bid/ask、融资、股息预测、借券、行权与结算时点约束。\end{enumerate}\MFQInterviewFollowup{GB-6-02：美式期权或随机股息下，复制组合的哪个等式需要重写？}}
+
+\providecommand{\MFQMappedPortfolioOptimizationQuestions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \MFQInterviewMeta{笔试推导}{15 分钟}{难}{均值方差与估计误差}{GB-6-14 Portfolio optimization}推导预算约束下的最小方差权重；随后说明均值方差解为何会放大预期收益估计误差，并提出至少两种稳健化方案。
+\end{enumerate}}
+\providecommand{\MFQMappedPortfolioOptimizationHints}{\par\textbf{来源映射题提示：}先解 $\min w^T\Sigma w$、$\mathbf1^Tw=1$；含均值时观察 $\Sigma^{-1}\hat\mu$。}
+\providecommand{\MFQMappedPortfolioOptimizationSolutions}{\section*{来源映射替换题}\begin{enumerate}[leftmargin=*]\item \textbf{GB-6-14。}$w^*=\Sigma^{-1}\mathbf1/(\mathbf1^T\Sigma^{-1}\mathbf1)$。含预期收益的解依赖 $\Sigma^{-1}\hat\mu$，小特征方向和噪声均值会被放大。可用协方差收缩、均值不确定集、权重/换手约束或 Bayesian shrinkage，并必须重新比较样本外风险和成本。\end{enumerate}\MFQInterviewFollowup{GB-6-14：禁止卖空后闭式解为何失效，应怎样识别活跃约束？}}
+
+\providecommand{\MFQMappedPortfolioTailQuestions}{
+\section*{来源映射替换题}
+\begin{enumerate}[leftmargin=*]
+\item \MFQInterviewMeta{口述概念}{10 分钟}{中}{VaR 的性质与反例}{GB-6-15 Value at Risk}解释历史 VaR、参数 VaR 与 ES 的估计对象；构造一个 VaR 不次可加的简单离散损失例，并说明这对风险限额意味着什么。
+\end{enumerate}}
+\providecommand{\MFQMappedPortfolioTailHints}{\par\textbf{来源映射题提示：}让两个头寸各自以小概率损失、且损失事件互斥；单项 VaR 可为零而组合 VaR 为正。}
+\providecommand{\MFQMappedPortfolioTailSolutions}{\section*{来源映射替换题}\begin{enumerate}[leftmargin=*]\item \textbf{GB-6-15。}历史法取经验损失分位数，参数法在分布假设下求分位数，ES 是越过分位点的尾部平均。令两个头寸各以 $4\%$ 概率损失 1，事件互斥；在 $95\%$ 水平各自 VaR 为 0，而组合有 $8\%$ 概率损失 1，VaR 为 1，故不次可加。限额系统不能把分散收益当作由 VaR 自动保证。\end{enumerate}\MFQInterviewFollowup{GB-6-15：把置信度提到 $99\%$ 时，需要多少尾部观测才能支撑可辩护的 ES？}}

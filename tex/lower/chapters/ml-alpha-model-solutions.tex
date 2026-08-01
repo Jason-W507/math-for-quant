@@ -1,11 +1,9 @@
-\chapter{ML 模型与表示分层答案}
+\chapter{表格统计学习答案}
 \begin{enumerate}[leftmargin=*]
-  \item shape 绑定 batch/time/feature 语义；dtype 与 device 限定数值和算子；\texttt{requires\_grad} 决定 autograd 是否追踪。
-  \item 特征顺序任意。应先取排序唯一值，再取相邻中点，否则行置换会改变模型。
-  \item $h=\phi(W_1x+b_1)$、$\hat y=W_2h+b_2$、$L=(\hat y-y)^2$；梯度从 $L$ 经 $W_2$、$\phi'$ 回传到 $W_1$。
-  \item 同步置换 token 会同步置换 $Q,K,V$，注意力输出只随位置重排；没有位置或因果结构就不知道先后。
-  \item 冻结 oracle 中均值差为 0；因果卷积、RNN、Attention 与 Transformer 差均大于 0，证明实现读取顺序。
-  \item checkpoint 指纹哈希训练配置与参数字节；恢复后预测逐项相同。仅保存权重而漏 tokenizer/预处理仍不合格。
-  \item 若输入先做时间均值，任何时序置换都相同；没有可训练序列层、位置结构和置换负例时只能称表示基线。
-  \item 全量微调表达力最高、成本和遗忘风险也高；任务头与 PEFT 冻结大部分编码器，证据必须报告可训练参数比例和基础模型版本。
+  \item 树无需标准化、能表示阈值和交互、原生支持多种缺失策略，适合中等样本表格；相对线性模型失去简单全局系数，相对神经网络不擅长端到端学习序列、文本和图像表示。
+  \item CART 逐节点最小化不纯度；随机森林平均 bootstrap 树并随机抽特征以降相关；gradient boosting 在函数空间拟合负梯度；XGBoost 再加入二阶曲率、叶权重和结构惩罚。
+  \item $s=-1.5,0,2$ 的 SSE 分别为 $17.33,10,10.67$（按各侧均值计算），所以 $s=0$ 最优；不分裂 SSE 为 46。
+  \item 叶目标为 $G_jw+\frac12(H_j+\lambda)w^2+\gamma$。一阶条件 $G_j+(H_j+\lambda)w=0$ 给出 $w_j^*=-G_j/(H_j+\lambda)$。
+  \item 使用相同外层 walk-forward，内层选择复杂度；报告模型、时间、验证损失、冻结仓位映射后的净收益与换手。若 MLP 不能稳定胜过提升树，应保留提升树。
+  \item 随机拆行会让同一资产相邻日期、同一市场冲击和重叠标签同时进入训练测试；AUC 衡量的是污染后的区分能力。应按决策时间切分并 purge 标签区间。
 \end{enumerate}
