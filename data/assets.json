@@ -43,7 +43,8 @@
         "data/fixtures/portfolio-risk-tail.json",
         "data/fixtures/microstructure-events.json",
         "data/fixtures/microstructure-control.json",
-        "data/fixtures/microstructure-simulation.json"
+        "data/fixtures/microstructure-simulation.json",
+        "data/fixtures/brainteasers.json"
       ],
       "kind": "synthetic-data",
       "source": "original synthetic teaching fixtures",

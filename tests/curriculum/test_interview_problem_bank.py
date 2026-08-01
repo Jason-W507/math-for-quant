@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import re
 import subprocess
@@ -7,12 +8,20 @@ import sys
 import unittest
 from pathlib import Path
 
-from notebooks.lower.brainteasers import recover_missing
 from tools.integrate_source_mapped_exercises import REPLACEMENT_SELECTORS, UNITS
 
 
 ROOT = Path(__file__).resolve().parents[2]
 LEDGER = ROOT / "curriculum" / "interview-problem-ledger.json"
+
+NOTEBOOK_SPEC = importlib.util.spec_from_file_location(
+    "mfq_brainteasers", ROOT / "notebooks" / "lower" / "brainteasers.py"
+)
+if NOTEBOOK_SPEC is None or NOTEBOOK_SPEC.loader is None:
+    raise RuntimeError("could not load the lower-volume brainteaser notebook")
+NOTEBOOK_MODULE = importlib.util.module_from_spec(NOTEBOOK_SPEC)
+NOTEBOOK_SPEC.loader.exec_module(NOTEBOOK_MODULE)
+recover_missing = NOTEBOOK_MODULE.recover_missing
 
 
 class InterviewProblemBankTest(unittest.TestCase):
