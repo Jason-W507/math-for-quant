@@ -17,12 +17,12 @@ AR(1) 模型 $X_t=\phi X_{t-1}+\varepsilon_t$ 在 $|\phi|<1$ 且创新满足适�
 所有滞后、变换与预测都必须可由决策时信息集 $\mathcal F_t$ 构造；全样本选规格不属于该信息集。
 
 \begin{diagnostic}
-先画水平、差分和滚动尺度，再冻结确定性项与最大滞后。看到一个小 p 值以后才选择含趋势或不含趋势的规格，会把规格搜索藏进检验。
+先画水平、差分和滚动尺度，再确定确定性项与最大滞后。看到一个小 p 值以后才选择含趋势或不含趋势的规格，会把规格搜索藏进检验。
 \end{diagnostic}
 
 \section{Engle--Granger 与误差修正}
 
-若 $x_t,y_t$ 都是 $I(1)$，但存在 $\beta$ 使 $z_t=y_t-a-\beta x_t$ 为 $I(0)$，则二者协整。Engle--Granger 两步法先估长期关系，再对残差做专用单位根检验\cite{engle1987cointegration}。冻结合成数据令
+若 $x_t,y_t$ 都是 $I(1)$，但存在 $\beta$ 使 $z_t=y_t-a-\beta x_t$ 为 $I(0)$，则二者协整。Engle--Granger 两步法先估长期关系，再对残差做专用单位根检验\cite{engle1987cointegration}。事先确定合成数据令
 \[
 y_t=1.5+2x_t+0.55^t,
 \]
@@ -76,11 +76,11 @@ dZ_t=\kappa(\mu-Z_t)dt+\sigma dW_t
 \texttt{adfuller}、\texttt{coint} 与 \texttt{coint\_johansen} 的默认确定性项、自动滞后和临界值并不相同。调用函数前先把统计问题写成完整规格，再在报告中保存库版本与参数。
 \end{note}
 
-\MFQLead{双轨数据与可执行实验}
+\MFQTransition{双轨数据与可执行实验}
 
 \begin{itemize}
-  \item 合成正确性 oracle：\path{data/fixtures/stat-arb-model.json}；
-  \item 公开领域宏观快照：\path{data/real/stat-arb-us-macro-1999q4-2009q3.json}。
+  \item 合成小样本：用于核对公式、边界和失败情形；
+  \item 公开领域宏观快照：用于说明真实数据的时间与许可边界。
 \end{itemize}
 快照保存来源、频率、观察截止和 SHA-256。它只能证明数据适配器与估计管线可复现，不能把 GDP 与消费称作统计套利交易对。
 
@@ -92,9 +92,9 @@ uv run python notebooks/lower/stat_arb_model.py \
 该 notebook 包含手算 oracle、残差图、爆炸序列故障注入、参数敏感性与限制说明。
 \end{implementationnote}
 
-本单元向 Route Capstone 交付冻结的长期关系、单位根规格、ECM 参数与 OU 时间尺度；交易规则尚不在本章作出。
+本单元向本路线的综合项目交付事先确定的长期关系、单位根规格、ECM 参数与 OU 时间尺度；交易规则尚不在本章作出。
 
-\MFQLead{单位根检验的原假设与检验力}
+\MFQTransition{单位根检验的原假设与检验力}
 
 ADF 回归在差分方程中检验水平项系数，原假设是单位根；KPSS 的原假设则是平稳。二者结论可以组合成“平稳”“单位根”或“证据不足”。短样本、接近单位根和结构突变会显著降低检验力，不能把 $p>0.05$ 翻译成“证明存在单位根”。
 
@@ -105,20 +105,20 @@ ADF 回归在差分方程中检验水平项系数，原假设是单位根；KPSS
 ARMA 描述条件均值的线性动态，VAR 处理多变量相互滞后，GARCH 描述条件方差：
 \[
 r_t=\mu_t+\varepsilon_t,\qquad
-\varepsilon_t=\sigma_tz_t,qquad
+\varepsilon_t=\sigma_tz_t,\qquad
 \sigma_t^2=\omega+\alpha\varepsilon_{t-1}^2+\beta\sigma_{t-1}^2.
 \]
 $\alpha+\beta$ 接近 1 表示波动冲击衰减慢；它不是价格均值回归速度。把 GARCH 波动预测直接当方向信号会混淆条件均值与条件方差。
 
 残差诊断至少包括自相关、平方残差自相关、尾部分布和参数稳定。模型阶数可用训练期信息准则筛选，再用滚动样本外验证；不能在全样本 ACF 图上挑阶数后仍称测试独立。
 
-\MFQLead{协整向量的经济解释与不稳定性}
+\MFQTransition{协整向量的经济解释与不稳定性}
 
 两个 $I(1)$ 序列若存在 $\beta$ 使 $z_t=y_t-\beta x_t$ 平稳，则共享随机趋势。$\beta$ 的尺度要固定，例如把 $y$ 系数规范为 1。纯统计搜索会从大量资产中找到偶然平稳组合，因此候选形成机制和多重检验必须记录。
 
 滚动 $\hat\beta_t$ 变化意味着对冲比率变化，也可能说明关系失效。若每期重新估计并立刻用新 beta 重写过去价差，历史信号会被回看修订；研究账本要保存当时版本的 beta 和价差。
 
-\MFQLead{OU 半衰期的推导与限制}
+\MFQTransition{OU 半衰期的推导与限制}
 
 连续 OU
 \[
@@ -132,4 +132,4 @@ Z_{t+\Delta}=\mu+e^{-\kappa\Delta}(Z_t-\mu)+\eta_t.
 \[
 h_{1/2}=\frac{\log2}{\kappa}=-\frac{\Delta\log2}{\log\phi}.
 \]
-只有 $0<\phi<1$ 时才有正的均值回归半衰期；$\phi\le0$ 表示振荡，$\phi\ge1$ 不均值回归。半衰期是模型参数，不是保证持仓在该时间盈利。
+这组模型为后续路线 Capstone 提供状态、半衰期与失效边界；它们描述的是可检验的动态假设，不是收益承诺。

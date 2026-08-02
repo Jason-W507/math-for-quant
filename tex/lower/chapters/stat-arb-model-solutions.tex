@@ -6,5 +6,5 @@
   \item 从 $w_t=A_1w_{t-1}+\cdots+A_pw_{t-p}+u_t$ 减去 $w_{t-1}$，得 $\Delta w_t=\Pi w_{t-1}+\sum\Gamma_j\Delta w_{t-j}+u_t$；$\beta$ 给长期组合，$\alpha$ 给调整方向和速度。
   \item 随 $\phi\uparrow1$，半衰期发散；$\phi\le0$ 不能用实数 $\kappa$ 的等间隔 OU 映射，$\phi\ge1$ 不均值回归。
   \item 透明回归验证代数；库函数提供 MacKinnon 或 Johansen 非标准临界值。若回归规格不同，统计量差异不是实现错误。
-  \item 500 次选择使最终 p 值带有选择权。应在训练期冻结候选规则，做多重检验或嵌套选择，并用从未参与选择的测试期评价。
+  \item 500 次选择使最终 p 值带有选择权。应在训练期事先确定候选规则，做多重检验或嵌套选择，并用从未参与选择的测试期评价。
 \end{enumerate}

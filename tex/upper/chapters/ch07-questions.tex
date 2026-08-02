@@ -9,16 +9,22 @@
 
 \subsection*{笔试推导}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item 由固定有限账本推导 CDF、均值、方差和 $X^2$ 的推前分布。
-  \item 从固定 $2\times2$ 联合表求边缘、协方差、相关系数和独立性差；构造零相关但不独立的例子。
+  \item 由固定有限记录推导 CDF、均值、方差和 $X^2$ 的推前分布。
+  \item 给定固定 $2\times2$ 联合表求边缘、协方差、相关系数和独立性差；构造零相关但不独立的例子。
   \item 推导 Lognormal 的密度、均值和方差；证明 Pareto$(\alpha)$ 的 $p$ 阶矩当且仅当 $p<\alpha$ 时有限。
 \end{enumerate}
 
 \subsection*{数值编程}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item 复现固定分布账本，并让程序在不抽样的情况下核验 CDF、平方推前律和联合协方差。
+  \item 复现固定分布记录，并让程序在不抽样的情况下核验 CDF、平方推前律和联合协方差。
   \item 复算 Bernoulli MGF、Poisson PGF、正态分布 MGF/CDF、Uniform/Exponential/Lognormal 矩；逐项标注解析来源与误差门。
-  \item 从临时 oracle 注入 NaN expected、缺字段、错误形状、负质量、宽容差和伪造 expected，记录六类稳定诊断。
+  \item 从临时参照数据注入 NaN expected、缺字段、错误形状、负质量、宽容差和伪造 expected，记录六类稳定诊断。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 观察到零相关时，哪些额外信息才能支持独立性？请用联合分布或反例说明。
+  \item 为什么有限样本中的经验分布、解析分布和抽样估计不能混为同一个对象？
 \end{enumerate}
 
 \endgroup

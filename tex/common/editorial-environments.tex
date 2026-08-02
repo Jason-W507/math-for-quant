@@ -4,10 +4,13 @@
 \displaywidowpenalty=10000
 
 % Short transitions stay inside the prose rather than creating another heading level.
-\providecommand{\MFQLead}[1]{\par\noindent\textbf{#1。}\enspace}
+% Keep the visual hierarchy quiet: a transition should connect paragraphs, not
+% turn every idea into a slide title.
+\providecommand{\MFQLead}[1]{\par\medskip\noindent\textit{#1。}\enspace}
+\providecommand{\MFQTransition}[1]{\par\smallskip\noindent #1。\enspace}
 \providecommand{\MFQInterviewMeta}[5]{%
-  \par\smallskip\noindent\textcolor{blue!55!black}{%
-  \textbf{#1｜#2｜#3}；能力：#4；来源映射：#5。}\par\smallskip}
+  \par\smallskip\noindent\textit{#1｜#2｜#3}%
+  \footnote{能力：#4；来源映射：#5。}\par\smallskip}
 
 \newenvironment{heuristic}
   {\begin{tcolorbox}[breakable,colback=yellow!5,colframe=yellow!45!black,title=经验近似]}

@@ -1,96 +1,55 @@
 # 量化研究数学
 
-《量化研究数学》是一套面向具备经济学或金融学基础、已经会 Python 的读者的双册自学教程：
+《量化研究数学》面向已经学过微积分、线性代数、概率统计并会使用 Python 的经济学与金融学读者。
 
-- 上册《通用工具与研究证据》包含 17 个学习单元、四级习题、可执行实验与独立 oracle；
-- 全书保留 35 个正式学习单元：上册 17 个，下册 18 个；下册把这些学习单元按知识耦合度组织为 9 个方向章节，并将机器学习与 AI 编排为“树模型—现代与前沿 AI—研究设计”三章主线；
-- v0.4.0 系统重写下册方向章节，补充全书可视化体系，并将《量化绿皮书》来源映射题扩展到冻结总题量的 50%。
+当前版本为 v0.4.0，课程清单包含 35 个正式学习单元。
+
+上册建立量化研究共同使用的数学基础，包括分析、测度与概率、统计推断、随机过程、时间序列、优化和数值计算。下册将这些工具用于多因子、统计套利、机器学习、衍生品、组合风险和市场微观结构。
+
+全书持续追问三个问题：公式在什么条件下成立，计算结果怎样得到独立核对，经验结论能否经受样本外检验和交易摩擦。正文以问题、定义、推导、算例和研究连接为主；配套实验负责重复计算与观察有限样本现象。
 
 ## 获取成品
 
 - [最新 GitHub Release](https://github.com/Jason-W507/math-for-quant/releases/latest)
-- 本地构建产物：`output/pdf/math-for-quant-upper.pdf`
-- 上下册共享答案：`output/pdf/math-for-quant-solutions.pdf`
-- 下册方向路线：`output/pdf/math-for-quant-lower.pdf`
+- [上册 PDF](https://github.com/Jason-W507/math-for-quant/releases/latest)
+- [下册 PDF](https://github.com/Jason-W507/math-for-quant/releases/latest)
+- [共享答案册](https://github.com/Jason-W507/math-for-quant/releases/latest)
 - 已确认勘误：[ERRATA.md](ERRATA.md)
-
-生成 PDF 不提交到源码历史；正式版本由 tag 构建并上传到 Release。
 
 ## 阅读路线
 
-- **应用主线**：先建立研究语言，再进入线性代数、概率统计、时间序列、优化、数值计算和研究审计；遇到条件化或极限交换时按课程地图回看测度论桥接。
-- **理论增强线**：完整学习分析、测度、条件期望、概率极限与随机过程。
+- **应用主线**：第 1、5、6、7、9、10、12、13、14、15、16、17 章；遇到条件化或极限交换时回看测度论桥接。
+- **理论增强线**：第 1—4、7—9、11 章，再进入动态模型、优化和研究审计。
 
-权威先修图与两条路线保存在 `curriculum/manifest.json`，构建时生成到上册课程地图；章首先修不手工维护第二份副本。
+完整依赖图、下册路线诊断和桥接地图由 `curriculum/manifest.json` 生成，见书中的课程地图。
 
-## 验证
+## 项目与复现
+
+数学正文在 `tex/`，可执行实验在 `notebooks/`，图源与出版资产在 `figures/` 和 `tex/figures/`。项目约定、构建命令和发布流程见 [`docs/development.md`](docs/development.md)；正文与维护者约定的边界见 [`docs/evidence-contract.md`](docs/evidence-contract.md)。
+
+维护者可用下面的入口完成完整验证；按改动范围选择相应册或路线即可：
 
 ```powershell
 uv sync
 uv run python tools/render_shared_registries.py --check
 uv run python -m unittest discover -s tests
-uv run python tools/check_learning_unit.py `
-  --manifest curriculum/manifest.json `
-  --volume upper
-```
-
-## 构建受影响的册
-
-图形采用独立图源与缓存矢量资产。修改图形规格后运行
-`uv run python tools/build_figures.py`；普通书稿构建不会重跑绘图或数值实验。完整约定见
-[`docs/figures.md`](docs/figures.md)。
-
-本机使用 MiKTeX/XeLaTeX。上册改动只构建上册：
-
-```powershell
+uv run python tools/check_pdf_visual_regression.py
+uv run python tools/check_learning_unit.py --manifest curriculum/manifest.json --volume all
 uv run python tools/build_books.py --volume upper
-```
-
-下册改动改用 `--volume lower`；只有共享源或正式全书发布才使用 `--volume all`。原模板目录保持不变，项目内模板来源见 `docs/template-provenance.md`。
-
-多因子路线的公共验收命令会验证本路线登记的学习单元，并且只重建下册与共享答案册：
-
-```powershell
+uv run python tools/build_books.py --volume lower
+uv run python tools/build_books.py --volume all
 uv run python tools/validate_multifactor_route.py
-```
-
-时间序列与统计套利路线采用相同边界，只构建下册与共享答案册：
-
-```powershell
 uv run python tools/validate_stat_arb_route.py
-```
-
-机器学习路线从树模型出发，依次覆盖深度学习与 CNN、RNN/Transformer/LLM、GNN/DRL 与多模态前沿，再贯通嵌套时序验证、漂移监控以及分数到成本后净收益：
-
-```powershell
 uv run python tools/validate_ml_alpha_route.py
-```
-
-衍生品路线把随机分析、定价与校准、离散对冲拆成三个学习单元，并以真实的 Novikov 失败见证、非等距执行价约束和多路径对冲分布作为验收边界：
-
-```powershell
 uv run python tools/validate_derivatives_route.py
-```
-
-组合风险路线贯通风险估计、稳健实施与尾部/压力风险：
-
-```powershell
 uv run python tools/validate_portfolio_risk_route.py
-```
-
-高频、微观结构与执行路线贯通事件/队列、执行/做市控制和共同随机数仿真：
-
-```powershell
 uv run python tools/validate_microstructure_route.py
-```
-
-正式发布使用统一入口；它要求干净工作树，执行全部 Jupytext 源、构建三份 PDF、核对学习单元/Capstone/模板基线，并生成带来源、版本、校验值和许可证文件的发行清单。Notebook 压缩包同时携带代码与书稿许可文本：
-
-```powershell
 uv run python tools/build_release.py
 ```
 
-## 权威来源
+图形规格改变时另行运行 `uv run python tools/build_figures.py`；上册或下册的局部改动不需要先构建全书。
+
+## 权威来源与许可
 
 - 数学正文：`tex/`
 - 可执行教材：`notebooks/` 下的 Jupytext 文本源
@@ -98,9 +57,4 @@ uv run python tools/build_release.py
 - 符号与术语：`curriculum/notation.json`、`curriculum/glossary.json`
 - 贡献规范：[CONTRIBUTING.md](CONTRIBUTING.md)
 
-## 许可
-
-- 代码：MIT；
-- 原创书稿与图形：CC BY-NC-SA 4.0；
-- ElegantBook：LPPL；
-- 数据：逐数据集记录自身许可。
+代码采用 MIT License；原创书稿与图形采用 CC BY-NC-SA 4.0；ElegantBook 类文件沿用 LPPL；真实数据在引入时分别记录来源与许可。

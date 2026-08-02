@@ -84,10 +84,13 @@ def validate_content(
         if max(markdown_items, tex_items, tex_sections) < 4:
             return f"{identifier}: {field} must address all four question levels"
     notation_text = documents["notation_and_assumptions"].lstrip()
-    if not notation_text.startswith("#") and "\\chapter" not in notation_text:
+    if not notation_text.startswith("#") and not re.search(r"\\(?:chapter|section|subsection)", notation_text):
         return f"{identifier}: notation and assumptions must have a heading"
     derivation = documents["core_derivation"]
-    if "=" not in derivation or ("#" not in derivation and "\\chapter" not in derivation):
+    if "=" not in derivation or (
+        "#" not in derivation
+        and not re.search(r"\\(?:chapter|section|subsection)", derivation)
+    ):
         return f"{identifier}: core derivation must contain a heading and derivation"
     if "capstone" not in documents["capstone_connection"].casefold():
         return f"{identifier}: capstone connection must name the Capstone boundary"

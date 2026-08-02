@@ -25,6 +25,9 @@
   \item $X=\sum_i\sigma_iu_iv_i^T$。保留第一项得到 $X_1$；Eckart--Young 给出 $\lVert X-X_1\rVert_2=\sigma_2=0.915272\ldots$。测试期望来自解析奇异值 $\sqrt{4-\sqrt{10}}$；若实现错误地保留较小奇异值，误差会变为 $\sigma_1$，因此会失败。
 \end{enumerate}
 
+\paragraph{扰动算例。}
+对固定矩阵的第一项扰动，绝对分量放大倍数为 $1000001$，相对范数放大约为 $1.0000005$；这两个数字与条件数的最坏方向放大必须分开解释。
+
 \section*{恢复路径}
 先手算固定 $3\times2$ 账本，再运行
 \begin{lstlisting}[language=bash]

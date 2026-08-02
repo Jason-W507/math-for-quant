@@ -16,8 +16,14 @@
 
 \subsection*{数值编程}
 \begin{enumerate}[nosep,leftmargin=*]
-  \item 复现固定最小二乘账本，分别用正规方程、QR、\texttt{lstsq} 与伪逆求解；比较残差正交和重构误差。
+  \item 复现固定最小二乘记录，分别用正规方程、QR、\texttt{lstsq} 与伪逆求解；比较残差正交和重构误差。
   \item 用 SVD 构造最佳秩一近似，核验二范数误差等于第二奇异值；再故意打乱奇异值顺序，证明测试能失败。
+\end{enumerate}
+
+\subsection*{研究判断}
+\begin{enumerate}[nosep,leftmargin=*]
+  \item 一个回归系数很大但条件数也很高时，如何区分经济信号、尺度变化与数值不稳定？
+  \item 什么时候应报告前向误差，什么时候应报告后向误差？请给出一个两者结论不同的例子。
 \end{enumerate}
 
 \endgroup

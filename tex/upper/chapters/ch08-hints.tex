@@ -7,9 +7,9 @@
   \item \textbf{推导 1：}先按 $W$ 的四个二元组求均值，再按 $Z$ 合并；用每组概率乘均值核验积分。
   \item \textbf{推导 2：}写 $X-\mathbb E[X\mid\mathcal G]$ 与任意 $\mathcal G$ 可测量正交，再展开平方。
   \item \textbf{推导 3：}Bayes 分母是先验加权似然；核混合是行向量左乘随机矩阵。
-  \item \textbf{编程 1：}expected 来自分数账本，不得由同一 NumPy 路径生成；最大正交误差应为零。
+  \item \textbf{编程 1：}expected 来自分数记录，不得由同一 NumPy 路径生成；最大正交误差应为零。
   \item \textbf{编程 2：}先验证每行非负且和为一，再比较混合；后验先核验分母 $0.31$。
-  \item \textbf{编程 3：}共同原因看“条件差零、边缘差非零”；碰撞点恰好相反。坏 oracle 只能放临时 fixture。
+  \item \textbf{编程 3：}共同原因看“条件差零、边缘差非零”；碰撞点恰好相反。错误参照数据只能放临时 fixture。
   \item \textbf{研究 1：}同时报告组内、组间与混合估计，并追踪行业权重和信号基准水平。
   \item \textbf{研究 2：}把成交指示画成共同结果，比较全量报价、逆概率加权与显式成交模型。
   \item \textbf{研究 3：}为每个字段记录 event time、knowledge time、revision time，只允许 knowledge time 不晚于决策时点。

@@ -16,6 +16,7 @@
 称为有限维分布；固定 $\omega$ 后，$t\mapsto X_t(\omega)$ 是样本路径。有限维分布族若满足相容性，Kolmogorov 扩张定理可构造过程的概率律，但它并不自动给出连续路径。两个过程可以同分布却不是同一版本；若每个固定 $t$ 都几乎处处相等，称为版本，若整条路径除零测集外处处相等，才称不可区分。连续修改、右连续和 càdlàg 都是需要另证的路径正则性。
 
 \input{tex/figures/generated/upper-ch11-filtration-timeline.tex}
+% Short alias: \input{tex/upper/figures/filtration-timeline.tex}
 
 
 
@@ -77,7 +78,7 @@ m_i=1+\tfrac12m_{i-1}+\tfrac12m_{i+1},\quad m_0=m_N=0.
 
 强度 $\lambda$ 的齐次 Poisson 过程从零开始，具有独立平稳增量，且 $N_t-N_s\sim\mathrm{Poisson}(\lambda(t-s))$。因此 $\mathbb E N_t=\operatorname{Var}N_t=\lambda t$，相邻到达等待时间独立且服从 $\mathrm{Exp}(\lambda)$。取 $\lambda=2,t=3$，模拟计数的均值与方差为 $5.980833$ 与 $5.988466$，解析目标均为 6。
 
-三条变换应能直接推导：独立强度 $\lambda_1,\lambda_2$ 的过程叠加后强度相加；对每次到达以概率 $q$ 独立保留，保留与拒绝流分别是强度 $q\lambda$、$(1-q)\lambda$ 的独立 Poisson 过程；非齐次强度 $\lambda(t)$ 的累计强度为 $\Lambda(t)=\int_0^t\lambda(s)\,ds$，经时间变换可还原单位速率过程。oracle 取等待率 2、叠加率 $2+3$、基准率 5 且 $q=0.3$，以及 $\lambda(t)=2+t$、$t\le3$，得到均值/方差 $0.5,0.25$，叠加强度 5，稀疏化强度 $1.5,3.5$，累计强度 $10.5$。
+三条变换应能直接推导：独立强度 $\lambda_1,\lambda_2$ 的过程叠加后强度相加；对每次到达以概率 $q$ 独立保留，保留与拒绝流分别是强度 $q\lambda$、$(1-q)\lambda$ 的独立 Poisson 过程；非齐次强度 $\lambda(t)$ 的累计强度为 $\Lambda(t)=\int_0^t\lambda(s)\,ds$，经时间变换可还原单位速率过程。独立基准取等待率 2、叠加率 $2+3$、基准率 5 且 $q=0.3$，以及 $\lambda(t)=2+t$、$t\le3$，得到均值/方差 $0.5,0.25$，叠加强度 5，稀疏化强度 $1.5,3.5$，累计强度 $10.5$。
 
 若订单计数方差显著大于均值、等待时间非指数、增量自相关或日内强度变化，齐次 Poisson 基线失效。非齐次 Poisson 可处理季节性，却仍不能产生自激聚集；Hawkes、Cox 或状态切换模型才是后续候选。模型升级应由残差诊断和样本外预测推动，而非因为模型名字更复杂。
 

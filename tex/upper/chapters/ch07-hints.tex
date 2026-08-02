@@ -3,7 +3,7 @@
 \begin{enumerate}[nosep,leftmargin=*]
   \item \textbf{口述概念：}事件在原空间，分布在目标空间；密度要积分才是概率。独立是联合律分解，不相关只约束一个二阶混合矩。
   \item \textbf{笔试推导：}CDF 累加不超过阈值的质量；平方映射把相同输出的质量合并。Lognormal 用 $z=\log y$；Pareto 积分尾部是 $x^{p-\alpha-1}$。
-  \item \textbf{数值编程：}不使用 Monte Carlo；所有 expected 来自分数求和、解析积分或已知变换。坏 oracle 必须走公开 CLI，不能在测试中复制内部算法。
+  \item \textbf{数值编程：}不使用 Monte Carlo；所有 expected 来自分数求和、解析积分或已知变换。错误参照数据必须走公开 CLI，不能在测试中复制内部算法。
   \item \textbf{研究判断：}比较支持集、偏度/尾部、极端分位数与压力情景；矩不存在时改用分位数或截尾统计并明确总体对象；相关失效时直接检查联合尾部事件。
 \end{enumerate}
 \endgroup

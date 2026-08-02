@@ -2,20 +2,20 @@
   "schema_version": 1,
   "hashes": {
     "upper:cover": "fffffffffffffffffffffffffffffffffffffffff800fc007000600007e00000",
-    "upper:course-map": "000007e07c007ffe7ff878007ffe7ffe7ff07ffe78007ffc7ff07ffe1e1c0000",
-    "upper:formula": "001e7ffe7ffe7ffe7ffe7ffe7fe07ffe7ffe7ffe7ffe7e003fc07ffe3fe00000",
-    "upper:table-or-code": "001e7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ff07fc03fc00000",
+    "upper:course-map": "000007e07c007ffe7ffe7c007ffe7ffe7e007ffe7fc07ffc7ff83ff000000000",
+    "upper:formula": "001e7ffe7e007ffe7ffc7ffe7ffe7ffe7f007ffe7ffe7ffe7ffc378000800000",
+    "upper:table-or-code": "003e7ffe7fe07f007fc07ffe7e007fe07f007ff07e007fc07ff07fe000000080",
     "upper:concept-index": "000003c03ffc3ffc3c6030603860306030603060306038603060306030400000",
     "lower:cover": "fffffffffffffffffffffffffffffffffffffffff800fc007000600007e00000",
-    "lower:route-contract": "000003c07ffe78007ffe7ff00000000000000000000000000000000000000000",
-    "lower:route-map": "001c7ffe7ffe7f007f807f007f807ffe7ffe7ffc37f007f03ff807f007800000",
-    "lower:formula": "003e7ffe7ffe7ffe7ffe7ffe7f007ffc7ffe7ffc7ff07fc07ffe7ffe00000000",
-    "lower:table-or-code": "000007e03ffe3ffe3ffe7e003ff87ffe7ffe7ffe7e007ffe7ffe7ffe7ffe0000",
-    "lower:concept-index": "000003e03ffc3ffc33fc33fc33fc33fc33fc33fc23fc33fc33fc33fc23fc0000",
-    "lower:references": "000003c07ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe0000",
+    "lower:route-contract": "00000ff07ffe7ffe7ffe7ffe78007ffe7ffe70007fc07fe07f007ffe7c000000",
+    "lower:route-map": "00067ffe7ffe7f007f807f807fc07ffe7f007f807f007f807ffe7ffe7f000000",
+    "lower:formula": "001c3ffe3fd83ffc3ffc7ffc7c003fe067e07ffe7ffe7ffe7f003fc000000000",
+    "lower:table-or-code": "001e7ffe7fc07ffe7ffe7ffe7ffe7ffc7ffe7ffe7ffe7ffe7ffe3ff87ffe0000",
+    "lower:concept-index": "000007e03ffc3ffc33fc33fc33fc33fc03fc33fc23fc33fc23fc33fc23fc0000",
+    "lower:references": "000003c07ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe3ff80000",
     "solutions:cover": "fffffffffffffffffffffffffffffffffffffffff800f0007000600007e00000",
     "solutions:upper-solutions": "0000000000000000000001c003c003c000000000000000000000000000000000",
     "solutions:lower-solutions": "0000000000000000000001c003c001c000000000000000000000000000000000",
-    "solutions:final-answer": "00000ff07ffe7ffe7ffe7ffe7ffe7ffe7ffe0000000000000000000000000000"
+    "solutions:final-answer": "00000ff07ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe7ffe38000000"
   }
 }

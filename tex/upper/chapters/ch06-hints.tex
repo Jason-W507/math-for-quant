@@ -3,7 +3,7 @@
 \begin{enumerate}[nosep,leftmargin=*]
   \item \textbf{口述概念：}把参数空间和观测空间分开；先问矩阵是否方阵、对称、正定、满秩，再选分解。小奇异值是问题敏感性，算法稳定性则看后向误差。
   \item \textbf{笔试推导：}残差属于 $\mathcal N(X^T)$；SVD 中只对非零奇异值取倒数；$X^TX=V\Sigma^2V^T$。Cholesky 令下三角元素逐项匹配。
-  \item \textbf{数值编程：}expected 来自手算账本；最佳秩一误差用独立的第二奇异值；最坏扰动把 $b$ 与 $\delta b$ 分别对齐最大、最小左奇异向量。
+  \item \textbf{数值编程：}expected 来自手算记录；最佳秩一误差用独立的第二奇异值；最坏扰动把 $b$ 与 $\delta b$ 分别对齐最大、最小左奇异向量。
   \item \textbf{研究判断：}先保留原始尺度与谱，再检查缺失处理、重复暴露和窗口；区分预测稳定与参数稳定；所有正则化都要报告目标变化和样本外影响。
 \end{enumerate}
 \endgroup

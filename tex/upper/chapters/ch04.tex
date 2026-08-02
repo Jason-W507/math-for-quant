@@ -4,7 +4,7 @@
 \begin{introduction}
   \input{tex/generated/prerequisites/upper-ch04.tex}
   \item 学习产出：能选择合适的 $L^p$ 误差尺度，证明常用范数不等式，并在交换极限或积分次序前逐条核对假设。
-  \item Python 边界：程序只复现固定的解析账本和有限截断，不能用浮点一致性替代可测性、可积性或一般定理。
+  \item Python 边界：程序只复现固定的解析记录和有限截断，不能用浮点一致性替代可测性、可积性或一般定理。
   \item 研究连接：预测误差、随机变量矩、联合分布、嵌套期望与数值积分都依赖本章的共同语言。
 \end{introduction}
 
@@ -33,7 +33,7 @@
 \]
 例如在 $[0,1]$ 上令 $f(1/2)=10^6$，其余点 $f(x)=x$。普通上确界是 $10^6$，但 $\lVert f\rVert_\infty=1$；改变单点不改变 $L^\infty$ 元素。对所有 $1\leq p\leq\infty$，$L^p$ 都是 Banach 空间：每个 $L^p$-Cauchy 序列都在 $L^p$ 中收敛。完备性保证“不断改进的近似”不会逃出误差空间。
 
-\subsection{固定账本：$f(x)=x$}
+\subsection{固定算例：$f(x)=x$}
 
 在 $[0,1]$ 的 Lebesgue 测度上，
 \[
@@ -66,7 +66,7 @@
 \]
 乘回两个范数即得结论。端点 $p=1,q=\infty$ 直接由 $|g|\leq\lVert g\rVert_\infty$ a.e. 得到。非零情形的等号要求 $|f|^p$ 与 $|g|^q$ a.e. 成比例；若讨论 $|\int fg|$ 的等号，还需符号或相位不发生抵消。
 
-\begin{example}[协方差存在性的最小门禁]
+\begin{example}[协方差存在性的最小检查]
 若随机变量 $X,Y\in L^2$，Cauchy--Schwarz（$p=q=2$ 的 Hölder）给出
 \[
  \mathbb E|XY|\leq(\mathbb E X^2)^{1/2}(\mathbb E Y^2)^{1/2}<\infty.
@@ -186,7 +186,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 若 $E\in\mathcal A\otimes\mathcal B$，则截面可测。示性函数满足 $\mathbf1_E(x,y)=\mathbf1_{E_x}(y)=\mathbf1_{E^y}(x)$，这是从集合测度走向二重积分的桥梁。
 
-\section{Tonelli 与 Fubini 是两道不同门禁}
+\section{Tonelli 与 Fubini 是两道不同检查}
 
 \begin{theorem}[Tonelli]
 若 $f:X\times Y\to[0,\infty]$ 对 $\mathcal A\otimes\mathcal B$ 可测，则
@@ -208,7 +208,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 则几乎所有截面可积，两种迭代积分都存在且有限，并等于乘积空间积分。
 \end{theorem}
 
-对 $|f|\geq0$ 使用 Tonelli，得到几乎所有截面的绝对积分有限；再把 $f=f^+-f^-$，分别对非负部分使用 Tonelli并相减。Fubini 的真正门禁是绝对可积性，不是“两个有限循环都跑完了”。
+对 $|f|\geq0$ 使用 Tonelli，得到几乎所有截面的绝对积分有限；再把 $f=f^+-f^-$，分别对非负部分使用 Tonelli并相减。Fubini 的真正检查是绝对可积性，不是“两个有限循环都跑完了”。
 
 \begin{example}[独立时的期望乘积]
 若 $X,Y$ 独立且 $u(X),v(Y)$ 可积，并且乘积绝对可积，则联合分布是边缘分布的乘积，Fubini 给
@@ -240,7 +240,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 缺口是绝对可积性：前 $N\times N$ 方阵有 $N$ 个 $+1$ 和 $N-1$ 个 $-1$，绝对值和为 $2N-1\to\infty$。有符号方阵和恒为 1，而 $(N+1)\times N$ 矩形和恒为 0；不同扩张路径保留不同边界项。含负项时 Tonelli 不适用，绝对和发散时 Fubini 不适用，两个有限截断都稳定也不能创造合法极限。
 
-\section{独立数值 oracle 与误差界}
+\section{独立数值基准与误差界}
 
 对 $f(x)=x^2$ 使用 $N$ 个等宽区间的复合中点公式：
 \[
@@ -253,7 +253,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 这里 $\max|f''|=2$。固定 $N=64$，脚本得到 $M_N=0.333312988$；解析积分为 $1/3$，实际误差与上界均为 $0.000020345\ldots$。双重级数部分只做整数计数，因此误差为零；次序差异不是浮点舍入制造的。
 
-oracle 还绑定 $p\in\{1,2,4\}$、$N=64$ 和截断尺寸 $10,100$。它拒绝非有限数、分组数量错配以及被改写的固定账本，防止 `NaN` 比较、数组截断或同步篡改 expected 把未核验结果标成成功。
+独立基准还绑定 $p\in\{1,2,4\}$、$N=64$ 和截断尺寸 $10,100$。它拒绝非有限数、分组数量错配以及被改写的固定算例，防止 `NaN` 比较、数组截断或同步篡改 expected 把未核验结果标成成功。
 
 \begin{lstlisting}[language=bash]
 uv run python tools/check_learning_unit.py \
@@ -262,7 +262,7 @@ uv run python tools/check_learning_unit.py \
 
 \section{研究中的换序审计}
 
-在把期望、积分、极限或求和交换前，依次记录：底层测度空间是否有限或 $\sigma$ 有限；函数与截面是否可测；使用的是非负性还是绝对可积性；积分允许无穷还是必须有限；收敛是 $L^p$、依测度还是 a.e.；所引用的包含关系是否依赖有限总测度；数值截断是否沿不同区域复核；expected 是否来自独立解析账本。若两个次序给出不同值，第一反应应是定位缺失假设，而不是挑选更符合策略叙事的结果。
+在把期望、积分、极限或求和交换前，依次记录：底层测度空间是否有限或 $\sigma$ 有限；函数与截面是否可测；使用的是非负性还是绝对可积性；积分允许无穷还是必须有限；收敛是 $L^p$、依测度还是 a.e.；所引用的包含关系是否依赖有限总测度；数值截断是否沿不同区域复核；expected 是否来自独立解析记录。若两个次序给出不同值，第一反应应是定位缺失假设，而不是挑选更符合策略叙事的结果。
 
 \noindent\textbf{延伸阅读。}$L^p$ 空间、乘积测度与泛函分析背景可参见\cite{brezis2011analysis,folland1999analysis}。
 
@@ -271,4 +271,4 @@ uv run python tools/check_learning_unit.py \
 
 \section*{本章小结与 Capstone 连接}
 
-$L^p$ 通过 a.e. 等价类把误差变成完备范数空间；Hölder 与 Minkowski 控制乘积和误差叠加；有限测度决定不同 $p$ 之间的包含关系；三种收敛只有有限的推出链；Tonelli 与 Fubini 则分别以非负性和绝对可积性守住换序边界。上册 Capstone 会要求每个联合期望、误差范数和数值近似同时声明空间、门禁、独立 oracle 与失败见证。
+$L^p$ 通过 a.e. 等价类把误差变成完备范数空间；Hölder 与 Minkowski 控制乘积和误差叠加；有限测度决定不同 $p$ 之间的包含关系；三种收敛只有有限的推出链；Tonelli 与 Fubini 则分别以非负性和绝对可积性守住换序边界。上册 Capstone 会要求每个联合期望、误差范数和数值近似同时声明空间、检查、独立基准与失败见证。
