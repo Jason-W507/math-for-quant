@@ -64,7 +64,10 @@ assumption gate failed: returns and weights must be finite
 
 \section*{恢复路径}
 先运行
-\begin{center}
-\texttt{uv run python tools/check\_learning\_unit.py --manifest curriculum/manifest.json --unit upper.ch01}
-\end{center}
+\begin{lstlisting}[language=bash]
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch01_convex_bound.ipynb
+\end{lstlisting}
 确认正常证据包通过。随后复制 \path{evidence/ch01/oracle.json} 到临时文件，依次修改权重和、反例非负性与向量长度，并把临时文件路径传给本章 Python 程序。恢复完成的标准不是“最终又变绿”，而是能够解释每条失败信息对应哪一个数学定义或假设。

@@ -11,7 +11,7 @@ $env:IPYTHONDIR = "build/ipython"
 $env:JUPYTER_RUNTIME_DIR = "build/jupyter-runtime"
 New-Item -ItemType Directory -Force build/ipython, build/jupyter-runtime | Out-Null
 uv run jupyter notebook notebooks/foundation/independent_oracle.ipynb
-# 无界面或发布时使用：
+# 无界面时检查单个 notebook：
 uv run jupyter nbconvert --to notebook --execute --stdout `
   --ExecutePreprocessor.timeout=60 `
   --ExecutePreprocessor.allow_error_names=SystemExit `

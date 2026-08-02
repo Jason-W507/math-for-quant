@@ -2,7 +2,7 @@
 
 《量化研究数学》面向已经学过微积分、线性代数、概率统计并会使用 Python 的经济学与金融学读者。
 
-当前版本为 v0.5.0，课程清单包含 35 个正式学习单元。
+当前版本为 v0.5.1，课程清单包含 35 个正式学习单元。
 
 上册建立量化研究共同使用的数学基础，包括分析、测度与概率、统计推断、随机过程、时间序列、优化和数值计算。下册将这些工具用于多因子、统计套利、机器学习、衍生品、组合风险和市场微观结构。
 
@@ -37,7 +37,7 @@ $env:JUPYTER_RUNTIME_DIR = "build/jupyter-runtime"
 New-Item -ItemType Directory -Force build/ipython, build/jupyter-runtime | Out-Null
 # 交互式检查：
 uv run jupyter notebook notebooks/foundation/independent_oracle.ipynb
-# 无界面/发布时的等价执行：
+# 无界面时检查单个 notebook：
 uv run jupyter nbconvert --to notebook --execute --stdout `
   --ExecutePreprocessor.timeout=60 `
   --ExecutePreprocessor.allow_error_names=SystemExit `
@@ -58,7 +58,7 @@ pwsh tools/publish.ps1 -Release
 
 - 数学正文：`tex/`
 - 可执行教材：`notebooks/` 下受 Git 跟踪的 `.ipynb`（读者直接打开的教学界面）
-- 发布执行副本：`output/notebooks/`（由发布命令生成，属于忽略的构建产物）
+- 发布打包副本：`output/notebooks/`（由发布命令复制，属于忽略的构建产物）
 - 课程图、路线与证据路径：`curriculum/manifest.json`
 - 符号与术语：`curriculum/notation.json`、`curriculum/glossary.json`
 - 贡献规范：[CONTRIBUTING.md](CONTRIBUTING.md)

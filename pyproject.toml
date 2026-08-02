@@ -1,6 +1,6 @@
 [project]
 name = "math-for-quant"
-version = "0.5.0"
+version = "0.5.1"
 description = "Executable evidence and publication pipeline for Quantitative Research Mathematics"
 requires-python = ">=3.11,<3.14"
 dependencies = [

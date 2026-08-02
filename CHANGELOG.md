@@ -1,9 +1,15 @@
 # Changelog
 
+## 0.5.1 - 2026-08-02
+
+- 清理答案册中残留的 `tools/check_learning_unit.py` 命令，改为直接运行对应的 `.ipynb`。
+- 修正图形构建器对教学 notebook 的伴随文件查找，使其使用受 Git 跟踪的 `.ipynb` 而不是已删除的 `.py` 源文件。
+- 更新 notebook 权威来源 ADR 和书稿中的运行说明，明确发布只复制 notebook，不会隐式执行整套课程。
+
 ## 0.5.0 - 2026-08-02
 
 - 将教学 notebook 直接改为仓库中跟踪的 `.ipynb` 文件；删除重复执行 notebook 和 LaTeX 的 CI 层，编辑时直接运行受影响文件并查看 `latexmk` 输出。
-- 合并为一个本地 PowerShell 出版入口，直接调用 `latexmk` 编译三份 PDF，并按需执行 notebook、生成 notebook 压缩包。
+- 合并为一个本地 PowerShell 出版入口，直接调用 `latexmk` 编译三份 PDF，并将跟踪的 notebook 打包为压缩包；notebook 运行由编辑者按需直接执行。
 - 清理只服务于旧测试编排层的 Python 构建、校验与测试脚本，让教材源码、notebook 和出版产物各自归位。
 - 润色上下册正文、术语、图形说明与开发文档，并补齐 MiKTeX 所需的 `fixtounicode` 依赖。
 

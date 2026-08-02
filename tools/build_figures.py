@@ -499,13 +499,13 @@ def companion_for(spec: dict) -> str | None:
     if spec["kind"] != "evidence":
         return None
     if spec["volume"] == "upper":
-        matches = sorted((ROOT / "notebooks" / "upper").glob(f"{spec['chapter']}_*.py"))
+        matches = sorted((ROOT / "notebooks" / "upper").glob(f"{spec['chapter']}_*.ipynb"))
     else:
-        exact = ROOT / "notebooks" / "lower" / f"{spec['chapter'].replace('-', '_')}.py"
+        exact = ROOT / "notebooks" / "lower" / f"{spec['chapter'].replace('-', '_')}.ipynb"
         route_fallbacks = {
-            "ml-alpha-deep": "ch03_ml_alpha.py",
-            "ml-alpha-sequence": "ch03_ml_alpha.py",
-            "ml-alpha-frontiers": "ch03_ml_alpha.py",
+            "ml-alpha-deep": "ch03_ml_alpha.ipynb",
+            "ml-alpha-sequence": "ch03_ml_alpha.ipynb",
+            "ml-alpha-frontiers": "ch03_ml_alpha.ipynb",
         }
         matches = [
             exact if exact.is_file()

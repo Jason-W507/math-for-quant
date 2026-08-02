@@ -50,7 +50,10 @@ witness gate failed: indices must be positive integers
 
 \section*{恢复路径}
 先运行
-\begin{center}
-\texttt{uv run python tools/check\_learning\_unit.py --manifest curriculum/manifest.json --unit upper.ch02}
-\end{center}
+\begin{lstlisting}[language=bash]
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch02_analysis_foundations.ipynb
+\end{lstlisting}
 确认正向账本通过。随后复制 \path{evidence/ch02/oracle.json}，分别修改压缩因子、声明固定点和见证下标，把临时路径传给 \path{notebooks/upper/ch02_analysis_foundations.ipynb}。恢复完成时应能把每条错误连接到定理的准确量词，而不只是把 JSON 改回绿色。
