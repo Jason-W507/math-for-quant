@@ -37,7 +37,7 @@
 \section*{代码恢复路径}
 在仓库根目录运行
 \begin{center}
-\texttt{uv run python notebooks/upper/ch16\_research\_validity.py}
+\path{uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch16_research_validity.ipynb}
 \end{center}
 正常路径必须同时给出 timeline、timezone、calendar、split、multiplicity、performance 和 friction 七类通过证据。随后复制 oracle：先把第一行 \path{available_at} 改到 \path{decision_at} 之后，确认时间门禁失败；再恢复时间并把 \path{selected_raw_p_value} 改为 $0.003$，确认多重检验门禁失败。把任一时间改成错误 UTC offset 或把决策日移出 \path{2024-07-v1} 日历，也必须稳定失败。恢复完成的标准不是“改回能跑”，而是能解释负例分别破坏了哪个研究假设，以及为什么增加样本或更换随机 seed 都无法修复。
 

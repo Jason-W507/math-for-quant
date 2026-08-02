@@ -56,7 +56,7 @@ regime switching 假设状态持续随机转换，change-point 假设参数在�
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/stat_arb_estimation.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/stat_arb_estimation.ipynb \
   evidence/stat-arb-estimation/oracle.json
 \end{lstlisting}
 实验逐项比较在线滤波与平滑，画出状态路径，并用真实时间验证器拒绝未来平滑状态。

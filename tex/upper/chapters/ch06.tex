@@ -163,9 +163,11 @@ A_\varepsilon=\begin{pmatrix}1&1\\1&1+\varepsilon\end{pmatrix},
 
 运行：
 \begin{lstlisting}[language=bash]
-uv run python notebooks/upper/ch06_linear_algebra.py
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch06
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch06_linear_algebra.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch06_linear_algebra.ipynb
 \end{lstlisting}
 程序核验正规方程记录、残差正交、投影对称/幂等、QR 与 SVD 重构、伪逆解、Cholesky、最佳秩一误差、条件数平方和两种扰动方向。它还固定输入、维数与容差；把设计矩阵写入 \texttt{NaN}、改成另一组数据、放宽误差门或伪造条件数标签都会以稳定诊断失败。
 

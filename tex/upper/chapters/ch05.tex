@@ -248,8 +248,10 @@ $\det\Sigma=1.75$，且
 公开 CLI 会拒绝非有限或非数值标量、错误维度、改写的输入记录、期望数组截断、放宽的容差以及与解析值不符的发布标签。这样 `zip` 截断、`NaN` 比较和“扩大 tolerance 后同步改 expected”都不能产生伪通过。
 
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch05
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch05_matrix_calculus.ipynb
 \end{lstlisting}
 
 \section{研究中的导数审计}

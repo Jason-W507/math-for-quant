@@ -5,7 +5,7 @@
   "data_license_path": "data/ch17/README.md",
   "license_id": "CC0-1.0",
   "license_manifest_path": "evidence/ch17/licenses.json",
-  "license_manifest_sha256": "b79b5fbd64febc0c63162925d0183d59b825f4b160c8d9895cb4441f4b487207",
+  "license_manifest_sha256": "9e2d686573bea0687f7d69ff08f96177f87c0e2d725075e98890351e459c378c",
   "limitations_path": "evidence/ch17/limitations.md",
   "limitations_sha256": "37575ac921df97d8f2f2e1744141af9bb75636a57806b3d9f83472393faf7c23",
   "environment": {
@@ -19,7 +19,7 @@
   "package_files": [
     "pyproject.toml",
     "uv.lock",
-    "notebooks/upper/ch17_research_audit.py",
+    "notebooks/upper/ch17_research_audit.ipynb",
     "src/math_for_quant/__init__.py",
     "src/math_for_quant/evidence.py",
     "src/math_for_quant/ch17/__init__.py",
@@ -45,7 +45,16 @@
     "--quiet",
     "--frozen",
     "python",
-    "notebooks/upper/ch17_research_audit.py"
+    "-m",
+    "jupyter",
+    "nbconvert",
+    "--to",
+    "notebook",
+    "--execute",
+    "--stdout",
+    "--ExecutePreprocessor.timeout=60",
+    "--ExecutePreprocessor.allow_error_names=SystemExit",
+    "notebooks/upper/ch17_research_audit.ipynb"
   ],
   "market_timezone": "Asia/Shanghai",
   "market_utc_offset": "+08:00",

@@ -264,8 +264,10 @@ DCT & $f_n,f$ 可测，a.e. 收敛且有 $L^1$ 支配 & 极限与积分可交换
 这些参数与发布标签绑定为固定算例。程序还拒绝非有限数、期望数量错位以及被改写的层级、尖峰下标或固定点，防止 `zip` 截断和 `NaN` 比较把未核验结果标成通过。
 
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch03
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch03_measure_integration.ipynb
 \end{lstlisting}
 
 正确输出以 `独立基准=passed` 开头。它证明仓库中的特定记录可复现，不证明所有可测函数都可积，也不替代 MCT 或 DCT 的一般证明。

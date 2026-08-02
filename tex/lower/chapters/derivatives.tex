@@ -122,7 +122,7 @@ Capstone 从复制到新目录的最小研究材料运行同一参数集，依�
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/ch04_derivatives.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch04_derivatives.ipynb \
   evidence/lower-ch04/oracle.json
 \end{lstlisting}
 \end{implementationnote}

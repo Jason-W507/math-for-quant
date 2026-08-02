@@ -256,8 +256,10 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 独立基准还绑定 $p\in\{1,2,4\}$、$N=64$ 和截断尺寸 $10,100$。它拒绝非有限数、分组数量错配以及被改写的固定算例，防止 `NaN` 比较、数组截断或同步篡改 expected 把未核验结果标成成功。
 
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch04
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch04_lp_product_measure.ipynb
 \end{lstlisting}
 
 \section{研究中的换序审计}

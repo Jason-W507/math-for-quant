@@ -84,7 +84,7 @@ x_t^\perp=x_t-Z_t(Z_t^{\mathsf T}Z_t)^{-1}Z_t^{\mathsf T}x_t,
 事先确定零信号搜索进行 20 次尝试，朴素 $p<0.05$ 留下 2 项，BH 拒绝 0 项。这不是证明所有信号无效，而是说明当前检验族的证据不足。删除 18 个失败尝试后把 $m$ 写成 2，会直接破坏审计边界\cite{white2000reality,bailey2017backtest}。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/multifactor_model.py}。图中分别显示预测斜率序列与经典风险价格；日期相等的故障注入必须以稳定类别拒绝。
+运行 \path{notebooks/lower/multifactor_model.ipynb}。图中分别显示预测斜率序列与经典风险价格；日期相等的故障注入必须以稳定类别拒绝。
 \end{implementationnote}
 
 Capstone 的模型卡必须先声明属于“特征预测”还是“beta 定价”，列出时间轴、资产轴、因子轴、参数单位和识别限制。只有模型对象事先确定后，下一章的正则化与库实现才有可比较的目标。

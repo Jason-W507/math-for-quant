@@ -29,8 +29,8 @@ _Avoid_: 基础复习章、摘要章
 _Avoid_: 大作业、生产项目、实盘项目
 
 **出版产物（Publication Artifact）**：
-由权威 TeX 或 Jupytext 源生成、供读者使用但不作为第二份手工来源维护的 PDF 或 notebook。
-_Avoid_: 源文件、手工副本
+由权威 TeX 或受 Git 跟踪的教学 notebook 生成、供读者使用的 PDF 或执行副本。`notebooks/` 中的 `.ipynb` 是教学界面和权威 notebook 来源；`output/` 中的执行副本只由发布命令生成，不作为第二份手工来源维护。
+_Avoid_: 忽略目录中的教学源、手工复制的执行结果
 
 **概念图（Concept Diagram）**：
 用矢量图形解释数学对象之间的结构、依赖、几何关系或信息流，不承担经验数值证据。

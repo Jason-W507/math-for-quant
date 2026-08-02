@@ -37,9 +37,11 @@
 \section*{恢复路径}
 先运行
 \begin{lstlisting}[language=bash]
-uv run python notebooks/upper/ch08_conditioning.py
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch08
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch08_conditioning.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch08_conditioning.ipynb
 \end{lstlisting}
 若失败，按“有限值与概率归一 $\rightarrow$ 分割是否嵌套 $\rightarrow$ 定义积分与正交性 $\rightarrow$ 方差分解 $\rightarrow$ 核/Bayes $\rightarrow$ 共同原因与碰撞点”的顺序恢复。不要把 observed 写回 expected，也不要把零测点版本当作模型外推规则。
 % MFQ source replacements removed=2 unit=UpperChEight

@@ -86,7 +86,7 @@ dZ_t=\kappa(\mu-Z_t)dt+\sigma dW_t
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/stat_arb_model.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/stat_arb_model.ipynb \
   evidence/stat-arb-model/oracle.json
 \end{lstlisting}
 该 notebook 包含手算 oracle、残差图、爆炸序列故障注入、参数敏感性与限制说明。

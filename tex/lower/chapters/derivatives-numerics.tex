@@ -110,7 +110,7 @@ $k=K/F_T$ 上比较 $C/(D_TF_T)$。事先确定实验取非零股息率 $q=3\%$�
 从 par yield 到零息贴现因子通常还需 bootstrap，并明确日计数、复利方式和结算日。事先确定代码直接用连续复利只是教学算术 oracle，因此在真实研究中必须替换为与合约一致的曲线构造。把 1 年 par yield 直接塞进所有期限的 Black--Scholes 公式，会同时制造期限错配与插值偏差。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/derivatives_numerics.py} 比较四条定价路径并重建曲面；运行 \path{evidence/derivatives/validate_real_data.py} 独立检查财政部快照的哈希、日期和贴现算术。
+运行 \path{notebooks/lower/derivatives_numerics.ipynb} 比较四条定价路径并重建曲面；运行 \path{evidence/derivatives/validate_real_data.py} 独立检查财政部快照的哈希、日期和贴现算术。
 \end{implementationnote}
 
 本单元向本路线的综合项目和下一章交付：价格、Delta、曲面参数、误差预算与市场输入协议。

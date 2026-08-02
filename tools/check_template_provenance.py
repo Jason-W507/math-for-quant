@@ -19,7 +19,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--vendored-only",
         action="store_true",
-        help="Verify committed vendored assets when the external baseline is unavailable in CI.",
+        help="Verify committed vendored assets when the external baseline is unavailable.",
     )
     return parser.parse_args()
 

@@ -195,8 +195,10 @@ $0<\varepsilon<1$，上式比率恒为 $1$；标准化和始终是 Rademacher �
 主实验取 Bernoulli$(0.3)$、$n=200$、重复 $20000$ 次。理论标准误为 $0.032404$，模拟均值为 $0.299794$、标准差为 $0.032672$；标准化后落在 $[-1.96,1.96]$ 的比例为 $0.943100$，相对 $0.95$ 的覆盖率容差为 $0.015$。模拟只验证实现；理论均值、精确尾概率、各集中界与 Berry--Esseen 记录均独立计算。
 
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch09
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch09_limit_theorems.ipynb
 \end{lstlisting}
 
 \section{量化研究中的使用边界}

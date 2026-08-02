@@ -70,7 +70,7 @@
 连续 LP 与枚举 oracle 的职责不同。LP 提供通用求解；枚举只覆盖小问题，却能逐点复核约束和目标。稳健再平衡也由另一套整数网格枚举独立重建权重与目标；Black--Litterman 则保留精度公式和 Woodbury 两条路径。成熟求解器成功状态只是开始，非最终证据。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/portfolio_risk_optimization.py} 可重建后验、CVaR LP 与成本台账；零风险厌恶、负成本、非正资本、非法网格或不可交易变仓均应拒绝。
+运行 \path{notebooks/lower/portfolio_risk_optimization.ipynb} 可重建后验、CVaR LP 与成本台账；零风险厌恶、负成本、非正资本、非法网格或不可交易变仓均应拒绝。
 \end{implementationnote}
 
 本单元向本路线的综合项目交付观点后验、情景损失、活跃约束、换手、成本与可行性证据。

@@ -11,7 +11,7 @@
     },
     {
       "id": "code",
-      "paths": ["notebooks/upper/ch17_research_audit.py"],
+      "paths": ["notebooks/upper/ch17_research_audit.ipynb"],
       "license_id": "MIT",
       "license_file": "LICENSE",
       "required_marker": "MIT License",

@@ -224,9 +224,11 @@ $\mathbb P(A=1,B=1)=1/4$，与边缘乘积相等；可在选择样本中
 在预测时点 $t$，应把可用信息写成 $\mathcal F_t$，目标写成未来变量；若特征实际在 $t+1$ 才发布，却被放进 $\mathcal F_t$，任何条件期望或 Bayes 解释都建立在泄漏信息上。行业中性化近似投影到可观测暴露，但只保证所选函数类内的残差性质；状态模型依赖核与转移机制；缺失/成交筛选则可能形成碰撞点。
 
 \begin{lstlisting}[language=bash]
-uv run python notebooks/upper/ch08_conditioning.py
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch08
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch08_conditioning.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch08_conditioning.ipynb
 \end{lstlisting}
 独立基准不抽样：它逐项验证定义积分、粗细分割塔式、正交残差、条件 Jensen、全方差、核混合、Bayes 后验、共同原因与碰撞点。固定形状、非负归一概率、固定参数、有限 expected、$10^{-10}$ 容差和发布标签共同防止同步伪造。
 

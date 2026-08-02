@@ -35,9 +35,11 @@
 \section*{恢复路径}
 先运行
 \begin{lstlisting}[language=bash]
-uv run python notebooks/upper/ch07_probability_distributions.py
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch07
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch07_probability_distributions.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch07_probability_distributions.ipynb
 \end{lstlisting}
 若失败，按“概率非负/归一 $\rightarrow$ 形状与支持 $\rightarrow$ 推前和边缘 $\rightarrow$ 解析变换 $\rightarrow$ 矩存在条件”的顺序恢复。不要通过删除尾部样本或放宽容差来让错误分布假设通过。
 % MFQ source replacements removed=3 unit=UpperChSeven

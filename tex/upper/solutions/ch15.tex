@@ -42,6 +42,6 @@
 \section*{代码恢复路径}
 在仓库根目录运行
 \begin{center}
-\texttt{uv run python notebooks/upper/ch15\_monte\_carlo.py}
+  \path{uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch15_monte_carlo.ipynb}
 \end{center}
 正常输出只给稳定证据类别：Monte Carlo 误差位于四标准误内、误差率检查通过、控制变量均值与方差门禁通过、bootstrap 精确枚举为 27 个状态。随后分别把 oracle 中的 \texttt{control\_known\_mean} 改成 $0.6$、把 \texttt{bootstrap\_observations\_iid} 改成 false；前者应报告目标均值被改变，后者应拒绝 IID 重抽样。完成恢复时应能解释每个失败为什么不能靠增加样本量或重复次数修复。

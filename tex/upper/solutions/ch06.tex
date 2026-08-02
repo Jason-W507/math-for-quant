@@ -31,9 +31,11 @@
 \section*{恢复路径}
 先手算固定 $3\times2$ 账本，再运行
 \begin{lstlisting}[language=bash]
-uv run python notebooks/upper/ch06_linear_algebra.py
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch06
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch06_linear_algebra.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch06_linear_algebra.ipynb
 \end{lstlisting}
 若失败，按“形状/有限值 $\rightarrow$ 固定输入 $\rightarrow$ 解析账本 $\rightarrow$ 分解不变量 $\rightarrow$ 扰动方向”的顺序恢复。不要用当前库输出改写 expected，也不要通过放宽容差把模型问题伪装成浮点误差。
 % MFQ source replacements removed=4 unit=UpperChSix

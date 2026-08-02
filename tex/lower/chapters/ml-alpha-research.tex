@@ -124,7 +124,7 @@ C_{i,t}^{\rm impact}\approx
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/ml_alpha_research.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ml_alpha_research.ipynb \
   evidence/ml-alpha-research/oracle.json
 \end{lstlisting}
 路线级命令只构建下册与共享答案册。

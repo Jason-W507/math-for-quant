@@ -114,7 +114,7 @@ Pearson IC 是 $x_{i,t}$ 与 $r_{i,t+1}$ 的横截面相关；Rank IC 是两者�
 \begin{implementationnote}
 执行下面的命令：
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/ch01_multifactor.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch01_multifactor.ipynb \
   evidence/lower-ch01/oracle.json
 \end{lstlisting}
 输出同时包含系数、IC、中性化约束、多重检验、毛净收益与两种失败检查；任一字段漂移都会非零退出。

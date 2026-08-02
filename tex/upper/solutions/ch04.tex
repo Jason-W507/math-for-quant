@@ -56,7 +56,9 @@
 
 先运行
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch04
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch04_lp_product_measure.ipynb
 \end{lstlisting}
 再复制 `evidence/ch04/oracle.json` 到临时文件，逐项注入一个坏值并从公开 CLI 运行脚本。每次记录退出码、完整 stderr 和被保护的数学账本。若两个积分次序不同，先保留有限矩形与绝对值和证据，再判断 Tonelli 或 Fubini 哪条假设缺失；不要用更高浮点精度掩盖一个本来就不合法的换序。

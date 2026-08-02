@@ -277,7 +277,7 @@
     {
       "zh": "出版产物",
       "en": "publication artifact",
-      "definition": "由权威 TeX 或 Jupytext 源生成、供读者使用但不作为第二份手工来源维护的 PDF 或 notebook。"
+      "definition": "由权威 TeX 或受 Git 跟踪的教学 notebook 生成、供读者使用但不作为第二份手工来源维护的 PDF 或 notebook。"
     },
     {
       "zh": "Monte Carlo",

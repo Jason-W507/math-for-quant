@@ -38,8 +38,10 @@
 \section*{恢复路径}
 先运行
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch05
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch05_matrix_calculus.ipynb
 \end{lstlisting}
 再复制 `evidence/ch05/oracle.json` 到临时文件逐项注入坏值，从公开 CLI 记录稳定诊断。若自动微分、差分和手推不一致，先回到固定非对称二次型与形状账本；只有该闭式案例一致后，才把复杂模型逐层接回。
 % MFQ source replacements removed=2 unit=UpperChFive

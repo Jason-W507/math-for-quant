@@ -15,7 +15,7 @@
 - `tex/figures/generated/*.tex`：包含图注和图源 ID 的包装片段；
 - `figures/figure-manifest.json`：记录图源、缓存路径与 SHA-256 的溯源清单。
 
-每幅证据图还登记 `scene` 与 `companion`。`companion` 指向对应章节的可修改 Jupytext notebook；它提供参数实验入口，PDF 图本身仍保持可独立阅读。
+每幅证据图还登记 `scene` 与 `companion`。`companion` 指向对应章节的可修改 teaching notebook；它提供参数实验入口，PDF 图本身仍保持可独立阅读。
 
 显式更新图形：
 
@@ -23,7 +23,7 @@
 uv run python tools/build_figures.py
 ```
 
-普通 `latexmk` 或 `tools/build_books.py` 只读取缓存资产，不运行绘图脚本或数值实验。
+普通 `latexmk` 或 `tools/publish.ps1` 只读取缓存资产，不运行绘图脚本或数值实验。
 
 ## 章节嵌入
 

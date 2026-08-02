@@ -6,10 +6,10 @@
 
 ## 修改学习单元
 
-1. 先更新权威 TeX 或 Jupytext 文本源；不要手改生成的 notebook、符号表、术语表或先修文件。
+1. 先更新权威 TeX 或 `notebooks/` 下受 Git 跟踪的 `.ipynb`；不要手改 `output/` 中的执行副本、符号表、术语表或先修文件。
 2. 数学、独立 oracle、四级题目与答案必须形成同一学习单元证据包。
-3. 运行 `uv run python tools/render_shared_registries.py --check` 和相关单元测试。
-4. 只构建受影响的册；上册改动使用 `--volume upper`，下册改动使用 `--volume lower`。
+3. 直接运行受影响的 notebook；需要出版物时运行 `pwsh tools/publish.ps1 -Volume upper|lower`，用 `latexmk` 输出和 PDF 截图检查结果。
+4. 只构建受影响的册；上册改动使用 `-Volume upper`，下册改动使用 `-Volume lower`。
 5. PDF 页数仅作异常诊断，不是内容完成或压缩目标。
 
 完整验证命令见 README。

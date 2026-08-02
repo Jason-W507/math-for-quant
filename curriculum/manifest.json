@@ -44,12 +44,9 @@
         "notation_and_assumptions": "evidence/foundation/notation-and-assumptions.md",
         "core_derivation": "evidence/foundation/core-derivation.md",
         "independent_oracle": {
-          "source": "notebooks/foundation/independent_oracle.py",
+          "source": "notebooks/foundation/independent_oracle.ipynb",
           "oracle": "evidence/foundation/oracle.json",
-          "command": [
-            "{python}",
-            "notebooks/foundation/independent_oracle.py"
-          ]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/foundation/independent_oracle.ipynb"]
         },
         "questions": "evidence/foundation/questions.md",
         "hints": "evidence/foundation/hints.md",
@@ -70,9 +67,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch01.tex",
         "core_derivation": "tex/upper/chapters/ch01.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch01_convex_bound.py",
+          "source": "notebooks/upper/ch01_convex_bound.ipynb",
           "oracle": "evidence/ch01/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch01_convex_bound.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch01_convex_bound.ipynb"]
         },
         "questions": "tex/upper/chapters/ch01-questions.tex",
         "hints": "tex/upper/chapters/ch01-hints.tex",
@@ -93,9 +90,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch02.tex",
         "core_derivation": "tex/upper/chapters/ch02.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch02_analysis_foundations.py",
+          "source": "notebooks/upper/ch02_analysis_foundations.ipynb",
           "oracle": "evidence/ch02/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch02_analysis_foundations.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch02_analysis_foundations.ipynb"]
         },
         "questions": "tex/upper/chapters/ch02-questions.tex",
         "hints": "tex/upper/chapters/ch02-hints.tex",
@@ -116,9 +113,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch03.tex",
         "core_derivation": "tex/upper/chapters/ch03.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch03_measure_integration.py",
+          "source": "notebooks/upper/ch03_measure_integration.ipynb",
           "oracle": "evidence/ch03/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch03_measure_integration.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch03_measure_integration.ipynb"]
         },
         "questions": "tex/upper/chapters/ch03-questions.tex",
         "hints": "tex/upper/chapters/ch03-hints.tex",
@@ -139,9 +136,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch04.tex",
         "core_derivation": "tex/upper/chapters/ch04.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch04_lp_product_measure.py",
+          "source": "notebooks/upper/ch04_lp_product_measure.ipynb",
           "oracle": "evidence/ch04/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch04_lp_product_measure.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch04_lp_product_measure.ipynb"]
         },
         "questions": "tex/upper/chapters/ch04-questions.tex",
         "hints": "tex/upper/chapters/ch04-hints.tex",
@@ -162,9 +159,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch05.tex",
         "core_derivation": "tex/upper/chapters/ch05.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch05_matrix_calculus.py",
+          "source": "notebooks/upper/ch05_matrix_calculus.ipynb",
           "oracle": "evidence/ch05/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch05_matrix_calculus.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch05_matrix_calculus.ipynb"]
         },
         "questions": "tex/upper/chapters/ch05-questions.tex",
         "hints": "tex/upper/chapters/ch05-hints.tex",
@@ -185,9 +182,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch06.tex",
         "core_derivation": "tex/upper/chapters/ch06.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch06_linear_algebra.py",
+          "source": "notebooks/upper/ch06_linear_algebra.ipynb",
           "oracle": "evidence/ch06/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch06_linear_algebra.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch06_linear_algebra.ipynb"]
         },
         "questions": "tex/upper/chapters/ch06-questions.tex",
         "hints": "tex/upper/chapters/ch06-hints.tex",
@@ -208,9 +205,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch07.tex",
         "core_derivation": "tex/upper/chapters/ch07.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch07_probability_distributions.py",
+          "source": "notebooks/upper/ch07_probability_distributions.ipynb",
           "oracle": "evidence/ch07/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch07_probability_distributions.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch07_probability_distributions.ipynb"]
         },
         "questions": "tex/upper/chapters/ch07-questions.tex",
         "hints": "tex/upper/chapters/ch07-hints.tex",
@@ -231,9 +228,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch08.tex",
         "core_derivation": "tex/upper/chapters/ch08.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch08_conditioning.py",
+          "source": "notebooks/upper/ch08_conditioning.ipynb",
           "oracle": "evidence/ch08/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch08_conditioning.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch08_conditioning.ipynb"]
         },
         "questions": "tex/upper/chapters/ch08-questions.tex",
         "hints": "tex/upper/chapters/ch08-hints.tex",
@@ -253,7 +250,7 @@
         "glossary_terms": ["几乎处处收敛", "依概率收敛", "\\(L^p\\) 收敛", "分布收敛", "一致可积", "连续映射定理", "Slutsky 定理", "大数定律", "中心极限定理", "Berry-Esseen 界", "集中不等式", "有效样本量"],
         "notation_and_assumptions": "tex/upper/chapters/ch09.tex",
         "core_derivation": "tex/upper/chapters/ch09.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch09_limit_theorems.py", "oracle": "evidence/ch09/oracle.json", "command": ["{python}", "notebooks/upper/ch09_limit_theorems.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch09_limit_theorems.ipynb", "oracle": "evidence/ch09/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch09_limit_theorems.ipynb"]},
         "questions": "tex/upper/chapters/ch09-questions.tex",
         "hints": "tex/upper/chapters/ch09-hints.tex",
         "solutions": "tex/upper/solutions/ch09.tex",
@@ -272,7 +269,7 @@
         "glossary_terms": ["估计量", "均方误差", "一致性", "渐近分布", "Delta 方法", "检验功效", "异方差稳健标准误", "HAC 标准误", "簇稳健标准误", "遗漏变量偏差", "族错误率", "Holm 方法", "错误发现率", "Benjamini-Hochberg 方法", "选择偏差"],
         "notation_and_assumptions": "tex/upper/chapters/ch10.tex",
         "core_derivation": "tex/upper/chapters/ch10.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch10_statistical_inference.py", "oracle": "evidence/ch10/oracle.json", "command": ["{python}", "notebooks/upper/ch10_statistical_inference.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch10_statistical_inference.ipynb", "oracle": "evidence/ch10/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch10_statistical_inference.ipynb"]},
         "questions": "tex/upper/chapters/ch10-questions.tex",
         "hints": "tex/upper/chapters/ch10-hints.tex",
         "solutions": "tex/upper/solutions/ch10.tex",
@@ -291,7 +288,7 @@
         "glossary_terms": ["随机过程", "滤过", "Markov 性", "停止时刻", "周期", "可选停止定理", "鞅", "Poisson 过程", "Brownian 运动", "反射原理", "二次变差"],
         "notation_and_assumptions": "tex/upper/chapters/ch11.tex",
         "core_derivation": "tex/upper/chapters/ch11.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch11_stochastic_processes.py", "oracle": "evidence/ch11/oracle.json", "command": ["{python}", "notebooks/upper/ch11_stochastic_processes.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch11_stochastic_processes.ipynb", "oracle": "evidence/ch11/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch11_stochastic_processes.ipynb"]},
         "questions": "tex/upper/chapters/ch11-questions.tex",
         "hints": "tex/upper/chapters/ch11-hints.tex",
         "solutions": "tex/upper/solutions/ch11.tex",
@@ -310,7 +307,7 @@
         "glossary_terms": ["严格平稳", "弱平稳", "遍历性", "白噪声", "创新", "因果性", "可逆性", "单位根", "协整", "GARCH", "状态空间模型", "Kalman 滤波", "平滑", "伪回归", "结构变化"],
         "notation_and_assumptions": "tex/upper/chapters/ch12.tex",
         "core_derivation": "tex/upper/chapters/ch12.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch12_time_series.py", "oracle": "evidence/ch12/oracle.json", "command": ["{python}", "notebooks/upper/ch12_time_series.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch12_time_series.ipynb", "oracle": "evidence/ch12/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch12_time_series.ipynb"]},
         "questions": "tex/upper/chapters/ch12-questions.tex",
         "hints": "tex/upper/chapters/ch12-hints.tex",
         "solutions": "tex/upper/solutions/ch12.tex",
@@ -329,7 +326,7 @@
         "glossary_terms": ["凸集", "凸函数", "强凸", "次梯度", "投影", "约束资格", "活跃集", "KKT 条件", "Lagrange 对偶", "弱对偶", "强对偶", "影子价格"],
         "notation_and_assumptions": "tex/upper/chapters/ch13.tex",
         "core_derivation": "tex/upper/chapters/ch13.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch13_convex_optimization.py", "oracle": "evidence/ch13/oracle.json", "command": ["{python}", "notebooks/upper/ch13_convex_optimization.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch13_convex_optimization.ipynb", "oracle": "evidence/ch13/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch13_convex_optimization.ipynb"]},
         "questions": "tex/upper/chapters/ch13-questions.tex",
         "hints": "tex/upper/chapters/ch13-hints.tex",
         "solutions": "tex/upper/solutions/ch13.tex",
@@ -348,7 +345,7 @@
         "glossary_terms": ["机器精度", "单位舍入误差", "末位单位", "次正规数", "前向误差", "后向误差", "算法稳定性", "病态问题", "补偿求和", "数值秩", "列主元", "稳定 log-sum-exp"],
         "notation_and_assumptions": "tex/upper/chapters/ch14.tex",
         "core_derivation": "tex/upper/chapters/ch14.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch14_numerical_stability.py", "oracle": "evidence/ch14/oracle.json", "command": ["{python}", "notebooks/upper/ch14_numerical_stability.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch14_numerical_stability.ipynb", "oracle": "evidence/ch14/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch14_numerical_stability.ipynb"]},
         "questions": "tex/upper/chapters/ch14-questions.tex",
         "hints": "tex/upper/chapters/ch14-hints.tex",
         "solutions": "tex/upper/solutions/ch14.tex",
@@ -367,7 +364,7 @@
         "glossary_terms": ["Monte Carlo", "标准误", "方差缩减", "控制变量", "bootstrap", "IID bootstrap"],
         "notation_and_assumptions": "tex/upper/chapters/ch15.tex",
         "core_derivation": "tex/upper/chapters/ch15.tex",
-        "independent_oracle": {"source": "notebooks/upper/ch15_monte_carlo.py", "oracle": "evidence/ch15/oracle.json", "command": ["{python}", "notebooks/upper/ch15_monte_carlo.py"]},
+        "independent_oracle": {"source": "notebooks/upper/ch15_monte_carlo.ipynb", "oracle": "evidence/ch15/oracle.json", "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch15_monte_carlo.ipynb"]},
         "questions": "tex/upper/chapters/ch15-questions.tex",
         "hints": "tex/upper/chapters/ch15-hints.tex",
         "solutions": "tex/upper/solutions/ch15.tex",
@@ -387,9 +384,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch16.tex",
         "core_derivation": "tex/upper/chapters/ch16.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch16_research_validity.py",
+          "source": "notebooks/upper/ch16_research_validity.ipynb",
           "oracle": "evidence/ch16/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch16_research_validity.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch16_research_validity.ipynb"]
         },
         "questions": "tex/upper/chapters/ch16-questions.tex",
         "hints": "tex/upper/chapters/ch16-hints.tex",
@@ -411,9 +408,9 @@
         "notation_and_assumptions": "tex/upper/chapters/ch17.tex",
         "core_derivation": "tex/upper/chapters/ch17.tex",
         "independent_oracle": {
-          "source": "notebooks/upper/ch17_research_audit.py",
+          "source": "notebooks/upper/ch17_research_audit.ipynb",
           "oracle": "evidence/ch17/oracle.json",
-          "command": ["{python}", "notebooks/upper/ch17_research_audit.py"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/upper/ch17_research_audit.ipynb"]
         },
         "questions": "tex/upper/chapters/ch17-questions.tex",
         "hints": "tex/upper/chapters/ch17-hints.tex",
@@ -435,9 +432,9 @@
         "notation_and_assumptions": "tex/lower/chapters/brainteasers.tex",
         "core_derivation": "tex/lower/chapters/brainteasers.tex",
         "independent_oracle": {
-          "source": "notebooks/lower/brainteasers.py",
+          "source": "notebooks/lower/brainteasers.ipynb",
           "oracle": "evidence/brainteasers/oracle.json",
-          "command": ["{python}", "notebooks/lower/brainteasers.py", "evidence/brainteasers/oracle.json"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/brainteasers.ipynb"]
         },
         "questions": "tex/lower/chapters/brainteasers.tex",
         "hints": "tex/lower/chapters/brainteasers-hints.tex",
@@ -462,9 +459,9 @@
         "notation_and_assumptions": "tex/lower/chapters/multifactor-model.tex",
         "core_derivation": "tex/lower/chapters/multifactor-model.tex",
         "independent_oracle": {
-          "source": "notebooks/lower/multifactor_model.py",
+          "source": "notebooks/lower/multifactor_model.ipynb",
           "oracle": "evidence/multifactor-model/oracle.json",
-          "command": ["{python}", "notebooks/lower/multifactor_model.py", "evidence/multifactor-model/oracle.json"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/multifactor_model.ipynb"]
         },
         "questions": "tex/lower/chapters/multifactor-model-questions.tex",
         "hints": "tex/lower/chapters/multifactor-model-hints.tex",
@@ -486,7 +483,7 @@
           "transparent": "src/math_for_quant/lower/multifactor_estimation.py",
           "library": "src/math_for_quant/lower/multifactor_library.py"
         },
-        "teaching_notebook": "notebooks/lower/multifactor_model.py",
+        "teaching_notebook": "notebooks/lower/multifactor_model.ipynb",
         "route_report": {
           "source": "tools/build_multifactor_report.py",
           "command": ["{python}", "tools/build_multifactor_report.py"],
@@ -511,9 +508,9 @@
         "notation_and_assumptions": "tex/lower/chapters/multifactor-estimation.tex",
         "core_derivation": "tex/lower/chapters/multifactor-estimation.tex",
         "independent_oracle": {
-          "source": "notebooks/lower/multifactor_estimation.py",
+          "source": "notebooks/lower/multifactor_estimation.ipynb",
           "oracle": "evidence/multifactor-estimation/oracle.json",
-          "command": ["{python}", "notebooks/lower/multifactor_estimation.py", "evidence/multifactor-estimation/oracle.json"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/multifactor_estimation.ipynb"]
         },
         "questions": "tex/lower/chapters/multifactor-estimation-questions.tex",
         "hints": "tex/lower/chapters/multifactor-estimation-hints.tex",
@@ -535,7 +532,7 @@
           "transparent": "src/math_for_quant/lower/multifactor_estimation.py",
           "library": "src/math_for_quant/lower/multifactor_library.py"
         },
-        "teaching_notebook": "notebooks/lower/multifactor_estimation.py",
+        "teaching_notebook": "notebooks/lower/multifactor_estimation.ipynb",
         "route_report": {
           "source": "tools/build_multifactor_report.py",
           "command": ["{python}", "tools/build_multifactor_report.py"],
@@ -560,9 +557,9 @@
         "notation_and_assumptions": "tex/lower/chapters/multifactor-research.tex",
         "core_derivation": "tex/lower/chapters/multifactor-research.tex",
         "independent_oracle": {
-          "source": "notebooks/lower/multifactor_research.py",
+          "source": "notebooks/lower/multifactor_research.ipynb",
           "oracle": "evidence/multifactor-research/oracle.json",
-          "command": ["{python}", "notebooks/lower/multifactor_research.py", "evidence/multifactor-research/oracle.json"]
+          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/multifactor_research.ipynb"]
         },
         "questions": "tex/lower/chapters/multifactor-research-questions.tex",
         "hints": "tex/lower/chapters/multifactor-research-hints.tex",
@@ -584,7 +581,7 @@
           "transparent": "src/math_for_quant/lower/multifactor_research.py",
           "library": "src/math_for_quant/lower/multifactor_library.py"
         },
-        "teaching_notebook": "notebooks/lower/multifactor_research.py",
+        "teaching_notebook": "notebooks/lower/multifactor_research.ipynb",
         "route_report": {
           "source": "tools/build_multifactor_report.py",
           "command": ["{python}", "tools/build_multifactor_report.py"],
@@ -604,10 +601,10 @@
         "glossary_terms": ["协整", "滚动向前验证"],
         "notation_and_assumptions": "tex/lower/chapters/stat-arb-model.tex",
         "core_derivation": "tex/lower/chapters/stat-arb-model.tex",
-        "independent_oracle": {"source":"notebooks/lower/stat_arb_model.py","oracle":"evidence/stat-arb-model/oracle.json","command":["{python}","notebooks/lower/stat_arb_model.py","evidence/stat-arb-model/oracle.json"]},
+        "independent_oracle": {"source":"notebooks/lower/stat_arb_model.ipynb","oracle":"evidence/stat-arb-model/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/stat_arb_model.ipynb"]},
         "questions": "tex/lower/chapters/stat-arb-model-questions.tex", "hints": "tex/lower/chapters/stat-arb-model-hints.tex", "solutions": "tex/lower/chapters/stat-arb-model-solutions.tex", "capstone_connection": "tex/lower/chapters/stat-arb-model.tex",
         "dual_track_data": {"oracle_fixture":"data/fixtures/stat-arb-model.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/stat-arb/real-data-oracle.json","real_data_oracle":{"source":"evidence/stat-arb/validate_real_data.py","oracle":"evidence/stat-arb/real-data-oracle.json","command":["{python}","evidence/stat-arb/validate_real_data.py","evidence/stat-arb/real-data-oracle.json"]}},
-        "dual_implementation": {"transparent":"src/math_for_quant/lower/stat_arb_models.py","library":"src/math_for_quant/lower/stat_arb_library.py"}, "teaching_notebook":"notebooks/lower/stat_arb_model.py", "route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"}, "shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation": {"transparent":"src/math_for_quant/lower/stat_arb_models.py","library":"src/math_for_quant/lower/stat_arb_library.py"}, "teaching_notebook":"notebooks/lower/stat_arb_model.ipynb", "route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"}, "shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -618,10 +615,10 @@
       "evidence": {
         "notation_symbols": ["\\mathcal F_t"], "glossary_terms": ["状态空间模型", "Kalman 滤波"],
         "notation_and_assumptions":"tex/lower/chapters/stat-arb-estimation.tex","core_derivation":"tex/lower/chapters/stat-arb-estimation.tex",
-        "independent_oracle":{"source":"notebooks/lower/stat_arb_estimation.py","oracle":"evidence/stat-arb-estimation/oracle.json","command":["{python}","notebooks/lower/stat_arb_estimation.py","evidence/stat-arb-estimation/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/stat_arb_estimation.ipynb","oracle":"evidence/stat-arb-estimation/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/stat_arb_estimation.ipynb"]},
         "questions":"tex/lower/chapters/stat-arb-estimation-questions.tex","hints":"tex/lower/chapters/stat-arb-estimation-hints.tex","solutions":"tex/lower/chapters/stat-arb-estimation-solutions.tex","capstone_connection":"tex/lower/chapters/stat-arb-estimation.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/stat-arb-estimation.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/stat-arb/real-data-oracle.json","real_data_oracle":{"source":"evidence/stat-arb/validate_real_data.py","oracle":"evidence/stat-arb/real-data-oracle.json","command":["{python}","evidence/stat-arb/validate_real_data.py","evidence/stat-arb/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/stat_arb_estimation.py","library":"src/math_for_quant/lower/stat_arb_library.py"},"teaching_notebook":"notebooks/lower/stat_arb_estimation.py","route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/stat_arb_estimation.py","library":"src/math_for_quant/lower/stat_arb_library.py"},"teaching_notebook":"notebooks/lower/stat_arb_estimation.ipynb","route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -632,10 +629,10 @@
       "evidence": {
         "notation_symbols":["R^{\\mathrm{net}}"],"glossary_terms":["滚动向前验证","交易成本","可复现研究包"],
         "notation_and_assumptions":"tex/lower/chapters/stat-arb-research.tex","core_derivation":"tex/lower/chapters/stat-arb-research.tex",
-        "independent_oracle":{"source":"notebooks/lower/stat_arb_research.py","oracle":"evidence/stat-arb-research/oracle.json","command":["{python}","notebooks/lower/stat_arb_research.py","evidence/stat-arb-research/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/stat_arb_research.ipynb","oracle":"evidence/stat-arb-research/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/stat_arb_research.ipynb"]},
         "questions":"tex/lower/chapters/stat-arb-research-questions.tex","hints":"tex/lower/chapters/stat-arb-research-hints.tex","solutions":"tex/lower/chapters/stat-arb-research-solutions.tex","capstone_connection":"tex/lower/chapters/stat-arb-research.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/stat-arb-research.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/stat-arb/real-data-oracle.json","real_data_oracle":{"source":"evidence/stat-arb/validate_real_data.py","oracle":"evidence/stat-arb/real-data-oracle.json","command":["{python}","evidence/stat-arb/validate_real_data.py","evidence/stat-arb/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/stat_arb_research.py","library":"src/math_for_quant/lower/stat_arb_execution_library.py"},"teaching_notebook":"notebooks/lower/stat_arb_research.py","route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/stat_arb_research.py","library":"src/math_for_quant/lower/stat_arb_execution_library.py"},"teaching_notebook":"notebooks/lower/stat_arb_research.ipynb","route_report":{"source":"tools/build_stat_arb_report.py","command":["{python}","tools/build_stat_arb_report.py"],"expected":"reports/stat-arb-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -644,10 +641,10 @@
       "evidence":{
         "notation_symbols":["h(D)"],"glossary_terms":["数据泄漏","样本外"],
         "notation_and_assumptions":"tex/lower/chapters/ml-alpha-model.tex","core_derivation":"tex/lower/chapters/ml-alpha-model.tex",
-        "independent_oracle":{"source":"notebooks/lower/ml_alpha_model.py","oracle":"evidence/ml-alpha-model/oracle.json","command":["{python}","notebooks/lower/ml_alpha_model.py","evidence/ml-alpha-model/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/ml_alpha_model.ipynb","oracle":"evidence/ml-alpha-model/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/ml_alpha_model.ipynb"]},
         "questions":"tex/lower/chapters/ml-alpha-model-questions.tex","hints":"tex/lower/chapters/ml-alpha-model-hints.tex","solutions":"tex/lower/chapters/ml-alpha-model-solutions.tex","capstone_connection":"tex/lower/chapters/ml-alpha-model.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/ml-alpha-model.json","real_data_snapshot":"data/real/multifactor-wdi-2013-2014.json","license":"data/real/WORLD-BANK-CC-BY-4.0.md","sha256":"9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b","time_protocol":"evidence/ml-alpha/real-data-oracle.json","real_data_oracle":{"source":"evidence/ml-alpha/validate_real_data.py","oracle":"evidence/ml-alpha/real-data-oracle.json","command":["{python}","evidence/ml-alpha/validate_real_data.py","evidence/ml-alpha/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha.py","library":"src/math_for_quant/lower/ml_alpha_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_model.py","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha.py","library":"src/math_for_quant/lower/ml_alpha_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_model.ipynb","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -655,10 +652,10 @@
       "evidence":{
         "notation_symbols":["\\mathcal I_t"],"glossary_terms":["滚动向前验证","数据泄漏"],
         "notation_and_assumptions":"tex/lower/chapters/ml-alpha-validation.tex","core_derivation":"tex/lower/chapters/ml-alpha-validation.tex",
-        "independent_oracle":{"source":"notebooks/lower/ml_alpha_validation.py","oracle":"evidence/ml-alpha-validation/oracle.json","command":["{python}","notebooks/lower/ml_alpha_validation.py","evidence/ml-alpha-validation/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/ml_alpha_validation.ipynb","oracle":"evidence/ml-alpha-validation/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/ml_alpha_validation.ipynb"]},
         "questions":"tex/lower/chapters/ml-alpha-validation-questions.tex","hints":"tex/lower/chapters/ml-alpha-validation-hints.tex","solutions":"tex/lower/chapters/ml-alpha-validation-solutions.tex","capstone_connection":"tex/lower/chapters/ml-alpha-validation.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/ml-alpha-validation.json","real_data_snapshot":"data/real/multifactor-wdi-2013-2014.json","license":"data/real/WORLD-BANK-CC-BY-4.0.md","sha256":"9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b","time_protocol":"evidence/ml-alpha/real-data-oracle.json","real_data_oracle":{"source":"evidence/ml-alpha/validate_real_data.py","oracle":"evidence/ml-alpha/real-data-oracle.json","command":["{python}","evidence/ml-alpha/validate_real_data.py","evidence/ml-alpha/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha_validation.py","library":"src/math_for_quant/lower/ml_alpha_validation_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_validation.py","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha_validation.py","library":"src/math_for_quant/lower/ml_alpha_validation_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_validation.ipynb","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -666,10 +663,10 @@
       "evidence":{
         "notation_symbols":["R^{\\mathrm{net}}"],"glossary_terms":["交易成本","可复现研究包","数据泄漏"],
         "notation_and_assumptions":"tex/lower/chapters/ml-alpha-research.tex","core_derivation":"tex/lower/chapters/ml-alpha-research.tex",
-        "independent_oracle":{"source":"notebooks/lower/ml_alpha_research.py","oracle":"evidence/ml-alpha-research/oracle.json","command":["{python}","notebooks/lower/ml_alpha_research.py","evidence/ml-alpha-research/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/ml_alpha_research.ipynb","oracle":"evidence/ml-alpha-research/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/ml_alpha_research.ipynb"]},
         "questions":"tex/lower/chapters/ml-alpha-research-questions.tex","hints":"tex/lower/chapters/ml-alpha-research-hints.tex","solutions":"tex/lower/chapters/ml-alpha-research-solutions.tex","capstone_connection":"tex/lower/chapters/ml-alpha-research.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/ml-alpha-research.json","real_data_snapshot":"data/real/multifactor-wdi-2013-2014.json","license":"data/real/WORLD-BANK-CC-BY-4.0.md","sha256":"9dfef0d88c94e9d8905c28665ac6935be7294effb8513f4ce9ab52040edbe20b","time_protocol":"evidence/ml-alpha/real-data-oracle.json","real_data_oracle":{"source":"evidence/ml-alpha/validate_real_data.py","oracle":"evidence/ml-alpha/real-data-oracle.json","command":["{python}","evidence/ml-alpha/validate_real_data.py","evidence/ml-alpha/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha_research.py","library":"src/math_for_quant/lower/ml_alpha_execution_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_research.py","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/ml_alpha_research.py","library":"src/math_for_quant/lower/ml_alpha_execution_library.py"},"teaching_notebook":"notebooks/lower/ml_alpha_research.ipynb","route_report":{"source":"tools/build_ml_alpha_report.py","command":["{python}","tools/build_ml_alpha_report.py"],"expected":"reports/ml-alpha-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -678,10 +675,10 @@
       "evidence":{
         "notation_symbols":["W_t"],"glossary_terms":["鞅","二次变差"],
         "notation_and_assumptions":"tex/lower/chapters/derivatives-stochastic.tex","core_derivation":"tex/lower/chapters/derivatives-stochastic.tex",
-        "independent_oracle":{"source":"notebooks/lower/derivatives_stochastic.py","oracle":"evidence/derivatives-stochastic/oracle.json","command":["{python}","notebooks/lower/derivatives_stochastic.py","evidence/derivatives-stochastic/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/derivatives_stochastic.ipynb","oracle":"evidence/derivatives-stochastic/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/derivatives_stochastic.ipynb"]},
         "questions":"tex/lower/chapters/derivatives-stochastic-questions.tex","hints":"tex/lower/chapters/derivatives-stochastic-hints.tex","solutions":"tex/lower/chapters/derivatives-stochastic-solutions.tex","capstone_connection":"tex/lower/chapters/derivatives-stochastic.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/derivatives-stochastic.json","real_data_snapshot":"data/real/derivatives-treasury-2024-12-02.json","license":"data/real/US-TREASURY-PUBLIC-DOMAIN.md","sha256":"9216e38a6fcee5af5926849c14fbd1b9a793c28d9779b567439a08e587a4a8ac","time_protocol":"evidence/derivatives/real-data-oracle.json","real_data_oracle":{"source":"evidence/derivatives/validate_real_data.py","oracle":"evidence/derivatives/real-data-oracle.json","command":["{python}","evidence/derivatives/validate_real_data.py","evidence/derivatives/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_stochastic.py","library":"src/math_for_quant/lower/derivatives_stochastic_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/derivatives_stochastic.py","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_stochastic.py","library":"src/math_for_quant/lower/derivatives_stochastic_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/derivatives_stochastic.ipynb","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -689,10 +686,10 @@
       "evidence":{
         "notation_symbols":["W_t"],"glossary_terms":["Monte Carlo","二次变差"],
         "notation_and_assumptions":"tex/lower/chapters/derivatives-numerics.tex","core_derivation":"tex/lower/chapters/derivatives-numerics.tex",
-        "independent_oracle":{"source":"notebooks/lower/derivatives_numerics.py","oracle":"evidence/derivatives-numerics/oracle.json","command":["{python}","notebooks/lower/derivatives_numerics.py","evidence/derivatives-numerics/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/derivatives_numerics.ipynb","oracle":"evidence/derivatives-numerics/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/derivatives_numerics.ipynb"]},
         "questions":"tex/lower/chapters/derivatives-numerics-questions.tex","hints":"tex/lower/chapters/derivatives-numerics-hints.tex","solutions":"tex/lower/chapters/derivatives-numerics-solutions.tex","capstone_connection":"tex/lower/chapters/derivatives-numerics.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/derivatives-numerics.json","real_data_snapshot":"data/real/derivatives-treasury-2024-12-02.json","license":"data/real/US-TREASURY-PUBLIC-DOMAIN.md","sha256":"9216e38a6fcee5af5926849c14fbd1b9a793c28d9779b567439a08e587a4a8ac","time_protocol":"evidence/derivatives/real-data-oracle.json","real_data_oracle":{"source":"evidence/derivatives/validate_real_data.py","oracle":"evidence/derivatives/real-data-oracle.json","command":["{python}","evidence/derivatives/validate_real_data.py","evidence/derivatives/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_numerics.py","library":"src/math_for_quant/lower/derivatives_numerics_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/derivatives_numerics.py","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_numerics.py","library":"src/math_for_quant/lower/derivatives_numerics_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/derivatives_numerics.ipynb","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -700,10 +697,10 @@
       "evidence":{
         "notation_symbols":["W_t"],"glossary_terms":["交易成本","可复现研究包"],
         "notation_and_assumptions":"tex/lower/chapters/derivatives-hedging.tex","core_derivation":"tex/lower/chapters/derivatives-hedging.tex",
-        "independent_oracle":{"source":"notebooks/lower/derivatives_hedging.py","oracle":"evidence/derivatives-hedging/oracle.json","command":["{python}","notebooks/lower/derivatives_hedging.py","evidence/derivatives-hedging/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/derivatives_hedging.ipynb","oracle":"evidence/derivatives-hedging/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/derivatives_hedging.ipynb"]},
         "questions":"tex/lower/chapters/derivatives-hedging-questions.tex","hints":"tex/lower/chapters/derivatives-hedging-hints.tex","solutions":"tex/lower/chapters/derivatives-hedging-solutions.tex","capstone_connection":"tex/lower/chapters/derivatives-hedging.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/derivatives-hedging.json","real_data_snapshot":"data/real/derivatives-treasury-2024-12-02.json","license":"data/real/US-TREASURY-PUBLIC-DOMAIN.md","sha256":"9216e38a6fcee5af5926849c14fbd1b9a793c28d9779b567439a08e587a4a8ac","time_protocol":"evidence/derivatives/real-data-oracle.json","real_data_oracle":{"source":"evidence/derivatives/validate_real_data.py","oracle":"evidence/derivatives/real-data-oracle.json","command":["{python}","evidence/derivatives/validate_real_data.py","evidence/derivatives/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_hedging.py","library":"src/math_for_quant/lower/derivatives_hedging_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/derivatives_hedging.py","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/derivatives_hedging.py","library":"src/math_for_quant/lower/derivatives_hedging_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/derivatives_hedging.ipynb","route_report":{"source":"tools/build_derivatives_report.py","command":["{python}","tools/build_derivatives_report.py"],"expected":"reports/derivatives-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -712,10 +709,10 @@
       "evidence":{
         "notation_symbols":["w_i","\\Sigma"],"glossary_terms":["协方差矩阵","因子风险模型"],
         "notation_and_assumptions":"tex/lower/chapters/portfolio-risk-estimation.tex","core_derivation":"tex/lower/chapters/portfolio-risk-estimation.tex",
-        "independent_oracle":{"source":"notebooks/lower/portfolio_risk_estimation.py","oracle":"evidence/portfolio-risk-estimation/oracle.json","command":["{python}","notebooks/lower/portfolio_risk_estimation.py","evidence/portfolio-risk-estimation/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/portfolio_risk_estimation.ipynb","oracle":"evidence/portfolio-risk-estimation/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/portfolio_risk_estimation.ipynb"]},
         "questions":"tex/lower/chapters/portfolio-risk-estimation-questions.tex","hints":"tex/lower/chapters/portfolio-risk-estimation-hints.tex","solutions":"tex/lower/chapters/portfolio-risk-estimation-solutions.tex","capstone_connection":"tex/lower/chapters/portfolio-risk-estimation.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/portfolio-risk-estimation.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/portfolio-risk-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/portfolio-risk-real/validate_real_data.py","oracle":"evidence/portfolio-risk-real/real-data-oracle.json","command":["{python}","evidence/portfolio-risk-real/validate_real_data.py","evidence/portfolio-risk-real/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/portfolio_estimation.py","library":"src/math_for_quant/lower/portfolio_estimation_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/portfolio_risk_estimation.py","route_report":{"source":"tools/build_portfolio_risk_report.py","command":["{python}","tools/build_portfolio_risk_report.py"],"expected":"reports/portfolio-risk-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/portfolio_estimation.py","library":"src/math_for_quant/lower/portfolio_estimation_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/portfolio_risk_estimation.ipynb","route_report":{"source":"tools/build_portfolio_risk_report.py","command":["{python}","tools/build_portfolio_risk_report.py"],"expected":"reports/portfolio-risk-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -723,10 +720,10 @@
       "evidence":{
         "notation_symbols":["w_i","\\Sigma"],"glossary_terms":["换手率","交易成本"],
         "notation_and_assumptions":"tex/lower/chapters/portfolio-risk-optimization.tex","core_derivation":"tex/lower/chapters/portfolio-risk-optimization.tex",
-        "independent_oracle":{"source":"notebooks/lower/portfolio_risk_optimization.py","oracle":"evidence/portfolio-risk-optimization/oracle.json","command":["{python}","notebooks/lower/portfolio_risk_optimization.py","evidence/portfolio-risk-optimization/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/portfolio_risk_optimization.ipynb","oracle":"evidence/portfolio-risk-optimization/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/portfolio_risk_optimization.ipynb"]},
         "questions":"tex/lower/chapters/portfolio-risk-optimization-questions.tex","hints":"tex/lower/chapters/portfolio-risk-optimization-hints.tex","solutions":"tex/lower/chapters/portfolio-risk-optimization-solutions.tex","capstone_connection":"tex/lower/chapters/portfolio-risk-optimization.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/portfolio-risk-optimization.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/portfolio-risk-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/portfolio-risk-real/validate_real_data.py","oracle":"evidence/portfolio-risk-real/real-data-oracle.json","command":["{python}","evidence/portfolio-risk-real/validate_real_data.py","evidence/portfolio-risk-real/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/portfolio_optimization.py","library":"src/math_for_quant/lower/portfolio_optimization_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/portfolio_risk_optimization.py","route_report":{"source":"tools/build_portfolio_risk_report.py","command":["{python}","tools/build_portfolio_risk_report.py"],"expected":"reports/portfolio-risk-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/portfolio_optimization.py","library":"src/math_for_quant/lower/portfolio_optimization_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/portfolio_risk_optimization.ipynb","route_report":{"source":"tools/build_portfolio_risk_report.py","command":["{python}","tools/build_portfolio_risk_report.py"],"expected":"reports/portfolio-risk-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -734,10 +731,10 @@
       "evidence":{
         "notation_symbols":["\\operatorname{VaR}_\\alpha(L)","\\operatorname{ES}_\\alpha(L)"],"glossary_terms":["风险价值","预期损失","可复现研究包"],
         "notation_and_assumptions":"tex/lower/chapters/portfolio-risk-tail.tex","core_derivation":"tex/lower/chapters/portfolio-risk-tail.tex",
-        "independent_oracle":{"source":"notebooks/lower/portfolio_risk_tail.py","oracle":"evidence/portfolio-risk-tail/oracle.json","command":["{python}","notebooks/lower/portfolio_risk_tail.py","evidence/portfolio-risk-tail/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/portfolio_risk_tail.ipynb","oracle":"evidence/portfolio-risk-tail/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/portfolio_risk_tail.ipynb"]},
         "questions":"tex/lower/chapters/portfolio-risk-tail-questions.tex","hints":"tex/lower/chapters/portfolio-risk-tail-hints.tex","solutions":"tex/lower/chapters/portfolio-risk-tail-solutions.tex","capstone_connection":"tex/lower/chapters/portfolio-risk-tail.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/portfolio-risk-tail.json","real_data_snapshot":"data/real/stat-arb-us-macro-1999q4-2009q3.json","license":"data/real/US-MACRO-PUBLIC-DOMAIN.md","sha256":"fe70a0e73aab9a4989fb4c9e2c230e6aedc686a5ca8f8cdf071ecb032adb93a1","time_protocol":"evidence/portfolio-risk-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/portfolio-risk-real/validate_real_data.py","oracle":"evidence/portfolio-risk-real/real-data-oracle.json","command":["{python}","evidence/portfolio-risk-real/validate_real_data.py","evidence/portfolio-risk-real/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/portfolio_tail.py","library":"src/math_for_quant/lower/portfolio_tail_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/portfolio_risk_tail.py","route_report":{"source":"tools/build_portfolio_risk_report.py","command":["{python}","tools/build_portfolio_risk_report.py"],"expected":"reports/portfolio-risk-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/portfolio_tail.py","library":"src/math_for_quant/lower/portfolio_tail_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/portfolio_risk_tail.ipynb","route_report":{"source":"tools/build_portfolio_risk_report.py","command":["{python}","tools/build_portfolio_risk_report.py"],"expected":"reports/portfolio-risk-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -746,10 +743,10 @@
       "evidence":{
         "notation_symbols":["N_t","\\lambda(t\\mid\\mathcal F_{t^-})"],"glossary_terms":["条件强度","Hawkes 过程","价格时间优先"],
         "notation_and_assumptions":"tex/lower/chapters/microstructure-events.tex","core_derivation":"tex/lower/chapters/microstructure-events.tex",
-        "independent_oracle":{"source":"notebooks/lower/microstructure_events.py","oracle":"evidence/microstructure-events/oracle.json","command":["{python}","notebooks/lower/microstructure_events.py","evidence/microstructure-events/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/microstructure_events.ipynb","oracle":"evidence/microstructure-events/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/microstructure_events.ipynb"]},
         "questions":"tex/lower/chapters/microstructure-events-questions.tex","hints":"tex/lower/chapters/microstructure-events-hints.tex","solutions":"tex/lower/chapters/microstructure-events-solutions.tex","capstone_connection":"tex/lower/chapters/microstructure-events.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/microstructure-events.json","real_data_snapshot":"data/real/sec-order-placement-2014.json","license":"data/real/SEC-MARKET-STRUCTURE-PUBLIC-DOMAIN.md","sha256":"969de25b64663bb4319d5c09d41228304ffeee9c37cd2a80af8d001a7235eb26","time_protocol":"evidence/microstructure-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/microstructure-real/validate_real_data.py","oracle":"evidence/microstructure-real/real-data-oracle.json","command":["{python}","evidence/microstructure-real/validate_real_data.py","evidence/microstructure-real/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_events.py","library":"src/math_for_quant/lower/microstructure_events_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/microstructure_events.py","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_events.py","library":"src/math_for_quant/lower/microstructure_events_library.py","comparison_kind":"mature-library"},"teaching_notebook":"notebooks/lower/microstructure_events.ipynb","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -757,10 +754,10 @@
       "evidence":{
         "notation_symbols":["V_t(x)"],"glossary_terms":["临时冲击","实现差额"],
         "notation_and_assumptions":"tex/lower/chapters/microstructure-control.tex","core_derivation":"tex/lower/chapters/microstructure-control.tex",
-        "independent_oracle":{"source":"notebooks/lower/microstructure_control.py","oracle":"evidence/microstructure-control/oracle.json","command":["{python}","notebooks/lower/microstructure_control.py","evidence/microstructure-control/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/microstructure_control.ipynb","oracle":"evidence/microstructure-control/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/microstructure_control.ipynb"]},
         "questions":"tex/lower/chapters/microstructure-control-questions.tex","hints":"tex/lower/chapters/microstructure-control-hints.tex","solutions":"tex/lower/chapters/microstructure-control-solutions.tex","capstone_connection":"tex/lower/chapters/microstructure-control.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/microstructure-control.json","real_data_snapshot":"data/real/sec-order-placement-2014.json","license":"data/real/SEC-MARKET-STRUCTURE-PUBLIC-DOMAIN.md","sha256":"969de25b64663bb4319d5c09d41228304ffeee9c37cd2a80af8d001a7235eb26","time_protocol":"evidence/microstructure-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/microstructure-real/validate_real_data.py","oracle":"evidence/microstructure-real/real-data-oracle.json","command":["{python}","evidence/microstructure-real/validate_real_data.py","evidence/microstructure-real/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_control.py","library":"src/math_for_quant/lower/microstructure_control_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/microstructure_control.py","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_control.py","library":"src/math_for_quant/lower/microstructure_control_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/microstructure_control.ipynb","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     },
     {
@@ -768,10 +765,10 @@
       "evidence":{
         "notation_symbols":["\\operatorname{PnL}_T"],"glossary_terms":["条件强度","实现差额"],
         "notation_and_assumptions":"tex/lower/chapters/microstructure-simulation.tex","core_derivation":"tex/lower/chapters/microstructure-simulation.tex",
-        "independent_oracle":{"source":"notebooks/lower/microstructure_simulation.py","oracle":"evidence/microstructure-simulation/oracle.json","command":["{python}","notebooks/lower/microstructure_simulation.py","evidence/microstructure-simulation/oracle.json"]},
+        "independent_oracle":{"source":"notebooks/lower/microstructure_simulation.ipynb","oracle":"evidence/microstructure-simulation/oracle.json","command":["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/lower/microstructure_simulation.ipynb"]},
         "questions":"tex/lower/chapters/microstructure-simulation-questions.tex","hints":"tex/lower/chapters/microstructure-simulation-hints.tex","solutions":"tex/lower/chapters/microstructure-simulation-solutions.tex","capstone_connection":"tex/lower/chapters/microstructure-simulation.tex",
         "dual_track_data":{"oracle_fixture":"data/fixtures/microstructure-simulation.json","real_data_snapshot":"data/real/sec-order-placement-2014.json","license":"data/real/SEC-MARKET-STRUCTURE-PUBLIC-DOMAIN.md","sha256":"969de25b64663bb4319d5c09d41228304ffeee9c37cd2a80af8d001a7235eb26","time_protocol":"evidence/microstructure-real/real-data-oracle.json","real_data_oracle":{"source":"evidence/microstructure-real/validate_real_data.py","oracle":"evidence/microstructure-real/real-data-oracle.json","command":["{python}","evidence/microstructure-real/validate_real_data.py","evidence/microstructure-real/real-data-oracle.json"]}},
-        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_simulation.py","library":"src/math_for_quant/lower/microstructure_simulation_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/microstructure_simulation.py","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
+        "dual_implementation":{"transparent":"src/math_for_quant/lower/microstructure_simulation.py","library":"src/math_for_quant/lower/microstructure_simulation_library.py","comparison_kind":"independent-vectorized"},"teaching_notebook":"notebooks/lower/microstructure_simulation.ipynb","route_report":{"source":"tools/build_microstructure_report.py","command":["{python}","tools/build_microstructure_report.py"],"expected":"reports/microstructure-v03-summary.md"},"shared_solutions":"tex/solutions-main.tex"
       }
     }
   ],

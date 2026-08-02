@@ -72,7 +72,7 @@ R^{\mathrm{net}}=0.03-0.006=0.024.
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/ch03_ml_alpha.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch03_ml_alpha.ipynb \
   evidence/lower-ch03/oracle.json
 \end{lstlisting}
 \end{implementationnote}

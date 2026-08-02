@@ -48,7 +48,9 @@
 
 先运行
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch03
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch03_measure_integration.ipynb
 \end{lstlisting}
 再复制 `evidence/ch03/oracle.json` 到临时路径逐项注入坏输入。每次只改变一个门禁，记录退出码与完整 stderr，恢复后要求原始固定账本重新通过。若数值网格与解析面积冲突，先审查采样位置、区间宽度和尾部质量，不要修改独立 expected 迁就程序。

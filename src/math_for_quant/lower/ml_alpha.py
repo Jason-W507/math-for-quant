@@ -162,7 +162,7 @@ def render_report(observed: dict[str, float | int], fingerprint: str) -> str:
 - 校准：Brier 分数由 {observed['uncalibrated_brier']:.3f} 降至 {observed['calibrated_brier']:.3f}。
 - 解释：特征重要性不等于因果；Top-2 Jaccard={observed['explanation_jaccard']:.6f}，因果主张由独立门禁拒绝。
 - 收益：毛收益 {observed['gross']:.3f}；成本 0.006；成本后收益：{observed['net']:.3f}。
-- 复现命令：`uv run python notebooks/lower/ch03_ml_alpha.py evidence/lower-ch03/oracle.json`。
+- 复现命令：`uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch03_ml_alpha.ipynb evidence/lower-ch03/oracle.json`。
 """
 
 

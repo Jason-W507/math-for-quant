@@ -53,7 +53,7 @@ q_t=w_t-p_{t-1},\qquad p_t=p_{t-1}+f_tq_t.
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run python notebooks/lower/stat_arb_research.py \
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/stat_arb_research.ipynb \
   evidence/stat-arb-research/oracle.json
 \end{lstlisting}
 路线级命令会验收本路线登记的学习单元、逐字重建报告，并只构建下册与共享答案册。

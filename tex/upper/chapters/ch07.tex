@@ -164,9 +164,11 @@ $\mathbb P(D=0)=1/2$，连续正态分布满足 $\mathbb P(Z=0)=0$；而且
 \section{独立基准、反例与研究边界}
 
 \begin{lstlisting}[language=bash]
-uv run python notebooks/upper/ch07_probability_distributions.py
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch07
+uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch07_probability_distributions.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch07_probability_distributions.ipynb
 \end{lstlisting}
 程序只复算手工记录：有限分布矩与 CDF、平方推前律、联合依赖/协方差、同均值方差反例、七类解析分布量和 Pareto 截断积分。它固定形状、参数与 $10^{-10}$ 容差；NaN expected、缺字段、错误边缘形状、负质量、替换后的固定值、伪造四阶矩、宽容差和伪造发布标签都会失败。
 

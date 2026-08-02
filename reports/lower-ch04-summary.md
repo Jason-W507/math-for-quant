@@ -8,4 +8,4 @@
 - Greeks：解析 Delta 0.579260，差分 Delta 0.579260；解析 Vega 39.104269。
 - 离散对冲：无成本复制误差 1.476783，成本后误差 1.391342，融资后成本拖累 0.085442，名义成本现金流 0.084354。
 - 模型风险：GBM、常波动率、连续交易和无冲击均是限制；本实验不可声称实盘盈利、可部署性或覆盖跳跃与波动率曲面风险。
-- 复现命令：`uv run python notebooks/lower/ch04_derivatives.py evidence/lower-ch04/oracle.json`。
+- 复现命令：`uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch04_derivatives.ipynb evidence/lower-ch04/oracle.json`。

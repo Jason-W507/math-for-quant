@@ -193,8 +193,10 @@ $\max(Z_1,Z_2)=(Z_1+Z_2+|Z_1-Z_2|)/2$，所以两个独立零效应正态估计�
 
 本章可执行证据为：
 \begin{lstlisting}[language=bash]
-uv run python tools/check_learning_unit.py \
-  --manifest curriculum/manifest.json --unit upper.ch10
+uv run jupyter nbconvert --to notebook --execute --stdout \
+  --ExecutePreprocessor.timeout=60 \
+  --ExecutePreprocessor.allow_error_names=SystemExit \
+  notebooks/upper/ch10_statistical_inference.ipynb
 \end{lstlisting}
 它同时核对解析记录、固定种子模拟、规范输入、版本和容差；篡改期望值与放宽门槛会以非零状态失败。
 

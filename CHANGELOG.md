@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 - 2026-08-02
+
+- 将教学 notebook 直接改为仓库中跟踪的 `.ipynb` 文件；删除重复执行 notebook 和 LaTeX 的 CI 层，编辑时直接运行受影响文件并查看 `latexmk` 输出。
+- 合并为一个本地 PowerShell 出版入口，直接调用 `latexmk` 编译三份 PDF，并按需执行 notebook、生成 notebook 压缩包。
+- 清理只服务于旧测试编排层的 Python 构建、校验与测试脚本，让教材源码、notebook 和出版产物各自归位。
+- 润色上下册正文、术语、图形说明与开发文档，并补齐 MiKTeX 所需的 `fixtounicode` 依赖。
+
 ## 0.4.0 - 2026-08-01
 
 - 按知识耦合度重组并扩写下册为 9 个方向章节，机器学习与 AI 形成“树模型—现代与前沿 AI—研究设计”三章主线，补充 CNN、序列模型、Transformer/LLM、GNN 与 DRL 的数学和量化研究边界。
