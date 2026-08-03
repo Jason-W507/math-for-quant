@@ -11,4 +11,4 @@
 - 校准：Brier 分数由 0.160 降至 0.025。
 - 解释：特征重要性不等于因果；Top-2 Jaccard=0.333333，因果主张由独立门禁拒绝。
 - 收益：毛收益 0.030；成本 0.006；成本后收益：0.024。
-- 复现命令：`uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch03_ml_alpha.ipynb evidence/lower-ch03/oracle.json`。
+- 当前教学 notebook：`notebooks/lower/ch08_ml_alpha_model.ipynb`、`notebooks/lower/ch12_ml_alpha_validation.ipynb`、`notebooks/lower/ch13_ml_alpha_research.ipynb`；历史整路线 oracle 不再由独立 notebook 维护。

@@ -2,7 +2,7 @@
 
 《量化研究数学》面向已经学过微积分、线性代数、概率统计并会使用 Python 的经济学与金融学读者。
 
-当前版本为 v0.5.1，课程清单包含 35 个正式学习单元。
+当前版本为 v0.5.2，课程清单包含 35 个正式学习单元。
 
 上册建立量化研究共同使用的数学基础，包括分析、测度与概率、统计推断、随机过程、时间序列、优化和数值计算。下册将这些工具用于多因子、统计套利、机器学习、衍生品、组合风险和市场微观结构。
 
@@ -25,7 +25,7 @@
 
 ## 项目与复现
 
-数学正文在 `tex/`，可执行教材在 `notebooks/`，图源与出版资产在 `figures/` 和 `tex/figures/`。项目约定、构建命令和发布流程见 [`docs/development.md`](docs/development.md)；正文与维护者约定的边界见 [`docs/evidence-contract.md`](docs/evidence-contract.md)。
+数学正文在 `tex/`，可执行教材在 `notebooks/`，可复用计算内核在 `src/m4q/`（导入名为 `m4q`），图源与出版资产在 `figures/` 和 `tex/figures/`。项目约定、构建命令和发布流程见 [`docs/development.md`](docs/development.md)；正文与维护者约定的边界见 [`docs/evidence-contract.md`](docs/evidence-contract.md)。
 
 维护者可用下面的入口直接编译书稿或执行教学 notebook：
 
@@ -61,6 +61,7 @@ pwsh tools/publish.ps1 -Release
 - 发布打包副本：`output/notebooks/`（由发布命令复制，属于忽略的构建产物）
 - 课程图、路线与证据路径：`curriculum/manifest.json`
 - 符号与术语：`curriculum/notation.json`、`curriculum/glossary.json`
+- 来源映射题台账：`curriculum/interview-problem-ledger.json`
 - 贡献规范：[CONTRIBUTING.md](CONTRIBUTING.md)
 
 代码采用 MIT License；原创书稿与图形采用 CC BY-NC-SA 4.0；ElegantBook 类文件沿用 LPPL；真实数据在引入时分别记录来源与许可。

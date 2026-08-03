@@ -60,7 +60,7 @@
 真实数据轨把 SEC 五个位置比率换成明确标注的隐含执行概率，并将前三个位置的概率依次送入同一执行状态机。事先确定压力路径只成交 1 手、剩余 8 手，partial-fill IS 为 $0.2$；它证明真实输入确实驱动控制结果，而不是停留在描述统计。聚合摘要没有母单意图、到达价和逐笔未成交委托，因此这个结果仍不是现实 implementation shortfall 估计。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/microstructure_control.ipynb} 可重建执行账本、DP/枚举对照与库存报价反馈；非法完成率、不可完成日程和未知成交状态会被拒绝。
+运行 \path{notebooks/lower/ch21_microstructure_control.ipynb} 可重建执行账本、DP/枚举对照与库存报价反馈；非法完成率、不可完成日程和未知成交状态会被拒绝。
 \end{implementationnote}
 
 本单元向本路线的综合项目交付执行目标、停止协议、状态转移和库存反馈图\cite{avellaneda2008high}。

@@ -5,7 +5,7 @@ type: book
 authors:
   - family-names: "W."
     given-names: "Jason"
-version: 0.5.1
-date-released: 2026-08-02
+version: 0.5.2
+date-released: 2026-08-03
 url: "https://github.com/Jason-W507/math-for-quant"
 license: CC-BY-NC-SA-4.0

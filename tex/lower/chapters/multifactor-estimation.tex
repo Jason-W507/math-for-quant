@@ -63,7 +63,7 @@ Lasso & 坐标下降与软阈值 & \texttt{sklearn.linear\_model.Lasso} \\
 这个数不能被称为股票因子收益：样本只有 7 个国家，变量是宏观增速，没有可交易资产、发布日期滞后、交易成本或因果识别。它的唯一用途是让读者练习“外部数据必须同时带来源、许可、哈希、字段解释、时间协议和限制声明”。合成面板仍是唯一正确性 oracle。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/multifactor_estimation.ipynb}。惩罚路径图展示 ridge 收缩；将设计矩阵换成全零列会触发稳定失败。随后核对透明实现与两个成熟库的最大系数差。
+运行 \path{notebooks/lower/ch03_multifactor_estimation.ipynb}。惩罚路径图展示 ridge 收缩；将设计矩阵换成全零列会触发稳定失败。随后核对透明实现与两个成熟库的最大系数差。
 \end{implementationnote}
 
 Capstone 必须保存训练期变换参数、惩罚路径、选择规则、库版本、条件数和实现差异。若透明实现与库实现不一致，先确定输入和目标函数，不允许挑选看起来更好的一份输出。

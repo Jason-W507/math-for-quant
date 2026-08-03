@@ -44,7 +44,7 @@ X\in\mathbb R^{B\times T\times F},
 \]
 分别表示 batch、时间步和特征。本章事先确定形状为 $(2,3,2)$，mask 形状必须是 $(2,3)$，预测目标位于输入窗口之后一个时间步。padding mask、因果 attention mask 与缺失值 mask 不可混用。
 
-每条合成路径有四个时间点：前三步形成输入，第四步按偏移量 1 生成下一期标签。非深度基线对最后一个有效时间步拟合线性模型；另一条基线先按 mask 求时间均值，再经事先确定随机投影、ReLU 和拟合输出层。后者不保留时间顺序，因此本版明确称为“随机特征表示基线”，不称深度序列模型。在事先确定任务上，两者 MSE 分别为 $6.398979$ 和 $1.051576$；这只验证实际前向计算与下一期标签对齐。后续正式路线将用时间置换负例验收因果卷积、RNN 与 Transformer 是否真正利用顺序。目标偏移为 0 会把标签时点纳入输入窗口，检查拒绝；未事先确定随机种子则无法给出固定推理证据。
+每条合成路径有四个时间点：前三步形成输入，第四步按偏移量 1 生成下一期标签。非深度基线对最后一个有效时间步拟合线性模型；另一条基线先按 mask 求时间均值，再经事先确定随机投影、ReLU 和拟合输出层。后者不保留时间顺序，因此本版明确称为“随机特征表示基线”，不称深度序列模型。在事先确定任务上，两者 MSE 分别为 $6.398979$ 和 $1.051576$；这只验证实际前向计算与下一期标签对齐。当前模型学习单元的 notebook 已用时间置换负例验收因果卷积、RNN、Attention 与 Transformer 的顺序敏感性；正文后续章节继续展开这些模型的对象与研究边界。目标偏移为 0 会把标签时点纳入输入窗口，检查拒绝；未事先确定随机种子则无法给出固定推理证据。
 
 \begin{note}[Python 边界]
 框架允许广播和自动 reshape，但“能运行”不说明 batch、time、feature 轴正确。每个张量边界都应保存形状、dtype、mask 语义和目标日期。
@@ -72,9 +72,11 @@ R^{\mathrm{net}}=0.03-0.006=0.024.
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch03_ml_alpha.ipynb \
-  evidence/lower-ch03/oracle.json
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch08_ml_alpha_model.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch12_ml_alpha_validation.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch13_ml_alpha_research.ipynb
 \end{lstlisting}
+深度、序列和前沿内容沿用模型学习单元的同一教学 notebook；旧版整路线入口已删除。
 \end{implementationnote}
 
 \section{本路线的综合项目：防泄漏 Alpha pipeline}

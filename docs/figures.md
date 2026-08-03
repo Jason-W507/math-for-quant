@@ -27,7 +27,7 @@ uv run python tools/build_figures.py
 
 ## 章节嵌入
 
-`tools/integrate_figures.py` 按规格中的章节锚点，将包装片段插入该节开头论述之后。命令是幂等的：已经嵌入的图不会重复插入。
+`tools/build_figures.py integrate` 按规格中的章节锚点，将包装片段插入该节开头论述之后。命令是幂等的：已经嵌入的图不会重复插入。
 
 新增图时应确保：
 
@@ -42,7 +42,9 @@ uv run python tools/build_figures.py
 生成图形联系表而不重建全书：
 
 ```powershell
-uv run python tools/render_figure_contact_sheets.py
+uv run python tools/build_figures.py contact-sheet
 ```
 
 联系表写入 `tmp/figures/`，只用于本地 QA，不属于出版资产。
+
+如果需要核对 PDF 中实际出现图形的页，可运行 `uv run python tools/build_figures.py book-pages`；它只渲染含已登记图形 ID 的页面。

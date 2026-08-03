@@ -6,7 +6,7 @@ import math
 from pathlib import Path
 import sys
 
-from math_for_quant.lower.microstructure_simulation import analyze_sec_order_placement
+from m4q.lower.microstructure_simulation import analyze_sec_order_placement
 
 
 def main(oracle_path: Path) -> int:

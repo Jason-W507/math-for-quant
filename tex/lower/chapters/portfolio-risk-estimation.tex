@@ -83,7 +83,7 @@ IID 重采样要求行之间可交换。波动聚集、重叠收益、共同宏�
 真实轨复用美国宏观公共快照，检查哈希、季度顺序和截至日期，把 40 个 GDP/消费水平转换为 39 个相邻对数增长率，再实际计算协方差与两列等风险权重。协方差迹为 $7.415213\times10^{-5}$，权重为 $(0.434184,0.565816)$。这演示 provenance、时点协议和真实输入适配；正文明确禁止把两列宏观增长率冒充可交易资产收益或风险模型有效性证据。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/portfolio_risk_estimation.ipynb} 可重建风险预算、收缩对照和 bootstrap 区间；非半正定矩阵会以稳定类别拒绝。
+运行 \path{notebooks/lower/ch17_portfolio_risk_estimation.ipynb} 可重建风险预算、收缩对照和 bootstrap 区间；非半正定矩阵会以稳定类别拒绝。
 \end{implementationnote}
 
 本单元向本路线的综合项目交付风险矩阵、风险预算、估计区间、失败诊断和数据时点协议。

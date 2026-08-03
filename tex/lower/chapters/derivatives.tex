@@ -122,9 +122,11 @@ Capstone 从复制到新目录的最小研究材料运行同一参数集，依�
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch04_derivatives.ipynb \
-  evidence/lower-ch04/oracle.json
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch14_derivatives_stochastic.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch15_derivatives_numerics.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch16_derivatives_hedging.ipynb
 \end{lstlisting}
+三个 notebook 分别覆盖随机分析、数值定价和离散对冲；旧版整路线入口已删除。
 \end{implementationnote}
 
 \input{tex/lower/chapters/derivatives-questions}

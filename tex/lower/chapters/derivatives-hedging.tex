@@ -85,7 +85,7 @@ bias 与 RMSE 本身也有抽样误差。可以对路径级误差 bootstrap，�
 一键报告从三个 fixture 重建随机分析、四种定价、逐点反演、参数曲面和多路径对冲；真实财政部快照只参与贴现输入审计。开放项目需要额外提交：合约条款、报价时点、曲线/股息、bid/ask、校准权重、求解器预算、Greek 验证、对冲策略、成本/成交协议、压力情景、限制报告和可复现命令。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/derivatives_hedging.ipynb} 重建误差分布；运行 \path{tools/build_derivatives_report.py} 必须与 \path{reports/derivatives-v03-summary.md} 逐字一致。
+运行 \path{notebooks/lower/ch16_derivatives_hedging.ipynb} 重建误差分布；运行 \path{tools/build_reports.py derivatives} 必须与 \path{reports/derivatives-v03-summary.md} 逐字一致。
 \end{implementationnote}
 
 本路线只能声称：在事先确定模型、输入和协议下，数学与数值证据可复现。它不能声称市场模型正确、生产可部署或策略盈利。

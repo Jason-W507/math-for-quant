@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -501,22 +503,37 @@ def companion_for(spec: dict) -> str | None:
     if spec["volume"] == "upper":
         matches = sorted((ROOT / "notebooks" / "upper").glob(f"{spec['chapter']}_*.ipynb"))
     else:
-        exact = ROOT / "notebooks" / "lower" / f"{spec['chapter'].replace('-', '_')}.ipynb"
-        route_fallbacks = {
-            "ml-alpha-deep": "ch03_ml_alpha.ipynb",
-            "ml-alpha-sequence": "ch03_ml_alpha.ipynb",
-            "ml-alpha-frontiers": "ch03_ml_alpha.ipynb",
+        lower_names = {
+            "multifactor-model": "ch02_multifactor_model.ipynb",
+            "multifactor-estimation": "ch03_multifactor_estimation.ipynb",
+            "multifactor-research": "ch04_multifactor_research.ipynb",
+            "stat-arb-model": "ch05_stat_arb_model.ipynb",
+            "stat-arb-estimation": "ch06_stat_arb_estimation.ipynb",
+            "stat-arb-research": "ch07_stat_arb_research.ipynb",
+            "ml-alpha-model": "ch08_ml_alpha_model.ipynb",
+            "ml-alpha-deep": "ch08_ml_alpha_model.ipynb",
+            "ml-alpha-sequence": "ch08_ml_alpha_model.ipynb",
+            "ml-alpha-frontiers": "ch08_ml_alpha_model.ipynb",
+            "ml-alpha-validation": "ch12_ml_alpha_validation.ipynb",
+            "ml-alpha-research": "ch13_ml_alpha_research.ipynb",
+            "derivatives-stochastic": "ch14_derivatives_stochastic.ipynb",
+            "derivatives-numerics": "ch15_derivatives_numerics.ipynb",
+            "derivatives-hedging": "ch16_derivatives_hedging.ipynb",
+            "portfolio-risk-estimation": "ch17_portfolio_risk_estimation.ipynb",
+            "portfolio-risk-optimization": "ch18_portfolio_risk_optimization.ipynb",
+            "portfolio-risk-tail": "ch19_portfolio_risk_tail.ipynb",
+            "microstructure-events": "ch20_microstructure_events.ipynb",
+            "microstructure-control": "ch21_microstructure_control.ipynb",
+            "microstructure-simulation": "ch22_microstructure_simulation.ipynb",
         }
-        matches = [
-            exact if exact.is_file()
-            else ROOT / "notebooks" / "lower" / route_fallbacks.get(spec["chapter"], "")
-        ]
+        notebook_name = lower_names.get(spec["chapter"])
+        matches = [] if notebook_name is None else [ROOT / "notebooks" / "lower" / notebook_name]
     if len(matches) != 1 or not matches[0].is_file():
         raise ValueError(f"No unique companion notebook for evidence figure {spec['id']}")
     return matches[0].relative_to(ROOT).as_posix()
 
 
-def main() -> int:
+def build_figures() -> int:
     configure_style()
     ASSET_DIR.mkdir(parents=True, exist_ok=True)
     data = json.loads(SPEC_PATH.read_text(encoding="utf-8"))
@@ -561,6 +578,180 @@ def main() -> int:
     generated_count = len(data["figures"])
     print(f"built {generated_count} cached vector figures; registered {len(records)} total figures")
     return 0
+
+
+def insertion_point(text: str, anchor: str) -> int:
+    start = text.index(anchor) + len(anchor)
+    cursor = start
+    while True:
+        while cursor < len(text) and text[cursor] in " \t\r\n":
+            cursor += 1
+        if text.startswith("\\label{", cursor):
+            cursor = text.index("\n", cursor) + 1
+            continue
+        break
+    paragraph_end = text.find("\n\n", cursor)
+    if paragraph_end == -1:
+        raise ValueError(f"No opening paragraph after {anchor}")
+    return paragraph_end + 2
+
+
+def integrate_figures() -> int:
+    """Insert generated figure wrappers into the chapter sources."""
+
+    data = json.loads(SPEC_PATH.read_text(encoding="utf-8"))
+    grouped: dict[tuple[str, str], list[str]] = defaultdict(list)
+    for spec in data["figures"]:
+        grouped[(spec["file"], spec["anchor"])].append(spec["id"])
+
+    changed = 0
+    for (relative_file, anchor), figure_ids in grouped.items():
+        path = ROOT / relative_file
+        text = path.read_text(encoding="utf-8")
+        block_lines = [
+            f"\\input{{tex/figures/generated/{figure_id}.tex}}\n"
+            for figure_id in figure_ids
+        ]
+        if all(line in text for line in block_lines):
+            continue
+        for figure_id in figure_ids:
+            text = text.replace(
+                f"\\input{{tex/figures/generated/{figure_id}.tex}}\n", ""
+            )
+        if anchor not in text:
+            raise ValueError(f"Anchor not found in {relative_file}: {anchor}")
+        block = "".join(block_lines) + "\n"
+        point = insertion_point(text, anchor)
+        path.write_text(text[:point] + block + text[point:], encoding="utf-8", newline="\n")
+        changed += len(figure_ids)
+    print(f"integrated {changed} generated figures")
+    return 0
+
+
+def _page_image(page, width: int = 430):
+    import fitz
+    from PIL import Image
+
+    scale = width / page.rect.width
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(scale, scale), alpha=False)
+    return Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
+
+
+def _make_sheet(images: list[tuple[str, object]], target: Path) -> None:
+    from PIL import Image, ImageDraw, ImageFont
+
+    columns = 4
+    tile_width, tile_height = 470, 660
+    rows = math.ceil(len(images) / columns)
+    sheet = Image.new("RGB", (columns * tile_width, rows * tile_height), "white")
+    draw = ImageDraw.Draw(sheet)
+    font = ImageFont.load_default()
+    for index, (label, image) in enumerate(images):
+        left = (index % columns) * tile_width + 20
+        top = (index // columns) * tile_height + 35
+        image.thumbnail((430, 600))
+        sheet.paste(image, (left, top))
+        draw.text((left, top - 22), label, fill="#2D3748", font=font)
+    sheet.save(target)
+
+
+def render_book_pages() -> int:
+    """Render only publication pages containing registered figure IDs."""
+
+    import fitz
+
+    manifest = ROOT / "figures" / "figure-manifest.json"
+    output = ROOT / "tmp" / "figures" / "book-pages"
+    records = json.loads(manifest.read_text(encoding="utf-8"))["figures"]
+    output.mkdir(parents=True, exist_ok=True)
+    for volume in ("upper", "lower"):
+        ids = {record["id"] for record in records if record["volume"] == volume}
+        pdf = ROOT / "output" / "pdf" / f"math-for-quant-{volume}.pdf"
+        document = fitz.open(pdf)
+        selected: list[tuple[str, object]] = []
+        found: set[str] = set()
+        for page_index, page in enumerate(document):
+            text = page.get_text()
+            page_ids = sorted(figure_id for figure_id in ids if figure_id in text)
+            if page_ids:
+                found.update(page_ids)
+                selected.append((f"p{page_index + 1}: {', '.join(page_ids)}", _page_image(page)))
+        document.close()
+        missing = sorted(ids - found)
+        if missing:
+            raise ValueError(f"{volume} figure IDs not found in PDF text: {missing}")
+        for sheet_index in range(0, len(selected), 16):
+            target = output / f"{volume}-{sheet_index // 16 + 1}.png"
+            _make_sheet(selected[sheet_index:sheet_index + 16], target)
+            print(target.relative_to(ROOT).as_posix())
+    return 0
+
+
+def _render_cached_pdf(path: Path, width: int = 640):
+    import fitz
+    from PIL import Image
+
+    document = fitz.open(path)
+    page = document[0]
+    scale = width / page.rect.width
+    pixmap = page.get_pixmap(matrix=fitz.Matrix(scale, scale), alpha=False)
+    image = Image.frombytes("RGB", (pixmap.width, pixmap.height), pixmap.samples)
+    document.close()
+    return image
+
+
+def render_contact_sheets() -> int:
+    """Render cached figure PDFs into compact QA contact sheets."""
+
+    from PIL import Image, ImageDraw, ImageFont
+
+    manifest = ROOT / "figures" / "figure-manifest.json"
+    output = ROOT / "tmp" / "figures"
+    records = [
+        record
+        for record in json.loads(manifest.read_text(encoding="utf-8"))["figures"]
+        if record["cached_asset"]
+    ]
+    output.mkdir(parents=True, exist_ok=True)
+    font = ImageFont.load_default()
+    for volume in ("upper", "lower"):
+        selected = [record for record in records if record["volume"] == volume]
+        columns = 3
+        tile_width, tile_height = 680, 430
+        rows = math.ceil(len(selected) / columns)
+        sheet = Image.new("RGB", (columns * tile_width, rows * tile_height), "white")
+        draw = ImageDraw.Draw(sheet)
+        for index, record in enumerate(selected):
+            image = _render_cached_pdf(ROOT / record["cached_asset"])
+            image.thumbnail((640, 360))
+            left = (index % columns) * tile_width + 20
+            top = (index // columns) * tile_height + 35
+            sheet.paste(image, (left, top))
+            draw.text((left, 10 + (index // columns) * tile_height), record["id"], fill="#2D3748", font=font)
+        target = output / f"{volume}-figures-contact-sheet.png"
+        sheet.save(target)
+        print(target.relative_to(ROOT).as_posix())
+    return 0
+
+
+def main() -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "task",
+        nargs="?",
+        choices=("build", "integrate", "book-pages", "contact-sheet"),
+        default="build",
+        help="operation to run (default: build cached vector figures)",
+    )
+    task = parser.parse_args().task
+    return {
+        "build": build_figures,
+        "integrate": integrate_figures,
+        "book-pages": render_book_pages,
+        "contact-sheet": render_contact_sheets,
+    }[task]()
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sys
 
-from math_for_quant.lower.portfolio_real_data import run_portfolio_real_data
+from m4q.lower.portfolio_real_data import run_portfolio_real_data
 
 
 def main(oracle_path: Path) -> int:

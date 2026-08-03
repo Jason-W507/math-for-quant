@@ -56,12 +56,12 @@ Capstone 固定交付：研究问题、数据与时间协议、手算小面板�
 
 事先确定路线报告由下面的命令生成，并与仓库中的期望报告逐字比较：
 \begin{lstlisting}[language=bash]
-uv run python tools/build_multifactor_report.py
+uv run python tools/build_reports.py multifactor
 \end{lstlisting}
 报告源文件和期望文件分别登记在课程清单中。WDI 截面只验证外部数据责任；合成组合只验证算术；两者都不允许被描述为实盘业绩。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/multifactor_research.ipynb}。柱状图并列毛收益、成本、容量冲击和净收益；故意裁掉收益面板一列必须触发形状错位失败。
+运行 \path{notebooks/lower/ch04_multifactor_research.ipynb}。柱状图并列毛收益、成本、容量冲击和净收益；故意裁掉收益面板一列必须触发形状错位失败。
 \end{implementationnote}
 
 \MFQTransition{分组组合的逐步算例}

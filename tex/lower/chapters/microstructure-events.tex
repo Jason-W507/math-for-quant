@@ -85,7 +85,7 @@ Poisson、季节性 Poisson 与 Hawkes 是嵌套的研究假设。先检查季�
 执行一笔 4 手市价卖单时，合成簿先吃掉第一张 3 手买单，再使第二张 2 手买单部分成交 1 手；随后撤去剩余 1 手，下一笔市价卖单得到未成交 1 手。这个小账本同时覆盖撤单、部分成交、流动性不足和状态不变量。
 
 \begin{implementationnote}
-运行 \path{notebooks/lower/microstructure_events.ipynb} 可重建 Poisson、季节性 Poisson、显式窗口 Hawkes、队列尾概率、联合回归与 FIFO 账本；无效观察窗、非稳定分支比、无识别方向或交叉被动委托会被稳定拒绝。
+运行 \path{notebooks/lower/ch20_microstructure_events.ipynb} 可重建 Poisson、季节性 Poisson、显式窗口 Hawkes、队列尾概率、联合回归与 FIFO 账本；无效观察窗、非稳定分支比、无识别方向或交叉被动委托会被稳定拒绝。
 \end{implementationnote}
 
 本单元向本路线的综合项目交付事件方向、队列状态、成交规则和可审计的时间协议\cite{hawkes1971spectra,cont2001empirical}。

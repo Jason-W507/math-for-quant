@@ -112,12 +112,13 @@ Pearson IC 是 $x_{i,t}$ 与 $r_{i,t+1}$ 的横截面相关；Rank IC 是两者�
 一个合格结果表至少并列报告：毛收益、佣金、价差、冲击、借券、净收益、双边换手、资金规模和可成交比例。若只报告 Sharpe 或 IC，读者无法从信号质量恢复可交易性。容量也不是单个“最大 AUM”：应画出资金规模到净绩效、参与率和成交完成率的曲线，并对冲击模型参数做敏感性分析。
 
 \begin{implementationnote}
-执行下面的命令：
+当前正文按三个学习单元分别执行下面的 notebook：
 \begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch01_multifactor.ipynb \
-  evidence/lower-ch01/oracle.json
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch02_multifactor_model.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch03_multifactor_estimation.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch04_multifactor_research.ipynb
 \end{lstlisting}
-输出同时包含系数、IC、中性化约束、多重检验、毛净收益与两种失败检查；任一字段漂移都会非零退出。
+每个 notebook 固定读取自己的 oracle；旧版整路线入口已删除。
 \end{implementationnote}
 
 \subsection*{A 股制度边界}

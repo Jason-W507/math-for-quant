@@ -81,10 +81,11 @@ R^{\mathrm{net}}=0.03+0.02-0.01=0.04.
 
 \begin{implementationnote}
 \begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch02_stat_arb.ipynb \
-  evidence/lower-ch02/oracle.json
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch05_stat_arb_model.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch06_stat_arb_estimation.ipynb
+uv run jupyter nbconvert --to notebook --execute --stdout --ExecutePreprocessor.timeout=60 notebooks/lower/ch07_stat_arb_research.ipynb
 \end{lstlisting}
-命令逐项核对 AR 错设、Kalman 更新、变点、协整价差、walk-forward、成本与三种失败检查。
+三个 notebook 分别覆盖模型、状态估计和样本外交易；旧版整路线入口已删除。
 \end{implementationnote}
 
 \section{本路线的综合项目：滚动统计套利研究材料}

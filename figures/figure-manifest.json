@@ -14,7 +14,7 @@
       "cached_asset": "tex/figures/generated/upper-ch06-projection-svd.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch06-projection-svd.tex",
       "caption": "投影把观测分为列空间分量与正交残差；SVD 进一步揭示列空间中的尺度与近奇异方向。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "28b1c3dbfeae9320ceb311a5950a69913da4069fa7b96fe935676c382b11c62a"
     },
     {
@@ -29,7 +29,7 @@
       "cached_asset": "tex/figures/generated/upper-ch09-convergence-map.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch09-convergence-map.tex",
       "caption": "常用概率收敛关系中，绿色实线表示直接蕴含；橙色虚线只表示可抽取子列，不是原序列的反向蕴含。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "f6d16b20607ab6bdb4404d4f933e8ad3e8b80a7f9bede6d6550ebc3066f1e863"
     },
     {
@@ -44,7 +44,7 @@
       "cached_asset": "tex/figures/generated/upper-ch11-filtration-timeline.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch11-filtration-timeline.tex",
       "caption": "滤过把“何时知道什么”写进随机过程模型；信息集只能随时间扩张。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "aef0f8044b3c2dd99df757188b203f1861c7c26f8e572bec17b2bffeda468a42"
     },
     {
@@ -59,7 +59,7 @@
       "cached_asset": "tex/figures/generated/upper-ch16-purge-embargo.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch16-purge-embargo.tex",
       "caption": "purge 删除与验证标签窗口重叠的训练样本；embargo 隔离验证后的慢变信息。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "34fa4926d594881c6606ffaae9ef6a52e60c9132c013244cb6feaac73ae7ca4d"
     },
     {
@@ -74,7 +74,7 @@
       "cached_asset": "tex/figures/generated/lower-dv-route.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-route.tex",
       "caption": "衍生品路线按随机分析、数值定价与离散对冲推进，最终由可复现限制报告统一约束。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "ce8e910d65c8dc1aacf2f59da7eba864f6e800c1a92762ac3e233aee3ebc1677"
     },
     {
@@ -89,7 +89,7 @@
       "cached_asset": "tex/figures/generated/lower-mf-pipeline.pdf",
       "tex_wrapper": "tex/figures/generated/lower-mf-pipeline.tex",
       "caption": "信号必须经过中性化、权重、重叠持有和成交成本，才能成为可交易净收益。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "7cf45e59af39fd6fd2ea848c154a0caa5c0c15aeee79d4b57581cb80fc7f5313"
     },
     {
@@ -104,7 +104,7 @@
       "cached_asset": "tex/figures/generated/lower-sa-timeline.pdf",
       "tex_wrapper": "tex/figures/generated/lower-sa-timeline.tex",
       "caption": "统计套利的滚动验证必须隔离标签重叠与选择后的慢变信息；交易区不能反向参与阈值选择。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "d58cf86ae963d0e6a925d388a63c155c1822f148631580c3a96d9b597c535504"
     },
     {
@@ -119,7 +119,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-nested-timeline.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-nested-timeline.tex",
       "caption": "嵌套时间验证把模型选择限制在外层训练区，测试区只评价冻结后的完整选择程序。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "3b6f875ea8813d74eb1a112a7507e922a7dbcd2a410ffe72559d2cc5f0b104a6"
     },
     {
@@ -134,7 +134,7 @@
       "cached_asset": "tex/figures/generated/lower-pf-capstone-loop.pdf",
       "tex_wrapper": "tex/figures/generated/lower-pf-capstone-loop.tex",
       "caption": "组合风险研究形成闭环：估计和优化必须经尾部压力检验，再把限制反馈到下一轮数据与建模协议。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "6ef462e94ca6664582536883addad09003bef872bf5e7d3fa45b5eda0cb6c26c"
     },
     {
@@ -149,7 +149,7 @@
       "cached_asset": "tex/figures/generated/lower-ms-feedback.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ms-feedback.tex",
       "caption": "做市控制必须逐事件更新库存与现金；停止规则约束下一次报价。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "993dbabedf2aec07e6bb7fdd046f7d88a435c070726d0141d6dc22104a574c23"
     },
     {
@@ -164,7 +164,7 @@
       "cached_asset": "tex/figures/generated/upper-ch01-proof-logic.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch01-proof-logic.tex",
       "caption": "证明链与反例链回答不同问题：证明从假设推出结论，反例则精确切断一个过强命题。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "7e824d67a24bc3dffacc0954a15b8c1e54a5d86d4f7b03d886fc26d80c82d306"
     },
     {
@@ -179,7 +179,7 @@
       "cached_asset": "tex/figures/generated/upper-ch02-completeness.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch02-completeness.tex",
       "caption": "完备性补上“极限仍在空间内”这一环，压缩映射才能把迭代收束为内部的不动点。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "4fdd087dc908fa2aa7f41dab74a9a6fc2b18855773c171f95aab0e7db814cd45"
     },
     {
@@ -194,7 +194,7 @@
       "cached_asset": "tex/figures/generated/upper-ch03-simple-integral.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch03-simple-integral.tex",
       "caption": "简单函数从下方逼近非负可测函数；矩形面积之和逐步逼近 Lebesgue 积分。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "a1a54aab5e17d8f40b330f7ab0f08a231a0c63e675e64a71616e03fc8c6877ef"
     },
     {
@@ -209,7 +209,7 @@
       "cached_asset": "tex/figures/generated/upper-ch04-lp-convergence.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch04-lp-convergence.tex",
       "caption": "尖峰序列在峰点之外逐点趋于零而峰值不降；图形显示几乎处处收敛与范数收敛为何不可互换。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "bd735ccf82444bde926287376139eaa6079a0992bcef37d9b969b7ab282d1cc6"
     },
     {
@@ -224,7 +224,7 @@
       "cached_asset": "tex/figures/generated/upper-ch05-hessian-geometry.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch05-hessian-geometry.tex",
       "caption": "梯度给出局部最陡方向，Hessian 的特征方向决定等高线的局部曲率与尺度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "b14f1458504ba74647a3f2425798f7852085f4f3fd242aa3cdc2d18911dc9bb0"
     },
     {
@@ -239,7 +239,7 @@
       "cached_asset": "tex/figures/generated/upper-ch07-pushforward.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch07-pushforward.tex",
       "caption": "随机变量把样本空间映到数值空间，推前律再把概率质量搬运为分布。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "b414b037baa7f9780844650fb58778474d09e4af15993ace35f7d6f4f8af239b"
     },
     {
@@ -254,7 +254,7 @@
       "cached_asset": "tex/figures/generated/upper-ch08-conditioning-projection.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch08-conditioning-projection.tex",
       "caption": "条件期望是对可见信息的最佳平方误差投影；残差在该信息空间方向上正交。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "a222c6d690eee64bfb4a71b299e27626ef2670aa969919e54dfe3fe210ff0319"
     },
     {
@@ -269,7 +269,7 @@
       "cached_asset": "tex/figures/generated/upper-ch10-multiple-testing.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch10-multiple-testing.tex",
       "caption": "同时检验的假设越多，纯噪声产生极小 p 值的机会越大；校正门槛必须随检验族变化。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "3300d3fe9f5bf9c92381cf31c19e947d7f01b891140b50fbd598758eaf3586de"
     },
     {
@@ -284,7 +284,7 @@
       "cached_asset": "tex/figures/generated/upper-ch12-state-space.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch12-state-space.tex",
       "caption": "状态方程推进不可观测状态，观测方程只在当前时点产生带噪数据；两类不确定性不能混为一谈。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "d366a828685ad019dcbd440c2bcc0ddce1af59f427f4b4d3fd2db872bace7834"
     },
     {
@@ -299,7 +299,7 @@
       "cached_asset": "tex/figures/generated/upper-ch13-kkt-geometry.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch13-kkt-geometry.tex",
       "caption": "最优点处目标等高线与活跃约束相切；乘子把约束法向量组合成目标梯度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "4bbca7b57062c8585c4df97363c59238a7e01983f9357da6e318a02f9deae682"
     },
     {
@@ -314,7 +314,7 @@
       "cached_asset": "tex/figures/generated/upper-ch14-cancellation.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch14-cancellation.tex",
       "caption": "两个接近的大数相减会放大输入舍入误差；数学等价的改写可能具有完全不同的数值稳定性。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "fc4809d22ff7b1b79f3c444f9965425c80781c449695c48e50e1430a6958d0f7"
     },
     {
@@ -329,7 +329,7 @@
       "cached_asset": "tex/figures/generated/upper-ch15-mc-rate.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch15-mc-rate.tex",
       "caption": "Monte Carlo 标准误按 $N^{-1/2}$ 衰减：误差减半通常需要约四倍样本，而不是两倍。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "9f913bf45864f0a1d77feaa5b0aaef2237c3e45bdf9d75b48930b4ca51e21e42"
     },
     {
@@ -344,7 +344,7 @@
       "cached_asset": "tex/figures/generated/upper-ch17-audit-matrix.pdf",
       "tex_wrapper": "tex/figures/generated/upper-ch17-audit-matrix.tex",
       "caption": "研究审计不是单一通过状态，而是数据、数学、数值、摩擦与复现证据的联合矩阵。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "f8f4f73ec0822ff8d1b2f7d57a980f94bcf9ee2e09239c328349df2aab4fd873"
     },
     {
@@ -359,7 +359,7 @@
       "cached_asset": "tex/figures/generated/lower-mf-three-axes.pdf",
       "tex_wrapper": "tex/figures/generated/lower-mf-three-axes.tex",
       "caption": "多因子研究同时沿资产、时间和特征三根轴展开；目标收益必须位于特征可得时点之后。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "4e37ecbd04d1a9e247fa554ff4865fec3873dbdf5b9184169fb8bba8b86bb216"
     },
     {
@@ -374,7 +374,7 @@
       "cached_asset": "tex/figures/generated/lower-mf-fmb-two-pass.pdf",
       "tex_wrapper": "tex/figures/generated/lower-mf-fmb-two-pass.tex",
       "caption": "经典两遍回归先估暴露、再估风险价格；第一阶段估计误差会传入第二阶段。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "110d2fc636ff8ec41d6717ef4799e395644929c7a03d5d7391329bf41caa37c3"
     },
     {
@@ -385,11 +385,11 @@
       "scene": "ic-decay",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/multifactor_model.ipynb",
+      "companion": "notebooks/lower/ch02_multifactor_model.ipynb",
       "cached_asset": "tex/figures/generated/lower-mf-ic-decay.pdf",
       "tex_wrapper": "tex/figures/generated/lower-mf-ic-decay.tex",
       "caption": "信号相关性随预测期限衰减；可交易持有期必须同时考虑衰减速度与调仓成本。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "69f3594475c9b08324b2526620254bbbe208142a61cb4285f14cd76a59649a83"
     },
     {
@@ -400,11 +400,11 @@
       "scene": "cost-chain",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/multifactor_research.ipynb",
+      "companion": "notebooks/lower/ch04_multifactor_research.ipynb",
       "cached_asset": "tex/figures/generated/lower-mf-cost-chain.pdf",
       "tex_wrapper": "tex/figures/generated/lower-mf-cost-chain.tex",
       "caption": "预测优势只有经过权重映射、换手和成本扣除后才成为净收益；每一层都可能改变排序。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "b6e16493b159d21184b217baba90469261bcfdd6a290646184db9059471c567d"
     },
     {
@@ -415,11 +415,11 @@
       "scene": "cointegration",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/stat_arb_model.ipynb",
+      "companion": "notebooks/lower/ch05_stat_arb_model.ipynb",
       "cached_asset": "tex/figures/generated/lower-sa-cointegration.pdf",
       "tex_wrapper": "tex/figures/generated/lower-sa-cointegration.tex",
       "caption": "两条非平稳价格路径可以共享共同趋势，而特定线性组合保持平稳并围绕均值波动。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "52ff0e28dc4922810b05da1742fb26c0089adf959bc7ea48166516ce82839720"
     },
     {
@@ -430,11 +430,11 @@
       "scene": "ou",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/stat_arb_model.ipynb",
+      "companion": "notebooks/lower/ch05_stat_arb_model.ipynb",
       "cached_asset": "tex/figures/generated/lower-sa-ou.pdf",
       "tex_wrapper": "tex/figures/generated/lower-sa-ou.tex",
       "caption": "OU 漂移强度决定条件均值回归速度；半衰期描述偏离缩小一半所需的时间尺度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "7fed3a7e4c2ce4566bd3cf6acea0a822e8bee3ea6e0ca67eeec322b41dddd4a5"
     },
     {
@@ -449,7 +449,7 @@
       "cached_asset": "tex/figures/generated/lower-sa-kalman.pdf",
       "tex_wrapper": "tex/figures/generated/lower-sa-kalman.tex",
       "caption": "Kalman 滤波在每个时点先预测、再用当期观测更新；平滑器使用未来信息，不能进入实时交易特征。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "130b44578b7e4bc18b892cc896b15ccfb5da194022dc6e082e9adb11dbe45359"
     },
     {
@@ -460,11 +460,11 @@
       "scene": "position-pnl",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/stat_arb_research.ipynb",
+      "companion": "notebooks/lower/ch07_stat_arb_research.ipynb",
       "cached_asset": "tex/figures/generated/lower-sa-position-pnl.pdf",
       "tex_wrapper": "tex/figures/generated/lower-sa-position-pnl.tex",
       "caption": "预测先映射为有界仓位，仓位再作用于下一期收益；换手成本在仓位变化时扣除。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "1e73006c91b9980e3a55f7ec83749799ad139e58fed06f734e2fbd0e5eb25d2c"
     },
     {
@@ -475,11 +475,11 @@
       "scene": "tree-split",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/ml_alpha_model.ipynb",
+      "companion": "notebooks/lower/ch08_ml_alpha_model.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-tree-split.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-tree-split.tex",
       "caption": "CART 在候选阈值中选择使加权节点不纯度下降最大的分裂；绿色区域表示本例选择的阈值。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "ec164c7e2dc210dd8797abaa1f8affedf45f13c144b6347d33f60e4aa8b7abeb"
     },
     {
@@ -494,7 +494,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-random-forest.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-random-forest.tex",
       "caption": "随机森林同时随机化样本和候选特征，使树之间的误差相关性下降，再通过聚合降低方差。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "2265c48b9308a507d747fb337912cfe242711bd8146143dee7a7f9007bb9e270"
     },
     {
@@ -509,7 +509,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-boosting.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-boosting.tex",
       "caption": "梯度提升在函数空间逐轮拟合负梯度；每棵弱树只修正当前集成模型尚未解释的方向。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "ee47c21907dc06b71e97772e13f08024cc3d0a8a587b6f6a7aed0d46f8e7600f"
     },
     {
@@ -524,7 +524,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-cnn.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-cnn.tex",
       "caption": "一维因果卷积只汇总当前及过去窗口；感受野随层数扩大，而参数在时间位置间共享。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "440df5ea3d83f3ecf6ce1e11f34a8a58e23d454f8521b143370acdb5c8ca3106"
     },
     {
@@ -535,11 +535,11 @@
       "scene": "training-curves",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/ch03_ml_alpha.ipynb",
+      "companion": "notebooks/lower/ch08_ml_alpha_model.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-training.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-training.tex",
       "caption": "训练损失继续下降而验证损失反弹时，新增迭代主要在拟合训练噪声；早停点由验证协议决定。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "852473b3d65d1ea68bffeed2534b606619a6c412a42966106e259f1d5a4f786a"
     },
     {
@@ -550,11 +550,11 @@
       "scene": "attention-mask",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/ch03_ml_alpha.ipynb",
+      "companion": "notebooks/lower/ch08_ml_alpha_model.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-attention.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-attention.tex",
       "caption": "因果 mask 将未来键位置置为不可见；每一行注意力权重只能分配给当前及过去 token。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "a56624ba269c39808c7db671b0bf93d764c39aa85d5601a1179d8fc6adb49c0b"
     },
     {
@@ -569,7 +569,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-transformer.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-transformer.tex",
       "caption": "Transformer 保持批次、时间、注意力头和通道维度；残差路径连接注意力与逐位置 MLP。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "ada90e7f0199160cba33bf40d98f4c331fd9913a2c65dd14f9052513cd38ac34"
     },
     {
@@ -584,7 +584,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-llm-pipeline.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-llm-pipeline.tex",
       "caption": "量化 LLM 管线必须在检索阶段冻结可得时间，并把自由文本输出转换成可审计的结构化信号。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "722f3f22794168a75bf50470493c4260e19fa8c5d0fda4ebab249f44ad9ff064"
     },
     {
@@ -599,7 +599,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-gnn.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-gnn.tex",
       "caption": "GNN 通过邻居消息、聚合和更新传播关系信息；边的经济含义与时间有效性必须先于模型复杂度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "859728224baae97d9cf28b05b55808e1e011abbc688c3dd956179d4f5204cef9"
     },
     {
@@ -614,7 +614,7 @@
       "cached_asset": "tex/figures/generated/lower-ml-drl.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-drl.tex",
       "caption": "强化学习闭环把策略动作送入市场状态转移，再以含成本的奖励反馈；离线数据缺少未执行动作的反事实结果。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "59d0534c965cd1dac774cad134f9ab67e6e657251adfaa31a349d15389e5dd0d"
     },
     {
@@ -625,11 +625,11 @@
       "scene": "calibration",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/ml_alpha_validation.ipynb",
+      "companion": "notebooks/lower/ch12_ml_alpha_validation.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-calibration.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-calibration.tex",
       "caption": "概率校准比较预测概率与真实频率；排序能力相同的模型也可能具有截然不同的概率可信度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "00516a75bbce2bd68ad2f7a098a2e0a70fd67e961b28cbbc6a223f4768ca1bb9"
     },
     {
@@ -640,11 +640,11 @@
       "scene": "drift",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/ml_alpha_validation.ipynb",
+      "companion": "notebooks/lower/ch12_ml_alpha_validation.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-drift.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-drift.tex",
       "caption": "输入分布、预测分布与收益映射可以在不同时间漂移；监控必须区分数据漂移与概念漂移。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "b9a940c75b6d73c40d730d3616d0b68bcb3d60d4df7aa6c4a9bd69e3a164d75c"
     },
     {
@@ -655,11 +655,11 @@
       "scene": "ml-decision-pnl",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/ml_alpha_research.ipynb",
+      "companion": "notebooks/lower/ch13_ml_alpha_research.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-decision-pnl.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-decision-pnl.tex",
       "caption": "模型分数经过阈值、仓位上限和成本映射后才形成净收益；验证指标不能替代决策层验收。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "2d6b9a5b2a6bb0b962274b16425482394f2bc13c7ccc69ed91cc70f767d99836"
     },
     {
@@ -674,7 +674,7 @@
       "cached_asset": "tex/figures/generated/lower-dv-replication.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-replication.tex",
       "caption": "复制组合以股票与现金动态匹配衍生品暴露；无套利价格来自自融资复制，而不是主观收益预测。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "b31ac164ac10785123c7c45b145426e4d8d7be46c6f68f5b4a3534cc5092d660"
     },
     {
@@ -685,11 +685,11 @@
       "scene": "quadratic-variation",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/derivatives_stochastic.ipynb",
+      "companion": "notebooks/lower/ch14_derivatives_stochastic.ipynb",
       "cached_asset": "tex/figures/generated/lower-dv-qv.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-qv.tex",
       "caption": "Brownian 路径的一阶增量和趋于随机波动，而平方增量和随分割加密收敛到时间长度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "5ce561bf6916bafdcbe9e7c09ba67b63e61ac7617c92fd564ab05de9344f5a7c"
     },
     {
@@ -704,7 +704,7 @@
       "cached_asset": "tex/figures/generated/lower-dv-measure.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-measure.tex",
       "caption": "Girsanov 变换通过密度过程改变路径权重，使可交易资产的贴现价格在风险中性测度下成为鞅。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "5cce9e520da976688203f080d2cf85892da0ae4a897e1ec35d971cbf6d9482c5"
     },
     {
@@ -719,7 +719,7 @@
       "cached_asset": "tex/figures/generated/lower-dv-methods.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-methods.tex",
       "caption": "不同定价器共享合约与模型输入，却具有不同离散化误差；交叉方法一致性是数值验收而非数学证明。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "c78e70e5240306eec90ab7e344f62418e50a10384d1b758839475356a4dd2f49"
     },
     {
@@ -730,11 +730,11 @@
       "scene": "vol-surface",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/derivatives_numerics.ipynb",
+      "companion": "notebooks/lower/ch15_derivatives_numerics.ipynb",
       "cached_asset": "tex/figures/generated/lower-dv-vol-surface.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-vol-surface.tex",
       "caption": "隐含波动率同时随执行价和期限变化；切片形状必须与报价单位及无套利条件一起解释。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "57c91492ecedeaa54845e285923435dcd4b29b66c0df7d957a33cdc52e449403"
     },
     {
@@ -745,11 +745,11 @@
       "scene": "pde-grid",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/derivatives_numerics.ipynb",
+      "companion": "notebooks/lower/ch15_derivatives_numerics.ipynb",
       "cached_asset": "tex/figures/generated/lower-dv-pde.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-pde.tex",
       "caption": "有限差分在价格—时间网格上从终端 payoff 向前推进；边界条件和稳定区域共同约束数值解。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "c4e08df3e5ee80730425bacfcf8ee11960debf5cfe3cc0352b1e9c3876453107"
     },
     {
@@ -760,11 +760,11 @@
       "scene": "greeks",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/derivatives_hedging.ipynb",
+      "companion": "notebooks/lower/ch16_derivatives_hedging.ipynb",
       "cached_asset": "tex/figures/generated/lower-dv-greeks.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-greeks.tex",
       "caption": "Delta、Gamma 与 Vega 描述不同局部扰动方向；同一头寸的风险会随标的价格变化而重新分配。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "bf7fe8c78a8cfafc234b2c019e2e8dd7abafba92f3a1d73436a8b90d9e89206e"
     },
     {
@@ -775,11 +775,11 @@
       "scene": "hedge-error",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/derivatives_hedging.ipynb",
+      "companion": "notebooks/lower/ch16_derivatives_hedging.ipynb",
       "cached_asset": "tex/figures/generated/lower-dv-hedge-error.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-hedge-error.tex",
       "caption": "离散对冲误差是分布而非单一路径数字；调仓频率提高会降低离散误差，却可能增加交易成本。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "f34b3b3b1f99011dbed58da4f08fa2c3adca3da4c690ca38c74a50ad67f6401d"
     },
     {
@@ -790,11 +790,11 @@
       "scene": "risk-ellipse",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/portfolio_risk_estimation.ipynb",
+      "companion": "notebooks/lower/ch17_portfolio_risk_estimation.ipynb",
       "cached_asset": "tex/figures/generated/lower-pf-risk-map.pdf",
       "tex_wrapper": "tex/figures/generated/lower-pf-risk-map.tex",
       "caption": "协方差矩阵把权重方向映射为风险椭圆；主轴方向和长度分别对应特征向量与特征值。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "4cd71bd523419d0667ac3534d9c1cc250346e05c23b2f2598351ae43738abdc0"
     },
     {
@@ -805,11 +805,11 @@
       "scene": "shrinkage",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/portfolio_risk_estimation.ipynb",
+      "companion": "notebooks/lower/ch17_portfolio_risk_estimation.ipynb",
       "cached_asset": "tex/figures/generated/lower-pf-shrinkage.pdf",
       "tex_wrapper": "tex/figures/generated/lower-pf-shrinkage.tex",
       "caption": "收缩在高方差样本协方差与结构化目标之间权衡，通常以少量偏差换取更低估计波动。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "ae7c02a75728c7d501a42a64241e58eb9a4cef367aaf85db2628be3bd65aef95"
     },
     {
@@ -820,11 +820,11 @@
       "scene": "frontier",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/portfolio_risk_optimization.ipynb",
+      "companion": "notebooks/lower/ch18_portfolio_risk_optimization.ipynb",
       "cached_asset": "tex/figures/generated/lower-pf-frontier.pdf",
       "tex_wrapper": "tex/figures/generated/lower-pf-frontier.tex",
       "caption": "约束与交易成本把理论有效前沿向内推；实施组合必须在收益、风险与换手之间共同选择。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "a4d0d21e18b15250d88aea0dd2a0ebe8c452677a57a5b4764d4c8e1531771032"
     },
     {
@@ -835,11 +835,11 @@
       "scene": "tail-risk",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/portfolio_risk_tail.ipynb",
+      "companion": "notebooks/lower/ch19_portfolio_risk_tail.ipynb",
       "cached_asset": "tex/figures/generated/lower-pf-tail.pdf",
       "tex_wrapper": "tex/figures/generated/lower-pf-tail.tex",
       "caption": "VaR 标记分位点，ES 汇总阈值以外的平均损失；尾部有效样本数决定估计可信度。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "8b2c680f4836a454323da933044235797a03ce0b46eb0d89016679b19d9df092"
     },
     {
@@ -854,7 +854,7 @@
       "cached_asset": "tex/figures/generated/lower-ms-order-book.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ms-order-book.tex",
       "caption": "订单簿按价格优先、时间优先组织队列；市场单消耗可见深度并留下成交与剩余状态。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "286c307ed70f232fd1b7cbd4f74f30cda8455b3e2b812e965a6c70954c1882a9"
     },
     {
@@ -865,11 +865,11 @@
       "scene": "hawkes",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/microstructure_events.ipynb",
+      "companion": "notebooks/lower/ch20_microstructure_events.ipynb",
       "cached_asset": "tex/figures/generated/lower-ms-hawkes.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ms-hawkes.tex",
       "caption": "Hawkes 强度在事件到达后跳升并指数衰减；分支比接近一时，聚集持续时间与方差显著上升。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "d02374391a5aedc9f329ac57d31e79f245a25b6c6c19f4bf4d425907f4f1a6c8"
     },
     {
@@ -884,7 +884,7 @@
       "cached_asset": "tex/figures/generated/lower-ms-control.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ms-control.tex",
       "caption": "执行与做市控制根据库存和剩余时间选择动作，再由随机成交改变下一状态；终端惩罚约束未完成风险。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "03ca2aea2e375ad3750694832cdebfd353ac8dbb19152583a4f90b8442f21df3"
     },
     {
@@ -895,11 +895,11 @@
       "scene": "execution",
       "source": "tools/build_figures.py",
       "spec": "figures/figure-specs.json",
-      "companion": "notebooks/lower/microstructure_simulation.ipynb",
+      "companion": "notebooks/lower/ch22_microstructure_simulation.ipynb",
       "cached_asset": "tex/figures/generated/lower-ms-execution.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ms-execution.tex",
       "caption": "执行轨迹在冲击成本与库存风险之间权衡；前置成交降低尾部库存，却提高早期冲击。",
-      "source_sha256": "7064908df9cc333d9c2f3fbaef70ed97951ef348cf3cb16da34b67859f5e6349",
+      "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "6b6c1e9d3ddaf45e4293a49146f37b09563a81ac9d9d4a6910d920f9747c6f00"
     }
   ]
