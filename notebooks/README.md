@@ -1,27 +1,7 @@
-# 教学 notebooks
+# 教学实验
 
-这里的 `.ipynb` 文件是本书可执行教材的权威来源，也是读者应当打开和修改的教学界面。它们受 Git 跟踪，不需要先经过转换步骤。
+按章节打开 notebook，从上到下运行。每个实验先提出问题，再显示公式对应的中间计算；最后修改参数、观察图形并阅读反馈。随机结果会波动，不要求保持固定小数。
 
-公共计算实现放在 `src/m4q/`，Python 导入名为 `m4q`；notebook 负责提出问题、展示推导与运行实验。直接用 Jupyter 执行任意 notebook：
+上册 01–17 对应各章。下册 01 为推理练习；02–04 多因子；05–07 统计套利；08 树模型；09 网络梯度；10 序列与注意力；11 选读图传播与动态规划；12–13 验证与决策；14–16 随机分析、定价与对冲；17–19 组合与风险；20–22 事件、控制与仿真。
 
-```powershell
-$env:JUPYTER_ALLOW_INSECURE_WRITES = "true"
-$env:IPYTHONDIR = "build/ipython"
-$env:JUPYTER_RUNTIME_DIR = "build/jupyter-runtime"
-New-Item -ItemType Directory -Force build/ipython, build/jupyter-runtime | Out-Null
-uv run jupyter notebook notebooks/foundation/independent_oracle.ipynb
-# 无界面或发布时使用：
-uv run jupyter nbconvert --to notebook --execute --stdout `
-  --ExecutePreprocessor.timeout=60 `
-  --ExecutePreprocessor.allow_error_names=SystemExit `
-  notebooks/foundation/independent_oracle.ipynb
-```
-
-正式发布时，`tools/publish.ps1 -Release` 会把执行后的副本写入被忽略的 `output/notebooks/`，并将它们打包。不要手工编辑 `output/` 中的文件；重新执行发布命令即可得到新的证据副本。
-
-## 命名约定
-
-- `upper/chNN_<slug>.ipynb`：上册一个章节对应一个教学 notebook。
-- `lower/chNN_<slug>.ipynb`：下册严格按正文目录编号；文件名直接给出 notebook 对应的章节序号和主题。
-
-编号顺序为：`ch01_brainteasers`；`ch02`--`ch04` 多因子；`ch05`--`ch07` 统计套利；`ch08_ml_alpha_model`、`ch12_ml_alpha_validation`、`ch13_ml_alpha_research` 机器学习 Alpha；`ch14`--`ch16` 衍生品；`ch17`--`ch19` 组合风险；`ch20`--`ch22` 微观结构。正文的 `ch09`--`ch11` 深度、序列和前沿内容共用 `ch08_ml_alpha_model.ipynb` 模型证据包，因此不复制出多个只执行同一 oracle 的 notebook。
+首次讲授的核心计算直接写在单元格中。图传播与动态规划是概念实验，不代表已经训练完整的 GNN 或深度强化学习模型。环境安装、批量执行与出版说明见仓库维护文档。

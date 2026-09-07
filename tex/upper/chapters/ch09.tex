@@ -43,9 +43,6 @@
 \input{tex/figures/generated/upper-ch09-convergence-map.tex}
 % Short alias: \input{tex/upper/figures/convergence-map.tex}
 
-
-
-
 $L^p\Rightarrow\mathbb P$ 直接来自 Markov 不等式：
 \[
  \mathbb P(|X_n-X|>\varepsilon)
@@ -185,15 +182,23 @@ $0<\varepsilon<1$，上式比率恒为 $1$；标准化和始终是 Rademacher �
 
 对 Bernoulli$(0.3)$、$n=200$、$t=0.1$，精确二项尾概率为 $0.002565$；Chebyshev、Hoeffding 与 Bernstein 界分别为 $0.105000$、$0.036631$、$0.032829$。上界比精确概率大不是错误；它们以较少分布信息换取可证明保证。比较界时必须保持同一事件、单双尾约定和严格/非严格阈值。
 
-\MFQLead{重尾、依赖与模拟记录}
+\section{样本量需求与极限的边界}
+若 $X_i\in[0,1]$ 独立同分布，希望 $\mathbb P(|\bar X_n-\mu|\geq0.05)\leq0.05$，Hoeffding 给出充分条件
+\[
+ 2e^{-2n(0.05)^2}\leq0.05
+ \quad\Longleftrightarrow\quad n\geq\frac{\log40}{0.005}.
+\]
+取整为 $n=738$。这不是最小可能样本量，而是在只知道有界性时得到的保守保证。若已知 Bernoulli 参数，可以直接累加二项概率；若参数未知却代入样本成功率，则已从严格界转成估计近似。
 
-标准 Cauchy 的均值不存在，且 iid Cauchy 样本平均仍服从标准 Cauchy。本章在固定种子下，对 $n=10$ 与 $n=1000$ 各重复 $8000$ 次，中位绝对均值分别为 $0.980865$ 与 $1.029577$，没有出现 $n^{-1/2}$ 收缩。这不是“模拟不够多”，而是有限方差 CLT 的前提不存在。
+为什么 Cauchy 均值不随样本量集中？标准 Cauchy 特征函数为 $e^{-|t|}$；独立样本平均的特征函数是 $[e^{-|t|/n}]^n=e^{-|t|}$，所以平均仍服从同一分布。notebook 同时重复生成 Bernoulli 和 Cauchy 的样本平均，比较不同 $n$ 的分位区间。前者区间会缩窄，后者在分布上保持原宽度；每次模拟的末位不同不影响这个理论判断。
 
-主实验取 Bernoulli$(0.3)$、$n=200$、重复 $20000$ 次。理论标准误为 $0.032404$，模拟均值为 $0.299794$、标准差为 $0.032672$；标准化后落在 $[-1.96,1.96]$ 的比例为 $0.943100$，相对 $0.95$ 的覆盖率容差为 $0.015$。模拟只验证实现；理论均值、精确尾概率、各集中界与 Berry--Esseen 记录均独立计算。
-
-\MFQLead{把极限条件写进量化研究}
-
-重叠持有期收益、滚动特征和成交簇会制造序列依赖；横截面共同暴露会制造簇相关；筛选幸存样本会改变概率律。研究报告至少应给出：信息时间与抽样单位、尾部与自相关诊断、有效样本量假设、HAC/分块方法的块长敏感性、滚动制度稳定性，以及失败时采用的稳健统计或压力界。渐近 $p$ 值小不代表成本后有效，集中界窄也不代表数据生成机制稳定。
+最后，常用的有效样本量来自方差而非删行计数。若平稳相关为 $\rho^k$、$|\rho|<1$，则
+\[
+ n\operatorname{Var}(\bar X_n)\longrightarrow
+ \sigma^2\left(1+2\sum_{k\geq1}\rho^k\right)
+ =\sigma^2\frac{1+\rho}{1-\rho}.
+\]
+令它等于 $\sigma^2n/n_{\rm eff}$ 才得到前述近似。$\rho=0.6$ 时 $n_{\rm eff}\approx n/4$；负相关则可能增加均值估计的信息量。该计算只解释方差，不单独证明依赖情形的 CLT。
 
 \noindent\textbf{延伸阅读。}概率收敛与渐近统计的条件和反例参见\cite{billingsley1999convergence,vanderVaart1998asymptotic}。
 

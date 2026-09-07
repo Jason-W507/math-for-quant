@@ -658,7 +658,7 @@
       "companion": "notebooks/lower/ch13_ml_alpha_research.ipynb",
       "cached_asset": "tex/figures/generated/lower-ml-decision-pnl.pdf",
       "tex_wrapper": "tex/figures/generated/lower-ml-decision-pnl.tex",
-      "caption": "模型分数经过阈值、仓位上限和成本映射后才形成净收益；验证指标不能替代决策层验收。",
+      "caption": "模型分数经过阈值、仓位上限和成本映射后才形成净收益；预测误差较小并不保证净收益为正。",
       "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
       "asset_sha256": "2d6b9a5b2a6bb0b962274b16425482394f2bc13c7ccc69ed91cc70f767d99836"
     },
@@ -718,9 +718,9 @@
       "companion": null,
       "cached_asset": "tex/figures/generated/lower-dv-methods.pdf",
       "tex_wrapper": "tex/figures/generated/lower-dv-methods.tex",
-      "caption": "不同定价器共享合约与模型输入，却具有不同离散化误差；交叉方法一致性是数值验收而非数学证明。",
+      "caption": "不同定价器共享合约与模型输入，却具有不同离散化误差；可通过网格加密与方法比较分析价格误差。",
       "source_sha256": "78966d1a080ddb82867c4d68b9c0bde8a2b57d0da6a461a90032283689c6adb1",
-      "asset_sha256": "c78e70e5240306eec90ab7e344f62418e50a10384d1b758839475356a4dd2f49"
+      "asset_sha256": "32d1f02fa2ea1a83be9320b4cc0a634ad2c010edd564eb15f23522305f55cfaa"
     },
     {
       "id": "lower-dv-vol-surface",

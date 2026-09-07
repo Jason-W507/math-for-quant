@@ -1,21 +1,5 @@
 \MFQTransition{组合优化答案}
-\begin{enumerate}[leftmargin=*]
-  \item $P$ 的每行定义一个绝对或相对观点，$q$ 是其期望收益，$\Omega$ 是观点误差协方差，$\tau\Sigma$ 是先验均值不确定性。减小 $\Omega$ 只表示提高置信度。
-  \item 合并 $(\mu-\pi)^\top(\tau\Sigma)^{-1}(\mu-\pi)$ 与 $(P\mu-q)^\top\Omega^{-1}(P\mu-q)$，令一阶导数为零，即得正文精度公式。
-  \item 对每个情景加入 $u_s\ge-r_s^\top w-z$ 和 $u_s\ge0$，目标为 $z+[(1-\alpha)N]^{-1}\sum_su_s$；连同满仓和 bounds 即为 LP。
-  \item 事先确定八情景最优权重为 $(0.2,0.8)$，最坏两个情景的平均损失为 $0.013$。枚举必须应用同一 0.8 上限，否则会得到不可比答案。
-  \item 上限 0.6 时可行权重落在 $[0.4,0.6]$；应重新求解而不是把原解裁剪，并报告上限乘子或枚举边界是否活跃。
-  \item 裁剪会改变权重和、风险、换手与成本，且裁剪后的点一般不满足原问题的最优性。应把边界直接写进可行域。
-  \item 均值不确定性惩罚降低暴露于低置信度收益的权重；ridge 稳定协方差谱；成本惩罚交易距离。数值形状相似不等于经济含义相同。
-\end{enumerate}
 
-事先确定 oracle：BL 后验均值为 $(0.05375,0.03)$；CVaR LP 与枚举均得到 $(0.2,0.8)$ 和 $0.013$；稳健成本感知再平衡得到 $(0.8,0.2)$、双边换手 $0.8$、现金成本 80。
-% MFQ source replacements removed=1 unit=PortfolioOptimization
-
-\input{tex/common/source-mapped-exercises}
-\MFQMappedPortfolioOptimizationSolutions
-
-\section*{逐题推导与核对}
 \begin{enumerate}[leftmargin=*]
   \item $P$ 的每行是观点组合，$q$ 是观点收益，$\Omega$ 是观点误差协方差；先验均值 $\pi$ 的不确定性用 $\tau\Sigma$ 表示。$\Omega$ 变小提高该观点精度，$\tau$ 变大降低先验精度；它们不是任意缩放参数，需在报告中给出单位和校准依据。
   \item 后验目标为
@@ -35,3 +19,9 @@
   \item “先优化再裁剪”会破坏满仓、上下界、风险预算、交易距离等约束，且裁剪后的点不再满足原目标的一阶/KKT 条件。正确做法是把所有限制直接放进可行域，重新求解并验证约束残差。
   \item 均值不确定性惩罚针对收益估计误差，协方差 ridge 针对风险矩阵病态，交易成本惩罚针对从旧权重移动的经济代价。可用三个单独压力实验改变各惩罚，比较权重、风险、换手和目标分解，避免只按数值形状猜经济含义。
 \end{enumerate}
+
+\subsection*{基础衔接：独立计算}
+$0.05-2(0.01)=0.03$。这是给定不确定集内的下界，不是对真实未来收益的无条件保证。
+
+\input{tex/common/source-mapped-exercises}
+\MFQMappedPortfolioOptimizationSolutions

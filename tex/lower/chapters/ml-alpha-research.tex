@@ -5,11 +5,12 @@
   \input{tex/generated/prerequisites/lower-ml-alpha-research}
 \end{itemize}
 
+同一个分数可以对应不同仓位，因而对应不同收益。先指定损失对应的预测对象，再用成本和风险决定是否交易，比直接最大化一条回测曲线更容易解释。
+
+
 \MFQTransition{目标函数必须对应决策}
 
 \input{tex/figures/generated/lower-ml-decision-pnl.tex}
-
-
 
 MSE 衡量点预测误差；pairwise ranking loss 惩罚收益次序与分数次序冲突；收益加权目标直接奖励 $s_ir_i$。三个目标回答不同问题：
 \[
@@ -70,7 +71,7 @@ $h$ 期标签对应的策略若每天建仓，会同时持有 $h$ 个 vintage。
 \[
 R^{\mathrm{net}}=0.05-4(0.001)=0.046.
 \]
-账本必须保存分数、rank、目标、旧仓位、订单、成交比例、实际仓位、收益日期和成本原因码。透明实现逐期递推“旧仓位 + 成交增量”；成熟库对照把每个资产的递推写成下三角线性系统并用 SciPy 求解，两者在事先确定账本上逐项一致。透明路径适合解释状态变化；稠密三角求解只适合小型批量核验，大规模稀疏系统应利用结构。两条路径都没有模拟队列、市场冲击、借券、涨跌停或停牌，不能把数值一致包装成成交模型充分。用目标仓位计算收益、删除未成交样本或把成交失败当成零仓都会产生虚假回测。
+计算记录必须保存分数、rank、目标、旧仓位、订单、成交比例、实际仓位、收益日期和成本原因码。透明实现逐期递推“旧仓位 + 成交增量”；成熟库对照把每个资产的递推写成下三角线性系统并用 SciPy 求解，两者在事先确定计算记录上逐项一致。透明路径适合解释状态变化；稠密三角求解只适合小型批量核验，大规模稀疏系统应利用结构。两条路径都没有模拟队列、市场冲击、借券、涨跌停或停牌，不能把数值一致包装成成交模型充分。用目标仓位计算收益、删除未成交样本或把成交失败当成零仓都会产生虚假回测。
 
 \MFQTransition{成本、冲击与容量}
 
@@ -98,7 +99,7 @@ C_{i,t}^{\rm impact}\approx
 
 历史回测检验时间协议和过去情景，纸面交易检验实时数据、延迟和信号稳定，影子模式在不下单时记录本应产生的订单和成交假设。三者证据强度递增，但都不等于实盘收益保证。
 
-最终测试集打开后，若继续修改模型，原测试集就成为开发数据。应发布失败结果并建立新的未来验证期，而不是反复“修到测试集变好”。这也是为什么版本、实验账本和不可变数据快照必须进入研究材料。
+最终测试集打开后，若继续修改模型，原测试集就成为开发数据。应发布失败结果并建立新的未来验证期，而不是反复“修到测试集变好”。这也是为什么版本、实验计算记录和不可变数据快照必须进入研究材料。
 
 \begin{diagnostic}
 若收益只来自极少数日期、单一行业或无法成交的小盘股，模型指标再漂亮也不是稳健 Alpha。逐笔归因、暴露分解和流动性过滤应在宣称改进之前完成。
@@ -110,29 +111,19 @@ C_{i,t}^{\rm impact}\approx
 
 预训练模型还要记录训练数据截止、模型发布日期与可能的记忆污染。零/少样本、监督微调或 PEFT 都不能绕过文本版本协议。若供应商只提供当前版本而无历史修订，研究必须降级为方法演示。
 
-路线报告由程序从三个 fixture 重建：模型与 checkpoint、顺序负例、嵌套验证、cross-fitting、校准/漂移、三类损失、仓位成交和净收益。双轨数据中，合成数据是正确性 oracle；WDI 公共快照只做留出集流程审计，其糟糕的留出 MSE 反而提醒读者不能把小样本相关包装成 Alpha。
-
-开放 Capstone 选择一个横截面、序列或文本信号，交付：合法数据与修订协议、简单基线、PyTorch checkpoint、嵌套时序验证、校准/漂移、预测到仓位、成本容量、故障注入、限制报告和一键复现命令。NLP 项目额外提交模型卡、tokenizer、prompt/PEFT 配置与人工抽查。
-
-完整路线不要求把所有方法塞进一个项目。推荐三个互斥 Capstone：
-\begin{enumerate}
-  \item \textbf{表格 Alpha}：随机森林/提升树为主，强调截面切分、重要性稳定和成本后组合；
-  \item \textbf{序列或文本 Alpha}：CNN/Transformer/LLM 为主，强调因果 mask、语料截止、checkpoint 和漂移；
-  \item \textbf{关系或决策项目}：GNN/DRL 为主，强调动态图快照或环境反事实、简单基线和模拟器失效。
-\end{enumerate}
-每个项目都必须保留树或线性基线；“模型更复杂”不是验收标准。
-
-\begin{implementationnote}
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch13_ml_alpha_research.ipynb \
-  evidence/ml-alpha-research/oracle.json
-\end{lstlisting}
-路线级命令只构建下册与共享答案册。
-\end{implementationnote}
-
 \section{本路线的综合项目}
 
 从树模型、序列或文本模型、关系或决策模型中选择一个清楚的研究问题，保留简单基线，按时间完成选择和最终测试，并把分数转成仓位、成交和净收益。报告还要说明漂移、解释稳定性和失败时的回退方案；模型名称本身不是结果。
+
+\subsection{概率怎样产生交易阈值}
+
+假设上涨时每单位盈利 $a>0$，下跌时亏损 $b>0$，往返成本为 $c\geq0$，预测上涨概率为 $p$。买入的条件期望净收益为 $pa-(1-p)b-c$，所以仅在
+\[
+ p>\frac{b+c}{a+b}
+\]
+时为正。$a=b=1\%$、$c=0.2\%$ 时阈值是 0.6，准确率超过一半仍不够。此推导假定预测概率校准、盈亏幅度固定且成本正确；改变幅度分布后要重新求条件期望。
+
+若连续仓位 $w$ 的收益目标为 $\mu w-\gamma\sigma^2w^2/2-c|w|$，从空仓出发，最优解为 $\operatorname{soft}(\mu,c)/(\gamma\sigma^2)$，再按仓位上限截取。成本使 $|\mu|\leq c$ 的信号不交易。notebook 会画出概率阈值和无交易区，并逐期更新部分成交后的实际仓位。
 
 \input{tex/lower/chapters/ml-alpha-validation-questions}
 \input{tex/lower/chapters/ml-alpha-research-questions}

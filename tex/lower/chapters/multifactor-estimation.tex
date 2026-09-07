@@ -5,6 +5,9 @@
   \input{tex/generated/prerequisites/lower-multifactor-estimation}
 \end{itemize}
 
+两个几乎相同的因子可能给出稳定的预测，却给出剧烈变化的系数。正则化针对的正是这种可识别方向不足的问题；先看目标怎样变化，再讨论参数选择。
+
+
 \MFQLead{从正规方程到数值求解}
 
 
@@ -42,32 +45,6 @@ Lasso 目标为
 \]
 透明实现得到 $0.470000$，与库实现误差低于 $10^{-10}$\cite{tibshirani1996regression}。零范数特征列必须在迭代前拒绝；高度相关特征中“选中哪一个”可能随小扰动改变，所以稀疏不等于经济解释稳定。
 
-\MFQTransition{双实现协议}
-
-透明实现负责：展示目标函数、单位、截距规则、更新公式和失败条件。成熟库负责：提供独立实现、更多诊断和工业级数值路径。交叉检查覆盖横截面与面板回归、中性化残差、IC、Rank IC、衰减、BH、ridge 与 lasso；至少比较系数、预测、残差、目标函数与退出状态。只比较“程序跑完”没有证据强度。
-
-\begin{longtable}{p{0.18\textwidth}p{0.34\textwidth}p{0.34\textwidth}}
-\toprule
-任务 & 透明路径 & 成熟库路径 \\
-\midrule
-横截面/两遍回归 & NumPy 最小二乘与手算 oracle & \texttt{statsmodels.OLS} \\
-Ridge & 闭式线性方程 & \texttt{sklearn.linear\_model.Ridge} \\
-Lasso & 坐标下降与软阈值 & \texttt{sklearn.linear\_model.Lasso} \\
-\bottomrule
-\end{longtable}
-
-\MFQTransition{WDI 事先确定截面：只演示研究设计}
-
-外部快照使用 2013 年资本形成增速作信号、2014 年人均 GDP 增速作结果，覆盖 7 个国家，严格满足信号年早于结果年。文件绑定 SHA-256，并记录 World Bank WDI 来源与 CC BY 4.0 许可。事先确定相关系数约为 $-0.336654$。
-
-这个数不能被称为股票因子收益：样本只有 7 个国家，变量是宏观增速，没有可交易资产、发布日期滞后、交易成本或因果识别。它的唯一用途是让读者练习“外部数据必须同时带来源、许可、哈希、字段解释、时间协议和限制声明”。合成面板仍是唯一正确性 oracle。
-
-\begin{implementationnote}
-运行 \path{notebooks/lower/ch03_multifactor_estimation.ipynb}。惩罚路径图展示 ridge 收缩；将设计矩阵换成全零列会触发稳定失败。随后核对透明实现与两个成熟库的最大系数差。
-\end{implementationnote}
-
-Capstone 必须保存训练期变换参数、惩罚路径、选择规则、库版本、条件数和实现差异。若透明实现与库实现不一致，先确定输入和目标函数，不允许挑选看起来更好的一份输出。
-
 \MFQTransition{滚动、扩展与加权估计}
 
 扩展窗口使用全部历史，方差较小但对制度变化反应慢；固定滚动窗口遗忘旧数据，方差更大。指数权重最小化
@@ -94,6 +71,12 @@ Capstone 必须保存训练期变换参数、惩罚路径、选择规则、库�
 \]
 聚类数太少时渐近近似不可靠，应报告簇数并考虑 wild bootstrap。标准误方法不能事后根据显著性选择。
 
-\begin{implementationnote}
-把惩罚路径扩成“系数--样本外误差--换手”三联图。若最小验证误差对应极不稳定系数，可采用 one-standard-error rule 选择更简单模型，但规则必须在最终测试前事先确定。
-\end{implementationnote}
+\subsection{从奇异方向理解 ridge 与 lasso}
+
+设 $X=UDV^T$，奇异值为 $d_j$。把 $\beta=V\theta$ 代入 ridge 正规方程，逐坐标得到
+\[
+ \hat\theta_j=\frac{d_j}{d_j^2+\lambda}u_j^Ty.
+\]
+OLS 在该方向的系数为 $u_j^Ty/d_j$，所以 ridge 把它乘以 $d_j^2/(d_j^2+\lambda)$。小奇异值对应的方向收缩最多；它不是把所有系数乘同一常数。$d_1=10,d_2=0.1,\lambda=1$ 时两个收缩因子分别约为 $0.9901,0.0099$。
+
+一列设计 $x=(1,2)$、$y=(1,1)$，有 $x^Tx=5,x^Ty=3$。OLS 为 $3/5$；ridge 取 $\lambda=1$ 得 $3/6=1/2$；lasso 的次梯度方程给 $\operatorname{soft}(3,1)/5=2/5$。若损失改为平均平方和 $\|y-X\beta\|^2/(2n)$，保持同一解需要把惩罚参数也除以 $n$。notebook 会显示这一列算例和两个共线特征的惩罚路径，允许改变噪声和惩罚强度。

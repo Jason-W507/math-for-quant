@@ -15,10 +15,10 @@
 \end{enumerate}
 
 \subsection*{数值编程}
-\begin{enumerate}[nosep,leftmargin=*]
-  \item 复现 $p=1,2,4$ 的 $\lVert x\rVert_p$、$N=64$ 的中点积分、实际误差和解析上界；expected 必须独立写出。
-  \item 复制参照数据后分别注入 `NaN`、改变 $p$ 值、网格数、截断尺寸和期望数组长度；记录五类稳定诊断。
-  \item 编写 typewriter 序列实验：对每层输出单项 $L^p$ 范数，并跟踪一个非二进点的命中序列，验证范数趋零而点值不收敛。
+\begin{enumerate}[leftmargin=*]
+  \item 画出 $n^a\mathbf1_{(0,1/n]}$ 的 $L^p$ 范数，比较 $a=1/3,p=1,2,3,4$。
+  \item 构造正文正负对角矩阵，比较 $N\times N$ 与 $(N+1)\times N$ 的和。
+  \item 改变单个点上的函数值，比较普通上确界与本质上确界。
 \end{enumerate}
 
 \subsection*{研究判断}
@@ -28,3 +28,6 @@
   \item 研究员在无限时间轴上用“高阶矩控制低阶矩”删去一个风险检查。评价该论证，并给出最小修制方案。
 \end{enumerate}
 \endgroup
+
+\subsection*{基础衔接：独立计算}
+令 $f_n=n^{1/3}\mathbf1_{(0,1/n]}$。分别判断 $L^1,L^2,L^3$ 收敛到零是否成立。

@@ -15,10 +15,10 @@
 \end{enumerate}
 
 \subsection*{数值编程}
-\begin{enumerate}[nosep,leftmargin=*]
-  \item 用解析积分、两个样本量和多个独立 seeds 核对 $N^{-1/2}$ 误差率，并提交误差预算。
-  \item 实现控制变量实验；故意把已知均值改为 $0.6$，解释为何 VRF 不变而答案错误。
-  \item 穷举 $(1,2,4)$ 的 27 个 bootstrap 均值，再用随机重抽样逼近精确分布并比较误差。
+\begin{enumerate}[leftmargin=*]
+  \item 比较普通、控制变量和重要性抽样的逐样本贡献与标准误。
+  \item 改变控制变量中心，解释低方差为何仍可能错误。
+  \item 穷举样本 $(1,2,4)$ 的全部有序重抽样均值。
 \end{enumerate}
 
 \subsection*{研究判断}
@@ -28,3 +28,6 @@
   \item 因子从五百个候选中筛选后再 bootstrap 最终一个因子，区间遗漏了什么不确定性？
 \end{enumerate}
 \endgroup
+
+\subsection*{基础衔接：独立计算}
+重要性抽样采用 $q(x)=3x^2$ 时，积分 $\int_0^1x^2dx$ 的贡献和方差是多少？为什么现实中难以普遍实现？

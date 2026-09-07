@@ -15,10 +15,10 @@
 \end{enumerate}
 
 \subsection*{数值编程}
-\begin{enumerate}[nosep,leftmargin=*]
-  \item 复现 $m=2,4,8$ 的有限和以及 $n=10,100$ 的尖峰面积、固定点值与交换差额，并逐项对照预先给定的解析参照；expected 不得由同一循环生成。
-  \item 修改临时参照数据，分别注入 `NaN`、删去一个期望值、改变简单函数层级、尖峰下标和固定点；记录五类稳定诊断并解释它们保护的证据含义。
-  \item 实现一个固定均匀网格积分器研究尖峰列；改变 $n$ 与网格规模，报告何时漏采质量，并与解析面积 $1$ 比较。
+\begin{enumerate}[leftmargin=*]
+  \item 计算 $m=2,4,8$ 时逼近 $x$ 的二进台阶积分。
+  \item 改变尖峰 $n\mathbf1_{(0,1/n]}$ 的 $n$，比较面积与固定点值。
+  \item 比较两种 Pareto 模型的截断期望，并解释能否用 DCT。
 \end{enumerate}
 
 \subsection*{研究判断}
@@ -28,3 +28,6 @@
   \item 模拟程序在越来越密的网格上给出稳定积分。设计一份比“再加网格”更强的可积性与极限交换审计。
 \end{enumerate}
 \endgroup
+
+\subsection*{基础衔接：独立计算}
+设 $X$ 的密度为 $2x^{-3}$（$x\geq1$）。求 $\mathbb EX$ 与 $\mathbb EX^2$，判断能否用 $X^2$ 支配函数列并调用 DCT。

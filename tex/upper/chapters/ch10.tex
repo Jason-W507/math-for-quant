@@ -28,7 +28,7 @@ $(\hat\theta_n-\mathbb E\hat\theta_n)+b$；平方取期望后，交叉项因中�
 $\operatorname{Var}(\bar X)=0.25$，考虑收缩估计
 $\tilde\theta=0.8\bar X$。它的偏差为 $-0.2$、方差为
 $0.8^2\times0.25=0.16$，所以 MSE 是
-$0.16+(-0.2)^2=0.20$，小于无偏估计的 $0.25$。本章基准 固定输出
+$0.16+(-0.2)^2=0.20$，小于无偏估计的 $0.25$。
 \texttt{mse=(0.250000,0.200000)}。无偏不是“最佳”的同义词；比较估计量必须先声明损失函数与参数范围。
 
 反过来，无偏也不保证一致。若 $X_i\sim\mathcal N(\theta,1)$，取
@@ -149,7 +149,7 @@ $X^Ty=(5,6)^T$，而
  \widehat\beta=(7/6,1/2)^T,\qquad
  \widehat\varepsilon=(-1/6,1/3,-1/6)^T,
 \]
-此时 $X^T\widehat\varepsilon=0$、残差平方和为 $1/6$。如果把第一系数误抄成 $2/3$，预测值仍可能看似平滑，但 $X^T\widehat\varepsilon$ 就不再为零；正交性是比图形直觉更可靠的实现检查。这个例子提醒读者：先检查代数账本，再讨论标准误和经济解释。
+此时 $X^T\widehat\varepsilon=0$、残差平方和为 $1/6$。如果把第一系数误抄成 $2/3$，预测值仍可能看似平滑，但 $X^T\widehat\varepsilon$ 就不再为零；正交性是比图形直觉更可靠的实现检查。这个例子提醒读者：先检查代数计算记录，再讨论标准误和经济解释。
 \end{example}
 
 \MFQLead{标准误各自修什么}
@@ -197,9 +197,6 @@ $\alpha/(m-j+1)$ 比较，遇到首次不拒绝即停止；它同样强控制 FW
 
 \input{tex/figures/generated/upper-ch10-multiple-testing.tex}
 
-
-
-
 Benjamini--Hochberg（BH）控制的是
 \[
  \operatorname{FDR}=\mathbb E\!\left[\frac{V}{R\vee1}\right],
@@ -226,6 +223,17 @@ $\max(Z_1,Z_2)=(Z_1+Z_2+|Z_1-Z_2|)/2$，所以两个独立零效应正态估计�
 量化数据还要求时点正确的资产池与特征、重叠收益的 HAC 或分块处理、横截面/日期聚类，以及退市、停牌和制度变化记录。确认结果最终还要过经济效应门：成本、换手、冲击、容量与样本外稳定性。FDR 控制不是盈利保证，稳健标准误也不是因果识别。
 
 配套计算只承担核对解析记录、固定种子模拟和负例门槛的工作；它不能替代本节对抽样机制、识别条件和经济效应的论证。
+
+\section{置信区间怎样由重复抽样产生}
+
+考虑 $X_i\sim N(\theta,\sigma^2)$ 独立，且 $\sigma$ 已知。标准化均值 $Z=\sqrt n(\bar X-\theta)/\sigma$ 精确服从标准正态，故
+\[
+ \mathbb P_\theta\left(\bar X-1.96\frac\sigma{\sqrt n}
+ \leq\theta\leq\bar X+1.96\frac\sigma{\sqrt n}\right)\approx0.95.
+\]
+这个概率对固定 $\theta$ 和随机端点取值。取 $n=25,\sigma=2,\bar X=1.2$，区间为 $[0.416,1.984]$；检验 $\theta=0$ 时统计量为 3，区间不含零。但如果只挑选 20 次实验中最大的均值，这个枢轴量已被选择改变，不能原样声称选择后的区间有 95\% 覆盖率。
+
+notebook 将生成许多独立数据集，每个数据集画一个区间；先固定报告第一项，再改成报告最大项，比较覆盖率。它还逐步构造 OLS 的残差和稳健协方差，读者可分别改变噪声方差与解释变量的相关性，观察“标准误变化”和“估计目标变化”这两个问题。
 
 \noindent\textbf{延伸阅读。}回归与渐近理论参见\cite{hayashi2000econometrics,vanderVaart1998asymptotic}；HAC、横截面回归和数据窥探分别参见\cite{newey1987hac,fama1973risk,white2000reality}。
 

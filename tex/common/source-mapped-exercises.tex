@@ -35,7 +35,7 @@
 \end{enumerate}
 \subsection*{数值编程（来源映射替换）}
 \begin{enumerate}[nosep,leftmargin=*]
-\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{LU/Cholesky 分解与失败诊断}{GB-3-19 LU decomposition and Cholesky decomposition}对比 LU 与 Cholesky 的前提和计算结构；实现带对角门禁的 Cholesky，并用一个对称但不正定矩阵证明失败是模型证据而非“库坏了”。
+\item \MFQInterviewMeta{数值编程}{12 分钟}{中}{LU/Cholesky 分解与失败诊断}{GB-3-19 LU decomposition and Cholesky decomposition}对比 LU 与 Cholesky 的前提和计算结构；实现带对角正性条件的 Cholesky，并用一个对称但不正定矩阵证明失败是模型证据而非“库坏了”。
 \end{enumerate}}
 \providecommand{\MFQMappedUpperChSixHints}{\par\textbf{来源映射题提示：}利用 $Q^TQ=I$；谱题区分零方向与全部方向；$x^TB^TBx=\|Bx\|^2$；Cholesky 的根号参数必须为正。}
 \providecommand{\MFQMappedUpperChSixSolutions}{
@@ -46,7 +46,7 @@
 \item \textbf{GB-3-18。}$x^TB^TBx=\|Bx\|_2^2\ge0$，所以半正定。其正定当且仅当 $Bx=0$ 只有零解，即 $B$ 满列秩。
 \item \textbf{GB-3-19。}LU 面向一般方阵且通常需选主元；Cholesky 利用对称正定结构，将 $A$ 写成 $LL^T$。逐列更新时若 $a_{jj}-\sum_{k<j}l_{jk}^2\le0$，则正定假设失败。用 $\left(\begin{smallmatrix}1&2\\2&1\end{smallmatrix}\right)$ 时第二个枢轴为 $1-4<0$；应报告负特征方向和输入来源，不能加任意 jitter 后假装原矩阵有效。
 \end{enumerate}
-\par\textbf{逐步核对：}GB-3-16 中残差分解来自 $Q^TQ=I$，先把 $y=QQ^Ty+(I-QQ^T)y$ 分成列空间和正交补，再解三角方程；不形成 $X^TX$ 是因为奇异值会平方。GB-3-17/18 要把零特征值解释为零风险方向而非零矩阵，并检查 $B$ 的列空间；GB-3-19 的对角门禁、主元和残差必须逐项记录，收缩只在有明确 PSD 目标和敏感性证据时使用。\MFQInterviewFollowup{GB-3-16：列近似相关时 QR 为什么比正规方程稳定？GB-3-17 与 GB-3-18：零特征值对风险模型意味什么？GB-3-19：何时允许收缩而不是盲目加 jitter？}}
+\par\textbf{逐步核对：}GB-3-16 中残差分解来自 $Q^TQ=I$，先把 $y=QQ^Ty+(I-QQ^T)y$ 分成列空间和正交补，再解三角方程；不形成 $X^TX$ 是因为奇异值会平方。GB-3-17/18 要把零特征值解释为零风险方向而非零矩阵，并检查 $B$ 的列空间；GB-3-19 的对角正性条件、主元和残差必须逐项记录，收缩只在有明确 PSD 目标和敏感性证据时使用。\MFQInterviewFollowup{GB-3-16：列近似相关时 QR 为什么比正规方程稳定？GB-3-17 与 GB-3-18：零特征值对风险模型意味什么？GB-3-19：何时允许收缩而不是盲目加 jitter？}}
 
 \providecommand{\MFQMappedUpperChSevenQuestions}{
 \subsection*{笔试推导（来源映射替换）}
@@ -81,7 +81,7 @@
 \item \textbf{GB-4-31。}定义要求 $N(t)-N(s)\sim\mathrm{Poisson}(\lambda(t-s))$，且不相交区间增量独立。模拟可比较样本均值、方差和交叉协方差是否接近理论值，但“协方差接近零”不证明独立，且罕见尾部需要更大样本。
 \item \textbf{GB-4-39。}联合概率 $q=P(D_1=D_2=1)$ 满足 $\max(0,2p-1)\le q\le p$；Bernoulli 相关系数若精确给定且两边际相同，可由 $q=p^2+\rho p(1-p)$ 恢复，但还必须落在可行界内。真实信用组合还需期限结构、共同因子和尾部依赖，单一相关系数不能跨状态外推。
 \end{enumerate}
-\par\textbf{逐步核对：}GB-4-03 的最小状态只保留“第一人座位”和“最后一人座位”是否仍空；每次被迫随机选座后按这两个状态递推，得到对称的 $1/2$。GB-4-01 写吸收差分方程并用边界解，GB-4-05 用“点数选择—花色选择—第五张”三层计数，GB-4-37 用单位正方形截线长度得到三角密度。数值题把精确式作为 oracle，模拟只核对均值/方差和置信误差；GB-4-39 先检查 $q$ 的 Fr\'echet 界，再讨论相关系数或共同因子，不能跳过可行性。\MFQInterviewFollowup{GB-4-01：有偏硬币时命中概率如何变化？GB-4-03：首位旅客按非均匀分布选座时结论如何改？GB-4-05：允许 joker 后计数如何重做？GB-4-10：闰日和非均匀出生率会破坏哪一步？GB-4-29：到达分布非均匀时如何积分？GB-4-31：非齐次强度怎样改变增量分布？GB-4-37：怎样用特征函数复核卷积？GB-4-38：非等概标签的瓶颈是什么？GB-4-39：怎样用单因子模型产生尾部相关？}}
+\par\textbf{逐步核对：}GB-4-03 的最小状态只保留“第一人座位”和“最后一人座位”是否仍空；每次被迫随机选座后按这两个状态递推，得到对称的 $1/2$。GB-4-01 写吸收差分方程并用边界解，GB-4-05 用“点数选择—花色选择—第五张”三层计数，GB-4-37 用单位正方形截线长度得到三角密度。数值题把精确式作为解析参照，模拟只核对均值/方差和置信误差；GB-4-39 先检查 $q$ 的 Fr\'echet 界，再讨论相关系数或共同因子，不能跳过可行性。\MFQInterviewFollowup{GB-4-01：有偏硬币时命中概率如何变化？GB-4-03：首位旅客按非均匀分布选座时结论如何改？GB-4-05：允许 joker 后计数如何重做？GB-4-10：闰日和非均匀出生率会破坏哪一步？GB-4-29：到达分布非均匀时如何积分？GB-4-31：非齐次强度怎样改变增量分布？GB-4-37：怎样用特征函数复核卷积？GB-4-38：非等概标签的瓶颈是什么？GB-4-39：怎样用单因子模型产生尾部相关？}}
 
 \providecommand{\MFQMappedUpperChEightQuestions}{
 \subsection*{口述概念（来源映射替换）}
@@ -173,7 +173,7 @@
 \item \MFQInterviewMeta{笔试推导}{12 分钟}{中}{有限差分误差}{GB-7-15 Finite difference}从 Taylor 展开推导中心差分的一阶导数公式与 $O(h^2)$ 截断误差，再解释 $h$ 过小时舍入误差为何上升。
 \item \MFQInterviewMeta{数值编程}{15 分钟}{中}{Monte Carlo 误差预算}{GB-7-14 Monte Carlo}用 Monte Carlo 估计 $E[e^Z]$（$Z\sim N(0,1)$），给出独立理论值、标准误和置信区间；再用 antithetic variates 比较方差而不是只比较单次误差。
 \end{enumerate}}
-\providecommand{\MFQMappedUpperFourteenHints}{\par\textbf{来源映射题提示：}Newton 需同时检查残差与步长；中心差分把两侧 Taylor 展开相减；Monte Carlo 先用矩母函数给独立 oracle，再比较配对样本的方差。}
+\providecommand{\MFQMappedUpperFourteenHints}{\par\textbf{来源映射题提示：}Newton 需同时检查残差与步长；中心差分把两侧 Taylor 展开相减；Monte Carlo 先用矩母函数给解析参照，再比较配对样本的方差。}
 \providecommand{\MFQMappedUpperFourteenSolutions}{
 \section*{来源映射替换题}
 \begin{enumerate}[leftmargin=*]
@@ -181,7 +181,7 @@
 \item \textbf{GB-7-15。}两式相减得 $[f(x+h)-f(x-h)]/(2h)=f'(x)+h^2f^{(3)}(\xi)/6$。截断误差随 $h^2$ 降低，但两近数相减的浮点绝对误差约为 $\epsilon|f|$，除以 $h$ 后放大为 $O(\epsilon/h)$，因此存在最优中间尺度。
 \item \textbf{GB-7-14。}正态矩母函数给 $E[e^Z]=e^{1/2}$，且 $\mathrm{Var}(e^Z)=e^2-e$。独立样本均值的标准误为样本标准差除以 $\sqrt n$。反变量配对使用 $[e^Z+e^{-Z}]/2$；应在相同随机预算下比较配对估计量的样本方差和区间宽度，而不是挑一次更接近真值的结果。
 \end{enumerate}
-\par\textbf{逐步核对：}Newton 每步同时记录 $x_k,f(x_k),f'(x_k),\Delta x_k$，以残差、相对步长和最大迭代共同停止；阻尼/信赖域限制远跳。中心差分的总误差可写 $C_1h^2+C_2\epsilon/h$，平衡两项得到中间最优尺度。Monte Carlo 先用 $e^{1/2}$ 和 $e^2-e$ 做独立 oracle，再用相同总随机预算比较 antithetic 配对样本方差和区间，不能按单次误差挑优。\MFQInterviewFollowup{GB-3-09：如何用阻尼或信赖域避免跳远？GB-7-14：控制变量与重要性抽样分别需要什么额外结构？GB-7-15：如何从截断与舍入两项估计最佳 $h$？}}
+\par\textbf{逐步核对：}Newton 每步同时记录 $x_k,f(x_k),f'(x_k),\Delta x_k$，以残差、相对步长和最大迭代共同停止；阻尼/信赖域限制远跳。中心差分的总误差可写 $C_1h^2+C_2\epsilon/h$，平衡两项得到中间最优尺度。Monte Carlo 先用 $e^{1/2}$ 和 $e^2-e$ 做解析参照，再用相同总随机预算比较 antithetic 配对样本方差和区间，不能按单次误差挑优。\MFQInterviewFollowup{GB-3-09：如何用阻尼或信赖域避免跳远？GB-7-14：控制变量与重要性抽样分别需要什么额外结构？GB-7-15：如何从截断与舍入两项估计最佳 $h$？}}
 
 \providecommand{\MFQMappedDerivativesStochasticQuestions}{
 \section*{研究判断（来源映射替换）}
@@ -213,4 +213,4 @@
 \item \MFQInterviewMeta{口述概念}{10 分钟}{中}{VaR 的性质与反例}{GB-6-15 Value at Risk}解释历史 VaR、参数 VaR 与 ES 的估计对象；构造一个 VaR 不次可加的简单离散损失例，并说明这对风险限额意味着什么。
 \end{enumerate}}
 \providecommand{\MFQMappedPortfolioTailHints}{\par\textbf{来源映射题提示：}让两个头寸各自以小概率损失、且损失事件互斥；单项 VaR 可为零而组合 VaR 为正。}
-\providecommand{\MFQMappedPortfolioTailSolutions}{\section*{来源映射替换题}\begin{enumerate}[leftmargin=*]\item \textbf{GB-6-15。}历史法取经验损失分位数，参数法在分布假设下求分位数，ES 是越过分位点的尾部平均。令两个头寸各以 $4\%$ 概率损失 1、事件互斥，其余概率损失 0；在 $95\%$ 水平各自 VaR 为 0，而组合有 $8\%$ 概率损失 1，VaR 为 1，故 $\mathrm{VaR}(X+Y)>\mathrm{VaR}(X)+\mathrm{VaR}(Y)$。限额系统不能把分散收益当作由 VaR 自动保证。\end{enumerate}\par\textbf{逐步核对：}先画离散损失分布并数清置信水平两侧的概率质量，再分别计算单项和组合分位点；把置信度提到 99\% 后尾部观察数更少，必须给样本量/有效尾部数和区间，否则只能返回 warn/reject。\MFQInterviewFollowup{GB-6-15：把置信度提到 $99\%$ 时，需要多少尾部观测才能支撑可辩护的 ES？}}
+\providecommand{\MFQMappedPortfolioTailSolutions}{\section*{来源映射替换题}\begin{enumerate}[leftmargin=*]\item \textbf{GB-6-15。}历史法取经验损失分位数，参数法在分布假设下求分位数，ES 是最坏给定概率质量的平均；有原子时需对分位点质量部分加权。令两个头寸各以 $4\%$ 概率损失 1、事件互斥，其余概率损失 0；在 $95\%$ 水平各自 VaR 为 0，而组合有 $8\%$ 概率损失 1，VaR 为 1，故 $\mathrm{VaR}(X+Y)>\mathrm{VaR}(X)+\mathrm{VaR}(Y)$。限额系统不能把分散收益当作由 VaR 自动保证。\end{enumerate}\par\textbf{逐步核对：}先画离散损失分布并数清置信水平两侧的概率质量，再分别计算单项和组合分位点；把置信度提到 99\% 后尾部观察数更少，必须给样本量/有效尾部数和区间，并解释少量尾部数据带来的局限。\MFQInterviewFollowup{GB-6-15：把置信度提到 $99\%$ 时，需要多少尾部观测才能支撑可辩护的 ES？}}

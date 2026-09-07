@@ -4,7 +4,7 @@
 \section*{口述概念}
 \begin{enumerate}[leftmargin=*]
   \item 定义规定本书如何使用一个符号或术语，本身不是待判真的经验陈述；命题在给定定义和假设后具有真假值。“$R_p=\sum_iw_ir_i$”选定了本章的组合简单收益口径。凸组合界则声称该对象满足上下界，必须由证明建立一般性，或被一个合法反例推翻。
-  \item $A\Rightarrow B$ 表示 $A$ 对 $B$ 充分，$B$ 对 $A$ 必要。若“没有未来信息”是可信回测的必要条件，那么发现未来信息足以否决回测；但没有发现未来信息并不能证明成本、选择偏差与统计不确定性都合格。通过必要门禁只意味着“尚未因此被否决”。
+  \item $A\Rightarrow B$ 表示 $A$ 对 $B$ 充分，$B$ 对 $A$ 必要。若“没有未来信息”是可信回测的必要条件，那么发现未来信息足以否决回测；但没有发现未来信息并不能证明成本、选择偏差与统计不确定性都合格。通过必要条件只意味着“尚未因此被否决”。
   \item 合法反例必须属于原定义域、满足原命题全部假设，却让结论失败。研究某一假设的必要性时，最好只删除这一条。$w=(2,0,0)$ 虽非标准凸权重并可能越界，但其权重和为 2，同时破坏归一化；它不能把越界归因于非负性，因为三个权重仍非负。
 \end{enumerate}
 
@@ -30,44 +30,18 @@
 \end{enumerate}
 
 \section*{数值编程}
-本章独立参照标记为 $0.013$ 与 $0.035$。
 \begin{enumerate}[leftmargin=*]
-  \item 三项贡献分别为 $0.010,-0.003,0.006$，所以 $R_p=0.013$；分量最小值为 $-0.01$、最大值为 $0.03$。运行
-  \begin{center}
-  \path{uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch01_convex_bound.ipynb}
-  \end{center}
-  应逐字包含以下字段：
-  \begin{lstlisting}
-oracle=passed weighted_return=0.013000
-lower=-0.010000 upper=0.030000
-counterexample=0.035000
-  \end{lstlisting}
-  \item 六种输入依次给出以下完整稳定诊断：
-  \begin{lstlisting}
-assumption gate failed: weights must sum to one
-assumption gate failed: weights must be nonnegative
-counterexample gate failed: weights must sum to one
-counterexample gate failed: deleted nonnegativity assumption is absent
-assumption gate failed: returns and weights must have equal length
-assumption gate failed: returns and weights must be finite
-  \end{lstlisting}
-  它们依次保护正常案例的归一化与非负性、受控反例只删除一条假设、点积定义域和有限数值域。
-  \item 可用 \texttt{Fraction} 保存整数基点收益与有理权重。对每组输入先用独立参照累加 $\sum_iw_ir_i$，再取最小值、最大值并比较。期望结果必须来自分数算术或解析记录，而不是调用待验收的 NumPy 点积。若权重非负且和为 1，任何越界都应作为程序或输入错误报告；若主动加入负权重，则记录权重、收益与越界方向作为失败见证。
+  \item 贡献为 $(0.010,-0.003,0.006)$，总和 $0.013$；改动后为 $0.035$，高于最大分量 $0.03$，因为有负权重。
+  \item 在 $w=1/2$ 两线相交且最坏收益为 0。偏离交点时其中一条严格为负，因此最大值为 0。
+  \item 和的方差为 $8+2\gamma$，对应标准差为 $\sqrt{10},\sqrt8,\sqrt6$；只有零协方差时可用独立方差相加。
 \end{enumerate}
 
 \section*{研究判断}
 \begin{enumerate}[leftmargin=*]
-  \item 可写成“可信回测 $\Rightarrow$ 已合理建模手续费”，即手续费门禁是可信性的必要条件之一，而非充分条件。即使通过，仍可能存在未来信息、幸存者偏差、参数选择泄漏、容量不足或不恰当的统计检验。
+  \item 可写成“可信回测 $\Rightarrow$ 已合理建模手续费”，即手续费条件是可信性的必要条件之一，而非充分条件。即使通过，仍可能存在未来信息、幸存者偏差、参数选择泄漏、容量不足或不恰当的统计检验。
   \item $100$ 美元是货币，$2\%$ 日收益是无量纲但带一日持有期，$15\%$ 年化波动率带年化时间尺度，三者不能直接相加。替代报告可分栏展示：美元 P\&L；以明确资本基数换算的同期收益；由明确日频样本、年化规则与假设得到的波动率；最后另报风险调整指标及其定义，不制造无单位依据的“综合分”。
-  \item 一百万次随机搜索没有发现反例，只能说明抽到的有限样本通过，不能覆盖连续定义域。更强证据包包含：一般证明，明确每条假设；独立 oracle 验证代表性算例；只删除非负性并保留归一化的 $w'=(1.5,-0.5,0)$，产生 $0.035>0.03$；以及会拒绝伪反例和错维输入的程序门禁。证明负责普遍性，oracle 负责实现一致性，失败见证负责边界。
+  \item 一百万次随机搜索没有发现反例，只能说明抽到的有限样本通过，不能覆盖连续定义域。更完整的论证包含：一般证明，明确每条假设；解析或独立计算参照 验证代表性算例；只删除非负性并保留归一化的 $w'=(1.5,-0.5,0)$，产生 $0.035>0.03$；以及会拒绝伪反例和错维输入的程序条件。证明负责普遍性，解析参照 负责实现一致性，失败见证负责边界。
 \end{enumerate}
 
-\section*{恢复路径}
-先运行
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch01_convex_bound.ipynb
-\end{lstlisting}
-确认正常证据包通过。随后复制 \path{evidence/ch01/oracle.json} 到临时文件，依次修改权重和、反例非负性与向量长度，并把临时文件路径传给本章 Python 程序。恢复完成的标准不是“最终又变绿”，而是能够解释每条失败信息对应哪一个数学定义或假设。
+\section*{基础衔接：独立计算}
+展开得到 $4+4+2\times1=10$，标准差 $\sqrt{10}$。独立缩放得到方差 $8$、标准差 $\sqrt8$，遗漏两份协方差；所有数值须使用同一收益单位。

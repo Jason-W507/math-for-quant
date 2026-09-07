@@ -29,11 +29,10 @@
 \end{enumerate}
 
 \section*{数值编程}
-
 \begin{enumerate}[leftmargin=*]
-  \item 独立解析参照给出 $m=2,4,8$ 时 $0.375$、$0.46875$、$0.498046875$。尖峰面积恒为 $n(1/n)=1$；$x=0.2$ 对 $n=10,100$ 都在 $(0,1/n]$ 外，点值为零，因此极限交换差额为 1。运行本章契约后，stdout 必须逐项复现这些独立常数。
-  \item `NaN` 应触发 `numeric gate failed`；期望数量错位触发 `expected counts must match input counts`；层级、尖峰下标和固定点的改写分别触发固定账本诊断。恢复时只还原临时 JSON；不能删测试、放宽 tolerance 或用被测结果重写 expected。
-  \item 设网格点为 $j/M$。若最小正网格点 $1/M>1/n$，且未特别采样零点右侧，则所有采样值都可能为零，数值面积误报为零。即使 $M\geq n$，矩形规则的端点约定也会影响结果。报告 $M,n$、采样位置与误差，并把解析面积 $1$ 作为独立 oracle。
+  \item 等差和给 $1/2-2^{-m-1}$，分别为 $0.375,0.46875,0.498046875$。
+  \item 面积恒为 1，任意固定正点最终取零；零点也取零，所以逐点趋零但积分不趋零。
+  \item 指数 1 时为 $1+\log n$，极限无穷；指数 2 时为 $2-1/n$，可用可积的 $X$ 支配截断变量。
 \end{enumerate}
 
 \section*{研究判断}
@@ -41,16 +40,8 @@
 \begin{enumerate}[leftmargin=*]
   \item 两条路线都先证明 $L_n$ 与 $L$ 可测。路线一再证明 $0\leq L_n\uparrow L$ 并用 MCT；路线二是找到共同的可积 $G$，证明 $|L_n|\leq G$ 且 a.e. 收敛，再用 DCT。只有非负性时，Fatou 通常只能给单侧不等式。还要声明期望是否允许为无穷。
   \item 在有限数据表中，几个缺失行的经验频率可能很小，却不是连续概率模型中的零测证明；它们甚至可能由系统性停牌或接口故障产生。在一个已声明的概率空间中，只有证明对应事件可测且概率为零，才能在积分等式中按 a.e. 忽略。实务上仍要报告缺失机制和处理规则。
-  \item 审计应包含：明确测度空间和可测性；证明绝对可积或给出尾部界；列出 MCT/DCT 的逐条假设；构造共同支配函数并验证其积分；保留解析或独立 oracle；使用自适应网格或区间界检查移动峰值；对截断域给出尾部误差；最后报告有限离散证据不能覆盖的一般性限制。
+  \item 审计应包含：明确测度空间和可测性；证明绝对可积或给出尾部界；列出 MCT/DCT 的逐条假设；构造共同支配函数并验证其积分；保留解析解或独立计算；使用自适应网格或区间界检查移动峰值；对截断域给出尾部误差；最后报告有限离散证据不能覆盖的一般性限制。
 \end{enumerate}
 
-\section*{恢复路径}
-
-先运行
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch03_measure_integration.ipynb
-\end{lstlisting}
-再复制 `evidence/ch03/oracle.json` 到临时路径逐项注入坏输入。每次只改变一个门禁，记录退出码与完整 stderr，恢复后要求原始固定账本重新通过。若数值网格与解析面积冲突，先审查采样位置、区间宽度和尾部质量，不要修改独立 expected 迁就程序。
+\section*{基础衔接：独立计算}
+$\mathbb EX=2\int_1^\infty x^{-2}dx=2$；$\mathbb EX^2=2\int_1^\infty x^{-1}dx=\infty$。$X^2$ 不是可积支配函数；有限一阶矩不推出有限二阶矩。

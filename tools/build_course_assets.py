@@ -69,7 +69,7 @@ def render_notation(
         f"{body}\n"
         "\\bottomrule\n"
         "\\end{longtable}\n\n"
-        "机器可读的权威注册位于课程清单引用的 notation registry；本表由注册表确定性生成。\n"
+        "同一符号在不同模型中可能有不同含义，使用时以相应章节的定义为准。\n"
     )
 
 

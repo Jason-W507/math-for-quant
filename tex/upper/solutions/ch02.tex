@@ -24,36 +24,18 @@
 \end{enumerate}
 
 \section*{数值编程}
-本章独立标记为 $0.067232$、$0.032768$ 与 $1/2$。
 \begin{enumerate}[leftmargin=*]
-  \item 迭代依次为 $0.02,0.036,0.0488,0.05904,0.067232$。固定点是 $0.1$，所以真实误差为 $0.032768$。先验界
-  \[
-   \frac{0.8^5}{1-0.8}(0.02)=0.032768,
-  \]
-  后验界 $0.8/(1-0.8)\times(0.067232-0.05904)$ 也等于 $0.032768$。运行本章脚本后，证据行还应包含两个 \texttt{0.500000} 见证误差。
-  \item 三条完整诊断依次为：
-  \begin{lstlisting}
-contraction gate failed: factor must satisfy 0 <= q < 1
-fixed-point gate failed: declared point does not satisfy T(x)=x
-witness gate failed: indices must be positive integers
-  \end{lstlisting}
-  它们分别防止把非压缩迭代套入 Banach 定理、用错误目标点定义误差，以及在 $2^{-1/n}$ 的定义域外制造见证。
-  \item 对每个固定网格 $G$ 可计算 $\max_{x\in G}|x^n-f(x)|$，但该值只控制 $G$。解析见证 $x_n=2^{-1/n}$ 随 $n$ 接近 1，并始终给出 $1/2$。若网格不含 $x_n$，加大 $n$ 会把失败区推入最后两个网格点之间。只有解析上界、区间算术、可证明 Lipschitz 网格误差或直接求连续域上确界，才能把网格结果提升为一致误差证据。
+  \item $x_n=0.1(1-0.8^n)$，误差为 $0.1(0.8)^n$，后验界为步长的 4 倍，恰等于误差。
+  \item 误差变成 $0.1(0.99)^n$，达到 $10^{-3}$ 需 $n\geq\lceil\log0.01/\log0.99\rceil=459$，而 0.8 时为 21。
+  \item 前者趋零，后者每次为 $1/2$；移动点说明 $[0,1]$ 上收敛不一致。
 \end{enumerate}
 
 \section*{研究判断}
 \begin{enumerate}[leftmargin=*]
   \item 不能。还需声明度量和变量缩放，证明迭代保持可行状态空间，说明空间完备或相关子集闭，给出与算法匹配的收敛定理，并检查固定点残差、梯度/KKT 残差或目标差。小步长也可能来自浮点停滞、过小学习率或错误参数尺度；“最优解”还需要目标与最优性证据。
   \item 不能。若状态空间严格是 $\mathbb Q$，极限 $\sqrt2$ 永远不合法；更多迭代只会产生更长的 Cauchy 序列。模型层可把状态空间完备化为 $\mathbb R$，或改成包含目标极限的闭子集；若输出必须为有理数，则应把任务改成带明确误差容忍度的近似问题，而不是宣称在 $\mathbb Q$ 中达到极限。
-  \item 一万个点只证明有限集合上的误差。连续输入之间可能存在尖峰，且最坏位置可随模型变化。更强证据可以是：证明误差函数具有已知 Lipschitz 常数并用网格间距补偿；使用区间界或形式验证覆盖每个单元；在可解模型上用解析上确界作 oracle；再配合域外、边界和移动峰值失败测试。若只有经验网格，应把结论限定为“该验证集上通过”。
+  \item 一万个点只证明有限集合上的误差。连续输入之间可能存在尖峰，且最坏位置可随模型变化。更强证据可以是：证明误差函数具有已知 Lipschitz 常数并用网格间距补偿；使用区间界或形式验证覆盖每个单元；在可解模型上用解析上确界作 解析参照；再配合域外、边界和移动峰值失败测试。若只有经验网格，应把结论限定为“该验证集上通过”。
 \end{enumerate}
 
-\section*{恢复路径}
-先运行
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch02_analysis_foundations.ipynb
-\end{lstlisting}
-确认正向账本通过。随后复制 \path{evidence/ch02/oracle.json}，分别修改压缩因子、声明固定点和见证下标，把临时路径传给 \path{notebooks/upper/ch02_analysis_foundations.ipynb}。恢复完成时应能把每条错误连接到定理的准确量词，而不只是把 JSON 改回绿色。
+\section*{基础衔接：独立计算}
+$\sup_{0\leq x\leq1/2}x^n=2^{-n}$。因 $2^{-9}>10^{-3}$ 而 $2^{-10}<10^{-3}$，最小值为 $n=10$；此上界不依赖所选的 $x$。

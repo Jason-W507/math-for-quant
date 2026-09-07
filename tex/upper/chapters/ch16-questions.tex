@@ -15,10 +15,10 @@
 \end{enumerate}
 
 \subsection*{数值编程}
-\begin{enumerate}[nosep,leftmargin=*]
-  \item 为每行实现 $t_e\le t_a\le t_d<t_y$ 检查；构造一个只改可得时间的泄漏 fixture，验证非零退出与稳定诊断。
-  \item 给滚动标签区间实现 overlap 检查，自动生成 purge 集合；用一个反例证明随机切分会共享未来价格。
-  \item 扩展本章基准：加入未成交比例和规模相关冲击，分别报告成交条件下净收益与包含机会成本的实现差额。
+\begin{enumerate}[leftmargin=*]
+  \item 用闭区间标签 $[t,t+4]$ 算出训练 1--20 日与验证 21--25 日的重叠。
+  \item 画出毛贡献 $0.003$、换手 2、其他成本 $0.0004$ 时净收益对成本率的曲线。
+  \item 构造可得时刻晚于决策的例子，说明如何改变模型输入。
 \end{enumerate}
 
 \subsection*{研究判断}
@@ -28,3 +28,6 @@
   \item 一个策略成本前 Sharpe 很高，成本后仍为正，但资金扩大十倍后仍沿用固定 5bp 成本。你会拒绝哪项结论，要求哪些容量证据？
 \end{enumerate}
 \endgroup
+
+\subsection*{基础衔接：独立计算}
+每期毛收益 $g=0.003$，双边换手 $\tau=2$，除线性成本外还有收益成本 $h=0.0004$。求盈亏平衡的单位换手成本。

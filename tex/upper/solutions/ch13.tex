@@ -20,10 +20,10 @@ w^*=\frac{\Sigma^{-1}\mathbf1}{\mathbf1^T\Sigma^{-1}\mathbf1}.
 \end{enumerate}
 
 \section*{数值编程}
-\begin{enumerate}[leftmargin=*,start=7]
-\item \path{notebooks/upper/ch13_convex_optimization.ipynb} 从 $(2,0)$ 以步长 $0.2$ 做 500 次投影梯度，得到数值解为 $(0.500000,0.500000)$。程序从数值候选而非预先写入的解析目标值重新计算证书：驻点残差为 $2.220\times10^{-16}$，原可行、对偶可行、互补残差与原始--对偶间隙为零。命令 \texttt{--audit-candidate 0.6 0.4} 会稳定拒绝被扰动候选。负例还确认驻点 $x=0$ 的目标值为 1，并确认资格失败问题的 KKT 驻点残差恒为 1。
-\item 程序分别计算 $p^*(1.2)=0.36$、解析乘子 $0.6$，以及步长 $10^{-5}$ 的中心差分 $\{p^*(b+\delta)-p^*(b-\delta)\}/(2\delta)=0.6$。oracle 冻结右端项、差分步长与容差；同步修改输入和预期仍会被 canonical design 拒绝。
-\item 对给定 $\Sigma$ 解线性方程而不显式求逆，再按预算归一化，得到权重 $(0.711864,0.288136)$、方差 $0.030203$、条件数 $2.308723$。把非对角元从 $0.006$ 改为 $0.02$ 后，权重为 $(0.777778,0.222222)$、方差 $0.035556$、条件数 $2.941260$，权重 $L^1$ 变化相对输入改变量的放大比为 $9.416196$。两矩阵都正定且约束未改变，因此差异来自输入敏感度，而不是求解失败。
+\begin{enumerate}[leftmargin=*]
+  \item 目标为 $(x^2+y^2)/2$ 时，$b>0$ 解为 $(b/2,b/2)$；$b\leq0$ 解为 $(0,0)$。
+  \item 解为 $\operatorname{sign}(a)(|a|-\lambda)_+$，网格只是近似，未落在网格上时会有离散差。
+  \item $|a|\leq\lambda$ 时解为零，来自绝对值在零点的次梯度区间。
 \end{enumerate}
 
 \section*{研究判断}
@@ -36,16 +36,7 @@ w^*=\frac{\Sigma^{-1}\mathbf1}{\mathbf1^T\Sigma^{-1}\mathbf1}.
 
 \input{tex/common/source-mapped-exercises}
 \MFQMappedUpperThirteenSolutions
-\section*{逐题逐步核对}
-\begin{enumerate}[leftmargin=*]
-  \item 凸性定义给弦不低于函数图像；若二阶可导，先沿任意方向 $d$ 看 $\frac{d^2}{dt^2}f(x+td)=d^T\nabla^2f(x+td)d\ge0$，再由积分得到一阶下界。强凸时多出 $\frac m2\|y-x\|^2$，在最优点代入便得目标差控制距离；不可微时用次梯度替代梯度。
-  \item KKT 四条件来自原可行、对偶可行、驻点和互补松弛。局部最优到 KKT 需要 LICQ/MFCQ 等资格；凸问题中 Slater 给强对偶和乘子存在，KKT 点再由拉格朗日下界推出全局最优。缺资格时“求解器有输出”不证明必要性。
-  \item 对偶函数 $q(\lambda,\nu)=\inf_x L(x,\lambda,\nu)$ 对任意原可行点给下界，故弱对偶；Slater 下最优间隙为零，原/对偶可行加 KKT 残差就是证书。乘子解释的是约束右端改变时最优值的一阶导，只有固定单位和活跃集附近有效。
-  \item 约束 $x+y\ge1$ 下，若不活跃则无约束最小点 $(0,0)$ 不可行，所以它必须活跃。$L=\frac12(x^2+y^2)+\lambda(1-x-y)$ 的驻点给 $x=y=\lambda$，结合 $x+y=1$ 得 $(.5,.5),\lambda=.5$；代回 $q(\lambda)=\lambda-\lambda^2$，最大值 .25 与原目标一致。
-  \item 右端为 $b$ 时同样得 $x=y=b/2$，$p^*(b)=b^2/4$，所以 $dp^*/db=b/2=\lambda^*$。在 $b=1.2$，目标 .36、乘子 .6；中心差分用同一解析函数在 $b\pm10^{-5}$ 计算，独立核对斜率 .6。
-  \item 最小方差问题的拉格朗日驻点是 $2\Sigma w-\nu\mathbf1=0$，预算归一化得 $w=\Sigma^{-1}\mathbf1/(\mathbf1^T\Sigma^{-1}\mathbf1)$。若某分量为负，long-only 的乘子和互补松弛必须加入，不能把负数裁成零后仍声称满足原问题 KKT。
-  \item 投影梯度的更新为 $x_{k+1}=\Pi_C(x_k-\eta\nabla f(x_k))$；若 $f$ 的梯度 $L$-Lipschitz，取 $0<\eta<2/L$ 才能使用下降不等式。停止同时检查投影梯度映射、约束残差和目标变化；候选 $(.6,.4)$ 需重新计算证书而不是与解析目标逐字相等。
-  \item 右端灵敏度实验固定输入和差分步长，比较解析乘子、有限差分和 KKT 残差；改变一个协方差非对角元时同时报告权重、目标、条件数和扰动放大，不把“当前问题最优”误写成“研究结论稳定”。
-  \item KKT 小残差只保证当前输入的局部证书。对协方差、预期收益和成本做有符号扰动，若活跃集或权重翻转，应报告区间/稳健解；固定费用、最小手数等离散约束还需要混合整数或明确的最优性缺口。
-  \item 约束与乘子题的完整数值答案应把原始/对偶可行性、互补残差、间隙、条件数和输入 hash 放在同一表中；缺任何一项，不能从一个“solver success”字符串推出经济解释。
-\end{enumerate}
+
+
+\section*{基础衔接：独立计算}
+$x^*=-1.5$，在负半轴的导数 $x-a-\lambda=-1.5+2-0.5=0$。

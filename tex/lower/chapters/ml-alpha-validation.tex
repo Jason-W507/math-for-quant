@@ -3,34 +3,29 @@
 
 \begin{itemize}
   \input{tex/generated/prerequisites/lower-ml-alpha-validation}
-  \item 学习产出：构造 purge/embargo 的嵌套时序验证，评价校准、解释稳定性与漂移，并将 cross-fitted 分数连接到仓位、成交、成本和净收益。
-  \item 研究边界：验证集用于选择，最终测试集只能在协议事先确定后打开一次；预测指标不能替代组合与执行指标。
 \end{itemize}
+
+排序正确与概率正确是不同目标。一个模型可以把所有上涨样本排在前面，却把 60\% 的上涨概率报成 99\%；下面把时间验证与概率评价分别计算。
+
 
 \section{嵌套时间轴与选择权}
 
-标签跨越 $h$ 期时，训练末端观测的结果可能落入验证期，因此必须 purge；验证参与模型选择后，测试期前再留 embargo。事先确定索引满足
+按信息完成时间建立训练与验证，而不只按行号。若第 $t$ 行标签在 $t+h$ 才完成，拟合时只能使用已完成标签。以下为一种保守的分块选择：
 \[
-\max I_{\rm train}+h<\min I_{\rm val},\qquad
-\max I_{\rm val}+e<\min I_{\rm test}.
+ \max I_{\rm train}+h<\min I_{\rm val},\qquad
+ \max I_{\rm val}+h<\min I_{\rm test}.
 \]
-本章取训练 $0{:}7$、验证 $10{:}11$、测试 $14{:}15$，$h=e=2$。训练扩到 8 会触发 purge；测试提前到 13 会触发 embargo。
+若另外需要缓冲 $e$，应在标签完成时间之外再加 $e$。例如训练最后索引 7，$h=2$，验证从 10 开始；验证最后索引 11，其标签到 13 完成，最终测试从 14 开始。额外缓冲并非通用必需条件，不能保证数据独立。
 
 \input{tex/figures/generated/lower-ml-nested-timeline.tex}
 
-
-
-
-内层只能在外层训练区内选择超参数；外层测试衡量整个选择程序。合法特征只可由决策时点的信息集 $\mathcal I_t$ 构造。把测试结果反馈给模型后，它就变成新的验证集。尝试次数、搜索空间和提前停止规则都属于研究选择权账本。
+内层只能在外层训练区内选择超参数；外层测试衡量整个选择程序。合法特征只可由决策时点的信息集 $\mathcal I_t$ 构造。把测试结果反馈给模型后，它就变成新的验证集。尝试次数、搜索空间和提前停止规则都属于研究选择权计算记录。
 
 \section{Cross-fitting 与概率校准}
 
 cross-fitting 对每个验证块只使用更早训练块拟合，再把预测写回原时间索引。透明 NumPy 路径显式构造截距、只惩罚斜率并拒绝倒序或重叠折；成熟库路径使用相同折和相同 ridge 强度的 \texttt{Ridge}。二者事先确定预测差低于数值容差。前者适合手算与暴露约束，后者适合扩展特征维度；若库默认截距、标准化或惩罚约定不同，就不能把差异归咎于浮点误差。cross-fitting 减少同一样本同时拟合 nuisance model 和评价主效应的污染，但不能自动解决非平稳或标签泄漏。事先确定两折产生索引 4--7 的四个真正样本外预测。
 
 \input{tex/figures/generated/lower-ml-calibration.tex}
-
-
-
 
 概率校准拟合 $\Pr(Y=1\mid s)$，例如 Platt scaling 的 logistic 映射。Brier 分数
 \[
@@ -60,9 +55,6 @@ cross-fitting 对每个验证块只使用更早训练块拟合，再把预测写
 
 \input{tex/figures/generated/lower-ml-drift.tex}
 
-
-
-
 经济指标必须建立在事先确定的仓位映射后，包括净收益、波动、回撤、换手、成本、容量和暴露。模型 A 的 MSE 较低不保证组合收益更高：改善可能集中在接近零的样本，而排序头尾没有变化。评价单位应匹配决策；逐行置信区间会忽略同日相关，通常要按日期聚合或使用双向聚类、块 bootstrap。
 
 \MFQTransition{校准、阈值与拒绝决策}
@@ -91,11 +83,14 @@ Top-$k$ 重要特征集合的 Jaccard 衡量两个窗口使用的特征是否一
 漂移统计量回答“分布是否变化”，不是“变化是否有经济意义”。极显著但幅度很小的漂移可能无关紧要；样本少但影响成交规则的制度变化可能必须立即停用。
 \end{heuristic}
 
-\begin{implementationnote}
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/lower/ch12_ml_alpha_validation.ipynb \
-  evidence/ml-alpha-validation/oracle.json
-\end{lstlisting}
-\end{implementationnote}
-
 本单元向路线 Capstone 交付：嵌套切分、cross-fitted 预测、校准报告、解释稳定性和漂移响应记录。
+\subsection{Brier 分数为何鼓励诚实概率}
+
+设真实成功概率为 $q$，预测为 $p$。条件期望损失为
+\[
+ \mathbb E(p-Y)^2=q(p-1)^2+(1-q)p^2
+ =(p-q)^2+q(1-q).
+\]
+第二项与预测无关，第一项在且仅在 $p=q$ 时最小，所以 Brier 是严格适当评分。若 $q=0.6$，报告 $p=0.6$ 的期望损失为 $0.24$，报告 $0.9$ 为 $0.33$；更极端不等于更好。
+
+有限评价样本 $p=(0.2,0.8,0.6,0.4)$、$y=(0,1,1,0)$ 的 Brier 为 $(0.04+0.04+0.16+0.16)/4=0.1$。把概率分箱后比较频率可以展示校准，但每箱样本少时波动很大。notebook 用较早数据拟合预测，后续数据拟合校准器，再在更晚数据评价；不能在同一组标签上调概率又宣称校准改善。

@@ -3,9 +3,10 @@
 
 \begin{itemize}
   \input{tex/generated/prerequisites/lower-stat-arb-model}
-  \item 学习产出：把单位根、协整、OU、状态空间、regime filtering 与变点检测串成可估计模型，并将预测接入仓位、成交、成本和失效监控。
-  \item 研究边界：合成路径是数学 oracle；公开快照只验证数据协议，任何统计套利结论都必须经过候选选择、多重检验和 walk-forward 台账。
 \end{itemize}
+
+两条价格同时上涨，可能只是共享趋势；协整关心能否消除这个趋势而留下稳定偏离。先建立一个能直接消去共同趋势的模型，再研究怎样从有限样本恢复它。
+
 
 \section{先区分平稳、单位根与共同趋势}
 
@@ -38,9 +39,6 @@ y_t=1.5+2x_t+0.55^t,
 
 \input{tex/figures/generated/lower-sa-cointegration.tex}
 
-
-
-
 长期偏离进入误差修正模型：
 \[
 \Delta y_t=c+\alpha z_{t-1}+\delta\Delta x_t+u_t.
@@ -72,7 +70,7 @@ Z_{t+\Delta}=\mu+e^{-\kappa\Delta}(Z_t-\mu)
 \hat\kappa=-\frac{\log\hat\phi}{\Delta},
 \qquad t_{1/2}=\frac{\log 2}{\hat\kappa}.
 \]
-合成残差给出 $\hat\phi\approx0.5442$、半衰期约 $1.1393$ 个周期。$1/\hat\kappa$ 只是特征回归时间，不是首次通过时间。若从 $z_0>0$ 首次命中均值边界 0，扩散率为 $\sigma$，边值问题的解为
+合成残差给出 $\hat\phi\approx0.5442$、半衰期约 $1.1393$ 个周期。$1/\hat\kappa$ 只是特征回归时间，不是首次通过时间。若先中心化令 $\mu=0$，从 $z_0>0$ 首次命中均值边界 0，扩散率为 $\sigma$，边值问题的解为
 \[
 \mathbb E_{z_0}\tau_0
 =\frac{\sqrt\pi}{\kappa}
@@ -81,9 +79,6 @@ Z_{t+\Delta}=\mu+e^{-\kappa\Delta}(Z_t-\mu)
 实现从离散创新方差映射 $\sigma$，并数值积分该式；起点、边界或扩散率改变时必须重算，不能用半衰期替代。
 
 \input{tex/figures/generated/lower-sa-ou.tex}
-
-
-
 
 \begin{note}[Python 边界]
 \texttt{adfuller}、\texttt{coint} 与 \texttt{coint\_johansen} 的默认确定性项、自动滞后和临界值并不相同。调用函数前先把统计问题写成完整规格，再在报告中保存库版本与参数。
@@ -107,6 +102,16 @@ $\alpha+\beta$ 接近 1 表示波动冲击衰减慢；它不是价格均值回�
 
 两个 $I(1)$ 序列若存在 $\beta$ 使 $z_t=y_t-\beta x_t$ 平稳，则共享随机趋势。$\beta$ 的尺度要固定，例如把 $y$ 系数规范为 1。纯统计搜索会从大量资产中找到偶然平稳组合，因此候选形成机制和多重检验必须记录。
 
-滚动 $\hat\beta_t$ 变化意味着对冲比率变化，也可能说明关系失效。若每期重新估计并立刻用新 beta 重写过去价差，历史信号会被回看修订；研究账本要保存当时版本的 beta 和价差。
+滚动 $\hat\beta_t$ 变化意味着对冲比率变化，也可能说明关系失效。若每期重新估计并立刻用新 beta 重写过去价差，历史信号会被回看修订；研究计算记录要保存当时版本的 beta 和价差。
 
 这组模型为后续路线 Capstone 提供状态、半衰期与失效边界；它们描述的是可检验的动态假设，不是收益承诺。
+\subsection{误差修正由共同趋势模型推出}
+
+令 $x_t=x_{t-1}+u_t$，$z_t=\phi z_{t-1}+\eta_t$，$y_t=a+\beta x_t+z_t$。两边差分即得
+\[
+ \Delta y_t=\beta u_t+(\phi-1)z_{t-1}+\eta_t
+ =\beta\Delta x_t+(\phi-1)(y_{t-1}-a-\beta x_{t-1})+\eta_t.
+\]
+因此在这个明确生成模型里，误差修正系数恰为 $\phi-1$。$\phi=0.8$ 时，偏离为 2 对下一期条件均值的贡献是 $-0.4$，而不是“保证下一期赚 0.4”；创新仍会带来随机损失。
+
+OU 映射还给出噪声尺度。若采样间隔为 $\Delta$、离散创新方差为 $v$，则 $\kappa=-\log\phi/\Delta$，$\sigma^2=2\kappa v/(1-\phi^2)$。负的 AR 系数不可能等于实数 $\kappa>0$ 下的 $e^{-\kappa\Delta}$，所以振荡回归不能强行解释成标量 OU。已有 notebook 用平稳初值与独立创新重复模拟；改变 $\phi$ 可同时观察调整速度和检验力的变化。

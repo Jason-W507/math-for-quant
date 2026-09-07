@@ -16,10 +16,10 @@
 \end{enumerate}
 
 \section*{数值编程}
-\begin{enumerate}[nosep,leftmargin=*,start=7]
-\item 对含 10 个小量的固定序列，朴素、成对、补偿与 Decimal 求和分别得到 $0$、$8$、$10$、$10$。成对树必须冻结；它改善误差增长阶数，但本例仍损失两个单位。
-\item 用构造真值 $(1,1)$ 比较三条路径。正规方程、显式 QR 与显式 SVD 的相对系数误差分别约为 $2.221\times10^{-4}$、$1.000\times10^{-4}$ 与 $1.000\times10^{-4}$；相对残差分别约为 $4.984\times10^{-11}$、$0$ 与 $2.220\times10^{-16}$，三者对该矩阵均报告秩 2。独立秩亏矩阵的第二奇异值约 $7.32\times10^{-16}$，应报告不可识别方向而非强行解释系数。
-\item 对 $(1000,1000)$，朴素指数上溢；减去最大值后，稳定 log-sum-exp 为 $1000.693147$。比较器使用 $|a-b|\le\mathrm{atol}+\mathrm{rtol}\max(|a|,|b|)$，并先拒绝 NaN/Inf。固定缩放实验中，列缩放把条件数从 $1.000\times10^9$ 降到 $1.407\times10^1$。
+\begin{enumerate}[leftmargin=*]
+  \item $x=10^{16}$ 时直接相减可能为零，共轭式约为 $5\times10^{-9}$，避免大数消去。
+  \item 两分量变化为 $-\delta/\epsilon,+\delta/\epsilon$，是精确问题敏感性，不能靠稳定算法消除。
+  \item 稳定解对扰动右端残差可很小，但它可能明显偏离原解；必须区分这两个问题。
 \end{enumerate}
 
 \section*{研究判断}
@@ -31,17 +31,7 @@
 
 \input{tex/common/source-mapped-exercises}
 \MFQMappedUpperFourteenSolutions
-\section*{逐题逐步核对}
-\begin{enumerate}[leftmargin=*]
-  \item binary64 把数写成 $(-1)^s(1.f)_2 2^e$，有效尾数 53 位；$\varepsilon_{mach}=2^{-52}$，最近舍入的单位误差为 $2^{-53}$。在指数改变处 ulp 也改变，次正规数/NaN/Inf 不适用普通相对误差模型，答案要把输入类别先分开。
-  \item 前向误差是输出差，后向误差是让计算输出成为精确解所需的最小输入扰动，残差是方程不满足程度；条件数属于问题，稳定性属于算法。典型界是前向误差 $\lesssim\kappa(A)\times$ 后向误差，故小残差在病态问题上仍可对应大答案误差。
-  \item 共轭化 $\sqrt{x+1}-\sqrt x=1/(\sqrt{x+1}+\sqrt x)$ 避免相消；$x=10^{16}$ 时分子两项均舍入成相同数而得 0，稳定式与高精度值约 $5\times10^{-9}$。这个中间量必须和原式并列报告，不能只打印最终相等。
-  \item $X=U\Sigma V^T$ 给 $X^TX=V\Sigma^2V^T$，所以条件数从 $\sigma_{max}/\sigma_{min}$ 变成平方。正规方程残差小不代表系数可靠；QR 保持奇异值尺度，SVD 还能暴露秩亏方向。
-  \item 写 $(A+\Delta A)(x+\Delta x)=b+\Delta b$，展开并忽略 $\Delta A\Delta x$ 得 $A\Delta x\approx\Delta b-\Delta Ax$；左乘 $A^{-1}$、取范数并用 $\|A^{-1}\|\|A\|=\kappa(A)$，得到前向误差界。近奇异例中 $\kappa\approx4\times10^8$，残差 $10^{-15}$ 仍可能对应 $10^{-2}$ 的答案误差。
-  \item 对十个小量分别用 naive、pairwise、Kahan 和 Decimal；逐步保存每次部分和，才能解释 0、8、10、10 的差异。pairwise 改善误差阶数但不保证该具体数据精确；Decimal 也需说明精度和舍入模式。
-  \item 构造真值 $(1,1)$ 后，正规方程/QR/SVD 都要列系数、残差、相对误差和秩。若第二奇异值 $7.32\times10^{-16}$，应判为数值不可识别并报告最小范数/区间；不能用一个任意小 ridge 把方向伪装成精确经济系数。
-  \item log-sum-exp 先取 $m=\max_i x_i$，再算 $m+\log\sum_i e^{x_i-m}$；对 $(1000,1000)$ 得 $1000+\log2=1000.693147$，避免指数上溢。比较器先拒绝 NaN/Inf，再用 atol+rtol 规则，列缩放后还要重新报告条件数。
-  \item 研究判断先冻结协方差、单位和估计窗，列特征谱、有效秩、条件数、权重和换手；再在相关项/窗口/缩放扰动下重算。集中权重只有在谱稳定、样本外风险和交易约束都稳定时才可解释为经济信号。
-  \item 两算法都可有很小残差，因为它们可能精确求解了不同的邻近问题。必须比较后向误差、条件数、最坏扰动方向、系数前向差和留出预测；更多小数位不等于更多信息。
-  \item 数值题的独立 oracle 应放在每道题旁边：二进制/ulp 公式、精确求和、高精度矩阵解和稳定 log-sum-exp；答案册不能只在章末给一个总表，让读者猜中间量对应哪一题。
-\end{enumerate}
+
+
+\section*{基础衔接：独立计算}
+$\Delta x_2=10^{-6}/10^{-4}=0.01$，$\Delta x_1=-0.01$。输入扰动被近似共线的方程放大。
