@@ -1,10 +1,15 @@
-\chapter{时间序列、状态估计与统计套利答案}
+\chapter{时间序列、协整与 OU 参考答案}
+\section*{逐题推导与核对}
 \begin{enumerate}[leftmargin=*]
-  \item 单位根下回归量的极限由 Brownian 泛函决定，普通 t 临界值不适用；确定性项和滞后还会改变分布。
-  \item 相关衡量给定窗口中的中心化共动；协整要求若干 $I(1)$ 水平序列存在 $I(0)$ 线性组合，二者互不推出。
-  \item $\kappa=-\log\phi/\Delta$，故 $t_{1/2}=\log2/\kappa$；只有 $0<\phi<1$ 才能映射为该 OU。
-  \item 从 $w_t=A_1w_{t-1}+\cdots+A_pw_{t-p}+u_t$ 减去 $w_{t-1}$，得 $\Delta w_t=\Pi w_{t-1}+\sum\Gamma_j\Delta w_{t-j}+u_t$；$\beta$ 给长期组合，$\alpha$ 给调整方向和速度。
-  \item 随 $\phi\uparrow1$，半衰期发散；$\phi\le0$ 不能用实数 $\kappa$ 的等间隔 OU 映射，$\phi\ge1$ 不均值回归。
-  \item 透明回归验证代数；库函数提供 MacKinnon 或 Johansen 非标准临界值。若回归规格不同，统计量差异不是实现错误。
-  \item 500 次选择使最终 p 值带有选择权。应在训练期事先确定候选规则，做多重检验或嵌套选择，并用从未参与选择的测试期评价。
+  \item 单位根回归的极限不是常规正态，而由标准 Brownian 运动泛函决定；因此 OLS t 统计量不能查普通 t 表。截距、趋势和滞后差分项都会改变极限分布，ADF 临界值必须随规格和样本报告。
+  \item 相关只约束固定窗口的同步共动；若 $x_t,y_t$ 都是 $I(1)$，协整要求存在非零 $\beta$ 使 $\beta^T(x_t,y_t)$ 为 $I(0)$。高相关可以由共同趋势产生而没有平稳价差，协整也不保证成本后可交易。
+  \item 离散 AR 系数满足 $\phi=e^{-\kappa\Delta}$，所以 $\kappa=-\log\phi/\Delta$；半衰期解 $e^{-\kappa h}=1/2$ 得 $h=\log2/\kappa$。只有 $0<\phi<1$ 才给出实数正 $\kappa$；$\phi\le0$ 需要离散振荡模型，$\phi\ge1$ 不均值回归。
+  \item 从 VAR$(p)$ 写 $w_t=A_1w_{t-1}+\cdots+A_pw_{t-p}+u_t$，加减 $w_{t-1}$ 后整理：
+  \[
+  \Delta w_t=\Pi w_{t-1}+\sum_{j=1}^{p-1}\Gamma_j\Delta w_{t-j}+u_t,
+  \]
+  其中 $\Pi=\sum_{j=1}^pA_j-I$，$\Gamma_j=-\sum_{k=j+1}^pA_k$。若 $\Pi=\alpha\beta^T$，$\beta^Tw_{t-1}$ 是长期误差，$\alpha$ 给各变量的修正方向。
+  \item 对 $\phi=0.2,0.6,0.9$，半衰期依次为 $\log2/(-\log\phi)=0.4307,1.3569,6.5788$（按单位步长）。画出 $\phi\uparrow1$ 时的发散，并把 $\phi\le0$、$\phi\ge1$ 标为无效/非均值回复区间，不能对所有系数强行套 OU。
+  \item 透明 DF 回归应先写 $\Delta y_t=\rho y_{t-1}+\sum_j\gamma_j\Delta y_{t-j}+u_t$，记录样本、滞后、t 统计量；库函数可能使用不同截距/趋势和 MacKinnon 临界值。Engle--Granger 还要先估长期回归，再对残差做非标准单位根检验；规格不同时统计量不可直接相等。
+  \item 从 500 对资产中选最平稳价差再报告 p 值，相当于条件在最小 p 值/最强统计量上，存在选择偏差。修复是事先固定候选和选择窗口，用多重检验或嵌套选择，再在未触碰后移窗口检查价差稳定、半衰期、成本后收益和容量。
 \end{enumerate}

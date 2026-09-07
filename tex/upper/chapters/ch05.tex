@@ -1,14 +1,8 @@
 \chapter{多元微积分与矩阵微分}
 \label{ch:matrix-calculus}
 
-\begin{introduction}
-  \input{tex/generated/prerequisites/upper-ch05.tex}
-  \item 学习产出：能从线性近似定义推导梯度、Jacobian 与 Hessian，使用微分和迹规则计算矩阵导数，并用独立差分检查实现。
-  \item Python 边界：自动微分和有限差分只能核对给定点的程序，不能决定行列约定、可微性或模型目标是否正确。
-  \item 研究连接：回归、组合优化、最大似然、风险敏感度和机器学习训练都依赖一致的形状与导数契约。
-\end{introduction}
 
-Python 可以在一行代码中返回梯度，但它不会替研究者判断目标是不是标量、参数采用行向量还是列向量、不可微点怎样处理，也不会证明某个数值梯度对应正确的经济目标。矩阵微分首先是一套局部线性映射与形状契约，其次才是公式表。
+Python 可以在一行代码中返回梯度，但它不会替研究者判断目标是不是标量、参数采用行向量还是列向量、不可微点怎样处理，也不会证明某个数值梯度对应正确的经济目标。矩阵微分首先是一套局部线性映射与形状契约，其次才是公式表。本章的学习顺序因此从“一个小扰动如何被线性映射近似”开始，再把同一观点推到链式法则、Hessian、矩阵变量和最小二乘；最后的有限差分只作为独立检查，而不是另一个黑箱。
 
 \section{可微的核心是统一线性近似}
 
@@ -27,7 +21,7 @@ Python 可以在一行代码中返回梯度，但它不会替研究者判断目�
 \]
 $df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times d}$：第 $i$ 行对应第 $i$ 个输出，第 $j$ 列对应第 $j$ 个输入，且 $df=J_f(x)dx$。
 
-\subsection{方向导数、偏导与可微性}
+\MFQLead{方向导数、偏导与可微性}
 
 方向 $v$ 上的方向导数是
 \[
@@ -35,7 +29,7 @@ $df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times 
 \]
 偏导只是 $v=e_j$ 的特殊情形。若 $f$ 可微，则所有方向导数存在且 $D_vf(x)=Df(x)v$；反向不自动成立，因为不同方向上的数值可能无法拼成一个对所有小 $h$ 都有效的线性映射。
 
-\subsection{失败见证：偏导存在仍不可微}
+\MFQLead{失败见证：偏导存在仍不可微}
 
 定义
 \[
@@ -47,7 +41,7 @@ $df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times 
 \]
 沿两条坐标轴函数恒为零，所以原点的两个偏导都存在且为零。但沿抛物线 $y=x^2$，有 $f(x,x^2)=1/2$，故函数在原点甚至不连续，更不可能可微。逐坐标检查通过不是全微分证据。
 
-\section{链式法则先乘线性映射}
+\section{链式法则与二阶曲率}
 
 设 $g:\mathbb R^d\to\mathbb R^m$ 在 $x$ 可微，$h:\mathbb R^m\to\mathbb R^k$ 在 $g(x)$ 可微。写
 \[
@@ -70,7 +64,7 @@ $df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times 
 \]
 形状为 $(d\times m)(m\times1)=d\times1$。若乘法形状不匹配，应修正约定或模型，不应随意增加转置让程序运行。
 
-\subsection{完整链式记录}
+\MFQLead{完整链式记录}
 
 令
 \[
@@ -91,7 +85,7 @@ $df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times 
 \]
 每一步保留输入输出形状，比背诵展开后的标量公式更不易出错。
 
-\section{二阶导数、Hessian 与 Taylor 展开}
+\MFQLead{二阶导数把局部变化变成曲率}
 
 对标量函数 $f:\mathbb R^d\to\mathbb R$，若梯度可微，其 Jacobian 是 Hessian：
 \[
@@ -112,7 +106,7 @@ $df$ 是标量。若 $m>1$，本文约定 Jacobian $J_f(x)\in\mathbb R^{m\times 
 \]
 $v^TH_fv$ 是方向 $v$ 上的局部曲率。Hessian 正定表示每个非零方向二阶曲率为正，但“某点 Hessian 正定”只给局部信息，不能单独证明全局最优。
 
-\section{用微分推导向量规则}
+\section{从微分到矩阵目标}
 
 常量的微分为零。对常量矩阵 $A$、向量 $b$ 与变量 $x$，
 \[
@@ -147,7 +141,7 @@ $v^TH_fv$ 是方向 $v$ 上的局部曲率。Hessian 正定表示每个非零方
 手算 $f(x)=-1$，梯度为 $(0,-0.5)^T$，Hessian 为
 $\left(\begin{smallmatrix}4&1\\1&3\end{smallmatrix}\right)$。这个非对称 $A$ 会立即暴露“忘记对称化”的错误公式。
 
-\section{迹技巧统一矩阵变量的微分}
+\MFQLead{迹技巧统一矩阵变量的微分}
 
 当变量本身是矩阵 $X\in\mathbb R^{m\times n}$，使用 Frobenius 内积
 \[
@@ -173,7 +167,7 @@ $\left(\begin{smallmatrix}4&1\\1&3\end{smallmatrix}\right)$。这个非对称 $A
 \]
 对称正定时 $X^{-T}=X^{-1}$。协方差似然和风险模型常同时出现逆矩阵与 log-determinant；维度和转置必须跟随微分，而不是凭记忆选择。
 
-\section{最小二乘是链式法则的矩阵版本}
+\MFQLead{最小二乘是链式法则的矩阵版本}
 
 设 $X\in\mathbb R^{n\times d}$、$\beta\in\mathbb R^d$、$y\in\mathbb R^n$，残差 $r=X\beta-y$，损失
 \[
@@ -192,7 +186,7 @@ $\left(\begin{smallmatrix}4&1\\1&3\end{smallmatrix}\right)$。这个非对称 $A
 \]
 错误写成 $X(X\beta-y)$ 时，$(n\times d)(n\times1)$ 通常没有定义。即使广播让代码运行，结果也不再是该标量损失的梯度。
 
-\section{量化算例：均值--方差目标}
+\MFQLead{均值--方差目标把公式放回量化语境}
 
 给定对称协方差矩阵 $\Sigma\in\mathbb R^{d\times d}$、期望收益 $\mu\in\mathbb R^d$ 与风险收益权衡 $\lambda>0$，考虑
 \[
@@ -221,9 +215,9 @@ $\det\Sigma=1.75$，且
  \Sigma w^*-\lambda\mu=0,
  \qquad L(w^*)=-0.0457142857\ldots.
 \]
-脚本用显式二阶逆矩阵记录复现权重、零梯度和目标值；这些 expected 来自上述手算，不由优化器生成。
+脚本用显式二阶逆矩阵记录复现权重、零梯度和目标值；这些 expected 来自上述解析记录，不由优化器生成。
 
-\section{有限差分是检查器，不是证明}
+\section{独立检查与不可微边界}
 
 第 $j$ 个坐标的中心差分
 \[
@@ -237,24 +231,17 @@ $\det\Sigma=1.75$，且
 
 不可微函数 $a(t)=|t|$ 在零点的左差商为 $-1$、右差商为 $1$，所以导数不存在；对称中心差分却恰好返回 0。数值“对称”可以掩盖尖点，单个差分值不能替代左右极限。
 
-\subsection{自动微分的正确边界}
+\MFQLead{自动微分的正确边界}
 
 自动微分精确应用程序执行图中的链式法则，通常优于有限差分的舍入误差，但仍只回答“这段程序的局部导数是什么”。它不能发现损失缩放写错、未来数据泄漏、约束遗漏或在尖点选择的次梯度不符合研究协议。可靠流程是：手推形状和关键公式，自动微分核对实现，再用少量独立差分或闭式算例做第三方检查。
 
-\section{固定算例与失败检查}
+\MFQLead{把解析推导交给数值检查}
 
 本章脚本绑定点 $(0.5,-1)$、非对称矩阵 $A$、向量 $b$、步长扫描、均值--方差记录、绝对容差 $10^{-12}$ 与梯度误差上限 $10^{-9}$。它检查二次型值、解析梯度、对称 Hessian、链式梯度、左右差商、有限差分失败和具体组合驻点。
 
-公开 CLI 会拒绝非有限或非数值标量、错误维度、改写的输入记录、期望数组截断、放宽的容差以及与解析值不符的发布标签。这样 `zip` 截断、`NaN` 比较和“扩大 tolerance 后同步改 expected”都不能产生伪通过。
+独立核对还应拒绝非有限或非数值标量、错误维度、被改写的输入记录、期望数组截断和放宽的容差。这样 `zip` 截断、`NaN` 比较或“扩大 tolerance 后同步改 expected”都不能产生伪通过。
 
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch05_matrix_calculus.ipynb
-\end{lstlisting}
-
-\section{研究中的导数审计}
+\MFQLead{写报告时如何解释一个导数}
 
 提交梯度前依次记录：输入、输出与每个中间量的形状；导数约定；可微性或次梯度协议；解析推导的独立来源；自动微分对应的实际程序；有限差分步长扫描；目标的单位与总和/均值缩放；病态矩阵和约束边界；至少一个故意失败见证。若只有“框架没有报错”，证据仍不完整。
 
@@ -263,6 +250,4 @@ uv run jupyter nbconvert --to notebook --execute --stdout \
 \input{tex/upper/chapters/ch05-questions}
 \input{tex/upper/chapters/ch05-hints}
 
-\section*{本章小结与 Capstone 连接}
-
-Fréchet 导数把可微性定义为统一线性近似；Jacobian 按形状组合链式法则；Hessian 描述二阶曲率；微分和迹技巧把向量、矩阵目标放在同一语言中。上册 Capstone 会要求每个优化或估计目标提交解析导数、维度记录、独立数值核验、不可微协议和失败证据。
+\noindent\textbf{本章要点。}Fréchet 导数把可微性定义为统一线性近似；Jacobian 按形状组合链式法则；Hessian 描述二阶曲率；微分和迹技巧把向量、矩阵目标放在同一语言中。自动微分和有限差分只能检查一段已写出的程序，不能替代目标、形状、可微性和研究含义的判断。

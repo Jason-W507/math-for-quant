@@ -14,3 +14,24 @@
 
 \input{tex/common/source-mapped-exercises}
 \MFQMappedPortfolioOptimizationSolutions
+
+\section*{逐题推导与核对}
+\begin{enumerate}[leftmargin=*]
+  \item $P$ 的每行是观点组合，$q$ 是观点收益，$\Omega$ 是观点误差协方差；先验均值 $\pi$ 的不确定性用 $\tau\Sigma$ 表示。$\Omega$ 变小提高该观点精度，$\tau$ 变大降低先验精度；它们不是任意缩放参数，需在报告中给出单位和校准依据。
+  \item 后验目标为
+  \[
+  Q(\mu)=\tfrac12(\mu-\pi)^T(\tau\Sigma)^{-1}(\mu-\pi)+
+  \tfrac12(P\mu-q)^T\Omega^{-1}(P\mu-q).
+  \]
+  梯度为 $(\tau\Sigma)^{-1}(\mu-\pi)+P^T\Omega^{-1}(P\mu-q)$；令其为零并整理得
+  \[
+  \mu_{post}=\left[(\tau\Sigma)^{-1}+P^T\Omega^{-1}P\right]^{-1}
+  \left[(\tau\Sigma)^{-1}\pi+P^T\Omega^{-1}q\right].
+  \]
+  代入本题参数后再逐项检查矩阵对称和残差，不要只抄最终向量。
+  \item 对损失 $L_s=-r_s^Tw$，$\mathrm{ES}_\alpha$ 的 Rockafellar--Uryasev 形式为 $\min_z z+[(1-\alpha)N]^{-1}\sum_su_s$，其中 $u_s\ge L_s-z$ 且 $u_s\ge0$。加入 $\sum_iw_i=1$、上下界和交易约束后，目标、约束均为线性，得到 LP；最优 $z$ 是 VaR 辅助阈值而不是先验分位数。
+  \item 八个情景逐行计算 $L_s$，对给定 $w$ 取 $u_s=\max(L_s-z,0)$，再枚举可行权重或调用 LP。固定上限 $w_i\le0.8$ 时最优为 $(0.2,0.8)$，最坏两情景平均损失 $0.013$；表中应列每个情景损失、是否超过 $z$ 和对 ES 的贡献。
+  \item 把上限改为 $0.6$ 后，可行集变为 $w_1,w_2\in[0.4,0.6]$ 且和为 1。重新枚举边界并计算 $z,u_s,\mathrm{ES}$，报告哪个上限活跃及其影子代价；先用旧解裁剪只得到一个可行点，不保证新问题最优，也可能改变成本和风险。
+  \item “先优化再裁剪”会破坏满仓、上下界、风险预算、交易距离等约束，且裁剪后的点不再满足原目标的一阶/KKT 条件。正确做法是把所有限制直接放进可行域，重新求解并验证约束残差。
+  \item 均值不确定性惩罚针对收益估计误差，协方差 ridge 针对风险矩阵病态，交易成本惩罚针对从旧权重移动的经济代价。可用三个单独压力实验改变各惩罚，比较权重、风险、换手和目标分解，避免只按数值形状猜经济含义。
+\end{enumerate}

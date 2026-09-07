@@ -25,7 +25,7 @@
 \frontmatter
 
 \chapter*{读者与范围}
-本册面向已经学习微积分、线性代数、概率统计、基础计量经济学并会使用 Python 的经济学或金融学读者。它把六条量化研究路线共同使用的数学工具串成一条学习主线；书中的例子用于理解方法，不构成投资建议或盈利承诺。
+读者应会使用一元与多元微积分、计算矩阵乘法和求解线性方程组，理解随机变量、期望与方差。证明方法、抽象向量空间、测度论和随机过程由本书讲授。实验需要 Python 的变量、数组与绘图基础；基础计量经济学不是入学要求。
 
 \input{tex/common/evidence-contract}
 
@@ -35,7 +35,7 @@
 \chapter*{课程地图与一则手算例}
 \addcontentsline{toc}{chapter}{课程地图与一则手算例}
 
-\section{为什么先建立证据链}
+\section{从熟悉的平均数开始}
 
 量化研究中的公式、数值程序和经验结论承担不同职责。先手算一个三期收益平均值，再让 Python 重复这项计算，可以看见两种证据如何彼此核对；计算结果本身并不替代证明或研究判断。
 
@@ -50,7 +50,7 @@
 \[
   \bar r=\frac{r_1+r_2+r_3}{3}=\frac{1}{150}.
 \]
-随后用配套程序重复计算。若显示值与手算结果一致，便可以继续阅读；更完整的误差说明和复现步骤放在线上材料。
+这个平均数概括三期等权收益。若三期权重不同，应怎样改写？第一章将从这个问题引入凸组合。
 \end{example}
 
 \part{数学语言与分析基础}
@@ -73,14 +73,18 @@
 \input{tex/upper/chapters/ch13}
 \input{tex/upper/chapters/ch14}
 \input{tex/upper/chapters/ch15}
-\part{研究有效性与审计}
+\part{研究实践：实验指南与综合练习}
+以下两章在学完数学主线后按需阅读。第 16 章解释选择偏差与成本，第 17 章是综合审阅练习，不是后续数学概念的先修。
 \input{tex/upper/chapters/ch16}
 \input{tex/upper/chapters/ch17}
 
 \appendix
 
+\chapter{实验结果的整理与复核}
+\input{tex/upper/guides/reproducibility}
+
 \chapter{练习反馈说明}
-正文保留即时练习、章末四级题与分级提示。完整推导、计算输出、失败见证和研究判断答案单独发布为
+正文保留即时练习、章末递进练习与分级提示。完整推导、计算输出、失败见证和研究判断答案单独发布为
 \path{output/pdf/math-for-quant-solutions.pdf}，避免读者在阅读题目时过早看到答案。
 
 \chapter{共享符号表}

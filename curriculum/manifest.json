@@ -221,7 +221,7 @@
       "volume": "upper",
       "state": "accepted",
       "published": true,
-      "prerequisites": ["upper.ch07"],
+      "prerequisites": ["upper.ch03", "upper.ch04", "upper.ch06", "upper.ch07"],
       "evidence": {
         "notation_symbols": ["\\mathbb{E}[X\\mid\\mathcal G]", "\\operatorname{Var}(X\\mid\\mathcal G)", "\\mathbb P(A\\mid\\mathcal G)", "K(z,B)", "X\\perp Y\\mid Z", "\\mathcal F_t"],
         "glossary_terms": ["条件期望", "塔式性质", "独立性", "条件独立", "概率核", "Doob-Dynkin 引理", "正则条件分布", "全方差公式", "Bayes 公式", "碰撞点偏差"],
@@ -776,14 +776,14 @@
     {
       "id": "applied",
       "title": "应用主线",
-      "description": "先建立研究语言，再进入概率统计、动态模型、优化、数值计算与研究审计；测度论概念按课程地图中的桥接清单回看。",
-      "units": ["upper.ch01", "upper.ch02", "upper.ch05", "upper.ch06", "upper.ch07", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch13", "upper.ch14", "upper.ch15", "upper.ch16", "upper.ch17"]
+      "description": "先学习数学语言与计算，再进入概率统计、动态模型和数值方法。第 8 章先读有限状态与预测；一般存在性及平方可积理论回读第 3、4 章。第 16、17 章在主线后作为研究实践阅读。",
+      "units": ["upper.ch01", "upper.ch02", "upper.ch05", "upper.ch06", "upper.ch07", "upper.ch08", "upper.ch09", "upper.ch10", "upper.ch12", "upper.ch13", "upper.ch14", "upper.ch15"]
     },
     {
       "id": "theory",
       "title": "理论增强线",
       "description": "完整学习分析、测度、条件化、概率极限与随机过程，再进入方向模型。",
-      "units": ["upper.ch01", "upper.ch02", "upper.ch03", "upper.ch04", "upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11"]
+      "units": ["upper.ch01", "upper.ch02", "upper.ch03", "upper.ch04", "upper.ch05", "upper.ch06", "upper.ch07", "upper.ch08", "upper.ch09", "upper.ch11"]
     }
   ],
   "reader_bridges": [

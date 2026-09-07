@@ -11,3 +11,25 @@
 \end{enumerate}
 
 事先确定 oracle：Poisson MLE 为 1、队列完全成交概率为 $0.576810$、联合回归斜率为 $0.15$；FIFO 账本得到 $3+1$ 手成交。
+
+\section*{逐题推导与核对}
+\begin{enumerate}[leftmargin=*]
+  \item 给定历史 $\mathcal F_{t-}$，条件强度 $\lambda(t\mid\mathcal F_{t-})$ 定义短区间内发生事件的条件概率：
+  \[
+  \mathbb P(N_{t+\Delta t}-N_t=1\mid\mathcal F_{t-})
+  =\lambda(t\mid\mathcal F_{t-})\Delta t+o(\Delta t).
+  \]
+  无条件率是再对历史取期望的 $\mathbb E[\lambda(t\mid\mathcal F_{t-})]$，因此订单簇集、日内时段和库存状态会使两者不同。只有强度恒为常数的齐次 Poisson 才能直接相等。
+  \item 观察窗口 $[0,T]$ 内有 $n$ 个事件且等待时间密度为 $\lambda e^{-\lambda\Delta_i}$，联合对数似然为 $\ell(\lambda)=n\log\lambda-\lambda\sum_i\Delta_i$。求导得到 $\ell'=n/\lambda-T$，令零点为 $\widehat\lambda=n/T$；二阶导 $-n/\lambda^2<0$ 说明这是唯一极大值。若窗口右删失，最后一段只贡献生存项，不能把未观察到的事件当作零间隔。
+  \item 点过程似然可写为
+  \[
+  L=\prod_{i=1}^n\lambda(t_i\mid\mathcal F_{t_i-})
+       \exp\left[-\int_0^T\lambda(u\mid\mathcal F_{u-})\,du\right].
+  \]
+  第一项奖励事件点处强度，指数项惩罚整个区间内没有额外事件的概率。若删掉补偿子，只要把强度整体放大，事件点乘积就无限增大，模型没有有限最优解，也失去不同窗口之间的可比性。
+  \item Hawkes 单事件后的响应为 $\alpha e^{-\beta u}$，积分为 $\alpha/\beta$；这就是分枝比 $n_b$。当 $n_b<1$，每代平均后代数小于一，簇会衰减；$n_b\uparrow1$ 时持续时间和方差变大；$n_b\ge1$ 时平稳解释失效。扫描时固定基准强度，分别画峰值、半衰期 $\log2/\beta$ 和累计强度，不能只看某一条曲线。
+  \item FIFO 账本的每一步先检查事件时间和价格档，再按订单序号从队首消费数量。若市价买单量为 $q$，对卖一档剩余量 $r_1$，先成交 $f_1=\min(q,r_1)$，更新 $q\leftarrow q-f_1$、$r_1\leftarrow r_1-f_1$，再进入下一档；撤单只能减少现存量，不能使数量为负。队列完全成交概率 $0.576810$ 是独立 oracle，程序应逐事件打印成交量、剩余量和队列位置。
+  \item 在交易所约定中，maker sell 是挂在卖方的被动单，主动买单会吃掉它；若把 maker side 当成主动方，符号会整体翻转。修复时同时检查 trade direction、best bid/ask、主动方与价差符号，并用一笔已知方向的成交作为单元测试；仅看回归斜率无法定位是标签还是价格定义出错。
+  \item 报告至少要补齐：日内基线 $\lambda_0(t)$、事件时间单位、窗口边界、初始历史、$\alpha/\beta$ 约束、补偿积分、时间变换残差和滚动样本外稳定性。逐项说明“缺了什么—会造成什么偏差—怎样复现”。例如未去季节性会把中午低强度误报成 Hawkes 抑制。
+  \item 数据协议按“快照—增量—校验—拒绝”实现：每条事件有交易所时间、接收时间、单调序号、订单号、价格、方向、数量和事件类型；重放后检查档位排序、数量非负、撤单不超额、成交不超过挂单。缺包、乱序和重复事件应进入明确失败状态，不能静默修复后继续拟合。
+\end{enumerate}

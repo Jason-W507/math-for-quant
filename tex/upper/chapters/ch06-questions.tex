@@ -1,5 +1,12 @@
-\section{四级问题与即时练习}
+\section*{章末练习}
 \begingroup\small
+\subsection*{基础计算}
+\begin{enumerate}[nosep,leftmargin=*]
+\item 令 $A=\left(\begin{smallmatrix}1&1\\2&2\end{smallmatrix}\right)$。求列空间与零空间的基，判断 $(2,4)^T$ 与 $(1,0)^T$ 是否在列空间中。
+\item 将 $y=(1,2)^T$ 投影到 $q=(1,1)^T/\sqrt2$ 张成的直线上，求投影、残差及平方距离。
+\item $D=\operatorname{diag}(3,0)$ 的零奇异值表示哪个方向？方程 $D\beta=(6,0)^T$ 的最小范数解是什么？
+\end{enumerate}
+
 \subsection*{口述概念}
 \begin{enumerate}[nosep,leftmargin=*]
   \item 区分列空间、零空间、行空间和左零空间；它们分别对应回归中的什么问题？
@@ -10,14 +17,14 @@
 \subsection*{笔试推导}
 \begin{enumerate}[nosep,leftmargin=*]
   \item 用正交投影与损失梯度两条路径推导正规方程；证明 $P_X$ 对称、幂等。
-  \item 从 SVD 推导 $X^+$、最小范数最小二乘解，并证明 $\kappa_2(X^TX)=\kappa_2(X)^2$。
+  \item 从 SVD 推导 $X^+$、最小范数最小二乘解，在满列秩条件下证明 $\kappa_2(X^TX)=\kappa_2(X)^2$。
   \item 对 $\Sigma=\left(\begin{smallmatrix}2&1\\1&2\end{smallmatrix}\right)$ 求谱分解与 Cholesky 分解，解释最大风险方向。
 \end{enumerate}
 
 \subsection*{数值编程}
 \begin{enumerate}[nosep,leftmargin=*]
   \item 复现固定最小二乘记录，分别用正规方程、QR、\texttt{lstsq} 与伪逆求解；比较残差正交和重构误差。
-  \item 用 SVD 构造最佳秩一近似，核验二范数误差等于第二奇异值；再故意打乱奇异值顺序，证明测试能失败。
+  \item 用 SVD 构造最佳秩一近似，核验二范数误差等于第二奇异值；再只保留较小奇异值对应的一项，解释为何误差更大。
 \end{enumerate}
 
 \subsection*{研究判断}

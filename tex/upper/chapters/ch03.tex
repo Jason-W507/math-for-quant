@@ -1,16 +1,10 @@
 \chapter{测度、可测函数与 Lebesgue 积分}
 \label{ch:measure-integration}
 
-\begin{introduction}
-  \input{tex/generated/prerequisites/upper-ch03.tex}
-  \item 学习产出：能从事件结构构造积分，证明常用连续性结论，并判断极限与积分交换缺少哪条假设。
-  \item Python 边界：代码只复现有限记录和解析见证，不能用网格采样替代可测性、可积性或一般收敛定理。
-  \item 研究连接：随机变量、期望、损失函数、似然与连续时间模型都使用同一套测度积分语言。
-\end{introduction}
 
-Riemann 积分先切分定义域，再比较上下和；概率与现代统计还必须回答三个更早的问题：哪些集合可以作为事件、事件有多大、一个数值映射是否把阈值问题拉回合法事件。Lebesgue 理论依次建立事件、大小、可测函数和积分，最后才讨论能否交换极限与积分。
+Riemann 积分先切分定义域，再比较上下和；概率与现代统计还必须回答三个更早的问题：哪些集合可以作为事件、事件有多大、一个数值映射是否把阈值问题拉回合法事件。Lebesgue 理论依次建立事件、大小、可测函数和积分，最后才讨论能否交换极限与积分。读者不需要先把这些定义当成形式主义：它们正是后来写下“收益低于阈值的概率”“损失的期望”和“把极限移入期望”的合法性条件。
 
-\section{事件结构：$\sigma$ 代数}
+\section{事件与测度：先规定可观察对象}
 
 \begin{definition}[$\sigma$ 代数]
 设 $\Omega$ 是非空集合。集合族 $\mathcal{F}\subseteq2^\Omega$ 称为 $\Omega$ 上的 $\sigma$ 代数，若
@@ -24,7 +18,7 @@ Riemann 积分先切分定义域，再比较上下和；概率与现代统计还
 
 定义立即推出 $\varnothing\in\mathcal F$；由 De Morgan 律，$\mathcal F$ 对可数交封闭；再结合补集，它也对差集封闭。这里必须是“可数”运算：只对有限并封闭的代数不足以支撑无限序列的概率极限。
 
-\subsection{有限样本空间先看信息含义}
+\MFQLead{有限样本空间先看信息含义}
 
 令 $\Omega=\{HH,HT,TH,TT\}$ 表示两次抛硬币。若只记录“正面个数是否为偶数”，则
 \[
@@ -36,7 +30,7 @@ Riemann 积分先切分定义域，再比较上下和；概率与现代统计还
 数据表中能写出一条筛选语句，不等于数学上已经声明该事件可测。模型需要同时说明样本空间、事件 $\sigma$ 代数以及每个数据字段对应映射的可测性。
 \end{note}
 
-\subsection{生成的 $\sigma$ 代数与 Borel 结构}
+\MFQLead{生成的 $\sigma$ 代数与 Borel 结构}
 
 给定集合族 $\mathcal C\subseteq2^\Omega$，包含 $\mathcal C$ 的所有 $\sigma$ 代数之交仍是 $\sigma$ 代数，称为由 $\mathcal C$ \textbf{生成}的 $\sigma$ 代数：
 \[
@@ -45,13 +39,13 @@ Riemann 积分先切分定义域，再比较上下和；概率与现代统计还
 \]
 它是“使 $\mathcal C$ 中问题合法所需的最小信息”。$\mathbb R$ 上由所有开集生成的 $\sigma$ 代数记为 $\mathcal B(\mathbb R)$，称为 Borel $\sigma$ 代数。开区间、闭区间、单点和可数集都是 Borel 集，但 $\mathcal B(\mathbb R)$ 仍小于 $2^{\mathbb R}$。
 
-\subsection{不可测边界：为什么不能给所有集合长度}
+\MFQLead{不可测边界：为什么不能给所有集合长度}
 
 在 $[0,1]$ 上定义 $x\sim y$ 当且仅当 $x-y\in\mathbb Q$，并从每个等价类选一个代表组成 $V$。令 $Q=\mathbb Q\cap[-1,1]$。平移族 $V+q$（$q\in Q$）两两不交，其可数并覆盖 $[0,1]$，又包含于 $[-1,2]$。
 
 若 $V$ 可被一个平移不变、可数可加且与区间长度一致的测度赋值，则只有两种可能：若 $\mu(V)=0$，可数并的测度为零，不可能覆盖 $[0,1]$；若 $\mu(V)>0$，可数个不交平移的总测度无穷，又不可能包含在有限长度的 $[-1,2]$ 中。矛盾说明不能同时保留这些自然公理并让每个子集都可测。该论证依赖选择代表的集合论步骤；实务结论是：可测性必须进入模型契约，不能靠数值采样补出来。
 
-\section{测度：为事件赋予可数可加的大小}
+\MFQLead{测度把事件变成可加的大小}
 
 \begin{definition}[测度]
 在可测空间 $(\Omega,\mathcal F)$ 上，映射 $\mu:\mathcal F\to[0,\infty]$ 称为测度。事件 $A$ 的大小记为 $\mu(A)$；要求 $\mu(\varnothing)=0$，且对任意两两不交的 $A_n\in\mathcal F$，
@@ -64,7 +58,7 @@ Riemann 积分先切分定义域，再比较上下和；概率与现代统计还
 
 计数测度令 $\mu(A)=|A|$；Dirac 测度 $\delta_{\omega_0}(A)=\mathbf{1}_{A}(\omega_0)$；Lebesgue 测度给区间赋长度；满足 $\mu(\Omega)=1$ 的测度就是概率测度。允许取 $\infty$ 很重要，例如整个实轴的 Lebesgue 测度无穷，但局部积分仍然有意义。
 
-\subsection{从可数可加性推出连续性}
+\MFQLead{从可数可加性推出连续性}
 
 若 $A\subseteq B$，把 $B$ 分成 $A$ 与 $B\setminus A$，得到单调性 $\mu(A)\leq\mu(B)$。若 $A_n\uparrow A$，令
 \[
@@ -80,11 +74,11 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 
 若 $A_n\downarrow A$ 且 $\mu(A_1)<\infty$，对 $A_1\setminus A_n\uparrow A_1\setminus A$ 使用从下连续性，才可相减得到 $\mu(A_n)\downarrow\mu(A)$。有限性不能删除：在计数测度下取 $A_n=\{n,n+1,\ldots\}$，则 $A_n\downarrow\varnothing$，但每个 $\mu(A_n)=\infty$。
 
-\subsection{零测集与几乎处处}
+\MFQLead{零测集与几乎处处}
 
 若性质失败的集合 $N$ 满足 $\mu(N)=0$，就说该性质几乎处处成立，记作 a.e.。几乎处处不是“有限样本中从未发生”，而是测度模型把失败集视为零。Lebesgue $\sigma$ 代数是 Borel 结构的完备化：它还包含所有 Borel 零测集的子集。若模型只写 $\mathcal B(\mathbb R)$，不能自动把任意零集子集当成事件。
 
-\section{可测函数：用逆像连接数值与事件}
+\section{可测函数与 Lebesgue 积分}
 
 \begin{definition}[可测函数]
 设 $(\Omega,\mathcal F)$、$(S,\mathcal S)$ 为可测空间。函数 $f:\Omega\to S$ 可测，若
@@ -96,7 +90,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 
 定义使用逆像，因为结果必须回到原样本空间的事件语言。像集 $f(A)$ 一般不会自动落入目标 $\sigma$ 代数。
 
-\subsection{阈值判据与基本闭包性质}
+\MFQLead{阈值判据与基本闭包性质}
 
 实值函数 $f$ 可测，当且仅当对每个 $t\in\mathbb R$，集合 $\{f>t\}$ 可测。正向由定义立即得到；反向是因为射线 $(t,\infty)$ 生成 $\mathcal B(\mathbb R)$，而使逆像可测的目标集合族本身构成一个 $\sigma$ 代数。
 
@@ -106,7 +100,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 若 $X$ 是收益随机变量，则事件 $\{X\leq-0.05\}$ 是否有概率，取决于 $X$ 是否可测。VaR、止损命中率和尾部损失都先依赖这个逆像事件，而不是先依赖一个数值积分器。
 \end{example}
 
-\section{简单函数：积分的有限记录}
+\MFQLead{先用简单函数建立积分}
 
 非负简单函数只有有限多个取值。把同值点合并为互不相交的可测层，可写成
 \[
@@ -139,7 +133,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 \]
 它满足 $0\leq\phi_n\uparrow f$。有限值、可测层和单调逼近同时进入构造。
 
-\subsection{固定算例：逼近 $f(x)=x$}
+\MFQLead{固定算例：逼近 $f(x)=x$}
 
 在 $[0,1]$ 上取 Lebesgue 测度，并令
 \[
@@ -154,7 +148,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 \]
 对 $m=2,4,8$，独立手算值分别为 $0.375$、$0.46875$、$0.498046875$，并从下趋于 $1/2$。端点 $x=1$ 的单点值不改变积分，因为单点 Lebesgue 测度为零。
 
-\section{有符号函数、可积性与期望}
+\MFQLead{有符号函数、可积性与期望}
 
 对实值可测函数，令
 \[
@@ -169,7 +163,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 
 例如在 $[1,\infty)$ 上，$x^{-2}$ 可积而 $x^{-1}$ 不可积。概率论中的期望就是积分 $\mathbb E[X]=\int X\,d\mathbb P$；要把期望当作有限数使用，必须验证 $\mathbb E|X|<\infty$。若 $f=g$ a.e.，则它们的积分相同；但原始数据中的缺失、截断与极端值是否属于零测例外，仍需由数据生成模型证明。
 
-\subsection{完整算例：有限状态收益的期望}
+\MFQLead{完整算例：有限状态收益的期望}
 
 令 $\Omega=\{\text{crash},\text{flat},\text{rally}\}$，取幂集作为 $\mathcal F$，并令三种状态的概率分别为 $0.2,0.5,0.3$。收益随机变量为
 \[
@@ -190,9 +184,9 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 \]
 所以期望是有限实数。下行损失 $L=(-R)^+$ 只在 crash 状态取 $0.10$，故 $\mathbb E[L]=0.02$；事件 $\{R\leq-0.05\}$ 的示性函数积分为 $0.2$。这一个例子把事件、可测函数、简单函数、可积性和期望放进同一记录，也说明代码中的离散加权平均必须先与概率测度对齐。
 
-\section{三条极限工具各自解决什么}
+\section{期望中的极限：Fatou、MCT 与 DCT}
 
-\subsection{单调收敛定理}
+\MFQLead{单调收敛定理}
 
 若 $f_n$ 是非负可测函数，且 $f_n\uparrow f$ 逐点成立，则 $f=\sup_nf_n$ 可测，且
 \[
@@ -205,7 +199,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 \]
 再令 $\alpha\uparrow1$ 并对所有 $\phi$ 取上确界，就得到反向不等式。简单函数的定义因此真正进入定理证明，而不是只服务计算。
 
-\subsection{Fatou 引理}
+\MFQLead{Fatou 引理}
 
 若 $f_n\geq0$ 可测，则
 \[
@@ -214,7 +208,7 @@ $B_n$ 两两不交，且 $A=\bigcup_nB_n$、$A_N=\bigcup_{n\leq N}B_n$，因此
 \]
 令 $g_k=\inf_{n\geq k}f_n$。则 $g_k\uparrow\liminf_nf_n$，由单调收敛，$\int g_k\uparrow\int\liminf f_n$；又因 $g_k\leq f_n$（$n\geq k$），取下确界和极限即可得到不等式。Fatou 通常只给单侧下界，不能擅自写成等号。
 
-\subsection{支配收敛定理}
+\MFQLead{支配收敛定理}
 
 若 $f_n$ 与 $f$ 是实值可测函数，$f_n\to f$ a.e.，且存在可积函数 $g$ 使 $|f_n|\leq g$ a.e.，则 $f$ 可积且
 \[
@@ -237,7 +231,7 @@ DCT & $f_n,f$ 可测，a.e. 收敛且有 $L^1$ 支配 & 极限与积分可交换
 \caption{极限工具的检查不能互相替代}
 \end{table}
 
-\section{失败见证：质量向零点集中}
+\MFQLead{一个尖峰见证为什么不能换序}
 
 在 $[0,1]$ 上令
 \[
@@ -253,26 +247,19 @@ DCT & $f_n,f$ 可测，a.e. 收敛且有 $L^1$ 支配 & 极限与积分可交换
 
 固定网格还可能完全漏掉窄区间 $(0,1/n]$，把面积误报为零。增加若干网格点不是 DCT 证明；本例的独立基准是“高度乘宽度”，不是被测网格的输出。
 
-\section{独立基准的逐步记录}
+\section{从测度语言到研究判断}
 
-脚本只复现两组手算：
+脚本只复现两组解析参照：
 \begin{enumerate}[nosep,leftmargin=*]
   \item 对 $m=2,4,8$，计算有限等差和，分别得到 $0.375$、$0.46875$、$0.498046875$；
   \item 对 $n=10,100$，用解析宽度 $1/n$ 得面积 $1$；固定点 $x=0.2$ 均落在区间外，点值为 $0$，交换差额为 $1$。
 \end{enumerate}
 
-这些参数与发布标签绑定为固定算例。程序还拒绝非有限数、期望数量错位以及被改写的层级、尖峰下标或固定点，防止 `zip` 截断和 `NaN` 比较把未核验结果标成通过。
+这些参数构成固定算例；非有限数、错位的期望或被改写的层级都会改变问题本身，不能冒充定理通过。
 
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch03_measure_integration.ipynb
-\end{lstlisting}
+独立计算只承担复核这些构造的任务：它说明特定记录与解析结果一致，却不证明所有可测函数都可积，也不替代 MCT 或 DCT 的一般证明。
 
-正确输出以 `独立基准=passed` 开头。它证明仓库中的特定记录可复现，不证明所有可测函数都可积，也不替代 MCT 或 DCT 的一般证明。
-
-\section{研究中的测度积分检查表}
+\MFQLead{把定理条件写进研究报告}
 
 在把极限移入期望或损失前，依次记录：$(\Omega,\mathcal F,\mu)$ 是什么；变量和极限是否可测；等式是处处还是 a.e.；积分允许扩展实数还是必须有限；使用 Fatou、MCT 或 DCT 的哪组假设；支配函数为何可积；数值证据是否独立于被测离散化。少一项时，应报告缺口而不是引用定理名字。
 
@@ -281,6 +268,4 @@ uv run jupyter nbconvert --to notebook --execute --stdout \
 \input{tex/upper/chapters/ch03-questions}
 \input{tex/upper/chapters/ch03-hints}
 
-\section*{本章小结与 Capstone 连接}
-
-$\sigma$ 代数规定合法事件，测度给事件大小，可测函数把数值问题拉回事件，简单函数从有限记录构造积分，正负部区分有限期望，Fatou、MCT 与 DCT 则给出不同的极限检查。上册 Capstone 会用这条依赖链审计期望、损失与模拟估计，尤其拒绝“网格看起来收敛”替代可测性、可积性和支配条件。
+\noindent\textbf{本章要点。}事件必须属于 $\sigma$ 代数，大小由测度给出，随机变量用逆像把数值条件拉回事件，积分从简单函数的有限记录向上逼近；有限期望还需要可积性，而 Fatou、单调收敛和支配收敛分别提供不同强度的极限控制。以后看到一个期望或积分交换，先写出空间、可测性和支配条件，再决定能否计算。

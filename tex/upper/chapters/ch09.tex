@@ -1,11 +1,8 @@
 \chapter{概率收敛、极限定理与集中不等式}
 \label{ch:limit-theorems}
 
-\begin{introduction}
-  \input{tex/generated/prerequisites/upper-ch09.tex}
-  \item 学习产出：能区分四种概率收敛，证明常用蕴含，识别反向箭头为何失败，并在使用 LLN、CLT 或集中界前逐项核对矩与依赖条件。
-  \item 研究连接：样本均值、风险指标、回测误差与模拟精度都依赖正确的极限制度；“样本很多”本身不是正态近似或独立性的证据。
-\end{introduction}
+
+“样本很多”不是一个数学条件。样本均值可以几乎处处收敛、依概率收敛、在 $L^p$ 中收敛或只在分布上接近某个极限，而这些说法支持的后续操作并不相同。本章先把四种收敛放在同一张逻辑地图上，再说明大数定律、中心极限定理和集中不等式分别需要什么，最后用重尾与依赖的例子说明为什么渐近近似会失效。
 
 \section{四种收敛不是四种写法}
 
@@ -33,7 +30,7 @@
 \noindent\textbf{即时练习}\quad
 如果只知道每个 $X_n\sim\mathcal N(0,1)$，能否判断 $X_n-X\to0$？先问 $X_n$ 与 $X$ 如何耦合；边缘分布相同不等于样本路径接近。
 
-\section{蕴含图：每条箭头都要有证明}
+\section{收敛之间的蕴含与传递}
 
 标准蕴含图为
 \[
@@ -68,7 +65,7 @@ $\mathbb P(|X_{n_k}-X|>2^{-k})\le2^{-k}$，再用 Borel--Cantelli；反向若失
 
 依概率收敛若再加 $\{|X_n-X|\}$ 的一致可积性，则推出 $L^1$ 收敛；这正是把“概率质量趋小”升级成“平均损失趋小”所缺的尾部条件。
 
-\section{反向箭头为什么断裂}
+\MFQLead{反向箭头为什么断裂}
 
 \noindent\textbf{依概率不推出几乎处处}\quad
 在 $[0,1)$ 上按层枚举二进区间：第 $m$ 层依次取
@@ -93,7 +90,7 @@ $\mathbb E|Y_n|^2=1$。反向需要更高阶矩的统一控制，不能只看样
 $\mathbb P(|X_n-X|>1)=1$。如果分布极限是常数 $c$，则例外地有
 $X_n\xrightarrow dc\Longleftrightarrow X_n\xrightarrow{\mathbb P}c$。
 
-\section{连续映射与 Slutsky：怎样传递极限}
+\MFQLead{连续映射与 Slutsky 如何传递极限}
 
 若 $X_n\xrightarrow dX$ 且 $g$ 在 $X$ 几乎处处取值的集合上连续，则连续映射定理给出
 $g(X_n)\xrightarrow d g(X)$。若
@@ -106,7 +103,7 @@ $X_n\xrightarrow dX$、$Y_n\xrightarrow{\mathbb P}c$，Slutsky 定理给出
 
 例如，若收益样本满足合适 CLT，样本波动率一致收敛到 $\sigma>0$，则学生化均值可用 Slutsky 得到标准正态极限。若真实波动率可能为零、估计器被截断，或分母和分子受同一选择事件影响，除法映射在边界不连续，不能机械套用。渐近分布说明重复抽样近似，不证明策略收益、成本后可交易性或跨制度稳定性。
 
-\section{大数定律：均值收敛需要什么}
+\section{从大数定律到中心极限定理}
 
 若 $X_i$ 独立同分布、$\mathbb E X_i=\mu$、
 $\operatorname{Var}(X_i)=\sigma^2<\infty$，则
@@ -130,7 +127,7 @@ $\bar X_n=Y$，方差恒为 $0.21$；iid 情形在 $n=200$ 时方差是 $0.00105
 但它只是特定相关结构下的近似，不替代混合条件、长程依赖或结构变化诊断。
 \end{diagnostic}
 
-\section{CLT：极限形状与有限样本误差}
+\MFQLead{中心极限定理的极限形状与有限样本误差}
 
 经典 iid CLT 要求 $0<\sigma^2<\infty$：
 \[
@@ -169,7 +166,7 @@ $0<\varepsilon<1$，上式比率恒为 $1$；标准化和始终是 Rademacher �
 
 一个警示例是 Bernoulli$(0.01)$、$n=10$：零次成功的精确概率为 $0.904382$，朴素正态区间甚至为 $[-0.05167,0.07167]$，越过概率参数的合法边界。此时应使用精确二项方法或适合稀有事件的近似。
 
-\section{集中不等式：从矩到有界性}
+\section{集中不等式与有限样本控制}
 
 集中界是有限样本保证，必须连同假设一起引用：
 \begin{align*}
@@ -188,20 +185,13 @@ $0<\varepsilon<1$，上式比率恒为 $1$；标准化和始终是 Rademacher �
 
 对 Bernoulli$(0.3)$、$n=200$、$t=0.1$，精确二项尾概率为 $0.002565$；Chebyshev、Hoeffding 与 Bernstein 界分别为 $0.105000$、$0.036631$、$0.032829$。上界比精确概率大不是错误；它们以较少分布信息换取可证明保证。比较界时必须保持同一事件、单双尾约定和严格/非严格阈值。
 
-\section{重尾、依赖与模拟记录}
+\MFQLead{重尾、依赖与模拟记录}
 
 标准 Cauchy 的均值不存在，且 iid Cauchy 样本平均仍服从标准 Cauchy。本章在固定种子下，对 $n=10$ 与 $n=1000$ 各重复 $8000$ 次，中位绝对均值分别为 $0.980865$ 与 $1.029577$，没有出现 $n^{-1/2}$ 收缩。这不是“模拟不够多”，而是有限方差 CLT 的前提不存在。
 
 主实验取 Bernoulli$(0.3)$、$n=200$、重复 $20000$ 次。理论标准误为 $0.032404$，模拟均值为 $0.299794$、标准差为 $0.032672$；标准化后落在 $[-1.96,1.96]$ 的比例为 $0.943100$，相对 $0.95$ 的覆盖率容差为 $0.015$。模拟只验证实现；理论均值、精确尾概率、各集中界与 Berry--Esseen 记录均独立计算。
 
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch09_limit_theorems.ipynb
-\end{lstlisting}
-
-\section{量化研究中的使用边界}
+\MFQLead{把极限条件写进量化研究}
 
 重叠持有期收益、滚动特征和成交簇会制造序列依赖；横截面共同暴露会制造簇相关；筛选幸存样本会改变概率律。研究报告至少应给出：信息时间与抽样单位、尾部与自相关诊断、有效样本量假设、HAC/分块方法的块长敏感性、滚动制度稳定性，以及失败时采用的稳健统计或压力界。渐近 $p$ 值小不代表成本后有效，集中界窄也不代表数据生成机制稳定。
 
@@ -210,5 +200,4 @@ uv run jupyter nbconvert --to notebook --execute --stdout \
 \input{tex/upper/chapters/ch09-questions}
 \input{tex/upper/chapters/ch09-hints}
 
-\noindent\textbf{本章小结与 Capstone 连接}\quad
-收敛模式决定结论强度，极限定理给出可传递的近似，集中界给出有限样本上界；上册 Capstone 将要求每条误差声明同时标注矩、独立或依赖条件、统计容差与可证伪的失效实验。
+\noindent\textbf{本章要点。}收敛模式决定结论强度，极限定理给出可传递的近似，集中界给出有限样本上界；“样本很多”只有和矩、独立性、依赖结构及抽样单位一起出现才有含义。重尾、重叠观察和共同暴露可能同时破坏渐近速度与标准误解释。

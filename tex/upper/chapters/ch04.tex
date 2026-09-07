@@ -1,14 +1,8 @@
 \chapter{$L^p$ 空间、收敛方式与乘积测度}
 \label{ch:lp-product-measure}
 
-\begin{introduction}
-  \input{tex/generated/prerequisites/upper-ch04.tex}
-  \item 学习产出：能选择合适的 $L^p$ 误差尺度，证明常用范数不等式，并在交换极限或积分次序前逐条核对假设。
-  \item Python 边界：程序只复现固定的解析记录和有限截断，不能用浮点一致性替代可测性、可积性或一般定理。
-  \item 研究连接：预测误差、随机变量矩、联合分布、嵌套期望与数值积分都依赖本章的共同语言。
-\end{introduction}
 
-同一个误差函数在平均绝对误差、均方误差和最坏情形下会得到不同判断；同一个二元函数在没有绝对可积性时，甚至会因积分次序不同而得到不同答案。本章先把误差放进完备的 $L^p$ 空间，再比较三种收敛方式，最后用乘积测度说明何时可以合法换序。
+同一个误差函数在平均绝对误差、均方误差和最坏情形下会得到不同判断；同一个二元函数在没有绝对可积性时，甚至会因积分次序不同而得到不同答案。本章先把误差放进完备的 $L^p$ 空间，再比较三种收敛方式，最后用乘积测度说明何时可以合法换序。贯穿全文的一个问题是：当研究者说“误差消失”时，到底是哪一种误差、在哪一个测度下、以什么方式消失？
 
 \section{$L^p$ 的元素是等价类}
 
@@ -23,7 +17,7 @@
 \]
 其元素是几乎处处等价类。实际书写仍用 $f$ 代表一个等价类，但任何依赖单点值的操作都必须先检查是否与代表元选择无关。
 
-\subsection{本质上确界与 $L^\infty$}
+\MFQLead{本质上确界与 $L^\infty$}
 
 普通上确界会被一个零测异常点改变。定义
 \[
@@ -33,7 +27,7 @@
 \]
 例如在 $[0,1]$ 上令 $f(1/2)=10^6$，其余点 $f(x)=x$。普通上确界是 $10^6$，但 $\lVert f\rVert_\infty=1$；改变单点不改变 $L^\infty$ 元素。对所有 $1\leq p\leq\infty$，$L^p$ 都是 Banach 空间：每个 $L^p$-Cauchy 序列都在 $L^p$ 中收敛。完备性保证“不断改进的近似”不会逃出误差空间。
 
-\subsection{固定算例：$f(x)=x$}
+\MFQLead{固定算例：$f(x)=x$}
 
 在 $[0,1]$ 的 Lebesgue 测度上，
 \[
@@ -43,7 +37,7 @@
 \]
 所以 $\lVert x\rVert_1=0.5$、$\lVert x\rVert_2=0.577350\ldots$、$\lVert x\rVert_4=0.668740\ldots$，而 $\lVert x\rVert_\infty=1$。$p$ 增大时更加惩罚峰值，但有限 $p$ 仍不是最大误差。
 
-\section{Hölder：把乘积放回 $L^1$}
+\MFQLead{Hölder 把乘积放回 $L^1$}
 
 若 $1<p<\infty$，共轭指数 $q$ 由 $1/p+1/q=1$ 定义。Young 不等式是证明的标量核心：对 $a,b\geq0$，
 \[
@@ -74,7 +68,7 @@
 因此 $\mathbb E[XY]$ 有限，协方差才是合法有限数。只有 $X,Y\in L^1$ 不足以保证乘积可积。
 \end{example}
 
-\section{Minkowski：范数的三角不等式}
+\section{不等式与误差尺度}
 
 对 $1<p<\infty$，先写
 \[
@@ -92,7 +86,7 @@
 \]
 $p=1$ 来自逐点三角不等式，$p=\infty$ 来自 a.e. 上界。Hölder 控制乘积，Minkowski 控制误差相加；二者角色不同。
 
-\subsection{有限测度空间上的嵌入}
+\MFQLead{有限测度空间上的嵌入}
 
 若 $\mu(\Omega)<\infty$ 且 $1\leq p<q<\infty$，对 $|f|^p\cdot1$ 使用 Hölder，指数取 $q/p$ 与 $q/(q-p)$：
 \[
@@ -142,7 +136,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 
 
 
-\subsection{$L^p$ 收敛推出依测度收敛}
+\MFQLead{$L^p$ 收敛推出依测度收敛}
 
 在事件 $A_n=\{|f_n-f|>\varepsilon\}$ 上有 $|f_n-f|^p\geq\varepsilon^p$，因此 Markov 不等式给出
 \[
@@ -150,7 +144,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 这条推出不要求 $\mu(\Omega)<\infty$。反向通常不成立：尖峰可以占据越来越小的集合，却保留不消失的 $L^p$ 质量。
 
-\subsection{依测度收敛只保证存在 a.e. 收敛子列}
+\MFQLead{依测度收敛只保证存在 a.e. 收敛子列}
 
 在有限测度空间中，若 $f_n\to f$ 依测度，可递归选择 $n_k$ 使
 \[
@@ -158,7 +152,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 这些坏事件的测度和有限。由 Borel--Cantelli 的第一部分，几乎每个点只落入有限多个坏事件，故 $f_{n_k}\to f$ a.e.。结论只保证一个子列，不能把原序列擅自升级为 a.e. 收敛。
 
-\subsection{typewriter 反例同时切断两条误推}
+\MFQLead{typewriter 反例同时切断两条误推}
 
 在 $[0,1)$ 上按层枚举二进区间
 \[
@@ -169,7 +163,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 
 反方向也失败。第 3 章的 $h_n=n\mathbf1_{(0,1/n]}$ a.e. 收敛到零，但 $\lVert h_n\rVert_1=1$；若改成 $h_n=n^{1/p}\mathbf1_{(0,1/n]}$，则 $\lVert h_n\rVert_p=1$。逐点消失不等于误差质量消失。
 
-\section{乘积空间与截面}
+\section{乘积空间与合法换序}
 
 给定 $(X,\mathcal A,\mu)$ 与 $(Y,\mathcal B,\nu)$，乘积 $\sigma$ 代数
 \[
@@ -186,7 +180,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 若 $E\in\mathcal A\otimes\mathcal B$，则截面可测。示性函数满足 $\mathbf1_E(x,y)=\mathbf1_{E_x}(y)=\mathbf1_{E^y}(x)$，这是从集合测度走向二重积分的桥梁。
 
-\section{Tonelli 与 Fubini 是两道不同检查}
+\MFQLead{Tonelli 与 Fubini 解决不同的问题}
 
 \begin{theorem}[Tonelli]
 若 $f:X\times Y\to[0,\infty]$ 对 $\mathcal A\otimes\mathcal B$ 可测，则
@@ -220,7 +214,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 独立性负责乘积测度结构，绝对可积性负责合法换序；两者不可互相替代。
 \end{example}
 
-\section{失败见证：条件求和不能冒充 Fubini}
+\MFQLead{一个条件求和反例说明缺少什么}
 
 在 $\mathbb N\times\mathbb N$ 上取计数测度，并令
 \[
@@ -240,7 +234,7 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 缺口是绝对可积性：前 $N\times N$ 方阵有 $N$ 个 $+1$ 和 $N-1$ 个 $-1$，绝对值和为 $2N-1\to\infty$。有符号方阵和恒为 1，而 $(N+1)\times N$ 矩形和恒为 0；不同扩张路径保留不同边界项。含负项时 Tonelli 不适用，绝对和发散时 Fubini 不适用，两个有限截断都稳定也不能创造合法极限。
 
-\section{独立数值基准与误差界}
+\section{从范数到研究判断}
 
 对 $f(x)=x^2$ 使用 $N$ 个等宽区间的复合中点公式：
 \[
@@ -253,16 +247,9 @@ $q=\infty$ 的端点不需要取极限。由 $|f|\leq\lVert f\rVert_\infty$ a.e.
 \]
 这里 $\max|f''|=2$。固定 $N=64$，脚本得到 $M_N=0.333312988$；解析积分为 $1/3$，实际误差与上界均为 $0.000020345\ldots$。双重级数部分只做整数计数，因此误差为零；次序差异不是浮点舍入制造的。
 
-独立基准还绑定 $p\in\{1,2,4\}$、$N=64$ 和截断尺寸 $10,100$。它拒绝非有限数、分组数量错配以及被改写的固定算例，防止 `NaN` 比较、数组截断或同步篡改 expected 把未核验结果标成成功。
+独立基准还绑定 $p\in\{1,2,4\}$、$N=64$ 和截断尺寸 $10,100$。非有限数、分组数量错配或被改写的固定算例都会改变所检验的对象；因此这些数字只能作为解析推导的独立核对，不能把数值输出升级为定理。
 
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch04_lp_product_measure.ipynb
-\end{lstlisting}
-
-\section{研究中的换序审计}
+\MFQLead{把换序条件写进研究判断}
 
 在把期望、积分、极限或求和交换前，依次记录：底层测度空间是否有限或 $\sigma$ 有限；函数与截面是否可测；使用的是非负性还是绝对可积性；积分允许无穷还是必须有限；收敛是 $L^p$、依测度还是 a.e.；所引用的包含关系是否依赖有限总测度；数值截断是否沿不同区域复核；expected 是否来自独立解析记录。若两个次序给出不同值，第一反应应是定位缺失假设，而不是挑选更符合策略叙事的结果。
 
@@ -271,6 +258,4 @@ uv run jupyter nbconvert --to notebook --execute --stdout \
 \input{tex/upper/chapters/ch04-questions}
 \input{tex/upper/chapters/ch04-hints}
 
-\section*{本章小结与 Capstone 连接}
-
-$L^p$ 通过 a.e. 等价类把误差变成完备范数空间；Hölder 与 Minkowski 控制乘积和误差叠加；有限测度决定不同 $p$ 之间的包含关系；三种收敛只有有限的推出链；Tonelli 与 Fubini 则分别以非负性和绝对可积性守住换序边界。上册 Capstone 会要求每个联合期望、误差范数和数值近似同时声明空间、检查、独立基准与失败见证。
+\noindent\textbf{本章要点。} $L^p$ 通过几乎处处等价类把误差变成完备范数空间；Hölder 与 Minkowski 分别控制乘积和误差叠加；有限测度决定不同 $p$ 之间的包含关系；三种收敛只有有限的推出链；Tonelli 与 Fubini 则分别以非负性和绝对可积性守住换序边界。看到“平均误差趋于零”时，先确认它是否足以支持你真正要说的结论。

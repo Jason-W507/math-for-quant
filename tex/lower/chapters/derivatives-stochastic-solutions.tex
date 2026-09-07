@@ -1,14 +1,23 @@
-\chapter{随机分析与无套利分层答案}
-\begin{enumerate}
-  \item 定理陈述为网格宽度趋零时二次变差依概率收敛到 $T$；有限模拟只给一个随机实现；离散平方恒等式则在每个有限网格精确成立。
-  \item $H_{t_i}$ 必须由 $\mathcal F_{t_i}$ 决定，不能读取 $W_{t_{i+1}}-W_{t_i}$ 后再选方向，否则积分把未来信息伪装成策略。
-  \item 由 $W_{i+1}^2-W_i^2=2W_i\Delta W_i+(\Delta W_i)^2$ 求和，再令网格细化，二次变差项趋于 $T$。
-  \item $f'(s)=1/s,f''(s)=-1/s^2$，故 $\mathrm d\log S_t=(\mu-\sigma^2/2)\mathrm dt+\sigma\mathrm dW_t$，积分得解析终值。
-  \item 事先确定实验的 block size 64、16、1 对应 $1.164390,1.132000,1.012519$；它展示同一路径的嵌套细化，不承诺单调。
-  \item $\theta=(0.08-0.02)/0.2=0.3$，所以 $0.08-0.2(0.3)=0.02$；换成 $-0.3$ 会得到 0.14 并触发诊断。
-  \item 确定性能量 100 给出 $e^{100}<\infty$。固定上限是风险政策，不是 Novikov；终端奇点的对数能量才随 cutoff 消失而发散。
+\chapter{随机分析与无套利参考答案}
+\section*{逐题推导与核对}
+\begin{enumerate}[leftmargin=*]
+  \item 依概率收敛的定义是对任意 $\varepsilon>0$，$\mathbb P(|X_n-X|>\varepsilon)\to0$；一条模拟路径上数值接近只是一个样本事件，不能替代概率量词。对每个固定网格，
+  \[
+  W_T^2=2\sum_iW_{t_i}\Delta W_i+\sum_i(\Delta W_i)^2
+  \]
+  是精确离散恒等式；只有在网格变细后才把最后一项解释成二次变差极限。
+  \item 适应性要求 $H_{t_i}$ 是 $\mathcal F_{t_i}$ 可测，即下单方向在看到当前信息时已经确定。若先看 $\Delta W_i$ 再选择 $H_{t_i}=\operatorname{sign}(\Delta W_i)$，则 $H_{t_i}$ 读取了区间末端信息，违反非预见性；积分就不再表示可执行策略。更具体地，每步获利 $|\Delta W_i|$ 的期望为 $\sqrt{2\Delta t_i/\pi}$，其正收益来自预见增量。
+  \item 将离散恒等式逐项求和：
+  \[
+  W_{t_{i+1}}^2-W_{t_i}^2=2W_{t_i}\Delta W_i+(\Delta W_i)^2.
+  \]
+  令网格范数趋零，第一项收敛于 $2\int_0^TW_t\mathrm dW_t$，第二项依概率收敛于 $T$，所以
+  $W_T^2=2\int_0^TW_t\mathrm dW_t+T$，也就是 $\mathrm d(W_t^2)=2W_t\mathrm dW_t+\mathrm dt$。若把平方项误删，就会得到错误的普通链式法则。
+  \item 对 $f(s)=\log s$ 有 $f'=1/s,f''=-1/s^2$。GBM 的二次变差为 $\sigma^2S_t^2\mathrm dt$，代入 Itô 公式得 $\mathrm d\log S_t=(\mu-\sigma^2/2)\mathrm dt+\sigma\mathrm dW_t$；从 $0$ 到 $T$ 积分得 $\log(S_T/S_0)=(\mu-\sigma^2/2)T+\sigma W_T$，所以对数收益服从均值 $(\mu-\sigma^2/2)T$、方差 $\sigma^2T$ 的正态分布，价格期望为 $S_0e^{\mu T}$。推导还要求 $S_t>0$，若模型允许跳到零，必须换用含跳跃的公式。
+  \item 从 4096 个独立 $N(0,T/4096)$ 增量出发，分别将每 $64,16,4,1$ 个增量相加，再计算平方和；步数为 $64,256,1024,4096$。先聚合再平方与先平方再聚合不同，后者不会产生粗网格的二次变差。每条路径数值不同，不要求固定输出；用多路径均值接近 $T$、方差接近 $2T^2/m$ 来理解定理。由正态四阶矩，$\operatorname{Var}((\Delta W)^2)=2(T/m)^2$，相加即得方差公式。
+  \item 风险价格方程为 $\mu-\sigma\theta=r$，所以 $\theta=(\mu-r)/\sigma=(0.08-0.02)/0.2=0.3$。反算 $0.08-0.2\times0.3=0.02$；若注入符号 $-0.3$，残差为 $0.12$ 而非零，所得漂移为 $0.14$，与目标 $r=0.02$ 不同；代回原动力学即可找出符号错误。
+  \item Novikov 要求某个时间窗内 $\mathbb E\exp(\frac12\int_0^T\theta_t^2\mathrm dt)<\infty$。若审计只看到一条路径的能量为 $100$，最多能说该路径的指数值有限；它不能证明总体期望有限，也不能据此宣称失败。应区分固定上限、尾部估计和随 cutoff 发散的序列，并报告 $\theta$ 的可测性与模型适用区间。
 \end{enumerate}
-% MFQ source replacements removed=1 unit=DerivativesStochastic
 
 \input{tex/common/source-mapped-exercises}
 \MFQMappedDerivativesStochasticSolutions

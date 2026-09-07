@@ -45,3 +45,15 @@
   \path{uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch15_monte_carlo.ipynb}
 \end{center}
 正常输出只给稳定证据类别：Monte Carlo 误差位于四标准误内、误差率检查通过、控制变量均值与方差门禁通过、bootstrap 精确枚举为 27 个状态。随后分别把 oracle 中的 \texttt{control\_known\_mean} 改成 $0.6$、把 \texttt{bootstrap\_observations\_iid} 改成 false；前者应报告目标均值被改变，后者应拒绝 IID 重抽样。完成恢复时应能解释每个失败为什么不能靠增加样本量或重复次数修复。
+\section*{逐题逐步核对}
+\begin{enumerate}[leftmargin=*]
+  \item seed 只保证伪随机序列重放；先检查路径分布、支付函数、单位和参数，再把模拟结果与闭式/枚举 oracle 比较。稳定重放的错误实现仍然是错误，答案必须列失败 fixture。
+  \item 把总误差拆成模型错设、路径/网格离散偏差、有限样本抽样误差、浮点数值误差和实现错误；增加 $N$ 只直接降低抽样项，不能修复前四项中的其他错误。报告要给每项的独立诊断或界。
+  \item Monte Carlo 估计 $\hat\mu=N^{-1}\sum Y_i$，IID 时方差为 $\sigma^2/N$；bootstrap 则条件于观测经验分布重抽样，近似统计量的抽样分布。时间依赖需要 block/stationary bootstrap 或模拟覆盖率，交换样本本身不保证独立。
+  \item 方差展开 $N^{-2}\sum_{i,j}\operatorname{Cov}(Y_i,Y_j)$，相关误差的非对角项不能删。对控制变量 $g-\beta h$ 展开二次式，求导得到 $\beta^*=\operatorname{Cov}(g,h)/\operatorname{Var}(h)$，最小方差为 $\operatorname{Var}(g)(1-\rho^2)$；先检查 $\operatorname{Var}(h)>0$。
+  \item 三次抽样的 27 个重抽样状态先用整数频数生成，再除以 27；频数和为 27，均值/方差由频数加权。随机 bootstrap 只能近似这个精确账本，差异应落在 $B^{-1/2}$ 误差内。
+  \item 对 $U^2$，独立 oracle 为 $E[U^2]=1/3$、$\operatorname{Var}(U^2)=4/45$；$N$ 增至 $4N$ 时标准误约减半。每个 $N$ 保存多次重复 RMSE、标准误和区间，不能拿一条更接近的路径宣称收敛。
+  \item 控制变量调整为 $U^2-(U-1/2)$，中心若改成 .6，均值增加 .1 而方差不变；这说明方差减少必须同时检查目标均值。antithetic、分层和重要性抽样也都要给权重/支撑条件。
+  \item 逐日 IID bootstrap 会打散自相关和波动聚集；移动块/平稳 bootstrap 要说明块长、边界和有效样本。重要性抽样还要报告权重最大值、有效样本量、二阶矩和支撑覆盖，否则少数路径可能支配结果。
+  \item 从 500 候选中先筛选再 bootstrap，筛选步骤本身也是随机量；若每次重抽样不重做筛选，区间漏掉选择不确定性。修复为重做完整流程、嵌套选择或样本分割，并另留时间外验证。
+\end{enumerate}

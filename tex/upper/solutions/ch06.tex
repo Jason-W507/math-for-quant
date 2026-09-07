@@ -1,6 +1,13 @@
 \chapter{第 6 章分层答案}
 \label{app:ch06-solutions}
 
+\section*{基础计算}
+\begin{enumerate}[leftmargin=*]
+\item 两列均为 $(1,2)^T$，故列空间基可取 $(1,2)^T$。$A\beta=0$ 等价于 $\beta_1+\beta_2=0$，零空间基为 $(1,-1)^T$。$(2,4)^T=2(1,2)^T$ 属于列空间；$(1,0)^T$ 不属于，因为第二分量不是第一分量的两倍。
+\item $q^Ty=3/\sqrt2$，故 $s=q(q^Ty)=(3/2,3/2)^T$，$r=(-1/2,1/2)^T$，平方距离 $r^Tr=1/2$。核对 $q^Tr=0$，再由勾股分解知道其他点距离更大。
+\item 零奇异方向是第二坐标，改变 $\beta_2$ 不影响输出。所有解为 $(2,t)^T$，范数平方为 $4+t^2$，故最小范数解为 $(2,0)^T$。
+\end{enumerate}
+
 \section*{口述概念}
 \begin{enumerate}[leftmargin=*]
   \item $\mathcal C(X)$ 是模型能表达的响应方向，$\mathcal N(X^T)$ 是与所有解释变量正交的残差方向；$\mathcal C(X^T)$ 是可由数据识别的参数方向，$\mathcal N(X)$ 是不改变预测的参数方向。四者分属观测空间和参数空间，不能混称“特征空间”。
@@ -15,29 +22,26 @@
     P^2=X(X^TX)^{-1}(X^TX)(X^TX)^{-1}X^T=P.
   \]
   秩亏时该逆不存在，但 $XX^+$ 仍是唯一正交投影。
-  \item 若 $X=U_r\Sigma_rV_r^T$，则 $X^+=V_r\Sigma_r^{-1}U_r^T$。任意最小二乘解可写成 $X^+y+z$，$z\in\mathcal N(X)$；两项正交，故 $z=0$ 给出最小范数。又 $X^TX=V_r\Sigma_r^2V_r^T$，最大/最小非零特征值为 $\sigma_1^2,\sigma_r^2$，所以条件数平方。
+  \item 若 $X=U_r\Sigma_rV_r^T$，则 $X^+=V_r\Sigma_r^{-1}U_r^T$。任意最小二乘解可写成 $X^+y+z$，$z\in\mathcal N(X)$；两项正交，故 $z=0$ 给出最小范数。又 $X^TX=V_r\Sigma_r^2V_r^T$，满列秩时全部特征值均正，最大/最小特征值为 $\sigma_1^2,\sigma_r^2$，所以条件数平方。
   \item 特征向量可取 $(1,-1)^T/\sqrt2$、$(1,1)^T/\sqrt2$，特征值分别为 $1,3$；后一方向方差最大。设 $L=\left(\begin{smallmatrix}a&0\\b&c\end{smallmatrix}\right)$，匹配 $LL^T=\Sigma$ 得 $a=\sqrt2$、$b=1/\sqrt2$、$c=\sqrt{3/2}$。
 \end{enumerate}
 
 \section*{数值编程}
 \begin{enumerate}[leftmargin=*]
-  \item 独立账本为 $\hat\beta=(7/6,1/2)^T$、$r=(-1/6,1/3,-1/6)^T$，残差平方和为 $1/6$。程序分别计算正规方程解、QR 回代 $R\beta=Q^Ty$、\texttt{np.linalg.lstsq} 与 $X^+y$，四者相对同一手算向量的最大分量误差必须小于 $10^{-12}$；这不表示四种算法对病态矩阵同样可靠。测试还要求 $X^Tr$、$Q^TQ-I$、$QR-X$、$P^2-P$ 与 $P-P^T$ 足够小，且重构误差小于 $10^{-12}$。
-  \item $X=\sum_i\sigma_iu_iv_i^T$。保留第一项得到 $X_1$；Eckart--Young 给出 $\lVert X-X_1\rVert_2=\sigma_2=0.915272\ldots$。测试期望来自解析奇异值 $\sqrt{4-\sqrt{10}}$；若实现错误地保留较小奇异值，误差会变为 $\sigma_1$，因此会失败。
+  \item 正文解得 $\hat\beta=(7/6,1/2)^T$、$r=(-1/6,1/3,-1/6)^T$，平方和为 $1/6$。正规方程求解 $X^TX\beta=X^Ty$，QR 求解 $R\beta=Q^Ty$，伪逆给出 $X^+y$，\texttt{lstsq} 直接求最小二乘。对本例四者只有舍入量级差别；逐项检查 $X^Tr=0$、$QR=X$ 与 $Q^TQ=I$ 可理解它们为何给出同一投影。改变到病态输入后，不能由本例推断四种算法仍同样准确。
+
+
+  \item $X=\sum_i\sigma_iu_iv_i^T$。保留第一项得到 $X_1$；Eckart--Young 给出 $\lVert X-X_1\rVert_2=\sigma_2=0.915272\ldots$。第二奇异值可由 $X^TX$ 的特征值算出，为 $\sqrt{4-\sqrt{10}}$；只保留较小奇异值时，舍弃了较大方向，误差变为 $\sigma_1$。
 \end{enumerate}
 
-\paragraph{扰动算例。}
-对固定矩阵的第一项扰动，绝对分量放大倍数为 $1000001$，相对范数放大约为 $1.0000005$；这两个数字与条件数的最坏方向放大必须分开解释。
+\section*{研究判断}
+\begin{enumerate}[leftmargin=*]
+\item 先核对单位。例如把收益从小数改为百分数会使系数乘以 100，但不增加信息。再对列作相同的标准化，观察奇异值和小奇异方向；近共线时，沿该方向的系数可以很大而预测变化很小。比较小幅数据扰动前后的参数与拟合值，并用后续样本比较预测误差，才能分别判断尺度、数值敏感性和预测能力。正则化可稳定参数，但回答了带惩罚的新问题。
+\item 有解析解或可靠参照解时可直接计算前向误差；只有输入和计算解时，残差可帮助估计后向误差。令 $A=\operatorname{diag}(1,10^{-6})$，$b=(1,0)^T$，真解 $x=(1,0)^T$。计算解 $\widehat x=(1,1)^T$ 的相对前向误差为 1，但它精确求解 $A\widehat x=b+(0,10^{-6})^T$，右端相对后向误差只有 $10^{-6}$。差别由病态性解释。
+\end{enumerate}
 
-\section*{恢复路径}
-先手算固定 $3\times2$ 账本，再运行
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --ExecutePreprocessor.allow_error_names=SystemExit notebooks/upper/ch06_linear_algebra.ipynb
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch06_linear_algebra.ipynb
-\end{lstlisting}
-若失败，按“形状/有限值 $\rightarrow$ 固定输入 $\rightarrow$ 解析账本 $\rightarrow$ 分解不变量 $\rightarrow$ 扰动方向”的顺序恢复。不要用当前库输出改写 expected，也不要通过放宽容差把模型问题伪装成浮点误差。
+\paragraph{继续练习。}将基础投影题中的 $y$ 改为 $(2,1)^T$，投影不变而残差反向。再在 notebook 中改变观测值，比较拟合变化。
+
 % MFQ source replacements removed=4 unit=UpperChSix
 
 \input{tex/common/source-mapped-exercises}

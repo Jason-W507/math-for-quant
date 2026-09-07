@@ -12,3 +12,36 @@
 
 \section*{独立 oracle 核对表}
 离散二次变差为 $0.86$，Itô 离散恒等式两侧为 $0.02$。闭式、二叉树与 Monte Carlo 价格分别为 $8.916037$、$8.911086$ 与 $8.909574$，Monte Carlo 95\% 半宽为 $0.085601$。解析 Delta 与差分 Delta 分别为 $0.579260$ 与 $0.579260$。无成本复制误差为 $1.476783$，成本后误差为 $1.391342$。
+
+\section*{逐题推导与核对}
+上面的列表先给出结论；本节把每一步写出来，便于把公式、信息集和数值账本逐项复查。
+\begin{enumerate}[leftmargin=*]
+  \item 在分割 $0=t_0<\cdots<t_n=T$ 上写 $\Delta W_i=W_{t_{i+1}}-W_{t_i}$。Brownian 增量独立且 $\mathbb E(\Delta W_i)^2=\Delta t_i$，所以
+  \[
+    \mathbb E\sum_i(\Delta W_i)^2=\sum_i\Delta t_i=T.
+  \]
+  同时 $\operatorname{Var}((\Delta W_i)^2)=2(\Delta t_i)^2$，网格范数趋零时方差和趋于零，于是平方和依概率收敛到 $T$。一阶总变差则约为 $\sum_i\sqrt{\Delta t_i}$，随网格细化发散；因此 Taylor 展开中二阶项不能被丢掉，而三阶及以上项在合适的概率意义下消失。
+  \item 真实概率 $\mathbb P$ 下的漂移 $\mu$ 描述实际统计世界；若存在等价测度 $\mathbb Q$ 使 $\mathrm d\mathbb Q/\mathrm d\mathbb P$ 满足 Girsanov 条件，则 Brownian 漂移被风险价格 $\theta$ 改写。对可交易资产，要求
+  \[
+    \widetilde S_t=e^{-rt}S_t,\qquad \mathbb E^{\mathbb Q}[\widetilde S_T\mid\mathcal F_t]=\widetilde S_t,
+  \]
+  即贴现价格为鞅。于是期权价格是 $V_t=\mathbb E^{\mathbb Q}[e^{-r(T-t)}H(S_T)\mid\mathcal F_t]$，而不是把历史频率直接代进折现公式。无套利要求的是这种测度存在及等价性，不是宣称市场真的服从风险中性概率。
+  \item 对 $S_t$ 应用 Itô 公式：
+  \[
+    \mathrm d\log S_t=\frac1{S_t}\mathrm dS_t-
+       \frac1{2S_t^2}(\mathrm dS_t)^2.
+  \]
+  因为 $(\mathrm dS_t)^2=\sigma^2S_t^2\mathrm dt$，代入 $\mathrm dS_t=\mu S_t\mathrm dt+\sigma S_t\mathrm dW_t$ 得
+  $\mathrm d\log S_t=(\mu-\sigma^2/2)\mathrm dt+\sigma\mathrm dW_t$。从 $0$ 积分后，
+  $\log S_t=\log S_0+(\mu-\sigma^2/2)t+\sigma W_t$，指数化即 $S_t=S_0\exp((\mu-\sigma^2/2)t+\sigma W_t)$。漂移修正来自二次变差，不能在最后一步才补上。
+  \item 令组合 $\Pi_t=V(t,S_t)-\Delta_tS_t$，先选 $\Delta_t=V_S(t,S_t)$。Itô 展开 $V$ 后，$\mathrm dW_t$ 的系数为 $V_S\sigma S-\Delta\sigma S=0$；剩余有限变差为
+  \[
+    V_t+\mu S V_S+\tfrac12\sigma^2S^2V_{SS}-\Delta\mu S.
+  \]
+  无套利要求无风险组合收益为 $r\Pi_t\mathrm dt$。消去 $\Delta=V_S$ 后得到
+  $V_t+\frac12\sigma^2S^2V_{SS}+rSV_S-rV=0$，并配上终端条件 $V(T,S)=H(S)$。如果有连续分红、融资利差或交易成本，漂移项和自融资条件都会相应改变，不能直接复用这条 PDE。
+  \item 二叉树的时间步长为 $\Delta t=T/N$，先用风险中性概率贴现递推，再与闭式值比较。固定同一参数后记录 $N=12,24,52$ 的误差；若误差近似按 $N^{-1}$ 或 $N^{-1/2}$ 缩放，只能说明该区间的经验阶数，不能把一次变小当作收敛证明。独立闭式 oracle 为 $8.916037$；输出 $8.911086$ 的差为 $-0.004951$，必须把符号和绝对误差都报告。
+  \item 对 Monte Carlo 价格 $\widehat V_N=e^{-rT}N^{-1}\sum_{j=1}^NH_j$，独立路径给出 $\operatorname{SE}(\widehat V_N)=s_H/\sqrt N$。因此路径数由 $N$ 增到 $4N$ 时，若同一分布和方差仍适用，半宽约减半；实际报告还要给样本标准差、随机种子、置信区间构造和是否使用 antithetic/control variate。不能只说“价格更接近”，因为一次抽样可能偶然更好。
+  \item 先检查静态套利区间，例如欧式看涨必须满足 $\max(0,S_0-Ke^{-rT})\le C\le S_0$（忽略分红）。若报价越界，任何反演出的“隐波”都不是无套利参数。即使报价在区间内，Vega $\partial C/\partial\sigma$ 很小时，隐波误差近似为 $\delta\sigma\approx\delta C/\mathrm{Vega}$，所以应报告价格误差、Vega 和条件数，而不是把高波动率打印成精确结论。
+  \item 先冻结合约、曲线、股息、随机种子和路径；再做四组实验：基线、只改变调仓步数、只打开成本、只改变波动率。每组输出均值、标准差、P5/P50/P95、最大损失和成本分解。这样可以把离散误差、摩擦和模型错设分开；若同时改动三者，误差变化没有可识别归因。
+\end{enumerate}

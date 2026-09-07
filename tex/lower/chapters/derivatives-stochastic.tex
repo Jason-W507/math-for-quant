@@ -1,215 +1,111 @@
 \chapter{随机分析与无套利：从二次变差到风险中性测度}
 \label{ch:lower-derivatives-stochastic}
 
-\begin{itemize}
-  \input{tex/generated/prerequisites/lower-derivatives-stochastic}
-  \item 学习产出：说明 Brownian 二次变差的收敛方式，构造 Itô 积分与公式，并逐项核对风险中性测度的成立条件。
-  \item 研究边界：数学上的充分条件、教材风险限额与经验稳定性检查是三种不同强度的命题。
-\end{itemize}
+若价格不断受到随机冲击，普通微积分还能计算持仓收益吗？若能通过交易复制期权，价格又为何不需要直接代入股票的历史平均收益率？这两个问题把本章连在一起：先建立随机积分，再由链式法则的修正推导复制价格。
+
+先修是上册条件期望、平方可积收敛、Brownian 运动与多元微分。目标是推导 $W_t^2$ 和几何 Brownian 运动的公式，理解自融资复制如何导出定价 PDE。一般测度变换与市场完备性放在选读部分，引用的定理不在本章完整证明。
 
 \input{tex/figures/generated/lower-dv-route.tex}
 
-
-
-
-\section{同一条路径上的嵌套分割}
-
-设 $W$ 是标准 Brownian 运动，$\pi_n=\{0=t_0<\cdots<t_{m_n}=T\}$ 的网格宽度 $|\pi_n|\to0$。二次变差定理写成
+\section{为什么平方增量不能忽略}
+标准 Brownian 运动 $W$ 从零出发，具有连续路径与独立正态增量。对确定分割 $\pi=\{0=t_0<\cdots<t_m=T\}$，令 $h_i=t_{i+1}-t_i$，$\Delta W_i=W_{t_{i+1}}-W_{t_i}$，$Q_\pi=\sum_i(\Delta W_i)^2$。正态二阶、四阶矩给出
 \[
-  \sum_i (W_{t_{i+1}}-W_{t_i})^2\xrightarrow{P}T.
+\mathbb E(\Delta W_i)^2=h_i,\qquad \mathbb E(\Delta W_i)^4=3h_i^2.
 \]
-这里是\textbf{依概率收敛}；单条有限路径越来越接近 $T$ 只是数值现象，不能替代定理。实验从同一组 4096 个最细增量出发，把相邻增量按 64、16、4、1 个聚合后再平方，避免不同网格其实来自不同随机路径。事先确定路径的粗、细值为 $1.164390$ 与 $1.012519$。
+增量独立，因而
+\[
+\mathbb E Q_\pi=T,\qquad \operatorname{Var}(Q_\pi)=2\sum_i h_i^2\le2T|\pi|.
+\]
+所以网格宽度 $|\pi|\to0$ 时，$Q_\pi\to T$ 在 $L^2$ 中成立，也依概率成立。这解释了平方增量为何不能忽略。光滑路径的平方增量和则趋于零。
 
 \input{tex/figures/generated/lower-dv-qv.tex}
+图中将同一细路径的增量聚合成粗增量。有限路径上的误差不必单调减小；在多条路径上重复才看得见误差分布的收缩。均匀 $m$ 步的理论方差是 $2T^2/m$。
 
-
-
-
-离散恒等式
+每个有限分割都满足代数恒等式
 \[
- W_T^2=2\sum_i W_{t_i}\Delta W_i+\sum_i(\Delta W_i)^2
+W_T^2=2\sum_iW_{t_i}\Delta W_i+\sum_i(\Delta W_i)^2.
 \]
-解释了普通链式法则为何少一项。取极限得到
+因此中间的和若有积分极限，就应满足
 \[
- W_T^2=2\int_0^T W_t\,\mathrm dW_t+T.
+\int_0^TW_t\,dW_t=\tfrac12(W_T^2-T).
 \]
-代码的恒等式误差约为 $6.7\times10^{-16}$；它验证代数实现，不验证二次变差定理。
+它的期望为零，与当前持仓无法预知下一次独立冲击相符。下一节给出这个极限的构造。
 
-\section{从简单过程到 Itô 公式}
+\section{从可用信息构造随机积分}
+滤过 $(\mathcal F_t)$ 表示截至 $t$ 的信息，并假定 $W$ 相对该滤过为 Brownian 运动。简单过程
+\[
+H_t=\sum_iH_i\mathbf1_{(t_i,t_{i+1}]}(t)
+\]
+中 $H_i$ 对 $\mathcal F_{t_i}$ 可测，$\mathbb EH_i^2<\infty$。它表示每段开始时决定持仓。定义 $I(H)=\sum_iH_i\Delta W_i$。条件于段首信息，每个增量均值为零，所以 $\mathbb EI(H)=0$。
 
-对适应简单过程 $H_t=\sum_k H_k\mathbf 1_{(t_k,t_{k+1}]}(t)$，其中 $H_k$ 对 $\mathcal F_{t_k}$ 可测，定义
+平方展开中的交叉项也为零：对 $i<j$，$H_i\Delta W_iH_j$ 在 $t_j$ 已知，再对最后的 $\Delta W_j$ 条件化即可。对角项为 $\mathbb E[H_i^2(\Delta W_i)^2]=h_i\mathbb EH_i^2$。因此
 \[
- \int_0^T H_t\,\mathrm dW_t
- =\sum_k H_k(W_{t_{k+1}}-W_{t_k}).
+\mathbb E[I(H)^2]=\mathbb E\int_0^TH_t^2dt.
 \]
-Itô 等距
-\[
- \mathbb E\left[\left(\int_0^T H_t\,\mathrm dW_t\right)^2\right]
- =\mathbb E\int_0^T H_t^2\,\mathrm dt
-\]
-让积分从简单过程延拓到平方可积适应过程。它不是逐路径 Riemann--Stieltjes 积分；适应性阻止积分在时点 $t$ 读取未来增量。
+这就是 Itô 等距。若简单可预测过程 $H^{(n)}$ 在右侧范数下逼近 $H$，等距保证 $I(H^{(n)})$ 是 $L^2$ Cauchy 列。利用完备性定义积分为其极限；再次用等距可知极限与逼近方式无关。由此得到平方可积可预测过程的 Itô 积分。渐进可测且满足同样可积条件的过程也可使用这一构造；单独写“适应”还不足以交代时间可测性。
 
-这里有三个容易混淆的层次。首先，$H$ 对滤过适应只约束信息时点；其次，$\mathbb E\int_0^T H_t^2\,\mathrm dt<\infty$ 保证当前构造下的平方可积；最后，样本路径通常仍没有有限变差。Python 中把两个数组点乘不会自动满足任何一条，研究者必须先声明时间索引、滤过和可积性，再解释数组运算对应哪个数学对象。
+对 $H_t=W_t$，$\mathbb E\int_0^TW_t^2dt=T^2/2<\infty$。左端阶梯近似的均方积分误差不超过 $T|\pi|$，所以前一节的和确实收敛到该积分，$W_T^2$ 的公式得到证明。
 
-若 $\mathrm dX_t=\mu(t,X_t)\,\mathrm dt+\sigma(t,X_t)\,\mathrm dW_t$ 且 $f\in C^{1,2}$，则
-\[
- \mathrm df(t,X_t)=\left(f_t+\mu f_x+\tfrac12\sigma^2f_{xx}\right)\mathrm dt
- +\sigma f_x\,\mathrm dW_t.
-\]
-额外的二阶项正来自 $\mathrm d[W]_t=\mathrm dt$。对 $f(x)=\log x$ 应用该式可得 GBM 的 $-\sigma^2/2$ 修正；忘掉它会系统性错写终值分布。
+\begin{example}[看见未来会改变什么]
+若先观察 $\Delta W_i$ 再选 $H_i=\operatorname{sign}(\Delta W_i)$，乘积变为 $|\Delta W_i|$，期望为 $\sqrt{2h_i/\pi}>0$。它不满足段首信息约束，因而不是上述可交易简单过程。
+\end{example}
 
-\section{无套利、复制与风险中性测度}
+\section{Itô 公式与几何 Brownian 运动}
+设 $dX_t=\mu_tdt+\sigma_tdW_t$，系数满足积分的可测性与局部可积条件，$f\in C^{1,2}$。Itô 公式为
+\[
+df(t,X_t)=\left(f_t+\mu_tf_x+\tfrac12\sigma_t^2f_{xx}\right)dt+\sigma_tf_xdW_t.
+\]
+从 Taylor 展开理解它：一阶项给出 $f_t\Delta t+f_x\Delta X$，二阶项含 $f_{xx}(\Delta X)^2/2$。Brownian 增量的平方累积保留为 $dt$，时间增量的平方及交叉项消失。一般公式的严格证明还需控制余项并作局部化；这里的解释不代替这些步骤。
 
-在无摩擦、可连续交易且标的满足
+对 $dS_t=\mu S_tdt+\sigma S_tdW_t$、$S_0>0$，取 $f(s)=\log s$，由 $f'=1/s,f''=-1/s^2$ 得
 \[
- \frac{\mathrm dS_t}{S_t}=\mu\,\mathrm dt+\sigma\,\mathrm dW_t
+d\log S_t=(\mu-\sigma^2/2)dt+\sigma dW_t,\qquad
+S_T=S_0\exp\{(\mu-\sigma^2/2)T+\sigma W_T\}.
 \]
-的模型中，对期权 $V(t,S)$ 取 $\Delta=V_S$ 消去瞬时 Brownian 风险，得到 Black--Scholes--Merton PDE
+反过来对这个显式正过程用 Itô 公式可验证原 SDE，也保证取对数合法。正态指数矩给出 $\mathbb ES_T=S_0e^{\mu T}$；对数的期望却是 $\log S_0+(\mu-\sigma^2/2)T$。价格均值和对数均值是不同的量。
+
+\section{复制如何导出定价方程}
+假定无股息股票服从上述模型，$\sigma>0$，银行账户 $B_t=e^{rt}$，允许无摩擦连续交易。用 $\Delta_t$ 股股票与银行账户组成价值 $V_t$ 的自融资组合，则
 \[
- V_t+\tfrac12\sigma^2S^2V_{SS}+rSV_S-rV=0.
+dV_t=\Delta_tdS_t+r(V_t-\Delta_tS_t)dt.
 \]
-该推导依赖复制与自融资，不是把历史漂移机械替换为 $r$。同一条件下，贴现资产在等价鞅测度 $\mathbb Q$ 下为鞅，Feynman--Kac 给出
+自融资表示调仓由组合内部支付，并不是对 $\Delta_tS_t$ 求导后丢掉调仓项。若期权价值为光滑函数 $V(t,S)$，则
 \[
- V(t,S_t)=e^{-r(T-t)}\mathbb E^{\mathbb Q}[g(S_T)\mid\mathcal F_t].
+dV=(V_t+\mu SV_S+\tfrac12\sigma^2S^2V_{SS})dt+\sigma SV_SdW.
 \]
-PDE、复制和风险中性期望是同一模型的三种表达，而不是三份彼此独立的市场事实\cite{black1973pricing,merton1973rational,shreve2004stochastic}。
+比较随机项得 $\Delta=V_S$；比较漂移项，两边的 $\mu SV_S$ 抵消，于是
+\[
+V_t+\tfrac12\sigma^2S^2V_{SS}+rSV_S-rV=0,\qquad V(T,S)=g(S).
+\]
+历史漂移退出公式，是因为复制消去了股票风险。在适当增长条件下，Feynman--Kac 定理给出
+\[
+V(t,S_t)=e^{-r(T-t)}\mathbb E^{\mathbb Q}[g(S_T)\mid\mathcal F_t],
+\qquad dS_t=rS_tdt+\sigma S_tdW_t^{\mathbb Q}.
+\]
+到期收益不光滑时，在到期前解释 PDE，用终端极限指定边界。取 $g(S)=S$，条件期望为 $S_te^{r(T-t)}$，贴现价格恰为 $S_t$，与持有一股的复制相符。
 
 \input{tex/figures/generated/lower-dv-replication.tex}
+图把收益、动态持仓和现金账户联系起来。实际离散调仓留下对冲误差；下一章将讨论它与定价离散误差的区别\cite{black1973pricing,merton1973rational,shreve2004stochastic}。
 
-
-
-
-更具体地，定义随机指数
+\section{选读：风险中性测度从哪里来}
+常数参数下令 $\theta=(\mu-r)/\sigma$，定义
 \[
- Z_T=\exp\left(-\int_0^T\theta_t\,\mathrm dW_t
- -\frac12\int_0^T\theta_t^2\,\mathrm dt\right),
- \qquad \frac{\mathrm d\mathbb Q}{\mathrm d\mathbb P}=Z_T.
+Z_T=\exp(-\theta W_T-\tfrac12\theta^2T),\qquad d\mathbb Q=Z_Td\mathbb P.
 \]
-若 $Z$ 是严格正的真鞅且 $\mathbb E Z_T=1$，Girsanov 定理给出
+正态指数矩给出 $\mathbb EZ_T=1$，且 $Z_T>0$，所以定义了与原测度等价的概率。独立增量还给出 $\mathbb E[Z_T\mid\mathcal F_t]=Z_t$。Girsanov 定理说明 $W_t^{\mathbb Q}=W_t+\theta t$ 在新测度下为 Brownian 运动。代入 $dW=dW^{\mathbb Q}-\theta dt$，
 \[
- W_t^{\mathbb Q}=W_t+\int_0^t\theta_s\,\mathrm ds,
+dS/S=(\mu-\sigma\theta)dt+\sigma dW^{\mathbb Q}=r\,dt+\sigma dW^{\mathbb Q}.
 \]
-它在 $\mathbb Q$ 下是 Brownian 运动。对常数参数，$\theta=(\mu-r)/\sigma$，所以
-\[
- \mu\,\mathrm dt+\sigma\,\mathrm dW_t
- =r\,\mathrm dt+\sigma\,\mathrm dW_t^{\mathbb Q}.
-\]
-符号取决于密度过程采用的约定；最安全的检查不是背符号，而是代回后验证贴现资产漂移为零。事先确定例中 $\theta=0.3$，错误地取 $-0.3$ 会把变换后漂移写成 0.14，而不是 0.02。
-
-“存在等价鞅测度”与“市场完备”也要分开。无套利对应等价局部鞅测度的存在；唯一性与每个或有要求可复制相关。在一般连续时间市场里还需技术条件，不能只从一条 SDE 和一个密度公式宣布基本定理全部成立。
-
-\MFQTransition{Novikov 条件不是固定能量上限}
-
-令 $\theta_t$ 为市场价格风险。密度随机指数成为真鞅的一个常用充分条件是
-\[
- \mathbb E\exp\left(\frac12\int_0^T\theta_t^2\,\mathrm dt\right)<\infty.
-\]
-确定常数 $\theta$ 在有限 $T$ 上即使能量为 100，指数仍是有限数；不能因为超过人为阈值就声称 Novikov 失败。仓库另有“市场价格风险能量预算”，它只是一条教材风险限额，名称和诊断都与数学条件分开。
-
-真正的失败见证取 $\theta_t=(T-t)^{-1/2}$。截到 $T-\varepsilon$ 时
-\[
- \frac12\int_0^{T-\varepsilon}\theta_t^2\,\mathrm dt
- =\frac12\log\frac{T}{\varepsilon},
-\]
-当 $\varepsilon\downarrow0$ 发散。事先确定实验从 $2.302585$ 增至 $6.907755$，完整端点给出稳定的不可积诊断。Novikov 只是充分条件；它失败时不能直接推出不存在其他方式证明密度为真鞅。
-
-测度变换另作成熟库对照：透明实现计算
-$\exp(\theta x-\theta^2/2)$，SciPy 用两个正态密度的对数比
-$\log\phi(x-\theta)-\log\phi(x)$ 重建同一 Radon--Nikodym 密度；事先确定点的差为
-$2.2\times10^{-16}$。这只核对符号与数值实现，不替代 Novikov、鞅性或等价性的证明。
-
-\begin{diagnostic}
-若程序只检查 $\int\theta^2\mathrm dt$ 是否小于某个常数，它验证的是内部风险政策；若检查有限场景的指数矩，它仍只覆盖离散近似；若要声称连续时间 Novikov 条件成立，必须对随机过程的指数矩本身给出数学论证。三个层次应使用不同字段和诊断名称。
-\end{diagnostic}
-
-\begin{implementationnote}
-运行 \path{notebooks/lower/ch14_derivatives_stochastic.ipynb}。oracle 只保存代数恒等式、漂移变换和不可积见证；随机路径具体数值另存为 regression，避免把模拟输出冒充独立数学答案。
-\end{implementationnote}
-
-本单元向本路线的综合项目和下一章交付：风险中性动力学、PDE、贴现期望及全部成立条件。
-
-\MFQTransition{滤过、适应性与可交易策略}
-
-滤过 $(\mathcal F_t)$ 表示截至 $t$ 的信息增长。价格 $S_t$ 应为适应过程，持仓 $\Delta_t$ 必须可预测：在 $(t,t+dt]$ 的收益发生前确定。若离散回测用区间终点价格计算同一区间 Delta，就是连续时间符号下的未来函数。
-
-简单可预测过程 $H_t=\sum_k H_k\mathbf1_{(t_k,t_{k+1}]}(t)$ 的 Itô 积分定义为
-\[
-\int_0^T H_t\,dW_t=
-\sum_k H_k(W_{t_{k+1}}-W_{t_k}),
-\]
-其中 $H_k$ 对 $\mathcal F_{t_k}$ 可测。Itô 等距
-\[
-\mathbb E\left[\left(\int_0^T H_t\,dW_t\right)^2\right]
-=\mathbb E\int_0^T H_t^2\,dt
-\]
-把随机积分的二阶矩化为普通积分，并支撑从简单过程到平方可积过程的完备化。
-
-Itô 积分在适当可积条件下是鞅，因此
-\[
-\mathbb E\!\left[\int_s^t H_u\,dW_u\mid\mathcal F_s\right]=0.
-\]
-这不是说每条路径的积分为零，而是给定当前信息后的条件均值为零。若被积过程偷看 $W_t-W_s$ 再决定 $H_s$，可预测性被破坏，条件均值结论也随之失效。连续时间金融中的“自融资策略不能使用未来价格”正是这一条件的经济版本。
-
-停止时间 $\tau$ 满足事件 $\{\tau\le t\}\in\mathcal F_t$。首次触及止损线是停止时间，完整样本中收益最低的日期却不是在线可识别停止时间。可选停止定理还需要有界性、一致可积等条件；仅凭“鞅在停止时仍公平”一句话，不能为无限加仓或翻倍策略背书。
-
-\MFQTransition{Itô 公式的多维版本}
-
-若 $X_t\in\mathbb R^d$ 满足 $dX_t=b_tdt+\sigma_tdW_t$，$f(t,x)$ 足够光滑，则
-\[
-df=\left(f_t+\nabla f^{\mathsf T}b+
-\frac12\operatorname{tr}(\sigma\sigma^{\mathsf T}\nabla^2f)\right)dt
-+\nabla f^{\mathsf T}\sigma\,dW_t.
-\]
-二阶项来自二次变差，不是普通链式法则中的“小量忽略”。对 $f(S)=\log S$ 应用后，GBM 的对数漂移从 $\mu$ 变为 $\mu-\sigma^2/2$。
-
-多资产期权还包含交叉变差 $dS_i,dS_j=\rho_{ij}\sigma_i\sigma_jS_iS_jdt$，PDE 中出现混合二阶导数。相关矩阵必须半正定；逐对指定相关而不检查整体矩阵可能导致不存在联合 Brownian 运动。
-
-对向量过程，协方差矩阵是瞬时二次协变差密度：
-\[
-d[X^i,X^j]_t=(\sigma_t\sigma_t^{\mathsf T})_{ij}\,dt.
-\]
-它决定 Itô 公式中的 Hessian 项。若用历史相关直接填入定价模型，还必须检查时间尺度、测度和状态依赖；历史 $\mathbb P$ 下的相关估计不自动等于风险中性 $\mathbb Q$ 下的联合动态。
-
-\MFQTransition{无套利基本定理的层次}
-
-一时期有限状态模型中，“无套利”等价于存在严格正状态价格；连续半鞅模型需要更精细的 NFLVR 条件。等价鞅测度存在对应无套利，唯一性对应市场完备。Black--Scholes 的单 Brownian、单风险资产模型完备；加入随机波动率、跳跃或不可交易风险源后通常不完备，衍生品价格不再只由无套利唯一决定。
-
-复制策略给出的是模型内部价格。真实市场的离散交易、成本、跳跃和约束破坏连续复制；风险中性测度也不是“投资者真的风险中性”，而是把可交易风险溢价吸收到测度中以便定价。
-
-市场完备时，鞅表示定理使每个平方可积或有要求都能写成常数加对 Brownian 运动的随机积分，于是对应可交易资产的动态策略可以复制它。若风险源多于独立可交易资产，表示中的某些方向无法对冲，等价鞅测度通常不唯一。此时无套利只给出价格区间或需要额外偏好、效用及校准准则。
-
-更换 numeraire 可以简化不同产品的定价。若 $N_t>0$ 是 numeraire，在对应测度 $\mathbb Q^N$ 下，可交易资产的相对价格 $S_t/N_t$ 是鞅：
-\[
-\frac{V_t}{N_t}=\mathbb E^{\mathbb Q^N}\!\left[
-\frac{V_T}{N_T}\middle|\mathcal F_t\right].
-\]
-货币市场账户对应风险中性测度，零息债券对应远期测度。测度名称只有连同 numeraire、期限和可交易集合一起写出才完整。
-
-\section{Girsanov 变换的符号检查}
-
-若密度过程
-\[
-Z_T=\exp\left(-\int_0^T\theta_t\,dW_t
--\frac12\int_0^T\theta_t^2dt\right)
-\]
-是真鞅，则在新测度下 $W_t^Q=W_t+\int_0^t\theta_sds$ 为 Brownian。代回
-$dS/S=\mu dt+\sigma dW$ 得
-\[
-\frac{dS}{S}=(\mu-\sigma\theta)dt+\sigma dW^Q.
-\]
-令 $\theta=(\mu-r)/\sigma$ 才得到风险中性漂移 $r$。最稳的符号检查是把 $dW=dW^Q-\theta dt$ 明确代回，而不是背密度指数的正负号。
+例如 $\mu=0.08,r=0.02,\sigma=0.2$，则 $\theta=0.3$。新测度改变路径的权重，并非把已发生的路径移动。
 
 \input{tex/figures/generated/lower-dv-measure.tex}
+对随机可预测 $\theta_t$，密度改为随机指数。常用充分条件是 Novikov 条件
+\[
+\mathbb E\exp\left(\tfrac12\int_0^T\theta_t^2dt\right)<\infty.
+\]
+它保证密度过程是真鞅。任意有限常数 $\theta$ 在有限期限上均满足此条件，没有固定能量上限。若 $\theta_t=(T-t)^{-1/2}$，则 $\int_0^{T-\varepsilon}\theta_t^2dt=\log(T/\varepsilon)$，完整端点处不再平方可积，不能直接用此式定义终端积分。一般而言，Novikov 不成立表示这个充分条件不可用，不等价于所有测度变换均不存在。
 
-
-
-
-\begin{diagnostic}
-风险中性定价仍需说明 numeraire、可交易资产、股息和利率。更换 numeraire 会更换测度；“所有贴现价格都是鞅”只对相应 numeraire 和可交易资产成立。
-\end{diagnostic}
-
-从研究角度，连续时间模型至少要留下四层记录：原始测度下的状态过程、密度或市场价格风险、numeraire 与新测度、最终可交易复制或定价公式。若只保存最终 Black--Scholes 数字，无法判断错误来自 SDE、测度变换、贴现还是 payoff。下一章的数值方法正是在这四层条件已经事先确定后，才讨论离散误差和校准误差。
-
-这些条件将在衍生品路线 Capstone 中与定价、校准和对冲误差一起复核。
+\MFQLead{多维与完备性的阅读边界}
+若 $dX=b\,dt+\sigma\,dW$，二阶项为 $\tfrac12\operatorname{tr}(\sigma\sigma^T\nabla^2f)dt$，即协变差与 Hessian 的配对。一般连续时间无套利定理需要 NFLVR 等技术条件，本章不作证明。在 Brownian 自然滤过下的标准 Black--Scholes 模型，可复制性与鞅表示相联系；增加不可交易风险源通常会使价格不再由复制唯一确定。更换正的计价资产还会更换相应测度。这些是进一步学习的入口。
 
 \input{tex/lower/chapters/derivatives-stochastic-questions}

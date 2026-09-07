@@ -1,11 +1,9 @@
 \chapter{估计、检验、渐近、回归与多重检验}
 \label{ch:statistical-inference}
 
-\begin{introduction}
-  \input{tex/generated/prerequisites/upper-ch10.tex}
-  \item 学习产出：从抽样规则推导偏差、方差、MSE 与渐近分布；从投影推导 OLS；为异方差、序列相关和聚类选择标准误；把因子搜索登记为一个检验族。
-  \item 研究连接：本章回答“估计对象是什么、误差如何量化、显著性是否可信”；它不把统计显著偷换成因果或成本后可交易性。
-\end{introduction}
+统计推断的起点不是一个显著的数字，而是一个明确的随机对象：数据怎样产生，估计量对数据做了什么，重复抽样时它会怎样变化。本章沿着这条线从偏差与方差走到渐近近似、检验和回归，再处理量化研究中最容易被忽略的多重搜索。读者应把每个标准误和每个 $p$ 值都追溯到抽样机制、目标参数和停止规则。
+
+本章的计算例子刻意同时给出解析值、有限样本结果和失败情形。解析推导说明命题为什么成立，模拟说明有限样本会怎样波动，反例则说明哪些直觉不能外推；三者缺一都不足以支撑研究结论。
 
 \section{估计量是抽样规则，不是屏幕上的数}
 
@@ -25,7 +23,7 @@ $\operatorname{Bias}(\hat\theta)$。
 $b=\mathbb E\hat\theta_n-\theta$，把误差写成
 $(\hat\theta_n-\mathbb E\hat\theta_n)+b$；平方取期望后，交叉项因中心化为零，便得到分解。
 
-\subsection*{有偏估计也可能更好}
+\MFQLead{有偏估计也可能更好}
 若无偏估计量 $\bar X$ 估计 $\theta=1$，且
 $\operatorname{Var}(\bar X)=0.25$，考虑收缩估计
 $\tilde\theta=0.8\bar X$。它的偏差为 $-0.2$、方差为
@@ -39,10 +37,10 @@ $\operatorname{Var}(T_n)=1$ 永不收缩，因此
 $T_n\not\xrightarrow{\mathbb P}\theta$。独立基准的
 \texttt{inconsistent\_var=1.000000} 是这一反例的解析记录，而不是模拟印象。
 
-\noindent\textbf{Python 边界}\quad
+\MFQLead{把一次计算和抽样分开}
 数组中一个估计值只是一轮样本的结果。要谈偏差、方差或覆盖率，必须明确重复抽样机制；固定随机种子保证复现，不会把 Monte Carlo 观察变成数学证明。
 
-\section{一致性、渐近正态与 Delta 方法}
+\section{渐近近似、检验与经济效应}
 
 一致性要求 $\hat\theta_n\xrightarrow{\mathbb P}\theta$；渐近正态通常写成
 \[
@@ -50,6 +48,19 @@ $T_n\not\xrightarrow{\mathbb P}\theta$。独立基准的
 \]
 前者说明误差最终集中，后者给出局部缩放后的近似形状与收敛速率。若两个一致估计量有相同目标和正则条件，才可用较小的渐近方差谈相对效率；不同目标、不同损失或不同模型类不能只比一个标准误。
 估计标准误简记为 $\operatorname{se}(\hat\theta)$，它必须对应实际抽样与依赖结构。
+
+\begin{proposition}[渐近正态的使用边界]
+若 $Y_i$ 独立同分布、$\mathbb E Y_i=\theta$ 且
+$0<\operatorname{Var}(Y_i)=\sigma^2<\infty$，则
+\[
+ \sqrt n(\bar Y_n-\theta)\xrightarrow d\mathcal N(0,\sigma^2).
+\]
+若用一致估计 $\widehat\sigma_n^2\to_p\sigma^2$ 替代 $\sigma^2$，Slutsky 定理才允许把
+\[
+ \frac{\sqrt n(\bar Y_n-\theta)}{\widehat\sigma_n}
+\]
+近似为标准正态。时间相关、重尾或随机停止会破坏其中的条件；“样本量很大”本身不是标准误一致性的证明。
+\end{proposition}
 
 若 $g$ 在 $\theta$ 可微，由一阶 Taylor 展开
 \[
@@ -70,8 +81,6 @@ $0.000960$。固定种子重复 $20000$ 次，得到均值 $0.399938$、经验�
 $0.000966$，正态区间覆盖率为 $0.954700$。模拟检验实现与有限样本表现；
 解析矩才是独立基准。
 
-\section{检验、区间、功效与经济效应}
-
 检验协议至少包含 $H_0,H_1$、统计量、拒绝域、显著性水平和停止规则。检验的\textbf{大小}是零假设参数集合上误拒概率的上确界；在具体备择 $\theta$ 下，功效为
 $\mathbb P_\theta(\text{拒绝 }H_0)$。$p$ 值是在 $H_0$ 下取得“至少同样极端”统计量的概率，不是 $H_0$ 为真的概率。
 
@@ -89,7 +98,7 @@ $1-0.95^{10}=0.401263$。停止规则属于实验设计，不能在看完路径�
 \noindent\textbf{即时练习}\quad
 把“$p=0.003$，所以策略有效”改写成可审计结论：注明检验族、停止规则、效应和区间，再列出成本后仍需验证的量。
 
-\section{OLS 是投影；识别与方差估计是两件事}
+\section{OLS、识别与不确定性}
 
 对 $y\in\mathbb R^n$、满列秩 $X\in\mathbb R^{n\times k}$，OLS 最小化
 $Q(b)=\lVert y-Xb\rVert_2^2$。求梯度得
@@ -122,7 +131,28 @@ $\operatorname{Var}(\varepsilon\mid X)=\sigma^2I$ 才给出经典协方差
 \]
 “系数估计了什么”属于识别问题；“这个系数抽样波动多大”属于协方差估计问题。修正后一项不会自动修正前一项。
 
-\section{四类标准误各自修什么}
+\begin{example}[一个可完整复核的 OLS]
+取
+\[
+ X=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix},
+ \qquad y=(1,2,2)^T.
+\]
+正规方程给
+$X^TX=\bigl(\begin{smallmatrix}3&3\\3&5\end{smallmatrix}\bigr)$、
+$X^Ty=(5,6)^T$，而
+\[
+ (X^TX)^{-1}
+ =\frac16\begin{pmatrix}5&-3\\-3&3\end{pmatrix}.
+\]
+因此
+\[
+ \widehat\beta=(7/6,1/2)^T,\qquad
+ \widehat\varepsilon=(-1/6,1/3,-1/6)^T,
+\]
+此时 $X^T\widehat\varepsilon=0$、残差平方和为 $1/6$。如果把第一系数误抄成 $2/3$，预测值仍可能看似平滑，但 $X^T\widehat\varepsilon$ 就不再为零；正交性是比图形直觉更可靠的实现检查。这个例子提醒读者：先检查代数账本，再讨论标准误和经济解释。
+\end{example}
+
+\MFQLead{标准误各自修什么}
 
 令 $x_i^T$ 是第 $i$ 行设计向量。异方差稳健三明治协方差的基本形式是
 \[
@@ -142,7 +172,7 @@ $[1+(5-1)0.4]/100=0.026000$。把它们都当 iid 会系统性低估不确定性
 实现记录另取中心化得分 $(1,1,-1,-1)$。带宽为 $1$ 的 Bartlett--HAC 使用
 $\hat\gamma_0+2(1-1/2)\hat\gamma_1$；按标签 $(0,0,1,1)$ 聚类时则先求两个簇得分和。HAC 与簇稳健标准误分别为 $0.559017$ 与 $0.707107$。这里真方差公式是理论基准，固定得分公式检验协方差实现；两者职责不同。
 
-\section{稳健标准误不修复遗漏变量}
+\MFQLead{稳健标准误不修复遗漏变量}
 
 真实模型为 $y=\beta_xx+\beta_zz+\varepsilon$，却只回归 $y$ 对 $x$。在相应矩存在且外生时，简单回归斜率的概率极限为
 \[
@@ -154,7 +184,7 @@ $\operatorname{Var}(x)=1$，遗漏后的斜率是 $2$，偏差是 $1$。三明�
 
 加入控制变量后系数稳定也不是因果证明：控制变量可能测量误差严重、是碰撞点或处于处理之后。因果解释还需要时间顺序、可辩护的识别假设和相应设计。
 
-\section{多重检验：先登记检验族，再看最小 p 值}
+\section{多重检验与从发现到确认}
 
 同时检验 $m$ 个独立真零假设、每项水平为 $\alpha$ 时，
 \[
@@ -185,25 +215,21 @@ Bonferroni、Holm、BH 分别拒绝 $(2,2,4)$ 项。BH 多发现两个候选不�
 这个膨胀可在最小例子中精确计算。若两个真实效应均为零，估计噪声独立服从标准正态，则
 $\max(Z_1,Z_2)=(Z_1+Z_2+|Z_1-Z_2|)/2$，所以两个独立零效应正态估计中选择较大者，其期望为 $1/\sqrt\pi=0.564190$。增加候选数只会强化选择，不会创造真实 alpha。
 
-\section{从发现到确认：事先确定选择，保留独立样本}
+\MFQLead{从一个检验结果走到报告结论}
+
+假设某日收益检验得到估计效应 $0.004$、标准误 $0.0015$，未校正双侧 $p$ 值约为 $0.008$。若这是 20 个候选信号中的最佳者，Bonferroni 阈值为 $0.0025$，所以“显著”这一描述在当前族错误率协议下不能直接保留；即使它通过，报告还应给出 $0.004$ 的经济单位、区间、选择前后的样本边界、换手和成本。统计门槛控制的是错误拒绝，不是收益符号、容量或未来稳定性。
+
+\MFQLead{从发现到确认：事先确定选择，保留独立样本}
 
 可审计协议是：先登记假设族、特征与参数网格、停止规则和错误率目标；在探索集上选择；事先确定全部选择；只在未参与选择的时间后移 holdout 上做一次确认。若数据有限，可用嵌套或滚动样本分割，但最外层评估不得回流到选择。样本分割降低估计精度，却换来对选择偏差的隔离。
 
 量化数据还要求时点正确的资产池与特征、重叠收益的 HAC 或分块处理、横截面/日期聚类，以及退市、停牌和制度变化记录。确认结果最终还要过经济效应门：成本、换手、冲击、容量与样本外稳定性。FDR 控制不是盈利保证，稳健标准误也不是因果识别。
 
-本章可执行证据为：
-\begin{lstlisting}[language=bash]
-uv run jupyter nbconvert --to notebook --execute --stdout \
-  --ExecutePreprocessor.timeout=60 \
-  --ExecutePreprocessor.allow_error_names=SystemExit \
-  notebooks/upper/ch10_statistical_inference.ipynb
-\end{lstlisting}
-它同时核对解析记录、固定种子模拟、规范输入、版本和容差；篡改期望值与放宽门槛会以非零状态失败。
+配套计算只承担核对解析记录、固定种子模拟和负例门槛的工作；它不能替代本节对抽样机制、识别条件和经济效应的论证。
 
 \noindent\textbf{延伸阅读。}回归与渐近理论参见\cite{hayashi2000econometrics,vanderVaart1998asymptotic}；HAC、横截面回归和数据窥探分别参见\cite{newey1987hac,fama1973risk,white2000reality}。
 
 \input{tex/upper/chapters/ch10-questions}
 \input{tex/upper/chapters/ch10-hints}
 
-\noindent\textbf{本章小结与 Capstone 连接}\quad
-估计量需要损失与抽样记录，检验需要预先声明的错误率与停止规则，回归需要把识别和协方差估计分开，多重搜索需要独立确认。上册 Capstone 将要求每项显著性声明可追溯到时点数据、检验族、依赖结构、效应大小、成本和明确限制。
+\noindent\textbf{本章要点。}估计量必须连同损失函数和抽样机制来理解；渐近近似和置信区间必须说明适用条件；回归识别与协方差估计是两笔不同的账；多重搜索只有在登记检验族、停止规则并保留独立确认样本后，才足以支持有限强度的统计陈述。
