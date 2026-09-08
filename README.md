@@ -2,7 +2,7 @@
 
 《量化研究数学》面向经济学与金融学读者。读者应会使用一元与多元微积分、计算矩阵乘法和求解线性方程组，理解随机变量、期望与方差。证明方法、抽象向量空间、测度论和随机过程由本书讲授。实验需要 Python 的变量、数组与绘图基础；基础计量经济学不是入学要求。
 
-当前源码包含后续教学修订；下方 Release 下载为已发布材料，可能早于当前源码，不能据此核对本轮修改。课程清单包含 35 个正式学习单元。
+当前发行版为 **v0.6.0**，包含两轮课程评审后的教学修订。课程清单包含 35 个正式学习单元；教学实验按 39 个正文单元组织。
 
 上册建立量化研究共同使用的数学基础，包括分析、测度与概率、统计推断、随机过程、时间序列、优化和数值计算。下册将这些工具用于多因子、统计套利、机器学习、衍生品、组合风险和市场微观结构。
 
@@ -10,12 +10,13 @@
 
 ## 获取成品
 
-本轮修订的本地 PDF 位于 `output/pdf/`，教学 Notebook 位于 `notebooks/`。GitHub Release 资产只有在另行发布后才会更新。
+以下下载对应 v0.6.0；主分支后续修改可能晚于该发行版。逐条核对结果见[本轮评审核对记录](docs/course-review-audit-2026-09-08.md)。
 
 - [最新 GitHub Release](https://github.com/Jason-W507/math-for-quant/releases/latest)
-- [上册 PDF](https://github.com/Jason-W507/math-for-quant/releases/latest)
-- [下册 PDF](https://github.com/Jason-W507/math-for-quant/releases/latest)
-- [共享答案册](https://github.com/Jason-W507/math-for-quant/releases/latest)
+- [上册 PDF](https://github.com/Jason-W507/math-for-quant/releases/download/v0.6.0/math-for-quant-upper.pdf)
+- [下册 PDF](https://github.com/Jason-W507/math-for-quant/releases/download/v0.6.0/math-for-quant-lower.pdf)
+- [共享答案册](https://github.com/Jason-W507/math-for-quant/releases/download/v0.6.0/math-for-quant-solutions.pdf)
+- [Notebook 压缩包](https://github.com/Jason-W507/math-for-quant/releases/download/v0.6.0/math-for-quant-notebooks.zip)
 - 已确认勘误：[ERRATA.md](ERRATA.md)
 
 ## 阅读路线
