@@ -29,13 +29,9 @@ ADF 回归在差分方程中检验水平项系数，原假设是单位根；KPSS
 
 \section{Engle--Granger 与误差修正}
 
-若 $x_t,y_t$ 都是 $I(1)$，但存在 $\beta$ 使 $z_t=y_t-a-\beta x_t$ 为 $I(0)$，则二者协整。Engle--Granger 两步法先估长期关系，再对残差做专用单位根检验\cite{engle1987cointegration}。用于核对运算的确定性算例令
-\[
-y_t=1.5+2x_t+0.55^t,
-\]
-对此数据作 OLS 得斜率约 $1.9912$，残差 DF 统计量约 $-8.3135$。斜率没有精确等于 2，是有限样本中确定性残差与趋势相关造成的差异。这里 $0.55^t$ 没有随机创新，不能用这一条序列说明平稳模型的检验力。
+若 $x_t,y_t$ 都是 $I(1)$，但存在 $\beta$ 使 $z_t=y_t-a-\beta x_t$ 为 $I(0)$，则二者协整。Engle--Granger 两步法先估长期关系，再对残差做专用单位根检验\cite{engle1987cointegration}。
 
-配套教学实验另使用 $x_t=x_{t-1}+u_t$、$z_t=\phi z_{t-1}+\eta_t$、$y_t=a+\beta x_t+z_t$，其中 $u_t\sim N(0,1)$、$\eta_t\sim N(0,\sigma_\eta^2)$ 相互独立且跨期独立，$|\phi|<1$。令 $z_0\sim N(0,\sigma_\eta^2/(1-\phi^2))$ 并独立于未来创新，则价差从一开始就平稳，而两个水平序列共享随机趋势。改变样本量并重复估计，才能看到有限样本误差。
+配套教学实验使用 $x_t=x_{t-1}+u_t$、$z_t=\phi z_{t-1}+\eta_t$、$y_t=a+\beta x_t+z_t$，其中 $u_t\sim N(0,1)$、$\eta_t\sim N(0,\sigma_\eta^2)$ 相互独立且跨期独立，$|\phi|<1$。令 $z_0\sim N(0,\sigma_\eta^2/(1-\phi^2))$ 并独立于未来创新，则价差从一开始就平稳，而两个水平序列共享随机趋势。改变样本量并重复估计，才能看到有限样本误差。
 
 \input{tex/figures/generated/lower-sa-cointegration.tex}
 
@@ -43,7 +39,17 @@ y_t=1.5+2x_t+0.55^t,
 \[
 \Delta y_t=c+\alpha z_{t-1}+\delta\Delta x_t+u_t.
 \]
-合成例得到 $\hat\alpha\approx-0.4606$；负号表示 $y_t$ 对正偏离向下调整。只有在协整向量、方向和时点协议固定后，$\alpha$ 才能解释为调整速度。
+负的调整系数表示 $y_t$ 对正偏离向下调整。下面由明确生成模型推导这个系数。
+
+\subsection{误差修正由共同趋势模型推出}
+
+令 $x_t=x_{t-1}+u_t$，$z_t=\phi z_{t-1}+\eta_t$，$y_t=a+\beta x_t+z_t$。两边差分即得
+\[
+ \Delta y_t=\beta u_t+(\phi-1)z_{t-1}+\eta_t
+ =\beta\Delta x_t+(\phi-1)(y_{t-1}-a-\beta x_{t-1})+\eta_t.
+\]
+因此在这个明确生成模型里，误差修正系数恰为 $\phi-1$。$\phi=0.8$ 时，偏离为 2 对下一期条件均值的贡献是 $-0.4$，而不是“保证下一期赚 0.4”；创新仍会带来随机损失。
+
 
 \section{选读：Johansen 的多变量秩问题}
 
@@ -52,7 +58,7 @@ VAR 的 VECM 形式为
 \Delta w_t=\Pi w_{t-1}+\sum_{j=1}^{p-1}\Gamma_j\Delta w_{t-j}+u_t,
 \qquad \Pi=\alpha\beta^{\mathsf T}.
 \]
-$\operatorname{rank}(\Pi)=r$ 是协整秩。Johansen 方法用广义特征值构造 trace 与最大特征根统计量，并按确定性项与滞后阶读取非标准临界值\cite{johansen1991estimation}。本项目的透明奇异值诊断只帮助理解“共同趋势方向”；正式 rank=1 结论由 \texttt{statsmodels} Johansen 临界值表独立计算。两者假设不同，不能把透明诊断冒充正式检验。
+$\operatorname{rank}(\Pi)=r$ 是协整秩。Johansen 方法用广义特征值构造 trace 与最大特征根统计量，并按确定性项与滞后阶读取非标准临界值\cite{johansen1991estimation}。把长期系数矩阵分成调整方向与协整向量，是低秩分解在动态模型中的应用；普通样本协方差的奇异值则不能直接决定协整秩。
 
 \section{从离散 AR 映射到 OU}
 
@@ -70,7 +76,7 @@ Z_{t+\Delta}=\mu+e^{-\kappa\Delta}(Z_t-\mu)
 \hat\kappa=-\frac{\log\hat\phi}{\Delta},
 \qquad t_{1/2}=\frac{\log 2}{\hat\kappa}.
 \]
-合成残差给出 $\hat\phi\approx0.5442$、半衰期约 $1.1393$ 个周期。$1/\hat\kappa$ 只是特征回归时间，不是首次通过时间。若先中心化令 $\mu=0$，从 $z_0>0$ 首次命中均值边界 0，扩散率为 $\sigma$，边值问题的解为
+例如 $\phi=0.8$、单位采样间隔下，半衰期为 $\log2/(-\log0.8)\approx3.106$ 个周期。$1/\hat\kappa$ 只是特征回归时间，不是首次通过时间。若先中心化令 $\mu=0$，从 $z_0>0$ 首次命中均值边界 0，扩散率为 $\sigma$，边值问题的解为
 \[
 \mathbb E_{z_0}\tau_0
 =\frac{\sqrt\pi}{\kappa}
@@ -80,11 +86,32 @@ Z_{t+\Delta}=\mu+e^{-\kappa\Delta}(Z_t-\mu)
 
 \input{tex/figures/generated/lower-sa-ou.tex}
 
-\begin{note}[Python 边界]
-\texttt{adfuller}、\texttt{coint} 与 \texttt{coint\_johansen} 的默认确定性项、自动滞后和临界值并不相同。调用函数前先把统计问题写成完整规格，再在报告中保存库版本与参数。
-\end{note}
+\paragraph{检验规格。}普通 ADF 与残差协整检验对应不同的统计问题；截距、趋势及差分滞后也会改变比较。配套实验统一使用长期回归含常数、一个差分滞后、不自动选阶，以便明确比较对象。
 
 \paragraph{实验阅读。}先比较确定性衰减与随机平稳价差，再计算 OLS 残差、协整检验和误差修正系数。公开宏观快照用于理解观测频率与真实数据背景，不作为可交易配对。
+
+OU 映射还给出噪声尺度。若采样间隔为 $\Delta$、离散创新方差为 $v$，则 $\kappa=-\log\phi/\Delta$，$\sigma^2=2\kappa v/(1-\phi^2)$。负的 AR 系数不可能等于实数 $\kappa>0$ 下的 $e^{-\kappa\Delta}$，所以振荡回归不能强行解释成标量 OU。已有 notebook 用平稳初值与独立创新重复模拟；改变 $\phi$ 可同时观察调整速度和检验力的变化。
+
+\section{怎样比较检验的统计性质}
+
+共同趋势模型下，拒绝“不存在协整”的频率估计功效。另生成两条独立随机游走 $x_t=x_{t-1}+u_t$、$y_t=y_{t-1}+v_t$，创新相互独立且方差为正：任意非零线性组合的创新方差均为正，不会产生平稳价差。此时拒绝频率估计第一类错误。两种模型都需要观察；只有检出率高，并不足以说明检验能区分原假设和备择。
+
+设独立重复 $B$ 次，拒绝指标为 $I_b$，模拟拒绝率 $\hat p=B^{-1}\sum_b I_b$。若真实拒绝概率为 $p$，则
+\[
+ \operatorname{Var}(\hat p)=\frac{p(1-p)}B,\qquad
+ \widehat{\operatorname{se}}_{\rm MC}=\sqrt{\frac{\hat p(1-\hat p)}B}.
+\]
+$p\approx0.5$ 时，60 次的标准误约为 $0.0645$，300 次约为 $0.0289$。几个百分点的频率差异可能只是模拟波动。实验同时画出二项比例的 Wilson 区间，它由 $|\hat p-p|\le1.96\sqrt{p(1-p)/B}$ 对 $p$ 求解得到；若全部重复均拒绝或均未拒绝，插件标准误虽为零，区间仍体现有限模拟次数的不确定性。这个区间描述检验在已给模型中的拒绝概率，不是协整为真的概率。
+
+\MFQTransition{同一组创新隔离噪声尺度的作用}
+令 $D=(\mathbf1,x)$，$y_c=D\beta+cz$，固定 $D,z$，只改变 $c>0$。投影给出
+\[
+ \hat\beta_c-\beta=c(D^TD)^{-1}D^Tz,\qquad
+ \hat u_c=(I-P_D)y_c=c(I-P_D)z.
+\]
+因此噪声尺度由 $0.5$ 增至 2 时，系数误差与残差都变成四倍。然而固定规格的 DF 统计量不变：差分回归的响应、滞后水平与滞后差分一起乘以 $c$，系数保持不变；残差方差乘 $c^2$，设计平方和也乘 $c^2$，故系数标准误不变，t 比值不变。
+
+配套实验在同一随机游走与标准化创新上比较两个尺度，显示系数误差、残差与统计量。该结论限于纯整体缩放；独立测量噪声、改变滞后规格或极端尺度造成的浮点误差，都可能打破上述比较。改变持续性 $\phi$ 则会改变自相关形状；固定创新方差时还改变平稳方差，不能把它当作同一种噪声尺度实验。
 
 \section{ARMA、VAR 与 GARCH 的职责}
 
@@ -102,16 +129,4 @@ $\alpha+\beta$ 接近 1 表示波动冲击衰减慢；它不是价格均值回�
 
 两个 $I(1)$ 序列若存在 $\beta$ 使 $z_t=y_t-\beta x_t$ 平稳，则共享随机趋势。$\beta$ 的尺度要固定，例如把 $y$ 系数规范为 1。纯统计搜索会从大量资产中找到偶然平稳组合，因此候选形成机制和多重检验必须记录。
 
-滚动 $\hat\beta_t$ 变化意味着对冲比率变化，也可能说明关系失效。若每期重新估计并立刻用新 beta 重写过去价差，历史信号会被回看修订；研究计算记录要保存当时版本的 beta 和价差。
-
-这组模型为后续路线 Capstone 提供状态、半衰期与失效边界；它们描述的是可检验的动态假设，不是收益承诺。
-\subsection{误差修正由共同趋势模型推出}
-
-令 $x_t=x_{t-1}+u_t$，$z_t=\phi z_{t-1}+\eta_t$，$y_t=a+\beta x_t+z_t$。两边差分即得
-\[
- \Delta y_t=\beta u_t+(\phi-1)z_{t-1}+\eta_t
- =\beta\Delta x_t+(\phi-1)(y_{t-1}-a-\beta x_{t-1})+\eta_t.
-\]
-因此在这个明确生成模型里，误差修正系数恰为 $\phi-1$。$\phi=0.8$ 时，偏离为 2 对下一期条件均值的贡献是 $-0.4$，而不是“保证下一期赚 0.4”；创新仍会带来随机损失。
-
-OU 映射还给出噪声尺度。若采样间隔为 $\Delta$、离散创新方差为 $v$，则 $\kappa=-\log\phi/\Delta$，$\sigma^2=2\kappa v/(1-\phi^2)$。负的 AR 系数不可能等于实数 $\kappa>0$ 下的 $e^{-\kappa\Delta}$，所以振荡回归不能强行解释成标量 OU。已有 notebook 用平稳初值与独立创新重复模拟；改变 $\phi$ 可同时观察调整速度和检验力的变化。
+滚动 $\hat\beta_t$ 变化意味着对冲比率变化，也可能说明关系失效。若每期重新估计并立刻用新 beta 重写过去价差，历史信号会被回看修订；历史评价应使用当时可估出的对冲比率计算当期价差。

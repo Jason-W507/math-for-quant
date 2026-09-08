@@ -14,15 +14,31 @@
 \]
 只允许零系数，它们线性无关。一组既线性无关又张成空间的向量称为\textbf{基}，基向量个数称为维数。坐标依赖所选基，向量本身不依赖。
 
-矩阵 $A\in\mathbb R^{m\times n}$ 表示映射 $x\mapsto Ax$。它带来四个基本子空间：列空间 $\mathcal C(A)\subseteq\mathbb R^m$、零空间 $\mathcal N(A)\subseteq\mathbb R^n$、行空间 $\mathcal C(A^T)$ 与左零空间 $\mathcal N(A^T)$。秩--零化度定理给出
+先把三点回归写成从参数到观测的映射：
 \[
-  \operatorname{rank}(A)+\dim\mathcal N(A)=n.
+ X=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix},\qquad
+ X\begin{pmatrix}b_0\\b_1\end{pmatrix}
+ =\begin{pmatrix}b_0\\b_0+b_1\\b_0+2b_1\end{pmatrix}.
 \]
-并且 $\mathcal C(A)^\perp=\mathcal N(A^T)$、$\mathcal C(A^T)^\perp=\mathcal N(A)$。因此，“数据无法解释的残差”与“参数不可辨识方向”分别落在不同空间，不能笼统归为“矩阵有问题”。
+两列 $v_1=(1,1,1)^T$、$v_2=(0,1,2)^T$ 的组合包含所有可由直线产生的预测。若 $b_0v_1+b_1v_2=0$，第一行给 $b_0=0$，第二行再给 $b_1=0$；所以两列独立，构成列空间的一组基，列空间维数为 2。
 
-\begin{example}[重复因子暴露]
-若设计矩阵两列完全相同，则 $(1,-1)^T\in\mathcal N(A)$。预测 $A\beta$ 可能唯一，但系数 $\beta$ 不唯一：沿 $(1,-1)^T$ 移动不会改变拟合值。删除变量、加约束或正则化会选择一个解，却都改变了问题的解释。
-\end{example}
+任意列空间向量 $s$ 都满足 $s_1-2s_2+s_3=0$。反过来，满足该等式时，取 $b_0=s_1,b_1=s_2-s_1$ 即可恢复 $s=Xb$。因此列空间是观测空间 $\mathbb R^3$ 中的一个平面。观测 $y=(1,2,2)^T$ 不满足这个等式，因为 $1-4+2=-1$；这就解释了为什么三点不能落在同一条直线上。
+
+零空间解决另一个问题：哪些参数变化不改变预测？上述方程已经给出 $\mathcal N(X)=\{0\}\subset\mathbb R^2$。列空间中的元素是三维预测，零空间中的元素是二维参数变化，二者不能互换。若把第二列也改为 $v_1$，新矩阵 $D$ 满足
+\[
+ Db=(b_0+b_1)v_1,\qquad
+ \mathcal N(D)=\operatorname{span}\{(1,-1)^T\}.
+\]
+只剩一个可识别的参数和 $b_0+b_1$。沿 $(1,-1)^T$ 移动系数不会改变预测。
+
+\textbf{四个基本子空间。}一般矩阵 $A\in\mathbb R^{m\times n}$ 的列空间 $\mathcal C(A)$ 与左零空间 $\mathcal N(A^T)$ 位于 $\mathbb R^m$；行空间 $\mathcal C(A^T)$ 与零空间 $\mathcal N(A)$ 位于 $\mathbb R^n$。本例逐行解 $X^Tr=0$：
+\[
+ r_1+r_2+r_3=0,\quad r_2+2r_3=0
+ \quad\Longrightarrow\quad r=t(1,-2,1)^T.
+\]
+因此左零空间维数为 1，行空间则由独立行 $(1,0),(1,1)$ 张成整个 $\mathbb R^2$。观察空间分成二维可拟合部分与一维剩余部分；参数空间中没有不可识别方向。
+
+秩--零化度关系 $\operatorname{rank}(A)+\dim\mathcal N(A)=n$ 把参数维数分成可识别与不可识别两部分。对 $X$ 是 $2+0=2$，对重复列矩阵 $D$ 是 $1+1=2$。由 $r^TAx=(A^Tr)^Tx$ 可见，$A^Tr=0$ 当且仅当 $r$ 垂直于所有列组合；这证明了 $\mathcal C(A)^\perp=\mathcal N(A^T)$。将 $A$ 换为 $A^T$，得到另一对正交补关系。
 
 \section{内积、正交补与投影定理}
 
@@ -75,9 +91,21 @@ y=\begin{pmatrix}1\\2\\2\end{pmatrix}.
 \]
 具体解法是从 $3\beta_0+3\beta_1=5$ 与 $3\beta_0+5\beta_1=6$ 相减，得到 $2\beta_1=1$，再代回求截距。拟合值是 $(7/6,5/3,13/6)^T$。残差第一、三项为负，第二项为正：直线略高于两端观测，低于中间观测。残差和为零来自常数列；残差与时间列的内积为零来自第二列。
 
-\MFQLead{把一个求解问题分成容易的步骤}
-
 \MFQLead{QR：最小二乘的默认几何工具}
+
+先在本例亲手构造正交基。第一列归一化为 $q_1=v_1/\sqrt3$；从第二列减去沿它的投影：
+\[
+ q_1^Tv_2=\sqrt3,\qquad
+ u_2=v_2-(q_1^Tv_2)q_1=(-1,0,1)^T,
+ \quad q_2=u_2/\sqrt2.
+\]
+两列内积为零且长度为 1。把原列用新基表示，得到
+\[
+ Q=\begin{pmatrix}1/\sqrt3&-1/\sqrt2\\1/\sqrt3&0\\1/\sqrt3&1/\sqrt2\end{pmatrix},
+ \quad R=\begin{pmatrix}\sqrt3&\sqrt3\\0&\sqrt2\end{pmatrix},
+ \quad Q^Ty=(5/\sqrt3,1/\sqrt2)^T.
+\]
+从 $R\hat\beta=Q^Ty$ 的第二行先求 $\hat\beta_1=1/2$，再由第一行求 $\hat\beta_0=7/6$。这就是 Gram--Schmidt 加上三角回代。若第二列重复，减去投影后 $u_2=0$，无法归一化；此时它没有提供新的方向，应转到较低维的基或使用伪逆。
 
 满列秩 $X=QR$，其中 $Q^TQ=I$、$R$ 上三角。因为正交变换保持二范数，
 \[
@@ -107,7 +135,7 @@ y=\begin{pmatrix}1\\2\\2\end{pmatrix}.
  X=U\Sigma V^T=\sum_{i=1}^{r}\sigma_i u_iv_i^T,
  \qquad \sigma_1\ge\cdots\ge\sigma_r>0.
 \]
-右奇异向量是参数方向，左奇异向量是输出方向；$Xv_i=\sigma_i u_i$。零奇异值给出不可辨识方向，小奇异值给出高敏感方向。伪逆
+右奇异向量是参数方向，左奇异向量是输出方向；$Xv_i=\sigma_i u_i$。零奇异值给出不可辨识方向；相对于最大奇异值很小的奇异值，对应相对误差可能被显著放大的方向。伪逆
 \[
  X^+=V\Sigma^+U^T
 \]
