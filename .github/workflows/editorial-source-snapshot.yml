@@ -13,15 +13,29 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Archive the fixed manuscript revision
+      - name: Read staged editorial transfer
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git clone --no-checkout https://github.com/Jason-W507/math-for-quant.git source
-          git -C source archive --format=zip --output="$GITHUB_WORKSPACE/source-20eceb7.zip" 20eceb7c287719cd97fa2e4177d24ad1646b70f9
-      - name: Make the source snapshot available for editorial review
+          python - <<'PY'
+          import urllib.request, os, json, base64, lzma
+          u='https://api.github.com/repos/Jason-W507/math-for-quant/git/blobs/f2c3e46d7028c791c2564c90bc834c2626ead491'
+          req=urllib.request.Request(u,headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'})
+          with urllib.request.urlopen(req) as r: b=json.load(r)
+          raw=base64.b64decode(b['content'])
+          open('staged-transfer.part1','wb').write(raw)
+          d=lzma.LZMADecompressor()
+          prefix=d.decompress(raw)
+          open('staged-transfer-prefix.txt','wb').write(prefix)
+          print('Retrieved',len(raw),'bytes;',len(prefix),'decoded bytes')
+          PY
+      - name: Make staged transfer available for verification
         uses: actions/upload-artifact@v4
         with:
-          name: source-20eceb7
-          path: source-20eceb7.zip
+          name: editorial-staged-transfer
+          path: |
+            staged-transfer.part1
+            staged-transfer-prefix.txt
           retention-days: 1
 
-# Temporary, read-only review-branch helper. Remove before the manuscript PR.
+# Temporary review helper; removed before the manuscript PR.
