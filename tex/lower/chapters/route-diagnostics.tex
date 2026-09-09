@@ -1,12 +1,10 @@
-\section{路线诊断与桥接地图}
+\section{按问题选择学习起点}
 
-\section{怎样使用诊断}
+先尝试回答所选方向的问题。能够解释概念并完成相应计算的部分，可以继续向下学习；尚不熟悉的部分，则利用后面的先修表返回上册。部分问题会在本方向中进一步展开，首次阅读时不必全部答出。
 
-每题按“能独立解释并完成”为 2 分、“知道概念但需要查阅”为 1 分、“尚不能”为 0 分。不要凭名词熟悉度给分：2 分必须能写出假设、计算步骤或失败边界。诊断不是录取考试，而是决定从哪里开始最省时间。
+\newcommand{\RouteScoreInterpretation}{}
 
-\newcommand{\RouteScoreInterpretation}{0--9 分：回到上册对应单元逐项补齐；10--15 分：先完成桥接，再进入方向模块；16--20 分：可直接进入，但仍须完成桥接中的自检题。}
-
-下册路线以经典资产定价、时间序列和回测过拟合文献作为起点，而不是把模型名称当成结论\cite{fama1973risk,brockwell2016timeseries,white2000reality,bailey2017backtest}。
+各方向与经典资产定价、时间序列和统计研究方法相联系；相应参考文献也可用于深入阅读\cite{fama1973risk,brockwell2016timeseries,white2000reality,bailey2017backtest}。
 
 \section{多因子与计量}\label{route:multifactor}
 
@@ -20,7 +18,7 @@
   \item 能否为因子搜索设计多重检验控制？
   \item 能否定义时点数据并识别一次发布日期泄漏？
   \item 能否把换手、佣金和冲击写入净收益？
-  \item 能否提交可复现的样本外因子报告并陈述容量限制？
+  \item 能否解释样本外因子表现与交易规模之间的关系？
 \end{enumerate}
 \RouteScoreInterpretation
 
@@ -36,7 +34,7 @@
   \item 能否写出 Kalman 滤波的预测与更新步骤？
   \item 能否设计不泄漏未来的 walk-forward 划分？
   \item 能否处理配对选择带来的多重检验？
-  \item 能否把换手、未成交和结构变化纳入失败报告？
+  \item 换手、未成交和结构变化会怎样影响策略收益？
 \end{enumerate}
 \RouteScoreInterpretation
 
@@ -84,7 +82,7 @@
   \item 能否定义 VaR、CVaR 与最大回撤并说明局限？
   \item 能否设计压力情景而不把历史最差日当作全部尾部风险？
   \item 能否把换手惩罚与再平衡频率写入优化？
-  \item 能否对估计误差、约束敏感性和容量做限制报告？
+  \item 估计误差、约束变化和交易规模会怎样改变组合？
 \end{enumerate}
 \RouteScoreInterpretation
 
@@ -104,8 +102,8 @@
 \end{enumerate}
 \RouteScoreInterpretation
 
-\section{精确桥接地图}
+\section{各方向需要的上册知识}
 
-下表不是“建议阅读书单”，而是各路线开始前需要核对的上册正式学习单元。若诊断只在某一项失分，只回看对应单元及其练习，不必重读整册。
+下表列出各方向用到的上册章节。某一道题涉及的概念尚不熟悉时，可以先回顾相应定义与例题，无须重读整册。
 
 \input{tex/generated/lower-route-bridges}

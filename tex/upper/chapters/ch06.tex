@@ -216,7 +216,7 @@ A_\varepsilon=\begin{pmatrix}1&1\\1&1+\varepsilon\end{pmatrix},
 它在 $(1,-1)^T$ 附近几乎把向量压到零，因此反向求解很敏感。更直观的例子是 $A=\operatorname{diag}(1,\varepsilon)$：取 $b=(1,0)^T$ 与 $\delta b=(0,\delta)^T$，则 $x=(1,0)^T$，$\delta x=(0,\delta/\varepsilon)^T$。相对放大恰好是 $1/\varepsilon=\kappa_2(A)$。若扰动沿第一坐标，放大只有 1；条件数描述的是最坏方向。
 
 \begin{note}
-列缩放可能显著改善数值条件，却改变系数单位；ridge 把 $X^TX$ 改为 $X^TX+\lambda I$，同时改变估计目标；删因子改变模型空间。三者都可能让数字更稳定，但研究含义不同，必须单独报告。
+列缩放可能显著改善数值条件，却改变系数单位；ridge 把 $X^TX$ 改为 $X^TX+\lambda I$，同时改变估计目标；删因子改变模型空间。三者都可能让数字更稳定，但分别改变计算坐标、估计目标和模型空间，解释结果时需要区分。
 \end{note}
 
 \section{从几何结论到收益数据}

@@ -6,7 +6,7 @@
 \input{tex/common/visual-system}
 
 \title{量化研究数学}
-\subtitle{上册：通用工具与研究证据}
+\subtitle{上册：共同数学基础}
 \author{Jason W.}
 \providecommand{\MFQReleaseDate}{2026-07-31}
 \ifdefined\MFQVersion\else
@@ -14,8 +14,8 @@
 \fi
 \date{\MFQReleaseDate}
 \version{\MFQVersion}
-\hypersetup{pdftitle={量化研究数学：上册},pdfauthor={Jason W.},pdfsubject={通用工具与研究证据}}
-\extrainfo{定义假设，独立验证，样本外判断。}
+\hypersetup{pdftitle={量化研究数学：上册},pdfauthor={Jason W.},pdfsubject={共同数学基础}}
+\extrainfo{从问题出发，理解概念与推导。}
 \cover{assets/cover.jpg}
 \setcounter{tocdepth}{2}
 
@@ -37,13 +37,7 @@
 
 \section{从熟悉的平均数开始}
 
-量化研究中的公式、数值程序和经验结论承担不同职责。先手算一个三期收益平均值，再让 Python 重复这项计算，可以看见两种证据如何彼此核对；计算结果本身并不替代证明或研究判断。
-
-\section{上册的学习路径}
-
-目录按读者叙事组织。应用主线和理论增强线都可以从这里进入；每章开头会说明直接先修，完整依赖图和路线桥接见课程地图。
-
-\input{tex/generated/course-map}
+平均数是熟悉的数学工具。它怎样概括几期收益？不同的权重又会怎样改变结果？从这个小问题出发，可以逐步理解线性组合、随机变量及其期望。
 
 \begin{example}
 给定 $r_1=0.01$、$r_2=-0.02$、$r_3=0.03$，先手算
@@ -52,6 +46,12 @@
 \]
 这个平均数概括三期等权收益。若三期权重不同，应怎样改写？第一章将从这个问题引入凸组合。
 \end{example}
+
+\section{上册的学习路径}
+
+应用主线先学习常用的计算与推断方法，再按需回读其理论基础；理论增强线依次学习分析、测度与概率。下表列出了各章之间的联系。
+
+\input{tex/generated/course-map}
 
 \part{数学语言与分析基础}
 \input{tex/upper/chapters/ch01}
@@ -81,8 +81,7 @@
 \appendix
 
 \chapter{练习反馈说明}
-正文保留即时练习、章末递进练习与分级提示。完整推导、计算输出、失败见证和研究判断答案单独发布为
-\path{output/pdf/math-for-quant-solutions.pdf}，避免读者在阅读题目时过早看到答案。
+正文中的即时练习帮助理解刚引入的概念，章末练习进一步联系证明、计算与应用。遇到困难时可先阅读提示；完整解答收录于共享答案册，便于独立作答后逐步核对。
 
 \chapter{共享符号表}
 \input{tex/common/notation}

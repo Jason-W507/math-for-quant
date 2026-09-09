@@ -656,7 +656,7 @@ def _make_sheet(images: list[tuple[str, object]], target: Path) -> None:
 
 
 def render_book_pages() -> int:
-    """Render only publication pages containing registered figure IDs."""
+    """Locate figure pages via PDF destinations; support older printed IDs too."""
 
     import fitz
 
@@ -668,18 +668,23 @@ def render_book_pages() -> int:
         ids = {record["id"] for record in records if record["volume"] == volume}
         pdf = ROOT / "output" / "pdf" / f"math-for-quant-{volume}.pdf"
         document = fitz.open(pdf)
+        destinations = document.resolve_names() if hasattr(document, "resolve_names") else {}
         selected: list[tuple[str, object]] = []
         found: set[str] = set()
         for page_index, page in enumerate(document):
             text = page.get_text()
-            page_ids = sorted(figure_id for figure_id in ids if figure_id in text)
+            page_ids = sorted(
+                figure_id for figure_id in ids
+                if figure_id in text
+                or destinations.get(f"mfq-figure:{figure_id}", {}).get("page") == page_index
+            )
             if page_ids:
                 found.update(page_ids)
                 selected.append((f"p{page_index + 1}: {', '.join(page_ids)}", _page_image(page)))
         document.close()
         missing = sorted(ids - found)
         if missing:
-            raise ValueError(f"{volume} figure IDs not found in PDF text: {missing}")
+            raise ValueError(f"{volume} figure IDs not found in PDF destinations or legacy text: {missing}")
         for sheet_index in range(0, len(selected), 16):
             target = output / f"{volume}-{sheet_index // 16 + 1}.png"
             _make_sheet(selected[sheet_index:sheet_index + 16], target)

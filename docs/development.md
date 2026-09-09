@@ -59,3 +59,7 @@ uv run python tools/build_reports.py microstructure
 ```
 
 更完整的材料分层约定见 [`evidence-contract.md`](evidence-contract.md)。
+
+### 正文与维护信息
+
+读者实验入口见 `reader-experiments.md`。补充习题附录显示题源及所在章节；选题数量、覆盖率和内部验收要求保留在 `curriculum/interview-problem-ledger.json` 及维护记录中。正文、提示、答案和图注不承担发布日志或固定输出检查的职责。
