@@ -24,7 +24,7 @@ The common mathematical volume and direction-specific volume share one glossary,
 
 ## Use the glossary's vocabulary
 
-Use terms as defined in `CONTEXT.md` when naming issues, hypotheses, tests, chapter concepts, and mathematical objects. Avoid drifting between synonyms without recording the distinction.
+Use the internal vocabulary in `CONTEXT.md` for issues, maintenance data and tests. For chapters, exercises, answers and notebook explanations, use the mathematical terminology in `curriculum/glossary.json` and ordinary explanatory prose. Do not turn evidence-package fields or acceptance steps into learner-facing headings. Preserve the meaning of assumptions and numerical conditions when changing wording.
 
 ## Flag ADR conflicts
 

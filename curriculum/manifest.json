@@ -9,7 +9,7 @@
   "volumes": [
     {
       "id": "upper",
-      "title": "通用工具与研究证据",
+      "title": "共同数学基础",
       "source": "tex/upper/main.tex",
       "pdf": "output/pdf/math-for-quant-upper.pdf"
     },
@@ -32,7 +32,7 @@
   "units": [
     {
       "id": "foundation.oracle-smoke",
-      "title": "独立 oracle 契约示例",
+      "title": "从平均数到加权平均",
       "volume": "upper",
       "internal": true,
       "state": "accepted",
@@ -40,13 +40,13 @@
       "prerequisites": [],
       "evidence": {
         "notation_symbols": ["r_t"],
-        "glossary_terms": ["独立 oracle"],
+        "glossary_terms": ["参照计算"],
         "notation_and_assumptions": "evidence/foundation/notation-and-assumptions.md",
         "core_derivation": "evidence/foundation/core-derivation.md",
         "independent_oracle": {
-          "source": "notebooks/foundation/independent_oracle.ipynb",
+          "source": "src/m4q/foundation/independent_oracle.py",
           "oracle": "evidence/foundation/oracle.json",
-          "command": ["{python}", "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute", "--stdout", "--ExecutePreprocessor.timeout=60", "--ExecutePreprocessor.allow_error_names=SystemExit", "notebooks/foundation/independent_oracle.ipynb"]
+          "command": ["{python}", "-m", "m4q.foundation.independent_oracle"]
         },
         "questions": "evidence/foundation/questions.md",
         "hints": "evidence/foundation/hints.md",
@@ -396,7 +396,7 @@
     },
     {
       "id": "upper.ch17",
-      "title": "Capstone：从三笔交易检验研究主张",
+      "title": "综合练习：从三笔交易检验研究主张",
       "volume": "upper",
       "capstone": true,
       "state": "accepted",
@@ -543,7 +543,7 @@
     },
     {
       "id": "lower.multifactor.research",
-      "title": "多因子研究：组合、摩擦与可复现研究包",
+      "title": "多因子研究：组合收益、归因与交易成本",
       "volume": "lower",
       "track": "multifactor",
       "track_stage": "oos-frictions-capstone",
@@ -659,7 +659,7 @@
       }
     },
     {
-      "id":"lower.ml-alpha.research","title":"Alpha 决策与研究包：从损失到净收益","volume":"lower","track":"ml-alpha","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.ml-alpha.validation"],
+      "id":"lower.ml-alpha.research","title":"Alpha 决策：从预测损失到交易收益","volume":"lower","track":"ml-alpha","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.ml-alpha.validation"],
       "evidence":{
         "notation_symbols":["R^{\\mathrm{net}}"],"glossary_terms":["交易成本","可复现研究包","数据泄漏"],
         "notation_and_assumptions":"tex/lower/chapters/ml-alpha-research.tex","core_derivation":"tex/lower/chapters/ml-alpha-research.tex",
@@ -693,7 +693,7 @@
       }
     },
     {
-      "id":"lower.derivatives.hedging","title":"对冲失效与研究包：从 Greeks 到误差分布","volume":"lower","track":"derivatives","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.derivatives.numerics"],
+      "id":"lower.derivatives.hedging","title":"离散对冲：Greeks、交易成本与误差分布","volume":"lower","track":"derivatives","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.derivatives.numerics"],
       "evidence":{
         "notation_symbols":["W_t"],"glossary_terms":["交易成本","可复现研究包"],
         "notation_and_assumptions":"tex/lower/chapters/derivatives-hedging.tex","core_derivation":"tex/lower/chapters/derivatives-hedging.tex",
@@ -750,7 +750,7 @@
       }
     },
     {
-      "id":"lower.microstructure.estimation","title":"执行与做市控制：从冲击账本到库存反馈","volume":"lower","track":"microstructure","track_stage":"estimation-numerics","state":"accepted","published":true,"prerequisites":["lower.microstructure.model","upper.ch13","upper.ch14","upper.ch15"],
+      "id":"lower.microstructure.estimation","title":"执行与做市：价格冲击与库存反馈","volume":"lower","track":"microstructure","track_stage":"estimation-numerics","state":"accepted","published":true,"prerequisites":["lower.microstructure.model","upper.ch13","upper.ch14","upper.ch15"],
       "evidence":{
         "notation_symbols":["V_t(x)"],"glossary_terms":["临时冲击","实现差额"],
         "notation_and_assumptions":"tex/lower/chapters/microstructure-control.tex","core_derivation":"tex/lower/chapters/microstructure-control.tex",
@@ -761,7 +761,7 @@
       }
     },
     {
-      "id":"lower.microstructure.research","title":"事件时间仿真：从共同随机数到 Route Capstone","volume":"lower","track":"microstructure","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.microstructure.estimation"],
+      "id":"lower.microstructure.research","title":"事件时间仿真与综合练习","volume":"lower","track":"microstructure","track_stage":"oos-frictions-capstone","capstone":true,"state":"accepted","published":true,"prerequisites":["lower.microstructure.estimation"],
       "evidence":{
         "notation_symbols":["\\operatorname{PnL}_T"],"glossary_terms":["条件强度","实现差额"],
         "notation_and_assumptions":"tex/lower/chapters/microstructure-simulation.tex","core_derivation":"tex/lower/chapters/microstructure-simulation.tex",
