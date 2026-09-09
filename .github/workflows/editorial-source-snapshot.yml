@@ -1,0 +1,27 @@
+name: Editorial source snapshot (temporary)
+
+on:
+  push:
+    branches: [editorial/textbook-prose-20260909]
+    paths: [.github/workflows/editorial-source-snapshot.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Archive the fixed manuscript revision
+        run: |
+          git clone --no-checkout https://github.com/Jason-W507/math-for-quant.git source
+          git -C source archive --format=zip --output="$GITHUB_WORKSPACE/source-20eceb7.zip" 20eceb7c287719cd97fa2e4177d24ad1646b70f9
+      - name: Make the source snapshot available for editorial review
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-20eceb7
+          path: source-20eceb7.zip
+          retention-days: 1
+
+# Temporary, read-only review-branch helper. Remove before the manuscript PR.
